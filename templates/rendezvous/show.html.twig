@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Rendezvous{% endblock %}
+
+{% block body %}
+    <h1>Rendezvous</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ rendezvou.id }}</td>
+            </tr>
+            <tr>
+                <th>ImageName</th>
+                <td>{{ rendezvou.ImageName }}</td>
+            </tr>
+            <tr>
+                <th>Day</th>
+                <td>{{ rendezvou.day ? rendezvou.day|date('Y-m-d') : '' }}</td>
+            </tr>
+        
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_rendezvous_index') }}">back to list</a>
+
+    <a href="{{ path('app_rendezvous_edit', {'id': rendezvou.id}) }}">edit</a>
+
+    {{ include('rendezvous/_delete_form.html.twig') }}
+{% endblock %}

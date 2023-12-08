@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Prendre RDV{% endblock %}
+{% block stylesheets %}
+<style>
+    #calendrier{
+        width: 50%;
+        margin: auto;
+    }
+</style>
+{% endblock %}
+
+
+{% block body %}
+
+<div class="grid grid-cols-3 mt-10">
+  <div class="col-span-2" id="calendrier">
+  </div>
+  <div>
+    {{ form_start(form) }}
+      {{ form_widget(form) }}
+      <button class="btn">{{ button_label|default('Save') }}</button>
+    {{ form_end(form) }}
+  </div>
+</div>
+{% endblock %}
+
+{%  block javascripts %} 
+    <script>
+      window.onload = () => {
+        let calendarElt = document.querySelector("#calendrier")
+        let calendar = new FullCalendar.Calendar(calendarElt, {
+            initialView: 'timeGridWeek',
+            locale: 'fr',
+            timeZone: 'Africa/Porto-Novo',
+
+            headerToolbar: {
+            left: 'title',
+            center: 'timeGridWeek,timeGridDay',
+            right: 'prev,next'
+            },
+            
+            buttonText: {
+            today: 'Aujourd\'hui',
+            month: 'Mois',
+            week: 'Semaine',
+            day: 'Jour'
+            },
+
+        })
+       // Événement après le rendu pour ajuster les titres de l'entête
+    calendar.render();
+      }
+
+    </script>
+{% endblock %}
