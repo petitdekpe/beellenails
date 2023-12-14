@@ -2,24 +2,28 @@
 
 {% block title %}Prendre RDV{% endblock %}
 {% block stylesheets %}
-<style>
+<!--style>
     #calendrier{
         width: 50%;
         margin: auto;
     }
-</style>
+</style-->
 {% endblock %}
 
 
 {% block body %}
 
-<div class="grid grid-cols-3 mt-10">
-  <div class="col-span-2" id="calendrier">
-  </div>
-  <div>
+<div class="max-w-sm mx-auto mt-10">
+  <!--div class="col-span-2" id="calendrier"></div-->
+  
+  <div class="mr-10">
     {{ form_start(form) }}
-      {{ form_widget(form) }}
-      <button class="btn">{{ button_label|default('Save') }}</button>
+      {{ form_row(form.prestation) }}
+      {{ form_label(form.day, 'Date du rendez-vous') }}
+      {{ form_widget(form.day) | replace({'type="text"': 'type="text" datepicker datepicker-autohide'}) | raw }}
+      {{ form_row(form.creneau) }}
+      {{ form_row(form.image) }}
+      <button type="submit" class="btn btn-primary">Enregistrer</button>
     {{ form_end(form) }}
   </div>
 </div>
@@ -51,6 +55,10 @@
        // Événement après le rendu pour ajuster les titres de l'entête
     calendar.render();
       }
+      
 
     </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/datepicker.min.js"></script> 
+
 {% endblock %}

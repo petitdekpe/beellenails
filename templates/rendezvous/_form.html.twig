@@ -1,4 +1,21 @@
+
+{% block stylesheets %}
+{% endblock %}
+
+{% block body %}
+
+<div class="max-w-sm mx-20">
 {{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
+    {{ form_row(form.prestation) }}
+    {{ form_label(form.day, 'Date du rendez-vous') }}
+    {{ form_widget(form.day) | replace({'type="text"': 'type="text" datepicker datepicker-autohide'}) | raw }}
+    {{ form_row(form.creneau) }}
+    {{ form_row(form.image) }}
+    <button type="submit" class="btn btn-primary">Enregistrer</button>
 {{ form_end(form) }}
+</div>
+{% endblock %}
+
+{%  block javascripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/datepicker.min.js"></script> 
+{% endblock %}

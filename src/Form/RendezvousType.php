@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Entity\CategoryPrestation;
 use App\Entity\Creneau;
 use App\Entity\Prestation;
 use App\Entity\Rendezvous;
@@ -19,25 +20,24 @@ class RendezvousType extends AbstractType
     {
         $builder
         ->add('day', TextType::class, [
-                'attr' => [
-                    'class' => 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500',
-                    'datepicker' => true,  // Ajoutez cet attribut pour activer le datepicker
-                    'datepicker-autohide' => true,  // Ajoutez cet attribut pour activer l'auto-masquage du datepicker
-                    'placeholder' => 'Select date',
-                ],
-            ])
+                'label' => 'Date du rendez-vous',
+                'attr' => ['class' =>'date bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5']
+            // Vous pouvez également ajouter d'autres options de champ ici si nécessaire
+        ])
         ->add('prestation', EntityType::class, [
+            'label' => 'Choisissez une prestation',
             'class' => Prestation::class,
             'choice_label' => 'Title',
             'attr' => ['class' => 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500']
         ])
         ->add('creneau', EntityType::class, [
+            'label' => 'Choisissez un créneau',
             'class' => Creneau::class,
             'choice_label' => 'libelle',
             'attr' => ['class' => 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500']
         ])
         ->add('image', VichImageType::class, [
-            'label' => 'Image',
+            'label' => 'Une photo de vos mains / pieds',
             'required' => true,
             'attr' => ['class' => 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500']
         ]);

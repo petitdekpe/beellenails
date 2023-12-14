@@ -36,6 +36,9 @@ class Prestation
     #[ORM\OneToMany(mappedBy: 'prestation', targetEntity: Rendezvous::class)]
     private Collection $rendezvouses;
 
+    #[ORM\ManyToOne(inversedBy: 'prestation')]
+    private ?CategoryPrestation $categoryPrestation = null;
+
     public function __construct()
     {
         $this->rendezvouses = new ArrayCollection();
@@ -138,6 +141,18 @@ class Prestation
                 $rendezvouse->setPrestation(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCategoryPrestation(): ?CategoryPrestation
+    {
+        return $this->categoryPrestation;
+    }
+
+    public function setCategoryPrestation(?CategoryPrestation $categoryPrestation): static
+    {
+        $this->categoryPrestation = $categoryPrestation;
 
         return $this;
     }
