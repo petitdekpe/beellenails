@@ -24,6 +24,14 @@ class RendezvousType extends AbstractType
                 'attr' => ['class' =>'date bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5']
             // Vous pouvez également ajouter d'autres options de champ ici si nécessaire
         ])
+        ->add('categorie', EntityType::class, [
+            'label' => 'Choisissez une catégorie de prestation',
+            'class' => CategoryPrestation::class,
+            'choice_label' => 'NomCategory',
+            'placeholder' => 'Sélectionnez une catégorie',
+            'attr' => ['class' => 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500'],
+            'mapped' => false, // Ceci signifie que le champ n'est pas lié à une propriété de l'entité Produit
+        ])
         ->add('prestation', EntityType::class, [
             'label' => 'Choisissez une prestation',
             'class' => Prestation::class,

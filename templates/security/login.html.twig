@@ -3,48 +3,55 @@
 {% block title %}Connectez-vous !{% endblock %}
 
 {% block body %}
-
-<form class="max-w-sm mx-auto" method="post">
-
-    <h1 class="h1 mt-6 mb-10 text-center font-semibold text-red-500 text-2xl">Bon retour, cher(e) client(e)!</h1>
-
-    {% if app.user %}
-        <div class="m-6 bg-red-100 p-3 rounded-lg text-center">
-            Vous êtes connecté(e) en tant que {{ app.user.userIdentifier }},<br> 
-            <a class="text-red-500" href="{{ path('app_logout') }}">Se déconnecter ?</a>
-        </div>
-    {% endif %}
-
-    <div class="mb-5">
-        <label for="inputEmail" class="block mb-2 text-sm font-medium text-red-500 dark:text-white">Adresse mail</label>
-        <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="exemple@mail.com" autocomplete="email" required autofocus>
-    </div>
-
-    <div class="mb-5">
-        <label for="inputPassword" class="block mb-2 text-sm font-medium text-red-500 dark:text-white">Mot de passe</label>
-        <input type="password" name="password" id="inputPassword" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="******************" autocomplete="current-password" required>
-    </div>
-
-    {% if error %}
-        <div class="mb-5">
-            <div class="text-red-500">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-        </div>
-    {% endif %}
-
-    <div class="flex items-start mb-5">
-        <div class="flex items-center h-5">
-            <input id="remember" type="checkbox" value="" class="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-red-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800">
-        </div>
-        <label for="remember" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Se rappeler de moi</label>
-    </div>
-
-    <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-
-    <button type="submit" class="text-white bg-gray-900 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Se connecter</button>
-    
-    <div class="m-6 text-center">
-            Vous n'avez pas de compte? <a class="text-red-500" href="{{ path('app_register') }}">S'inscrire</a>
-    </div>
-</form>
-
+<section class="bg-gray-50 h-full">
+  <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto lg:py-0">
+      <a href="#" class="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">
+          <img class="w-40 h-40 sm: mr-2 md:max-w-md" src="/assets/logooff.png" alt="logo">  
+      </a>
+        {% if app.user %}
+                <div class="m-6 bg-red-100 p-3 rounded-lg text-center">
+                    Vous êtes connecté(e) en tant que {{ app.user.userIdentifier }},<br> 
+                    <a class="text-red-500" href="{{ path('app_logout') }}">Se déconnecter ?</a>
+                </div>
+        {% endif %}
+      <div class="w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-lg xl:p-0 md:w-full">
+          <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
+              <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
+                  Connectez-vous à votre compte
+              </h1>
+              <form class="space-y-4 md:space-y-6" method="post">
+                  <div>
+                      <label for="email" class="block mb-2 text-sm font-medium text-gray-900">Votre adresse mail:</label>
+                      <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="ex: nom@gmail.com" autocomplete="email" required autofocus>
+                  </div>
+                  <div>
+                      <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Mot de passe</label>
+                      <input type="password" name="password" id="inputPassword" placeholder="••••••••" autocomplete="current-password" required class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                  </div>
+                    {% if error %}
+                    <div class="mb-5">
+                        <div class="text-red-500">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                    </div>
+                    {% endif %}
+                  <div class="flex items-center justify-between">
+                      <div class="flex items-start">
+                          <div class="flex items-center h-5">
+                            <input id="remember" value="" type="checkbox" class="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300">
+                          </div>
+                          <div class="ml-3 text-sm">
+                            <label for="remember" class="text-gray-500">Se rappeler de moi</label>
+                          </div>
+                      </div>
+                      <a href="#" class="text-sm font-medium text-primary-600 hover:underline">Mot de passe oublié ?</a>
+                  </div>
+                  <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                  <button type="submit" class="text-white bg-gray-900 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Se connecter</button>
+                  <p class="text-sm font-light text-gray-500 dark:text-gray-400">
+                      Vous n'avez pas encore de compte ? <a href="{{ path('app_register') }}" class="font-medium text-primary-600 hover:underline dark:text-primary-500">S'inscrire</a>
+                  </p>
+              </form>  
+          </div>
+      </div>
+  </div>
+</section>
 {% endblock %}

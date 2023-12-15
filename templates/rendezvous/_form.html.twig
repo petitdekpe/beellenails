@@ -6,6 +6,7 @@
 
 <div class="max-w-sm mx-20">
 {{ form_start(form) }}
+    {{ form_row(form.categorie) }}
     {{ form_row(form.prestation) }}
     {{ form_label(form.day, 'Date du rendez-vous') }}
     {{ form_widget(form.day) | replace({'type="text"': 'type="text" datepicker datepicker-autohide'}) | raw }}

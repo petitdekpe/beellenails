@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Creneau{% endblock %}
+
+{% block body %}
+    <h1>Creneau</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ creneau.id }}</td>
+            </tr>
+            <tr>
+                <th>StartTime</th>
+                <td>{{ creneau.startTime ? creneau.startTime|date('H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>EndTime</th>
+                <td>{{ creneau.endTime ? creneau.endTime|date('H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Libelle</th>
+                <td>{{ creneau.libelle }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_creneau_index') }}">back to list</a>
+
+    <a href="{{ path('app_creneau_edit', {'id': creneau.id}) }}">edit</a>
+
+    {{ include('creneau/_delete_form.html.twig') }}
+{% endblock %}

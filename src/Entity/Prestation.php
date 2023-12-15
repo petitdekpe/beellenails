@@ -39,6 +39,9 @@ class Prestation
     #[ORM\ManyToOne(inversedBy: 'prestation')]
     private ?CategoryPrestation $categoryPrestation = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $description = null;
+
     public function __construct()
     {
         $this->rendezvouses = new ArrayCollection();
@@ -153,6 +156,18 @@ class Prestation
     public function setCategoryPrestation(?CategoryPrestation $categoryPrestation): static
     {
         $this->categoryPrestation = $categoryPrestation;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): static
+    {
+        $this->description = $description;
 
         return $this;
     }

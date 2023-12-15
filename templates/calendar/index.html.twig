@@ -17,14 +17,7 @@
   <!--div class="col-span-2" id="calendrier"></div-->
   
   <div class="mr-10">
-    {{ form_start(form) }}
-      {{ form_row(form.prestation) }}
-      {{ form_label(form.day, 'Date du rendez-vous') }}
-      {{ form_widget(form.day) | replace({'type="text"': 'type="text" datepicker datepicker-autohide'}) | raw }}
-      {{ form_row(form.creneau) }}
-      {{ form_row(form.image) }}
-      <button type="submit" class="btn btn-primary">Enregistrer</button>
-    {{ form_end(form) }}
+    {{ include('rendezvous/_form.html.twig') }}
   </div>
 </div>
 {% endblock %}
