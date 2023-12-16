@@ -13,10 +13,13 @@
 
 {% block body %}
 
-<div class="max-w-sm mx-auto mt-10">
+<div class="mt-10 flex justify-center content-center">
   <!--div class="col-span-2" id="calendrier"></div-->
+
+  <div class="mx-auto flex flex-col justify-center">
   
-  <div class="mr-10">
+  <img class="w-40 h-40 sm: mr-2 md:max-w-md" src="/assets/logooff.png" alt="logo">  
+  
     {{ include('rendezvous/_form.html.twig') }}
   </div>
 </div>

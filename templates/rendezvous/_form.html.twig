@@ -4,7 +4,7 @@
 
 {% block body %}
 
-<div class="max-w-sm mx-20">
+<div class="max-w-xl mx-20">
 {{ form_start(form) }}
     {{ form_row(form.categorie) }}
     {{ form_row(form.prestation) }}
@@ -12,7 +12,7 @@
     {{ form_widget(form.day) | replace({'type="text"': 'type="text" datepicker datepicker-autohide'}) | raw }}
     {{ form_row(form.creneau) }}
     {{ form_row(form.image) }}
-    <button type="submit" class="btn btn-primary">Enregistrer</button>
+    <button type="submit" class="btn btn-primary mt-5 text-white bg-gray-900 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center">Enregistrer</button>
 {{ form_end(form) }}
 </div>
 {% endblock %}
