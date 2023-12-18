@@ -64,4 +64,4 @@ DirectoryIndex index.php
         # to the front controller explicitly so that the website
         RedirectMatch 307 ^/$ /index.php/
     </IfModule>
-</IfModule
+</IfModule>
