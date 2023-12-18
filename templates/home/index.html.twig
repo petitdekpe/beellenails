@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello HomeController!{% endblock %}
+
+{% block body %}
+
+<section class="w-full mx-auto bg-nordic-gray-light flex pt-12 md:pt-0 md:items-center bg-cover bg-right" style="max-width:1600px; height: 32rem; background-image: url('assets/back.jpeg');">
+<div class="container mx-auto">
+    <div class="flex flex-col w-full lg:w-1/2 justify-center items-start  px-6 tracking-wide">
+        <h1 class="text-white text-2xl my-4">"Be ELLE, où chaque détail compte, pour des mains sublimes à chaque instant!"
+</h1>
+        <a class="text-xl text-white inline-block no-underline border-b border-gray-600 leading-relaxed hover:text-black hover:border-black" href="#">"Des ongles impeccables, une confiance inégalée."</a>
+    </div>
+  </div>
+</section>
+
+<section class="bg-white dark:bg-gray-900">
+    <div class="gap-8 py-8 px-4 mx-auto max-w-screen-xl h-fit xl:gap-16 md:grid md:grid-cols-2 sm:py-16 lg:px-6 items-center">
+        <div>
+        <img class="w-full h-auto dark:hidden" src="assets/home.jpeg" alt="dashboard image">
+        </div>
+        <div class="mt-4 md:mt-0">
+            <h2 class="mb-4 text-4xl tracking-tight font-extrabold text-red-400">Révélez la beauté de vos mains !</h2>
+            <p class="mb-6 font-light text-gray-500 md:text-lg dark:text-gray-400"> Spécialiste du traitement de l’ongle naturel, Be Elle vous propose une large gamme de prestations pour sublimer vos ongles sans les abîmer. Nous n'utilisons donc pas de capsules en plastique ni de colle pour nos prestations. Dans toutes nos prestations est incluse la manucure Russe sans douleur, qui permet un travail poussé des cuticules pour une pose durable.  Que ce soit sur ongles naturels ou pas, Be Elle vous offre  des manucures luxueuses et durables 3 semaines minimum.</p>
+        </div>
+    </div>
+</section>
+
+<section class="bg-red-400 py-5 dark:bg-gray-900">
+    <div class="px-4 mx-auto max-w-screen-xl lg:px-6">
+        <div class="mx-auto max-w-screen-sm text-center">
+            <h2 class="mb-4 text-4xl tracking-tight font-extrabold leading-tight text-white">Prenez dès maintenant Rendez-vous</h2>
+            <p class="mb-6 font-light text-white md:text-lg">Réservez dès maintenant pour une expérience unique de beauté et d'élégance!"</p>
+            <a href="#" class="text-white bg-red-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">Free trial for 30 days</a>
+        </div>
+    </div>
+</section>
+<!--h2 class="mb-4 mt-8 text-4xl tracking-tight text-center font-extrabold leading-tight text-black">Ce que nous vous proposons</h2-->
+{% endblock %}
+{% block javascripts %}
+
+{% endblock %}

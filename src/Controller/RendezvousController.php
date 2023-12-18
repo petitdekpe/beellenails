@@ -31,6 +31,20 @@ class RendezvousController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Récupérer la valeur du champ de date depuis le formulaire
+            $dateString = $form->get('day')->getData();
+
+            // Dump pour vérifier la valeur de la chaîne de date
+            dd($dateString);
+
+            // Récupérer la valeur du champ de date depuis le formulaire
+            $dateString = $form->get('day')->getData();
+
+            // Convertir la chaîne en objet DateTime
+            $dateTime = new \DateTime($dateString);
+
+            // Affecter la valeur convertie à votre entité Rendezvous
+            $rendezvou->setDay($dateTime);
 
 
             $entityManager->persist($rendezvou);

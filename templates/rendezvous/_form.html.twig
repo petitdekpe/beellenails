@@ -9,14 +9,24 @@
     {{ form_row(form.categorie) }}
     {{ form_row(form.prestation) }}
     {{ form_label(form.day, 'Date du rendez-vous') }}
-    {{ form_widget(form.day) | replace({'type="text"': 'type="text" datepicker datepicker-autohide'}) | raw }}
+    {{ form_widget(form.day) | replace({'type="text"': 'type="text" datepicker datepicker-format="dd/mm/yyyy" datepicker-autohide'}) | raw }}
     {{ form_row(form.creneau) }}
     {{ form_row(form.image) }}
-    <button type="submit" class="btn btn-primary mt-5 text-white bg-gray-900 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center">Enregistrer</button>
+    <button id="pay-btn" type="submit" class="btn btn-primary mt-5 text-white bg-gray-900 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center">Enregistrer</button>
 {{ form_end(form) }}
 </div>
 {% endblock %}
 
 {%  block javascripts %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/datepicker.min.js"></script> 
+<script type="text/javascript">
+      FedaPay.init('#pay-btn', {
+      public_key: 'pk_live_svzGysl6HsmF9eWDaWD4lvVV',
+      transaction: {
+        amount: 100,
+        description: 'Avance sur Rendez-Vous'
+      },
+      
+     });
+  </script>
 {% endblock %}
