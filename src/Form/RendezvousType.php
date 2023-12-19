@@ -19,9 +19,10 @@ class RendezvousType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-        ->add('day', TextType::class, [
+        ->add('day', DateType::class, [
                 'label' => 'Date du rendez-vous',
-                'attr' => ['class' =>'date bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5']
+                'attr' => ['class' =>'date bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5'],
+                'widget' => 'single_text'
             // Vous pouvez également ajouter d'autres options de champ ici si nécessaire
         ])
         ->add('categorie', EntityType::class, [
