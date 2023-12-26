@@ -39,8 +39,11 @@ class Prestation
     #[ORM\ManyToOne(inversedBy: 'prestation')]
     private ?CategoryPrestation $categoryPrestation = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(length: 800, nullable: true)]
     private ?string $description = null;
+
+    #[ORM\Column(length: 800, nullable: true)]
+    private ?string $inclus = null;
 
     public function __construct()
     {
@@ -168,6 +171,18 @@ class Prestation
     public function setDescription(?string $description): static
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    public function getInclus(): ?string
+    {
+        return $this->inclus;
+    }
+
+    public function setInclus(?string $inclus): static
+    {
+        $this->inclus = $inclus;
 
         return $this;
     }
