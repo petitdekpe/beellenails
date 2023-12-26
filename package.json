@@ -2,6 +2,10 @@
   "dependencies": {
     "bootstrap": "^5.3.2",
     "flatpickr": "^4.6.13",
-    "jquery": "^3.7.1"
+    "jquery": "^3.7.1",
+    "preline": "^2.0.2"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.0"
   }
 }
