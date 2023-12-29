@@ -12,11 +12,12 @@
 
 
 {% block body %}
+<div class="relative overflow-hidden w-full min-h-[90px] bg-white rounded-lg"></div>
 
-<div class="mt-24 flex justify-center content-center">
+<div class="flex justify-center content-center">
   <!--div class="col-span-2" id="calendrier"></div-->
-
-  <div class="mx-auto flex flex-col justify-center">
+<h2 class="text-3xl font-bold">Nos Prestations</h2>
+  <div class="mt-12 mb-12 mx-10 flex flex-col justify-center">
     {{ include('rendezvous/_form.html.twig') }}
   </div>
 </div>

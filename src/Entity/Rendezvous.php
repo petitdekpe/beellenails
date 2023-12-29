@@ -6,6 +6,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\RendezvousRepository;
 use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 #[ORM\Entity(repositoryClass: RendezvousRepository::class)]
@@ -27,6 +28,7 @@ class Rendezvous
     #[ORM\Column(length: 255)]
     private ?string $ImageName = null;
 
+    
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $day = null;
 
