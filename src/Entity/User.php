@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -37,6 +39,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255)]
     private ?string $Phone = null;
+
+    #[ORM\OneToMany(mappedBy: 'User', targetEntity: Rendezvous::class)]
+    private Collection $rendezvouses;
+
+    public function __construct()
+    {
+        $this->rendezvouses = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -140,6 +150,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPhone(string $Phone): static
     {
         $this->Phone = $Phone;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Rendezvous>
+     */
+    public function getRendezvouses(): Collection
+    {
+        return $this->rendezvouses;
+    }
+
+    public function addRendezvouse(Rendezvous $rendezvouse): static
+    {
+        if (!$this->rendezvouses->contains($rendezvouse)) {
+            $this->rendezvouses->add($rendezvouse);
+            $rendezvouse->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRendezvouse(Rendezvous $rendezvouse): static
+    {
+        if ($this->rendezvouses->removeElement($rendezvouse)) {
+            // set the owning side to null (unless already changed)
+            if ($rendezvouse->getUser() === $this) {
+                $rendezvouse->setUser(null);
+            }
+        }
 
         return $this;
     }

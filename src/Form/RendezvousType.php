@@ -2,17 +2,17 @@
 
 namespace App\Form;
 
-use App\Entity\CategoryPrestation;
 use App\Entity\Creneau;
 use App\Entity\Prestation;
 use App\Entity\Rendezvous;
+use App\Entity\CategoryPrestation;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Vich\UploaderBundle\Form\Type\VichImageType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 
 class RendezvousType extends AbstractType
 {
@@ -21,9 +21,11 @@ class RendezvousType extends AbstractType
         $builder
         ->add('day', DateType::class, [
                 'label' => 'Date du rendez-vous',
-                'attr' => ['datepicker','class' =>'date bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5'],
-                'widget' => 'choice',
-                'format' => 'dd-MM-yyyy',
+                'placeholder' => 'Cliquez pour choisir une date de rendez-vous',
+                'attr' => ['id'=>"datepicker2",'class' =>' bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5'],
+                'widget' => 'single_text',
+                'html5' => false,
+                'format' => 'dd-mm-yyyy'
 
             // Vous pouvez également ajouter d'autres options de champ ici si nécessaire
         ])
@@ -50,7 +52,9 @@ class RendezvousType extends AbstractType
         ->add('image', VichImageType::class, [
             'label' => 'Une photo de vos mains / pieds',
             'required' => true,
-            'attr' => ['class' => 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500']
+            'attr' => ['class' => 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500'],
+            'help' => 'Ajouter une photo de vos mains ou pieds au naturel afin que nous puissions les analyser.'
+            
         ]);
     }
 

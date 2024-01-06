@@ -27,19 +27,18 @@ class RendezvousController extends AbstractController
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $rendezvou = new Rendezvous();
+
         $form = $this->createForm(RendezvousType::class, $rendezvou);
         $form->handleRequest($request);
 
+
         if ($form->isSubmitted() && $form->isValid()) {
-            
+
             $entityManager->persist($rendezvou);
             $entityManager->flush();
 
             return $this->redirectToRoute('app_rendezvous_index', [], Response::HTTP_SEE_OTHER);
-        } else {
-            // Le formulaire n'est pas valide, vous pouvez ajouter un message flash ici
-            $this->addFlash('error', 'Le formulaire contient des erreurs. Veuillez le corriger.');
-        }
+        } 
 
         return $this->render('rendezvous/new.html.twig', [
             'rendezvou' => $rendezvou,

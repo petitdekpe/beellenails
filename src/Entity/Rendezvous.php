@@ -36,6 +36,10 @@ class Rendezvous
     #[ORM\JoinColumn(nullable: false)]
     private ?Creneau $creneau = null;
 
+    #[ORM\ManyToOne(inversedBy: 'rendezvouses')]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?User $User = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -97,6 +101,18 @@ class Rendezvous
     public function setCreneau(?Creneau $creneau): static
     {
         $this->creneau = $creneau;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->User;
+    }
+
+    public function setUser(?User $User): static
+    {
+        $this->User = $User;
 
         return $this;
     }
