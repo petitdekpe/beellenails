@@ -42,11 +42,12 @@
     <div class="bg-white lg:py-12 lg:flex lg:justify-center">
         <div class="bg-white justify-center lg:mx-8 lg:flex lg:max-w-5xl lg:shadow-lg lg:rounded-lg">
             <div class="lg:w-1/2">
-                <img src="{{ asset('assets/muriel.png') }}" class="h-auto w-full" alt="Logo">
+                <div class="h-64 bg-contain bg-center bg-no-repeat lg:rounded-lg lg:h-full" style="background-image:url('assets/muriel.png')"></div>
+                <!--img src="{{ asset('assets/muriel.png') }}" class="h-64 lg:rounded-lg lg:h-full" alt="Logo"-->
             </div>
             <div class="py-12 sm:px-6 max-w-xl lg:max-w-5xl lg:w-1/2">
                 <!--h2 class="text-3xl text-gray-800 font-bold">Qui suis-je?</h2-->
-                <p class="mt-4 text-gray-600">Je suis Muriel AHODODE épouse ASSOGBA, prothésiste ongulaire, formatrice et fondatrice de Be Elle Nails Care. Titulaire d'un Master en Comptabilité Contrôle et Audit, je décide il y a deux ans de changer d'orientation professionnelle et de me former au métier de prothésiste ongulaire. Très perfectionniste et porté sur les détails, je me lance dans une série de formations aux 4 coins du monde pour offrir le meilleur de ce métier à mes clientes. Ainsi un an après mes formations le salon Be Elle Nails Care voit le jour. Je prend plaisir à offrir des prestations de qualité et adaptées aux besoins de mes clientes dans un cadre paisible et épuré. Introvertie de nature, j'aime découvrir et passer d'agréables moments avec mes clientes. </p>
+                <p class="mt-2 text-gray-600 text-justify">Je suis Muriel AHODODE épouse ASSOGBA, prothésiste ongulaire, formatrice et fondatrice de Be Elle Nails Care. Titulaire d'un Master en Comptabilité Contrôle et Audit, je décide il y a deux ans de changer d'orientation professionnelle et de me former au métier de prothésiste ongulaire. Très perfectionniste et porté sur les détails, je me lance dans une série de formations aux 4 coins du monde pour offrir le meilleur de ce métier à mes clientes. Ainsi un an après mes formations le salon Be Elle Nails Care voit le jour. Je prend plaisir à offrir des prestations de qualité et adaptées aux besoins de mes clientes dans un cadre paisible et épuré. Introvertie de nature, j'aime découvrir et passer d'agréables moments avec mes clientes. </p>
             </div>
         </div>
     </div> 
@@ -60,8 +61,8 @@
         <div class="bg-white lg:mx-8 lg:flex lg:max-w-5xl lg:shadow-lg lg:rounded-lg">
             <div class="lg:w-1/2">
                 <!-- Slider -->
-                <div data-hs-carousel='{"loadingClasses": "opacity-0", "isAutoPlay": true}' class="relative mx-10 my-5">
-                    <div class="hs-carousel relative overflow-hidden w-full min-h-[350px] bg-white rounded-lg">
+                <div data-hs-carousel='{"loadingClasses": "opacity-0", "isAutoPlay": true}' class="relative my-5">
+                    <div class="hs-carousel relative overflow-hidden w-full h-64 bg-white rounded-lg">
                         <div class="hs-carousel-body absolute top-0 bottom-0 start-0 flex flex-nowrap transition-transform duration-700 opacity-0">
                             <div class="hs-carousel-slide">
                                 <div class="flex justify-center h-full bg-gray-100 p-6">
@@ -108,7 +109,7 @@
             </div>
             <div class="py-12 sm:px-6 max-w-xl lg:max-w-5xl lg:w-1/2">
                 <!--h2 class="text-3xl text-gray-800 font-bold">Le Salon ?</h2-->
-                <p class="text-gray-600">Créé en 2021, Be Elle vous accueille dans un cadre chaleureux et épuré pour sublimer et prendre soin de vos ongles. Je serais ravie de vous recevoir en prestation pour sublimer vos ongles ou lors d’une formation afin de vous transmettre mon savoir ainsi que ma passion. N’hésitez pas à me contacter pour toute question, ou information.</p>
+                <p class="text-gray-600 text-justify">Créé en 2021, Be Elle vous accueille dans un cadre chaleureux et épuré pour sublimer et prendre soin de vos ongles. Je serais ravie de vous recevoir en prestation pour sublimer vos ongles ou lors d’une formation afin de vous transmettre mon savoir ainsi que ma passion. N’hésitez pas à me contacter pour toute question, ou information.</p>
             </div>
         </div>
     </div> 
@@ -126,7 +127,7 @@
                 </div>
                 <div class="py-12 sm:px-6 max-w-xl lg:max-w-5xl lg:w-1/2">
                     <h2 class="text-3xl text-gray-800 font-bold"></span></h2>
-                    <p class="text-gray-600"> Spécialiste du traitement de l’ongle naturel, Be Elle vous propose une large gamme de prestations pour sublimer vos ongles sans les abîmer. Nous n'utilisons donc pas de capsules en plastique ni de colle pour nos prestations. Dans toutes nos prestations est incluse la manucure Russe sans douleur, qui permet un travail poussé des cuticules pour une pose durable.  Que ce soit sur ongles naturels ou pas, Be Elle vous offre  des manucures luxueuses et durables 3 semaines minimum.</p>
+                    <p class="text-gray-600 text-justify"> Spécialiste du traitement de l’ongle naturel, Be Elle vous propose une large gamme de prestations pour sublimer vos ongles sans les abîmer. Nous n'utilisons donc pas de capsules en plastique ni de colle pour nos prestations. Dans toutes nos prestations est incluse la manucure Russe sans douleur, qui permet un travail poussé des cuticules pour une pose durable.  Que ce soit sur ongles naturels ou pas, Be Elle vous offre  des manucures luxueuses et durables 3 semaines minimum.</p>
                     <div class="mt-8">
                         <a href="{{ path('app_prestation_index') }}" class="bg-pink-700 text-gray-100 px-5 py-3 font-semibold rounded">Découvrez nos prestations</a>
                     </div>
@@ -146,7 +147,7 @@
                 </div>
                 <div class="py-12 sm:px-6 max-w-xl lg:max-w-5xl lg:w-1/2">
                     <h2 class="text-3xl text-gray-800 font-bold"></span></h2>
-                    <p class="mt-4 text-gray-600">Découvrez nos formations pour tous les niveaux, de débutant à expérimenté. Nous vous transmettrons sans réserve notre savoir-faire pour sublimer efficacement et sans danger les ongles naturels.</p>
+                    <p class="mt-4 text-gray-600 text-justify">Découvrez nos formations pour tous les niveaux, de débutant à expérimenté. Nous vous transmettrons sans réserve notre savoir-faire pour sublimer efficacement et sans danger les ongles naturels.</p>
                     <div class="mt-8">
                         <a href="#" class="bg-pink-700 text-gray-100 px-5 py-3 font-semibold rounded">Découvrez nos formations</a>
                     </div>
