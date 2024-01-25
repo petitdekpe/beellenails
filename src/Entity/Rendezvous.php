@@ -86,7 +86,7 @@ class Rendezvous
         return $this->day;
     }
 
-    public function setDay(\DateTimeInterface $day): static
+    public function setDay($day): static
     {
         $this->day = $day;
 

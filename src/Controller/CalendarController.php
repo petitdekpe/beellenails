@@ -14,7 +14,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class CalendarController extends AbstractController
 {
     #[Route('/prendrerdv', name: 'app_calendar')]
-    #[IsGranted("ROLE_USER")]
+    #/[IsGranted("ROLE_USER")]
     public function index(Request $request, EntityManagerInterface $entityManager): Response
     {
         $rendezvou = new Rendezvous();

@@ -26,35 +26,36 @@
 {% endblock %}
 
 {%  block javascripts %} 
-    <script>
-      window.onload = () => {
-        let calendarElt = document.querySelector("#calendrier")
-        let calendar = new FullCalendar.Calendar(calendarElt, {
-            initialView: 'timeGridWeek',
-            locale: 'fr',
-            timeZone: 'Africa/Porto-Novo',
-
-            headerToolbar: {
-            left: 'title',
-            center: 'timeGridWeek,timeGridDay',
-            right: 'prev,next'
-            },
-            
-            buttonText: {
-            today: 'Aujourd\'hui',
-            month: 'Mois',
-            week: 'Semaine',
-            day: 'Jour'
-            },
-
-        })
-       // Événement après le rendu pour ajuster les titres de l'entête
-    calendar.render();
-      }
-      
-
-    </script>
-
+  
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/datepicker.min.js"></script> 
+
+    <script>
+        window.onload = () => {
+            let categorie = document.querySelector("#rendezvous_categorie");
+
+            categorie.addEventListener("change", function(){
+                let form = this.closest("form");
+                let data = this.name + "=" + this.value;
+                
+                fetch(form.action, {
+                    method: form.getAttribute("method"),
+                    body: data,
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded; charset:UTF-8"
+                    }
+                })
+                .then(response => response.text())
+                .then(html => {
+                    let content = document.createElement("html");
+                    content.innerHTML = html;
+                    let nouveauSelect = content.querySelector("#rendezvous_prestation");
+                   document.querySelector("#rendezvous_prestation").replaceWith(nouveauSelect);
+                })
+                .catch(error => {
+                    console.log(error);
+                })
+            });
+        }
+    </script>
 
 {% endblock %}
