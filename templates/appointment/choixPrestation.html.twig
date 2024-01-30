@@ -65,7 +65,8 @@
                     method: form.getAttribute("method"),
                     body: data,
                     headers: {
-                        "Content-Type": "application/x-www-form-urlencoded; charset:UTF-8"
+                        "Content-Type": "application/x-www-form-urlencoded; charset:UTF-8",
+                         "X-CSRF-TOKEN": form.querySelector('input[name="_token"]').value
                     }
                 })
                 .then(response => response.text())
