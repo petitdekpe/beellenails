@@ -30,13 +30,13 @@ class Prestation
     #[Vich\UploadableField(mapping: 'prestation', fileNameProperty: 'imageName')]
     private ?File $image = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $imageName = null;
 
     #[ORM\OneToMany(mappedBy: 'prestation', targetEntity: Rendezvous::class)]
     private Collection $rendezvouses;
 
-    #[ORM\ManyToOne(inversedBy: 'prestation')]
+    #[ORM\ManyToOne(inversedBy: 'prestation', cascade: ['persist', 'remove'])]
     private ?CategoryPrestation $categoryPrestation = null;
 
     #[ORM\Column(length: 800, nullable: true)]

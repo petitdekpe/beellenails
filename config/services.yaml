@@ -4,8 +4,13 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    app.fedapay_private_key: '%env(FEDAPAY_PRIVATE_KEY)%'
+    app.fedapay_public_key: '%env(FEDAPAY_PUBLIC_KEY)%'
+    app.fedapay_env: '%env(FEDAPAY_ENV)%'
 
 services:
+    # Autoriser l'auto-câblage pour l'entité Rendezvous
+    App\Entity\Rendezvous: ~
     # default configuration for services in *this* file
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.
@@ -22,3 +27,14 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+    FedaPay\FedaPay:
+        arguments:
+
+    FedaPay\Transaction:
+        arguments:
+
+    App\Service\FedapayService:
+        arguments:
+            $privateKey: '%app.fedapay_private_key%'
+            $publicKey: '%app.fedapay_public_key%'
+            $fedapayEnv: '%app.fedapay_env%'

@@ -43,6 +43,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'User', targetEntity: Rendezvous::class)]
     private Collection $rendezvouses;
 
+    #[ORM\OneToMany(mappedBy: 'customer', targetEntity: Payment::class)]
+    private Collection $payments;
+
     public function __construct()
     {
         $this->rendezvouses = new ArrayCollection();
@@ -183,4 +186,48 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
+    public function toArrayForPayment(): array
+	{
+		return [
+			'firstname' => $this->getPrenom(),
+			'lastname' => $this->getNom(),
+			'email' => $this->getEmail(),
+			'phone_number' => [
+				"number" => "+229" . $this->getPhone(),
+				"country" => "bj",
+			],
+		];
+	}
+
+    /**
+	 * @return Collection<int, Payment>
+	 */
+	public function getPayments(): Collection
+	{
+		return $this->payments;
+	}
+
+	public function addPayment(Payment $payment): self
+	{
+		if (!$this->payments->contains($payment)) {
+			$this->payments->add($payment);
+			$payment->setCustomer($this);
+		}
+
+		return $this;
+	}
+
+	public function removePayment(Payment $payment): self
+	{
+		if ($this->payments->removeElement($payment)) {
+			// set the owning side to null (unless already changed)
+			if ($payment->getCustomer() === $this) {
+				$payment->setCustomer(null);
+			}
+		}
+
+		return $this;
+	}
+
 }

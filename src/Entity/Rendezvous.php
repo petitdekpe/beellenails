@@ -18,7 +18,7 @@ class Rendezvous
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'rendezvouses')]
+    #[ORM\ManyToOne(inversedBy: 'rendezvouses', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
     private ?Prestation $prestation = null;
 
@@ -32,13 +32,19 @@ class Rendezvous
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $day = null;
 
-    #[ORM\ManyToOne(inversedBy: 'rendezvouses')]
+    #[ORM\ManyToOne(inversedBy: 'rendezvouses', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
     private ?Creneau $creneau = null;
 
     #[ORM\ManyToOne(inversedBy: 'rendezvouses')]
     #[ORM\JoinColumn(nullable: true)]
     private ?User $User = null;
+
+    #[ORM\OneToOne(mappedBy: 'rendezvou', cascade: ['persist', 'remove'])]
+    private ?Payment $payment = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $Paid = null;
 
     public function getId(): ?int
     {
@@ -116,4 +122,38 @@ class Rendezvous
 
         return $this;
     }
+
+    public function isPaid(): ?bool
+    {
+        return $this->Paid;
+    }
+
+    public function setPaid(?bool $Paid): static
+    {
+        $this->Paid = $Paid;
+
+        return $this;
+    }
+
+    public function getPayment(): ?Payment
+	{
+		return $this->payment;
+	}
+
+	public function setPayment(?Payment $payment): self
+	{
+		// unset the owning side of the relation if necessary
+		if ($payment === null && $this->payment !== null) {
+			$this->payment->setRendezvous(null);
+		}
+
+		// set the owning side of the relation if necessary
+		if ($payment !== null && $payment->getRendezvous() !== $this) {
+			$payment->setRendezvous($this);
+		}
+
+		$this->payment = $payment;
+
+		return $this;
+	}
 }
