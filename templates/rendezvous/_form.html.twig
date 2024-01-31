@@ -1,23 +1,10 @@
 
-{% block stylesheets %}
-{% endblock %}
 
 {% block body %}
 
-<div class="max-w-xl mx-10">
+<div class="max-w-xl mx-8">
 {{ form_start(form) }}
   <ol class="relative border-s border-gray-200">
-
-    <li class="ms-6">
-        <span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -start-3 ring-8 ring-white">
-            <svg class="w-2.5 h-2.5 text-blue-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
-            </svg>
-        </span>
-        <h3 class="mb-1 text-lg font-semibold text-gray-900">{{form_label(form.categorie)}}</h3>
-        <time class="block mb-2 text-sm font-normal leading-none text-gray-400"></time>
-        <p class="text-base font-normal text-gray-500"> {{ form_widget(form.categorie) }} </p>
-    </li>
 
     <li class="mb-10 ms-6">
         <span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -start-3 ring-8 ring-white">
@@ -57,8 +44,8 @@
         <div>
         {% for label, value in field_choices(form.creneau) %}
         <div class="flex items-center ps-4 border border-gray-200 rounded">
-            <input id="bordered-radio-1" type="radio" value="{{ value }}" name="{{ field_name(form.creneau) }}" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-            <label for="bordered-radio-1" class="w-full py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">{{ label }}</label>
+            <input id="bordered-radio-1" type="radio" value="{{ value }}" name="{{ field_name(form.creneau) }}" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500">
+            <label for="bordered-radio-1" class="w-full py-4 ms-2 text-sm font-medium text-gray-900">{{ label }}</label>
         </div>
         {% endfor %}
         </div>
@@ -77,9 +64,9 @@
     </li>
 </ol>
     
-    <button type="submit" class="btn btn-primary mt-5 text-white bg-gray-900 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center">Enregistrer</button>
+    <button type="submit" class="btn btn-primary mt-5 text-white bg-pink-700 hover:bg-pink-500 focus:ring-4 focus:outline-none  font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center">Enregistrer</button>
     {{ form_widget(form._token) }}
-{{ form_end(form) }}
+{{ form_end(form, {'render_rest': false}) }}
 </div>
 
 
@@ -91,10 +78,37 @@
 <script> 
     flatpickr("#datepicker", {
         enableTime: false,
-        dateFormat: "d-m-Y",
+        dateFormat: "Y-m-d",
+        altInput: true,
+        altFormat: "j F Y",
         inline: true,
         locale: "fr",
+        minDate: "today",
     });
 </script>
 
+{% endblock %}
+
+{% block stylesheets %}
+<style>
+/* Media queries pour ajuster Flatpickr avec Tailwind CSS */
+.flatpickr-calendar {
+        width: 300px; /* Ajustez la largeur selon vos besoins */
+        font-size: 14px; /* Ajustez la taille de la police selon vos besoins */
+    }
+/* Pour les écrans moyens et plus grands */
+@media (min-width: 640px) {
+    /* Ajustement de la taille de l'élément Flatpickr */
+   .flatpickr-calendar {
+        width: 300px; /* Ajustez la largeur selon vos besoins */
+        font-size: 16px; /* Ajustez la taille de la police selon vos besoins */
+    }
+}
+
+/* Pour les écrans plus petits */
+@media (max-width: 767px) {
+    /* Ajustement de la taille de l'élément Flatpickr pour les petits écrans */
+    
+}
+</style>
 {% endblock %}

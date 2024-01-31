@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Recap Rendez-vous{% endblock %}
+
+{% block body %}
+
+{% set day = app.session.get('day') %}
+{% set creneau = app.session.get('creneau') %}
+{% set prestation = app.session.get('prestation') %}
+<div class="relative overflow-hidden w-full min-h-[90px] bg-white rounded-lg"></div>
+<h1 class="text-2xl font-bold my-5 text-center">Faites votre choix de Prestation</h1>
+    <h2 class="text-xl font-bold my-5 text-justify mx-8">Bonjour {{app.user.Prenom}} {{app.user.Nom}},</h2>
+    <h2 class="text-xl font-semibold text-justify mx-8">Vous avez choisi de faire : </h2>
+    <p class="mx-8">La prestation {{ prestation }}, le {{ day|date("d/m/Y") }} à {{ creneau }}. Le prix de cette prestation est de {{ prestation.price }} FCFA.</p>
+    <p class="mx-8 mt-5">Pour une prestation optimale, nous demandons d'ajouter une photo de vos mains ou pieds au naturel afin que nous puissions les analyser.</p>
+
+<h1 class="text-2xl font-bold my-5 text-center">POLITIQUE D’ANNULATION ET DE REPORT</h1>
+    <p class="mx-8 mt-5 text-justify">
+        L’acompte est non remboursable en cas d’annulation.
+        Pour reporter votre rendez-vous veuillez de le faire 48h à l'avance en nous laissant un e-mail. Passez le délai de 48h votre acompte ne sera malheureusement pas réutilisable pour un autre rendez-vous.
+        En cas de doute subsistant sur l'état de vos ongles malgré la photo envoyée, veuillez nous contacter directement pour éviter une annulation le jour de votre rendez-vous.
+    </p>
+
+<h1 class="text-2xl font-bold my-5 text-center">REGLES DE FONCTIONNEMENT</h1>
+    <p class="mx-8 mt-5 text-justify">
+        Veuillez être très ponctuelle s'il vous plaît car tout retard de plus de 15 minutes annoncé ou pas pourrait annuler votre rendez-vous.
+        Si vous avez annoncé un retard et qu’il n’excède pas 15 minutes, la prestation à faire devra être adaptée au temps restant de votre créneau.
+        <br>
+        Les enfants ne sont pas acceptés pour des raisons de sécurité.
+        <br>
+        Aucun remplissage d’une prestation faite ailleurs n’est acceptée.
+    </p>
+
+{{ form_start(form) }}  
+    {{ form_widget(form) }}
+    <button class="btn">{{ button_label|default('Save') }}</button>
+    {{ form_end(form) }} 
+
+
+{% endblock %}

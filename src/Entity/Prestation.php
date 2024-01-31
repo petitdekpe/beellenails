@@ -36,7 +36,7 @@ class Prestation
     #[ORM\OneToMany(mappedBy: 'prestation', targetEntity: Rendezvous::class)]
     private Collection $rendezvouses;
 
-    #[ORM\ManyToOne(inversedBy: 'prestation', cascade: ['persist', 'remove'])]
+    #[ORM\ManyToOne(inversedBy: 'prestation')]
     private ?CategoryPrestation $categoryPrestation = null;
 
     #[ORM\Column(length: 800, nullable: true)]

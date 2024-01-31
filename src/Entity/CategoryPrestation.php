@@ -27,7 +27,7 @@ class CategoryPrestation
     #[ORM\Column(length: 255)]
     private ?string $imageName = null;
 
-    #[ORM\OneToMany(mappedBy: 'categoryPrestation', targetEntity: Prestation::class, cascade: ['persist', 'remove'])]
+    #[ORM\OneToMany(mappedBy: 'categoryPrestation', targetEntity: Prestation::class)]
     private Collection $prestation;
 
     public function __construct()

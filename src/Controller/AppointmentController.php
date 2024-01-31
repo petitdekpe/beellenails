@@ -93,8 +93,9 @@ class AppointmentController extends AbstractController
             $day = $choixDate['day'];
             $creneau = $choixDate['creneau'];
             $paid = "false";
-            $user = $this->getUser(); // Récupérer l'utilisateur actuel
-            // Par exemple, vous pouvez ajouter l'utilisateur actuel au rendez-vous
+            // Récupérer l'utilisateur actuel
+            $user = $this->getUser(); 
+            // Ajouter l'utilisateur actuel au rendez-vous
             $rendezvous->setUser($user);
             $rendezvous->setPrestation($prestation);
             $rendezvous->setDay($day);

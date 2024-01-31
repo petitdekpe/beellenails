@@ -18,7 +18,7 @@ class Rendezvous
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'rendezvouses', cascade: ['persist', 'remove'])]
+    #[ORM\ManyToOne(inversedBy: 'rendezvouses')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Prestation $prestation = null;
 
@@ -32,7 +32,7 @@ class Rendezvous
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $day = null;
 
-    #[ORM\ManyToOne(inversedBy: 'rendezvouses', cascade: ['persist', 'remove'])]
+    #[ORM\ManyToOne(inversedBy: 'rendezvouses')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Creneau $creneau = null;
 
@@ -40,7 +40,7 @@ class Rendezvous
     #[ORM\JoinColumn(nullable: true)]
     private ?User $User = null;
 
-    #[ORM\OneToOne(mappedBy: 'rendezvou', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(mappedBy: 'rendezvou')]
     private ?Payment $payment = null;
 
     #[ORM\Column(nullable: true)]

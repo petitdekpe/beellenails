@@ -23,10 +23,15 @@ class CalendarController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
+            $formData = $form->getData();
+            $request->getSession()->set('day',  $form->get('day')->getData());
+            $request->getSession()->set('creneau',  $form->get('creneau')->getData());
+            $request->getSession()->set('prestation',  $form->get('prestation')->getData());
+
             $entityManager->persist($rendezvou);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_home', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_recap', ['rendezvou' => $rendezvou->getId()]);
         }
         
         return $this->render('calendar/index.html.twig', [
