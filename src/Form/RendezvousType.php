@@ -29,7 +29,7 @@ class RendezvousType extends AbstractType
                 'widget' => 'single_text',
                 'html5' => false,
                 'format' => 'yyyy-MM-dd',
-                'required' => 'false'
+                'required' => true
 
             // Vous pouvez également ajouter d'autres options de champ ici si nécessaire
         ])
@@ -43,7 +43,7 @@ class RendezvousType extends AbstractType
         ])
         ->add('prestation', EntityType::class, [
             'class' => Prestation::class,
-            'required'=> false,
+            'required'=> true,
             'choice_label' => 'Title',
             'placeholder' => 'Prestation (Choisir une catégorie)',
             'attr' => ['class' => 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500'],
@@ -55,6 +55,7 @@ class RendezvousType extends AbstractType
             'choice_label' => 'libelle',
             'expanded' => true,
             'multiple' => false,
+            'required'=> true,
             'attr' => ['class' => '']
         ])
         ->add('image', VichImageType::class, [
