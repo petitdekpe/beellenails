@@ -8,11 +8,11 @@
 {% set creneau = app.session.get('creneau') %}
 {% set prestation = app.session.get('prestation') %}
 <div class="relative overflow-hidden w-full min-h-[90px] bg-white rounded-lg"></div>
-<h1 class="text-2xl font-bold my-5 text-center">Faites votre choix de Prestation</h1>
+<h1 class="text-2xl font-bold my-5 text-center">Confirmer votre rendez-vous avec un acompte</h1>
     <h2 class="text-xl font-bold my-5 text-justify mx-8">Bonjour {{app.user.Prenom}} {{app.user.Nom}},</h2>
     <h2 class="text-xl font-semibold text-justify mx-8">Vous avez choisi de faire : </h2>
     <p class="mx-8">La prestation {{ prestation }}, le {{ day|date("d/m/Y") }} à {{ creneau }}. Le prix de cette prestation est de {{ prestation.price }} FCFA.</p>
-    <p class="mx-8 mt-5">Pour une prestation optimale, nous demandons d'ajouter une photo de vos mains ou pieds au naturel afin que nous puissions les analyser.</p>
+    <p class="mx-8 mt-5 text-justify">Un acompte de 5.000f est nécessaire pour confirmer votre rendez-vous. L’acompte représente une avance et sera défalquée de votre facture après prestation. Veuillez prendre connaissance de notre Politique d’annulation et de report ainsi que de nos règles de fonctionnement avant de confirmer votre rendez-vous.</p>
 
 <h1 class="text-2xl font-bold my-5 text-center">POLITIQUE D’ANNULATION ET DE REPORT</h1>
     <p class="mx-8 mt-5 text-justify">
@@ -31,10 +31,11 @@
         Aucun remplissage d’une prestation faite ailleurs n’est acceptée.
     </p>
 
-{{ form_start(form) }}  
+    <div class="mx-8 mt-5 text-justify flex justify-center">
+    {{ form_start(form) }}  
     {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
+    <button class="btn cursor-pointer block mx-8 mt-5 text-white bg-pink-700 hover:bg-pink-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center justify-items-center">{{ button_label|default('Passer au paiement') }}</button>
     {{ form_end(form) }} 
-
+    </div>
 
 {% endblock %}

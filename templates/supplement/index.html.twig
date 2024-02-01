@@ -1,0 +1,37 @@
+{#% extends 'base.html.twig' %#}
+
+{% block title %}Supplement index{% endblock %}
+
+{% block body %}
+    <h1>Supplement index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Title</th>
+                <th>Price</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for supplement in supplements %}
+            <tr>
+                <td>{{ supplement.id }}</td>
+                <td>{{ supplement.title }}</td>
+                <td>{{ supplement.price }}</td>
+                <td>
+                    <a href="{{ path('app_supplement_show', {'id': supplement.id}) }}">show</a>
+                    <a href="{{ path('app_supplement_edit', {'id': supplement.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_supplement_new') }}">Create new</a>
+{% endblock %}

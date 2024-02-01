@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\RendezvousRepository;
@@ -45,6 +47,14 @@ class Rendezvous
 
     #[ORM\Column(nullable: true)]
     private ?bool $Paid = null;
+
+    #[ORM\ManyToMany(targetEntity: Supplement::class, inversedBy: 'rendezvouses')]
+    private Collection $supplement;
+
+    public function __construct()
+    {
+        $this->supplement = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -141,19 +151,43 @@ class Rendezvous
 	}
 
 	public function setPayment(?Payment $payment): self
-	{
-		// unset the owning side of the relation if necessary
-		if ($payment === null && $this->payment !== null) {
-			$this->payment->setRendezvous(null);
-		}
+                        	{
+                        		// unset the owning side of the relation if necessary
+                        		if ($payment === null && $this->payment !== null) {
+                        			$this->payment->setRendezvous(null);
+                        		}
+                        
+                        		// set the owning side of the relation if necessary
+                        		if ($payment !== null && $payment->getRendezvous() !== $this) {
+                        			$payment->setRendezvous($this);
+                        		}
+                        
+                        		$this->payment = $payment;
+                        
+                        		return $this;
+                        	}
 
-		// set the owning side of the relation if necessary
-		if ($payment !== null && $payment->getRendezvous() !== $this) {
-			$payment->setRendezvous($this);
-		}
+    /**
+     * @return Collection<int, Supplement>
+     */
+    public function getSupplement(): Collection
+    {
+        return $this->supplement;
+    }
 
-		$this->payment = $payment;
+    public function addSupplement(Supplement $supplement): static
+    {
+        if (!$this->supplement->contains($supplement)) {
+            $this->supplement->add($supplement);
+        }
 
-		return $this;
-	}
+        return $this;
+    }
+
+    public function removeSupplement(Supplement $supplement): static
+    {
+        $this->supplement->removeElement($supplement);
+
+        return $this;
+    }
 }

@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Entity\Creneau;
 use App\Entity\Prestation;
 use App\Entity\Rendezvous;
+use App\Entity\Supplement;
 use App\Entity\CategoryPrestation;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
@@ -38,15 +39,15 @@ class RendezvousType extends AbstractType
             'class' => CategoryPrestation::class,
             'choice_label' => 'NomCategory',
             'placeholder' => 'Sélectionnez une catégorie',
-            'attr' => ['class' => 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500'],
+            'attr' => ['class' => 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5'],
             'mapped' => false, // Ceci signifie que le champ n'est pas lié à une propriété de l'entité Rendez-vous
         ])
         ->add('prestation', EntityType::class, [
             'class' => Prestation::class,
             'required'=> true,
             'choice_label' => 'Title',
-            'placeholder' => 'Prestation (Choisir une catégorie)',
-            'attr' => ['class' => 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500'],
+            'placeholder' => 'Choisir une prestation',
+            'attr' => ['class' => 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5'],
             'label' => 'Choisissez une prestation'
         ])
         ->add('creneau', EntityType::class, [
@@ -58,10 +59,19 @@ class RendezvousType extends AbstractType
             'required'=> true,
             'attr' => ['class' => '']
         ])
+        ->add('supplement', EntityType::class,[
+            'label' => 'Choisissez un créneau',
+            'class' => Supplement::class,
+            'choice_label' => 'title',
+            'expanded' => true,
+            'multiple' => true,
+            'attr' => ['class' => '']
+
+        ])
         ->add('image', VichImageType::class, [
             'label' => 'Une photo de vos mains / pieds',
             'required' => true,
-            'attr' => ['class' => 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500'],
+            'attr' => ['class' => 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5'],
             'help' => 'Ajouter une photo de vos mains ou pieds au naturel afin que nous puissions les analyser.'
             
         ]);

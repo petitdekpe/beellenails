@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Supplement{% endblock %}
+
+{% block body %}
+    <h1>Edit Supplement</h1>
+
+    {{ include('supplement/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_supplement_index') }}">back to list</a>
+
+    {{ include('supplement/_delete_form.html.twig') }}
+{% endblock %}
