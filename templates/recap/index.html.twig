@@ -7,11 +7,12 @@
 {% set day = app.session.get('day') %}
 {% set creneau = app.session.get('creneau') %}
 {% set prestation = app.session.get('prestation') %}
+{% set prestation = app.session.get('supplement') %}
 <div class="relative overflow-hidden w-full min-h-[90px] bg-white rounded-lg"></div>
 <h1 class="text-2xl font-bold my-5 text-center">Confirmer votre rendez-vous avec un acompte</h1>
     <h2 class="text-xl font-bold my-5 text-justify mx-8">Bonjour {{app.user.Prenom}} {{app.user.Nom}},</h2>
     <h2 class="text-xl font-semibold text-justify mx-8">Vous avez choisi de faire : </h2>
-    <p class="mx-8">La prestation {{ prestation }}, le {{ day|date("d/m/Y") }} à {{ creneau }}. Le prix de cette prestation est de {{ prestation.price }} FCFA.</p>
+    <p class="mx-8">La prestation {{ prestation }}, le {{ day|date("d/m/Y") }} à {{ creneau }} avec ajout: {{ supplement }}. Le prix de cette prestation est de {{ prestation.price }} FCFA.</p>
     <p class="mx-8 mt-5 text-justify">Un acompte de 5.000f est nécessaire pour confirmer votre rendez-vous. L’acompte représente une avance et sera défalquée de votre facture après prestation. Veuillez prendre connaissance de notre Politique d’annulation et de report ainsi que de nos règles de fonctionnement avant de confirmer votre rendez-vous.</p>
 
 <h1 class="text-2xl font-bold my-5 text-center">POLITIQUE D’ANNULATION ET DE REPORT</h1>

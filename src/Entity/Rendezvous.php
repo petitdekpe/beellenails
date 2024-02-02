@@ -8,7 +8,6 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\RendezvousRepository;
 use Symfony\Component\HttpFoundation\File\File;
-use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 #[ORM\Entity(repositoryClass: RendezvousRepository::class)]
@@ -48,7 +47,7 @@ class Rendezvous
     #[ORM\Column(nullable: true)]
     private ?bool $Paid = null;
 
-    #[ORM\ManyToMany(targetEntity: Supplement::class, inversedBy: 'rendezvouses')]
+    #[ORM\ManyToMany(targetEntity: supplement::class, inversedBy: 'rendezvouses')]
     private Collection $supplement;
 
     public function __construct()
@@ -151,31 +150,31 @@ class Rendezvous
 	}
 
 	public function setPayment(?Payment $payment): self
-                        	{
-                        		// unset the owning side of the relation if necessary
-                        		if ($payment === null && $this->payment !== null) {
-                        			$this->payment->setRendezvous(null);
-                        		}
-                        
-                        		// set the owning side of the relation if necessary
-                        		if ($payment !== null && $payment->getRendezvous() !== $this) {
-                        			$payment->setRendezvous($this);
-                        		}
-                        
-                        		$this->payment = $payment;
-                        
-                        		return $this;
-                        	}
+                                                	{
+                                                		// unset the owning side of the relation if necessary
+                                                		if ($payment === null && $this->payment !== null) {
+                                                			$this->payment->setRendezvous(null);
+                                                		}
+                                                
+                                                		// set the owning side of the relation if necessary
+                                                		if ($payment !== null && $payment->getRendezvous() !== $this) {
+                                                			$payment->setRendezvous($this);
+                                                		}
+                                                
+                                                		$this->payment = $payment;
+                                                
+                                                		return $this;
+                                                	}
 
     /**
-     * @return Collection<int, Supplement>
+     * @return Collection<int, supplement>
      */
     public function getSupplement(): Collection
     {
         return $this->supplement;
     }
 
-    public function addSupplement(Supplement $supplement): static
+    public function addSupplement(supplement $supplement): static
     {
         if (!$this->supplement->contains($supplement)) {
             $this->supplement->add($supplement);
@@ -184,7 +183,7 @@ class Rendezvous
         return $this;
     }
 
-    public function removeSupplement(Supplement $supplement): static
+    public function removeSupplement(supplement $supplement): static
     {
         $this->supplement->removeElement($supplement);
 

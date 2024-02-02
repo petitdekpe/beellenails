@@ -59,14 +59,18 @@ class RendezvousType extends AbstractType
             'required'=> true,
             'attr' => ['class' => '']
         ])
-        ->add('supplement', EntityType::class,[
-            'label' => 'Choisissez un créneau',
+        ->add('supplement', EntityType::class, [
             'class' => Supplement::class,
             'choice_label' => 'title',
             'expanded' => true,
             'multiple' => true,
-            'attr' => ['class' => '']
-
+            'attr' => [
+                'class' => 'flex items-center mb-4' // Ajoutez vos classes CSS ici
+            ],
+            'choice_attr' => function($choice, $key, $value) {
+                // Ajoutez les attributs supplémentaires pour chaque option si nécessaire
+                return ['class' => 'w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500'];
+            }
         ])
         ->add('image', VichImageType::class, [
             'label' => 'Une photo de vos mains / pieds',
