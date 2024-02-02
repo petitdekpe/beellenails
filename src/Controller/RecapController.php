@@ -32,9 +32,12 @@ class RecapController extends AbstractController
             return $this->redirectToRoute('payment_init', ['rendezvou' => $rendezvou->getId()]);
         }
 
-        
+        // Récupérer les suppléments associés à ce rendez-vous
+        $supplements = $rendezvou->getSupplement();
+
         return $this->render('recap/index.html.twig', [
             'form' => $form->createView(),
+            'supplements' => $supplements, // Passer la liste des suppléments à la vue Twig
         ]);
     }
 }

@@ -21,8 +21,8 @@ class TermsType extends AbstractType
                     'message' => 'Vous devez accepter nos conditions générales.',
                 ]),
             ],
-            'attr' => ['class' => 'mx-4 w-4 h-4 border border-pink-300 rounded bg-pink-500 focus:ring-3 focus:ring-primary-300'],
-            'label' => 'J\'accepte les conditions générales.',
+            'attr' => ['class' => 'w-4 h-4 border border-pink-300 rounded bg-pink-500 focus:ring-3 focus:ring-primary-300'],
+            'label' => 'J\'ai lu et j\'accepte les règles de fonctionnement et la politique d\'annulation.',
         ])
         ;
     }
