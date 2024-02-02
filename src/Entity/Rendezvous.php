@@ -47,7 +47,7 @@ class Rendezvous
     #[ORM\Column(nullable: true)]
     private ?bool $Paid = null;
 
-    #[ORM\ManyToMany(targetEntity: supplement::class, inversedBy: 'rendezvouses')]
+    #[ORM\ManyToMany(targetEntity: Supplement::class, inversedBy: 'rendezvouses')]
     private Collection $supplement;
 
     public function __construct()
