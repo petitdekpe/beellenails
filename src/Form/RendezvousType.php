@@ -38,6 +38,7 @@ class RendezvousType extends AbstractType
             'label' => 'Choisissez une catégorie de prestation',
             'class' => CategoryPrestation::class,
             'choice_label' => 'NomCategory',
+            'required'=> false,
             'placeholder' => 'Sélectionnez une catégorie',
             'attr' => ['class' => 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5'],
             'mapped' => false, // Ceci signifie que le champ n'est pas lié à une propriété de l'entité Rendez-vous
