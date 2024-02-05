@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Prendre RDV{% endblock %}
+{% block stylesheets %}
+
+{% endblock %}
+
+
+{% block body %}
+<div class="relative overflow-hidden w-full min-h-[90px] bg-white rounded-lg"></div>
+<div class="flex content-center">
+  <div class="mt-12 mb-12 flex flex-col justify-center content-center">
+  <h2 class="text-2xl font-bold mb-10 text-center">Prendre Rendez-vous</h2>
+    {{ include('new_rendezvous/_form.html.twig') }}
+  </div>
+</div>
+{% endblock %}
+
+{%  block javascripts %} 
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/datepicker.min.js"></script> 
+
+{% endblock %}
