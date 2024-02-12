@@ -3,14 +3,16 @@
 namespace App\Form;
 
 use App\Entity\User;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 
 class RegistrationFormType extends AbstractType
 {
@@ -62,7 +64,27 @@ class RegistrationFormType extends AbstractType
             ],
             'label' => 'Password',
         ]);
+
+               // Ajoutez un écouteur d'événements pour modifier les données avant la soumission
+               $builder->addEventListener(
+                FormEvents::PRE_SUBMIT,
+                function (FormEvent $event) {
+                    $data = $event->getData();
+                    // Récupère le numéro de téléphone depuis les données soumises
+                    $phoneNumber = $data['Phone'] ?? null;
+                    
+                    // Modifiez les données soumises pour utiliser le numéro de téléphone comme mot de passe
+                    // C'est juste pour démonstration, ne le faites pas en production
+                    $data['plainPassword'] = $phoneNumber;
+    
+                    // Met à jour les données du formulaire
+                    $event->setData($data);
+                }
+            );
 }
+
+
+
 
     public function configureOptions(OptionsResolver $resolver): void
     {

@@ -108,6 +108,7 @@ class RendezvousType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Rendezvous::class,
+            'creneau_repository' => null,
         ]);
     }
 }

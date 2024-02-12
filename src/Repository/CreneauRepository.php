@@ -3,8 +3,9 @@
 namespace App\Repository;
 
 use App\Entity\Creneau;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @extends ServiceEntityRepository<Creneau>
@@ -19,6 +20,19 @@ class CreneauRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Creneau::class);
+    }
+
+    public function findAvailableCreneaux(\DateTime $date)
+    {
+        $qb = $this->createQueryBuilder('c');
+        $qb->leftJoin('c.rendezvous', 'r', Join::WITH, 'r.day = :date')
+           ->andWhere($qb->expr()->orX(
+               $qb->expr()->isNull('r.id'),
+               $qb->expr()->neq('r.day', ':date') // Exclure les créneaux qui sont déjà réservés pour la date donnée
+           ))
+           ->setParameter('date', $date);
+    
+        return $qb->getQuery()->getResult();
     }
 
 //    /**

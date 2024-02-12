@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -45,6 +46,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\OneToMany(mappedBy: 'customer', targetEntity: Payment::class)]
     private Collection $payments;
+
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $birthday = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $genre = null;
 
     public function __construct()
     {
@@ -204,30 +211,54 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 	 * @return Collection<int, Payment>
 	 */
 	public function getPayments(): Collection
-	{
-		return $this->payments;
-	}
+                     	{
+                     		return $this->payments;
+                     	}
 
 	public function addPayment(Payment $payment): self
-	{
-		if (!$this->payments->contains($payment)) {
-			$this->payments->add($payment);
-			$payment->setCustomer($this);
-		}
-
-		return $this;
-	}
+                     	{
+                     		if (!$this->payments->contains($payment)) {
+                     			$this->payments->add($payment);
+                     			$payment->setCustomer($this);
+                     		}
+                     
+                     		return $this;
+                     	}
 
 	public function removePayment(Payment $payment): self
-	{
-		if ($this->payments->removeElement($payment)) {
-			// set the owning side to null (unless already changed)
-			if ($payment->getCustomer() === $this) {
-				$payment->setCustomer(null);
-			}
-		}
+                     	{
+                     		if ($this->payments->removeElement($payment)) {
+                     			// set the owning side to null (unless already changed)
+                     			if ($payment->getCustomer() === $this) {
+                     				$payment->setCustomer(null);
+                     			}
+                     		}
+                     
+                     		return $this;
+                     	}
 
-		return $this;
-	}
+    public function getBirthday(): ?\DateTimeInterface
+    {
+        return $this->birthday;
+    }
+
+    public function setBirthday(?\DateTimeInterface $birthday): static
+    {
+        $this->birthday = $birthday;
+
+        return $this;
+    }
+
+    public function getGenre(): ?string
+    {
+        return $this->genre;
+    }
+
+    public function setGenre(?string $genre): static
+    {
+        $this->genre = $genre;
+
+        return $this;
+    }
 
 }

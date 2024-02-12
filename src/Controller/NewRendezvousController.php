@@ -15,7 +15,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class NewRendezvousController extends AbstractController
 {
     #[Route('/newappointment/{prestation?}', name: 'app_new_rendezvous')]
-    public function index(Request $request, EntityManagerInterface $entityManager, PrestationRepository $prestationRepository,Prestation $prestation): Response
+    public function index(Request $request, EntityManagerInterface $entityManager, Prestation $prestation): Response
     {
    
         // Créer une nouvelle instance de Rendezvous
