@@ -43,11 +43,11 @@
                             <label for="remember" class="text-gray-500">Se rappeler de moi</label>
                           </div>
                       </div>
-                      <a href="#" class="text-sm font-medium text-primary-600 hover:underline">Mot de passe oublié ?</a>
+                      <!--a href="#" class="text-sm font-medium text-primary-600 hover:underline">Mot de passe oublié ?</a-->
                   </div>
                   <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
                   <button type="submit" class="text-white bg-gray-900 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center">Se connecter</button>
-                  <p class="text-base font-light text-gray-500">
+                  <p class="text-base font-light text-black-500">
                       Vous n'avez pas encore de compte ? <a href="{{ path('app_register') }}" class="font-medium text-pink-600 underline">S'inscrire</a>
                   </p>
               </form>  
