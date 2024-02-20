@@ -6,20 +6,22 @@ use App\Entity\User;
 use App\Entity\Creneau;
 use App\Entity\Prestation;
 use App\Entity\Rendezvous;
+use App\Entity\CategoryPrestation;
 use App\Controller\Admin\UserCrudController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Controller\Admin\PrestationCrudController;
 use App\Controller\Admin\RendezvousCrudController;
-use App\Entity\CategoryPrestation;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 
 class DashboardController extends AbstractDashboardController
 {
     #[Route('/admin', name: 'admin')]
+    #[IsGranted("ROLE_ADMIN")]
     public function index(): Response
     {
         // return parent::index();
