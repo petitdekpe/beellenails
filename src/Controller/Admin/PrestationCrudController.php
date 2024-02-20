@@ -28,7 +28,7 @@ class PrestationCrudController extends AbstractCrudController
             MoneyField::new('price', 'Prix')->setCurrency('XOF'),
             NumberField::new('duration', 'Durée'),
             TextField::new('image', 'Image:')->setFormType(VichImageType::class),
-            ImageField::new('imageName')->setBasePath('assets/images/prestation')->setUploadDir('public/assets/images/prestation')->onlyOnIndex(),
+            ImageField::new('imageName')->setBasePath('assets/images/prestations')->setUploadDir('public/assets/images/prestations')->onlyOnIndex(),
             AssociationField::new('categoryPrestation', 'Catégorie')
         ];
     }

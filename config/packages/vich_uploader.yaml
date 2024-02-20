@@ -6,7 +6,7 @@ vich_uploader:
 
     mappings:
         prestation:
-            uri_prefix: images/prestations
+            uri_prefix: /assets/images/prestations
             upload_destination: '%kernel.project_dir%/public/assets/images/prestations'
             namer: Vich\UploaderBundle\Naming\UniqidNamer
         
