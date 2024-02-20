@@ -3,10 +3,12 @@
 namespace App\Controller\Admin;
 
 use App\Entity\CategoryPrestation;
-use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use Vich\UploaderBundle\Form\Type\VichImageType;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
+use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 
 class CategoryPrestationCrudController extends AbstractCrudController
 {
@@ -15,14 +17,14 @@ class CategoryPrestationCrudController extends AbstractCrudController
         return CategoryPrestation::class;
     }
 
-    /*
+    
     public function configureFields(string $pageName): iterable
     {
         return [
-            IdField::new('id'),
-            TextField::new('title'),
-            TextEditorField::new('description'),
+            TextField::new('NomCategory', 'Nom de la Catégorie:'),
+            TextField::new('image', 'Image:')->setFormType(VichImageType::class),
+            ImageField::new('imageName')->setBasePath('assets/images/categoryprestations')->setUploadDir('public/assets/images/categoryprestations')->onlyOnIndex(),
         ];
     }
-    */
+    
 }

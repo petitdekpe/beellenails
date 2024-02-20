@@ -35,6 +35,11 @@ class CategoryPrestation
         $this->prestation = new ArrayCollection();
     }
 
+    public function __toString(): string
+    {
+        return $this->NomCategory;
+    }
+
     public function getId(): ?int
     {
         return $this->id;

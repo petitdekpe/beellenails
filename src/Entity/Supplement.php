@@ -24,6 +24,11 @@ class Supplement
     #[ORM\ManyToMany(targetEntity: Rendezvous::class, mappedBy: 'supplement')]
     private Collection $rendezvouses;
 
+    public function __toString()
+    {
+        return $this->title;
+    }
+    
     public function __construct()
     {
         $this->rendezvouses = new ArrayCollection();

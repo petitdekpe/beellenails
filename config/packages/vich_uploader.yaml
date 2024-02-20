@@ -11,11 +11,11 @@ vich_uploader:
             namer: Vich\UploaderBundle\Naming\UniqidNamer
         
         rendezvous:
-            uri_prefix: images/rendezvous
+            uri_prefix: /assets/images/rendezvous
             upload_destination: '%kernel.project_dir%/public/assets/images/rendezvous'
             namer: Vich\UploaderBundle\Naming\UniqidNamer
 
         category_prestation:
-            uri_prefix: images/categoryprestations
+            uri_prefix: /assets/images/categoryprestations
             upload_destination: '%kernel.project_dir%/public/assets/images/categoryprestations'
             namer: Vich\UploaderBundle\Naming\UniqidNamer
