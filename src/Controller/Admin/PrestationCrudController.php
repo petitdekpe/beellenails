@@ -12,6 +12,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 
 class PrestationCrudController extends AbstractCrudController
 {
@@ -23,13 +24,15 @@ class PrestationCrudController extends AbstractCrudController
     public function configureFields(string $pageName): iterable
     {
         return [
-            IdField::new('id')->onlyOnIndex(),
+            AssociationField::new('categoryPrestation', 'Catégorie'),
             TextField::new('Title', 'Nom'),
             MoneyField::new('price', 'Prix')->setCurrency('XOF'),
             NumberField::new('duration', 'Durée'),
             TextField::new('image', 'Image:')->setFormType(VichImageType::class),
             ImageField::new('imageName')->setBasePath('assets/images/prestations')->setUploadDir('public/assets/images/prestations')->onlyOnIndex(),
-            AssociationField::new('categoryPrestation', 'Catégorie')
+            TextareaField::new('description'),
+            TextareaField::new('inclus')
+
         ];
     }
 
