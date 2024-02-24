@@ -85,6 +85,16 @@
         inline: true,
         locale: "fr",
         minDate: "today",
+        disable: [
+        function(date) {
+            // Retourne true pour désactiver les samedis
+            return (date.getDay() === 6);
+        },
+        function(date) {
+            // Retourne true pour désactiver les dimanches
+            return (date.getDay() === 0);
+        }
+        ],
     });
 </script>
 
