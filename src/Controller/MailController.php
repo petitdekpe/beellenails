@@ -20,22 +20,16 @@ class MailController extends AbstractController
     //    ]);
     //}
     
-    public function sendMail(MailerInterface $mailer): Response
+    public function sendMail(MailerInterface $mailer)
     {
-        try {
             $mail = (new Email())
-                ->from('expediteur@demo.test')
-                ->to('petitdekpe@gmail.com')
+                ->from('thebest@demo.test')
+                ->to('jy.ahouanvoedo@gmail.com')
                 ->subject('Mon beau sujet')
-                ->html('<p>Ceci est mon message en HTML</p>');
+                ->html('<h1>Tu es bon</h1><br><p>Ceci est mon message pour toi</p>');
     
             $mailer->send($mail);
-    
-            // Return a confirmation response
-            return new Response('Email envoyé avec succès!');
-        } catch (TransportExceptionInterface $e) {
-            // Log or handle the error
-            return new Response('Erreur lors de l\'envoi de l\'email: ' . $e->getMessage());
-        }
+            
+        
     }
 }
