@@ -30,6 +30,7 @@ class RendezvousCrudController extends AbstractCrudController
             AssociationField::new('supplement', 'Ajouter à la prestation:'),
             TextField::new('image', 'Photo client:')->setFormType(VichImageType::class),
             ImageField::new('imageName')->setBasePath('assets/images/rendezvous')->setUploadDir('public/assets/images/rendezvous')->onlyOnIndex(),
+            TextField::new('status', 'Statut'),
         ];
     }
     

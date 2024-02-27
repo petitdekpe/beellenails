@@ -7,12 +7,15 @@ use DateTimeImmutable;
 use App\Entity\Payment;
 use App\Entity\Rendezvous;
 use App\Service\FedapayService;
+use Symfony\Component\Mime\Email;
 use App\Repository\UserRepository;
 use App\Repository\PaymentRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class PaymentController extends AbstractController
@@ -55,7 +58,7 @@ class PaymentController extends AbstractController
 	}
 
 	#[Route('/rendezvous/payment/callback', name: 'payment_callback')]
-	public function callback(Request $request, PaymentRepository $repository): Response
+	public function callback(Request $request, PaymentRepository $repository, UserInterface $user, MailerInterface $mailer): Response
 	{
 		$transactionID = $request->get('id');
 		$status = $request->get('status');
@@ -87,8 +90,19 @@ class PaymentController extends AbstractController
 		$rendezvou = $payment->getRendezvous();
 		$rendezvou->setPaid(true);
 
+		$userEmail = $rendezvou->getUser()->getEmail();
 
+		// Envoyer l'e-mail après la création du rendez-vous
+		$email = (new Email())
+		->from('noreply@beellenails.com')
+		->to($userEmail)
+		->subject('Votre Rendez-vous !')
+		->html($this->renderView(
+			'emails/rendezvous_created.html.twig',
+			['rendezvous' => $rendezvou]
+		));
 
+		$mailer->send($email);
 
         // TODO : consulter la variable $transaction pour les infos de FEDAPAY
 

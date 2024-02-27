@@ -50,14 +50,30 @@ class Rendezvous
     #[ORM\ManyToMany(targetEntity: Supplement::class, inversedBy: 'rendezvouses')]
     private Collection $supplement;
 
+    #[ORM\Column(nullable: true)]
+    private ?string $status = null;
+
     public function __construct()
     {
         $this->supplement = new ArrayCollection();
     }
 
+
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(?string $status): static
+    {
+        $this->status = $status;
+
+        return $this;
     }
 
     public function getPrestation(): ?Prestation

@@ -21,6 +21,7 @@ class NewRendezvousController extends AbstractController
         // Créer une nouvelle instance de Rendezvous
         $rendezvou = new Rendezvous();
         $rendezvou->setPrestation($prestation);
+        $rendezvou->setStatus("En attente");
 
         $form = $this->createForm(PreRendezvousType::class, $rendezvou, ['prestation' => $prestation]);
         $form->handleRequest($request);

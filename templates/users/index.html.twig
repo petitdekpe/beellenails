@@ -51,6 +51,9 @@
                         Prestation
                     </th>
                     <th scope="col" class="px-6 py-3">
+                        Statut
+                    </th>
+                    <th scope="col" class="px-6 py-3">
                         Action
                     </th>
                 </tr>
@@ -68,8 +71,15 @@
                             <td class="px-6 py-4">{{ appointment.day|date('d/m/Y') }}</td>
                             <td class="px-6 py-4">{{ appointment.creneau.libelle }}</td>
                             <td class="px-6 py-4">{{ appointment.prestation.Title }}</td>
+                            <td class="px-6 py-4">{{ appointment.status }}</td>
                             <td class="px-6 py-4">
-                                <a href="#" class="font-medium text-pink-600 hover:underline">Reporter</a>
+                                {% if appointment.status != "Annulé" %}
+                                    <a href="{{ path('app_rendezvous_edit', {'id': appointment.id}) }}" class="font-medium text-pink-600 hover:underline">Reporter</a>
+                                    <a href="{{ path('app_rendezvous_cancel', {'id': appointment.id}) }}" class="font-medium text-pink-600 hover:underline">Annuler</a>
+                                {% else %}
+                                    <span class="opacity-50 cursor-not-allowed">Reporter</span>
+                                    <span class="opacity-50 cursor-not-allowed">Annuler</span>
+                                {% endif %}
                             </td>
                         </tr>
                     {% endfor %}

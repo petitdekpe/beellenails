@@ -4,13 +4,17 @@ namespace App\Controller;
 
 use App\Entity\Rendezvous;
 use App\Form\RendezvousType;
+use Symfony\Component\Mime\Email;
+use App\Form\RendezvousModifyType;
 use App\Repository\RendezvousRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[Route('/rendezvous')]
 class RendezvousController extends AbstractController
@@ -24,9 +28,10 @@ class RendezvousController extends AbstractController
     }
 
     #[Route('/new', name: 'app_rendezvous_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, MailerInterface $mailer, UserInterface $user): Response
     {
         $rendezvou = new Rendezvous();
+        $rendezvou->setStatus("En attente");
 
         $form = $this->createForm(RendezvousType::class, $rendezvou);
         $form->handleRequest($request);
@@ -36,6 +41,21 @@ class RendezvousController extends AbstractController
 
             $entityManager->persist($rendezvou);
             $entityManager->flush();
+
+            // Récupérer l'adresse e-mail de l'utilisateur à partir du rendez-vous
+            $userEmail = $rendezvou->getUser()->getEmail();
+
+            // Envoyer l'e-mail après la création du rendez-vous
+            $email = (new Email())
+                ->from('noreply@beellenails.com')
+                ->to($userEmail)
+                ->subject('Votre Rendez-vous !')
+                ->html($this->renderView(
+                    'emails/rendezvous_created.html.twig',
+                    ['rendezvous' => $rendezvou]
+                ));
+
+            $mailer->send($email);
 
             return $this->redirectToRoute('app_rendezvous_index', [], Response::HTTP_SEE_OTHER);
         } 
@@ -57,19 +77,32 @@ class RendezvousController extends AbstractController
     #[Route('/{id}/edit', name: 'app_rendezvous_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Rendezvous $rendezvou, EntityManagerInterface $entityManager): Response
     {
-        $form = $this->createForm(RendezvousType::class, $rendezvou);
+        // Création d'un formulaire personnalisé avec seulement les champs 'day' et 'creneau'
+        $form = $this->createForm(RendezvousModifyType::class, $rendezvou);
         $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
+    
+        if ($form->isSubmitted()) {
+            // Persistance des changements en base de données
             $entityManager->flush();
-
+    
             return $this->redirectToRoute('app_rendezvous_index', [], Response::HTTP_SEE_OTHER);
         }
-
+    
         return $this->render('rendezvous/edit.html.twig', [
             'rendezvou' => $rendezvou,
-            'form' => $form,
+            'form' => $form->createView(),
         ]);
+    }
+
+    #[Route('/{id}/cancel', name: 'app_rendezvous_cancel', methods: ['GET', 'POST'])]
+    public function cancel(Request $request, Rendezvous $rendezvou, EntityManagerInterface $entityManager): Response
+    {
+        $rendezvou->setStatus("Annulé");
+
+        $entityManager->persist($rendezvou);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('app_users', [], Response::HTTP_SEE_OTHER);
     }
 
     #[Route('/{id}', name: 'app_rendezvous_delete', methods: ['POST'])]
