@@ -85,7 +85,7 @@ class RendezvousController extends AbstractController
             // Persistance des changements en base de données
             $entityManager->flush();
     
-            return $this->redirectToRoute('app_rendezvous_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_users', [], Response::HTTP_SEE_OTHER);
         }
     
         return $this->render('rendezvous/edit.html.twig', [

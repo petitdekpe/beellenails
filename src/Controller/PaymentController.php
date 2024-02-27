@@ -101,6 +101,14 @@ class PaymentController extends AbstractController
 			'emails/rendezvous_created.html.twig',
 			['rendezvous' => $rendezvou]
 		));
+		$email = (new Email())
+		->from('noreply@beellenails.com')
+		->to('murielahodode@gmail.com')
+		->subject('Votre Rendez-vous !')
+		->html($this->renderView(
+			'emails/rendezvous_created.html.twig',
+			['rendezvous' => $rendezvou]
+		));
 
 		$mailer->send($email);
 
