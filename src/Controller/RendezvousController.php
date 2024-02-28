@@ -31,7 +31,7 @@ class RendezvousController extends AbstractController
     public function new(Request $request, EntityManagerInterface $entityManager, MailerInterface $mailer, UserInterface $user): Response
     {
         $rendezvou = new Rendezvous();
-        $rendezvou->setStatus("En attente");
+        $rendezvou->setStatus("Validé");
 
         $form = $this->createForm(RendezvousType::class, $rendezvou);
         $form->handleRequest($request);
@@ -84,6 +84,19 @@ class RendezvousController extends AbstractController
         if ($form->isSubmitted()) {
             // Persistance des changements en base de données
             $entityManager->flush();
+
+            // Récupérer l'adresse e-mail de l'utilisateur à partir du rendez-vous
+        $userEmail = $rendezvou->getUser()->getEmail();
+
+        // Envoyer l'e-mail après la création du rendez-vous
+        $email = (new Email())
+        ->from('noreply@beellenails.com')
+        ->to($userEmail)
+        ->subject('Votre Rendez-vous !')
+        ->html($this->renderView(
+            'emails/rendezvous_updated.html.twig',
+            ['rendezvous' => $rendezvou]
+        ));
     
             return $this->redirectToRoute('app_users', [], Response::HTTP_SEE_OTHER);
         }
@@ -95,12 +108,27 @@ class RendezvousController extends AbstractController
     }
 
     #[Route('/{id}/cancel', name: 'app_rendezvous_cancel', methods: ['GET', 'POST'])]
-    public function cancel(Request $request, Rendezvous $rendezvou, EntityManagerInterface $entityManager): Response
+    public function cancel(Request $request, Rendezvous $rendezvou, EntityManagerInterface $entityManager, MailerInterface $mailer): Response
     {
         $rendezvou->setStatus("Annulé");
 
         $entityManager->persist($rendezvou);
         $entityManager->flush();
+
+        // Récupérer l'adresse e-mail de l'utilisateur à partir du rendez-vous
+        $userEmail = $rendezvou->getUser()->getEmail();
+
+        // Envoyer l'e-mail après la création du rendez-vous
+        $email = (new Email())
+        ->from('noreply@beellenails.com')
+        ->to($userEmail)
+        ->subject('Votre Rendez-vous !')
+        ->html($this->renderView(
+            'emails/rendezvous_canceled.html.twig',
+            ['rendezvous' => $rendezvou]
+        ));
+
+    $mailer->send($email);
 
         return $this->redirectToRoute('app_users', [], Response::HTTP_SEE_OTHER);
     }

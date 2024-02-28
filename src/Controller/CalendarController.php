@@ -18,7 +18,7 @@ class CalendarController extends AbstractController
     public function index(Request $request, EntityManagerInterface $entityManager): Response
     {
         $rendezvou = new Rendezvous();
-        $rendezvou->setStatus("En attente");
+        $rendezvou->setStatus("Validé");
         $form = $this->createForm(RendezvousType::class, $rendezvou);
         $form->handleRequest($request);
 
