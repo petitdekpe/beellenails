@@ -39,10 +39,8 @@ class RendezvousModifyType extends AbstractType
             'label' => 'Choisissez un créneau',
             'class' => Creneau::class,
             'choice_label' => 'libelle',
-            'expanded' => true,
-            'multiple' => false,
             'required'=> true,
-            'attr' => ['class' => '']
+            'attr' => ['class' => 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5'],
         ]);
         
     }
