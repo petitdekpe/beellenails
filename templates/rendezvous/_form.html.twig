@@ -142,18 +142,30 @@
         function updateSlotsDropdown(slots) {
             var slotsDropdown = document.getElementById('rendezvous_creneau');
             slotsDropdown.innerHTML = ''; // Efface les options actuelles
-            var selectElement = document.createElement('select'); // Crée un élément select
-            selectElement.id = 'rendezvous_creneau';
-            selectElement.name = 'rendezvous[creneau]'; // Ajoute le nom
-            selectElement.className = 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5'; // Ajoute les classes
-            slots.forEach(function(slot) {
-                var option = document.createElement('option');
-                option.value = slot.id;
-                option.text = slot.libelle;
-                selectElement.appendChild(option);
-            });
-            slotsDropdown.replaceWith(selectElement); // Remplace la liste existante par le nouveau select
+
+            // Si la liste de créneaux est vide
+            if (slots.length === 0) {
+                var noSlotsOption = document.createElement('option');
+                noSlotsOption.text = 'Aucun Créneau Disponible Pour Cette Date';
+                noSlotsOption.disabled = true; // Désactive l'option pour qu'elle ne soit pas sélectionnable
+                slotsDropdown.appendChild(noSlotsOption);
+            } else {
+                var selectElement = document.createElement('select'); // Crée un élément select
+                selectElement.id = 'rendezvous_creneau';
+                selectElement.name = 'rendezvous[creneau]'; // Ajoute le nom
+                selectElement.className = 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5'; // Ajoute les classes
+
+                slots.forEach(function(slot) {
+                    var option = document.createElement('option');
+                    option.value = slot.id;
+                    option.text = slot.libelle;
+                    selectElement.appendChild(option);
+                });
+
+                slotsDropdown.replaceWith(selectElement); // Remplace la liste existante par le nouveau select
+            }
         }
+
     });
 </script>
 
