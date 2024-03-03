@@ -32,9 +32,15 @@
                     <a href="https://wa.me/22997853512" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-red-500 md:p-0">Contact</a>
                 </li>
                 {% if app.user %}
-                <li>
-                    <a href="{{ path('app_users') }}" class="block py-2 px-3 text-white bg-pink-700 rounded md:bg-transparent md:text-red-500 md:p-0">Mon Profil</a>
-                </li>
+                {% if is_granted('ROLE_ADMIN') %}
+                    <li>
+                        <a href="{{ path('app_dashboard') }}" class="block py-2 px-3 text-white bg-pink-700 rounded md:bg-transparent md:text-red-500 md:p-0">Espace Administrateur</a>
+                    </li>
+                {% else %}
+                    <li>
+                        <a href="{{ path('app_users') }}" class="block py-2 px-3 text-white bg-pink-700 rounded md:bg-transparent md:text-red-500 md:p-0">Mon Profil</a>
+                    </li>
+                {% endif %}
                 {% else %}
                 <li>
                     <a href="{{ path('app_login') }}" class="block py-2 px-3 text-white bg-pink-700 rounded md:bg-transparent md:text-red-500 md:p-0">Se connecter</a>

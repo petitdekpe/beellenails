@@ -29,6 +29,7 @@ class CreneauRepository extends ServiceEntityRepository
         ->select('c.id')
         ->innerJoin('c.rendezvouses', 'r')
         ->andWhere('r.day = :selectedDate')
+        ->andWhere('r.Paid IS NOT NULL') // Filtrer les rendez-vous avec Paid non null
         ->setParameter('selectedDate', $selectedDate->format('Y-m-d'))
         ->getQuery()
         ->getResult();
