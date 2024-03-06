@@ -47,7 +47,7 @@ class RendezvousController extends AbstractController
 
             // Envoyer l'e-mail après la création du rendez-vous
             $email = (new Email())
-                ->from('noreply@beellenails.com')
+
                 ->to($userEmail)
                 ->subject('Votre Rendez-vous !')
                 ->html($this->renderView(

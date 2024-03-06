@@ -94,7 +94,7 @@ class PaymentController extends AbstractController
 
 		// Envoyer l'e-mail après la création du rendez-vous
 		$email = (new Email())
-		->from('noreply@beellenails.com')
+		->from('votrerendezvousy@beellenails.com')
 		->to($userEmail)
 		->subject('Votre Rendez-vous !')
 		->html($this->renderView(
@@ -102,7 +102,7 @@ class PaymentController extends AbstractController
 			['rendezvous' => $rendezvou]
 		));
 		$email = (new Email())
-		->from('noreply@beellenails.com')
+		->from('votrerendezvousy@beellenails.com')
 		->to('murielahodode@gmail.com')
 		->subject('Votre Rendez-vous !')
 		->html($this->renderView(

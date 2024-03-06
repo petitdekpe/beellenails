@@ -30,122 +30,6 @@
         {% block javascripts %}
         <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
         <script src='fullcalendar/core/locales/fr.global.js'></script>
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                var calendarEl = document.getElementById('calendar');
-                var calendar = new FullCalendar.Calendar(calendarEl, {
-        events: {{ eventsJson | raw }},
-        initialView: 'dayGridMonth',
-        firstDay: 1,
-        hiddenDays: [0, 1],
-        headerToolbar: {
-            left: 'prev,next',
-            center: 'title',
-            right: 'dayGridMonth,timeGridWeek,timeGridDay'
-        },
-        buttonText: {
-            today: 'Aujourd\'hui',
-            month: 'Mois',
-            timeGridWeek: 'Semaine',
-            day: 'Jour'
-        },
-        locale: 'fr',
-        views: {
-            timeGridWeek: {
-                type: 'timeGrid',
-                duration: { days: 7 },
-                slotDuration: '00:30:00',
-                slotLabelFormat: {
-                    hour: 'numeric',
-                    minute: '2-digit',
-                    omitZeroMinute: false,
-                    hour12: false
-                },
-                slotMinTime: '09:00:00', // Heure de début des créneaux
-                slotMaxTime: '19:00:00', // Heure de fin des créneaux
-                scrollTime: '09:00'
-            },
-            timeGridDay: {
-                type: 'timeGrid',
-                duration: { days: 1 },
-                slotDuration: '00:30:00',
-                slotLabelFormat: {
-                    hour: 'numeric',
-                    minute: '2-digit',
-                    omitZeroMinute: false,
-                    hour12: false
-                },
-                businessHours: [
-                    {
-                        daysOfWeek: [1, 2, 3, 4, 5],
-                        startTime: '09:00',
-                        endTime: '12:00'
-                    },
-                    {
-                        daysOfWeek: [1, 2, 3, 4, 5],
-                        startTime: '13:00',
-                        endTime: '17:30'
-                    }
-                ],
-                slotMinTime: '09:00:00', // Heure de début des créneaux
-                slotMaxTime: '19:00:00', // Heure de fin des créneaux
-                scrollTime: '09:00'
-            }
-        },
-        eventMouseEnter: function(info) {
-            var rendezvous = info.event;
-
-            var detailBox = document.createElement('div');
-            detailBox.className = 'absolute z-10 inline-block w-64 text-sm text-gray-500 transition-opacity duration-300 bg-white border border-gray-200 rounded-lg shadow-sm opacity-0';
-            detailBox.setAttribute('role', 'tooltip');
-            detailBox.innerHTML = `
-                <div class="p-3">
-                    <p class="text-base font-semibold leading-none text-gray-900 dark:text-white">
-                        ${rendezvous.title}
-                    </p>
-                    <p class="mb-3 text-sm font-normal">
-                        <strong>Prestation:</strong> ${rendezvous.extendedProps.prestation}
-                    </p>
-                    <p class="mb-3 text-sm font-normal">
-                        <strong>Début:</strong> ${rendezvous.start.toLocaleString()}
-                    </p>
-                    <p class="mb-3 text-sm font-normal">
-                        <strong>Fin:</strong> ${rendezvous.end.toLocaleString()}
-                    </p>
-                </div>
-                <div data-popper-arrow></div>
-            `;
-
-            detailBox.style.position = 'absolute';
-            detailBox.style.left = info.jsEvent.pageX + 'px';
-            detailBox.style.top = info.jsEvent.pageY + 'px';
-
-            document.body.appendChild(detailBox);
-
-            setTimeout(function() {
-                detailBox.classList.add('opacity-100');
-            }, 50);
-
-            rendezvous.setExtendedProp('detailBox', detailBox);
-        },
-        eventMouseLeave: function(info) {
-            var rendezvous = info.event;
-            var detailBox = rendezvous.extendedProps.detailBox;
-            if (detailBox) {
-                detailBox.remove();
-                rendezvous.setExtendedProp('detailBox', null);
-            }
-        },
-        eventClick: function(info) {
-            var rendezvous = info.event;
-            var imageUrl = '/assets/images/rendezvous/' + rendezvous.extendedProps.image;
-            window.location.href = imageUrl;
-        },
-    });
-
-                calendar.render();
-            });
-        </script>
 
         {% endblock %}
         
@@ -233,9 +117,9 @@
 
 <div class="sm:ml-64">
     <div class="relative overflow-hidden w-full min-h-[70px] bg-pink-500"></div>
-    <p class="p-4 text-2xl font-semibold mt-10">Bonjour, {{app.user}}</p>
-    <p class="p-4">Voici votre agenda</p>
-    <div class="px-20" id='calendar'></div>
+    <h4 class="text-2xl font-bold p-4">Prestations</h4>
+
+    <div class="px-4">{{ include('dashboard/prestation/index.html.twig') }}</div>
 </div>
 
 {% endblock %}

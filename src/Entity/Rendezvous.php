@@ -53,9 +53,18 @@ class Rendezvous
     #[ORM\Column(nullable: true)]
     private ?string $status = null;
 
+    #[ORM\Column(type: 'datetime')]
+    private \DateTimeInterface $created_at;
+
+    #[ORM\Column(type: 'datetime')]
+    private \DateTimeInterface $updated_at;
+
     public function __construct()
     {
         $this->supplement = new ArrayCollection();
+        $this->created_at = new \DateTime(); // Initialisez la date et l'heure de création
+        $this->updated_at = new \DateTime(); // Initialisez la date et l'heure de mise à jour
+
     }
 
 
@@ -120,6 +129,7 @@ class Rendezvous
     public function setDay($day): static
     {
         $this->day = $day;
+        $this->updateTimestamps(); // Mettez à jour les timestamps
 
         return $this;
     }
@@ -132,6 +142,7 @@ class Rendezvous
     public function setCreneau(?Creneau $creneau): static
     {
         $this->creneau = $creneau;
+        $this->updateTimestamps(); // Mettez à jour les timestamps
 
         return $this;
     }
@@ -166,21 +177,21 @@ class Rendezvous
 	}
 
 	public function setPayment(?Payment $payment): self
-                                                	{
-                                                		// unset the owning side of the relation if necessary
-                                                		if ($payment === null && $this->payment !== null) {
-                                                			$this->payment->setRendezvous(null);
-                                                		}
+        {
+        // unset the owning side of the relation if necessary
+            if ($payment === null && $this->payment !== null) {
+                $this->payment->setRendezvous(null);
+            }
                                                 
-                                                		// set the owning side of the relation if necessary
-                                                		if ($payment !== null && $payment->getRendezvous() !== $this) {
-                                                			$payment->setRendezvous($this);
-                                                		}
+        // set the owning side of the relation if necessary
+            if ($payment !== null && $payment->getRendezvous() !== $this) {
+                $payment->setRendezvous($this);
+            }
                                                 
-                                                		$this->payment = $payment;
+                $this->payment = $payment;
                                                 
-                                                		return $this;
-                                                	}
+            return $this;
+        }
 
     /**
      * @return Collection<int, supplement>
@@ -204,5 +215,20 @@ class Rendezvous
         $this->supplement->removeElement($supplement);
 
         return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->created_at;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->updated_at;
+    }
+
+    public function updateTimestamps(): void
+    {
+        $this->updated_at = new \DateTime(); // Mettez à jour updated_at lors de la modification
     }
 }

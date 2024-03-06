@@ -2,10 +2,12 @@
 
 namespace App\Controller;
 
-use App\Entity\Rendezvous; // Import de l'entité Rendezvous
+use App\Repository\UserRepository;
+use App\Repository\PrestationRepository;
 use App\Repository\RendezvousRepository;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Entity\Rendezvous; // Import de l'entité Rendezvous
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class DashboardController extends AbstractController
@@ -50,4 +52,30 @@ class DashboardController extends AbstractController
             'eventsJson' => $eventsJson, // Passer les événements à la vue
         ]);
     }
+
+
+    #[Route('/dashboard/prestation', name: 'app_dashboard_prestation', methods: ['GET'])]
+    public function prestation(PrestationRepository $prestationRepository): Response
+    {
+        return $this->render('dashboard/prestation.html.twig', [
+            'prestations' => $prestationRepository->findAll(),
+        ]);
+    }
+
+    #[Route('/dashboard/rendezvous', name: 'app_dashboard_rendezvous', methods: ['GET'])]
+    public function rendezvous(RendezvousRepository $rendezvousRepository): Response
+    {
+        return $this->render('dashboard/rendezvous.html.twig', [
+            'rendezvouses' => $rendezvousRepository->findAll(),
+        ]);
+    }
+
+    #[Route('/dashboard/clients', name: 'app_dashboard_user', methods: ['GET'])]
+    public function user(UserRepository $userRepository): Response
+    {
+        return $this->render('dashboard/user.html.twig', [
+            'users' => $userRepository->findAll(),
+        ]);
+    }
+
 }
