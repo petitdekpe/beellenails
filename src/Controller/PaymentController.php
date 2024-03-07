@@ -34,7 +34,7 @@ class PaymentController extends AbstractController
 		/** @var \FedaPay\Transaction $transaction */
 		$transaction = $this->fedapayService->initTransaction(
 			//montant
-			5000,
+			100,
 			//description 
 			'Acompte sur Prestation',
 			//utilisateur
@@ -103,7 +103,7 @@ class PaymentController extends AbstractController
 
 		// Envoyer l'e-mail après la création du rendez-vous
 		$email = (new Email())
-		->from('votrerendezvousy@beellenails.com')
+		->from('beellenailscare@beellenails.com')
 		->to($userEmail)
 		->subject('Informations de rendez-vous!')
 		->html($this->renderView(
@@ -111,7 +111,7 @@ class PaymentController extends AbstractController
 			['rendezvous' => $rendezvou]
 		));
 		$email = (new Email())
-		->from('votrerendezvous@beellenails.com')
+		->from('beellenailscare@beellenails.com')
 		->to('murielahodode@gmail.com')
 		->subject('Nouveau Rendez-vous !')
 		->html($this->renderView(

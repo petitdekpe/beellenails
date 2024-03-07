@@ -40,7 +40,7 @@ class RegistrationController extends AbstractController
             // do anything else you need here, like send an email
                         // Envoyer l'e-mail de création de compte
                         $email = (new Email())
-                        ->from('votrerendezvous@beellenails.com')
+                        ->from('beellenailscare@beellenails.com')
                         ->to($user->getEmail())
                         ->subject('Votre inscription sur BeElleNails')
                         ->html($this->renderView(
