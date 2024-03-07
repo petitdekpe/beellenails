@@ -21,6 +21,18 @@ class RendezvousRepository extends ServiceEntityRepository
         parent::__construct($registry, Rendezvous::class);
     }
 
+    public function findPaidRendezvous()
+{
+    return $this->createQueryBuilder('r')
+        ->andWhere('r.Paid = :paidValue')
+        ->andWhere('r.status != :cancelledStatus')
+        ->setParameter('paidValue', 1)
+        ->setParameter('cancelledStatus', 'Annulé')
+        ->getQuery()
+        ->getResult();
+}
+
+
 //    /**
 //     * @return Rendezvous[] Returns an array of Rendezvous objects
 //     */

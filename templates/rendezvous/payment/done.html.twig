@@ -1,49 +1,117 @@
-{% block stylesheets %}
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}BeElle Nails{% endblock %}</title>
 
-{% endblock %}
+        <!-- Primary Meta Tags -->
+        <title>BeElle Nails</title>
+        <meta name="title" content="BeElle Nails" />
+        <meta name="description" content="Tout ce qui touche au soin des ongles et à la pause d'extension et de vernis permanent ou semi permanent, Tout ce qui touche au soin des ongles et à la pause d'extension et de vernis permanent ou semi permanent" />
+
+        <!-- Open Graph / Facebook -->
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://beellenails.com/" />
+        <meta property="og:title" content="BeElle Nails" />
+        <meta property="og:description" content="Tout ce qui touche au soin des ongles et à la pause d'extension et de vernis permanent ou semi permanent, Tout ce qui touche au soin des ongles et à la pause d'extension et de vernis permanent ou semi permanent" />
+        <meta property="og:image" content="https://metatags.io/images/meta-tags.png" />
+
+        <!-- Twitter -->
+        <meta property="twitter:card" content="summary_large_image" />
+        <meta property="twitter:url" content="https://beellenails.com/" />
+        <meta property="twitter:title" content="BeElle Nails" />
+        <meta property="twitter:description" content="Tout ce qui touche au soin des ongles et à la pause d'extension et de vernis permanent ou semi permanent, Tout ce qui touche au soin des ongles et à la pause d'extension et de vernis permanent ou semi permanent" />
+        <meta property="twitter:image" content="https://metatags.io/images/meta-tags.png" />
+
+        <!-- Meta Tags Generated with https://metatags.io -->
+
+        <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+        <link rel="manifest" href="/favicon/site.webmanifest">
+        <link rel="mask-icon" href="/favicon/safari-pinned-tab.svg" color="#5bbad5">
+        <meta name="msapplication-TileColor" content="#da532c">
+        <meta name="theme-color" content="#ffffff">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.js"></script>
+        <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+        {% block stylesheets %}
+        {% endblock %}
+
+        {% block javascripts %}
+        {% endblock %}
+        
+    </head>
+
+
 
 {% block body %}
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Responsive Card</title>
-  <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,400i,700,900&display=swap" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <style>
-    .checkmark {
-      font-size: 100px;
-      line-height: 200px;
-      margin-left: -15px;
-    }
-  </style>
-</head>
-<body class="bg-gray-200 text-gray-900">
-  <div class="container mx-auto py-8 px-4">
-    <div class="max-w-md mx-auto bg-white rounded-lg shadow-md overflow-hidden md:max-w-2xl">
-      <div class="md:flex">
-        <div class="md:flex-shrink-0">
-          <div class="flex items-center justify-center h-24 w-24 rounded-full bg-gray-100 mx-auto">
-            <i class="checkmark text-green-500">✓</i>
-          </div>
-        </div>
-        <div class="p-8 text-justify">
-          <h1 class="text-3xl text-center font-bold text-green-600 mb-4">Paiement effectué</h1>
-          <p class="text-lg font-semibold text-gray-700">Merci d'avoir pris votre rendez-vous. Nous vous reviendrons pour plus de détails</p>
-          <div class="flex justify-center">
-          <a href="{{ path('app_home') }}">
-          <button type="" class="btn btn-primary my-5 text-white bg-green-700 hover:bg-green-500 focus:ring-4 font-medium rounded-lg text-sm w-1/2 sm:w-auto px-5 py-2.5 text-center">Retour au site</button>
-          </a>
-          </div>
-        </div>
-      </div>
+
+
+    <div class="relative overflow-hidden w-full min-h-[90px] bg-white rounded-lg flex justify-center items-center">
+        <img src="{{ asset('assets/logooff.png') }}" class="h-16" alt="Logo">
     </div>
-  </div>
-</body>
+
+    <h1 class="text-2xl font-bold my-5 mx-5 text-center text-green-700">Paiement réussi.</h1>
+
+    <!--h1 class="text-xl font-bold my-5 mx-5">Paiement échoué</h1-->
+        <p class="mx-8 mt-5 text-justify text-sm">
+            Félicitations ! Votre paiement a été traité avec succès.
+            Merci d’avoir pris rendez-vous chez Be Elle Nails Care. Veuillez consulter vos mails, les informations liées à votre rendez-vous vous ont été envoyées.
+        </p>
+
+        <div class="mx-8 mt-5 text-sm">
+          <h3>Détails de la transaction :</h3>
+          <ul>
+              <li><strong>Montant payé:</strong> {{ payment.amount }} {{ payment.currency }}</li>
+              <li><strong>Date de la transaction:</strong> {{ payment.createdAt|date('d/m/Y H:i:s') }}</li>
+              <li><strong>Référence de transaction:</strong> {{ payment.reference }}</li>
+              <li><strong>Mode de paiement:</strong> {{ payment.mode }}</li>
+              <li><strong>Frais:</strong> {{ payment.fees }} {{ payment.currency }}</li>
+          </ul>
+        </div>
+
+        <div class="mx-auto mt-5 flex flex-row justify-center items-center mb-5">
+            <a href="{{ path('app_home') }}" class="mx-5">
+                <button class="btn cursor-pointer block text-white bg-pink-700 hover:bg-pink-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Retour sur le site</button>
+            </a>
+        </div>
+
+    <footer class="p-4 bg-pink-700 md:p-8 lg:p-10">
+    <div class="mx-auto max-w-screen-xl text-center">
+        <a href="#" class="flex justify-center items-center text-2xl font-semibold text-gray-900">
+            <img src="{{ asset('assets/logooffwhite.png') }}" class="h-16" alt="Logo">
+        </a>
+        <p class="my-6 text-white text-center">Cotonou - Ste Rita | Rue face au marché, premier immeuble rose dans la rue avec un portail marron. Ouvrez le portail et montez les escaliers à gauche.</p>
+        <ul class="flex flex-wrap justify-center items-center mb-6 text-white">
+            <li>
+                <a href="{{ path('app_home') }}" class="mr-4 hover:underline md:mr-6 ">Accueil</a>
+            </li>
+            <li>
+                <a href="{{ path('app_prestation_index') }}" class="mr-4 hover:underline md:mr-6">Nos prestations</a>
+            </li>
+            
+            <li>
+                <a href="https://wa.me/22997853512" class="mr-4 hover:underline md:mr-6">Contact</a>
+            </li>
+        </ul>
+        <ul class="flex flex-wrap justify-center items-center mb-6 text-white">
+            <li>
+                <a href="https://www.instagram.com/be.elle.beauty" class="mr-4 hover:underline md:mr-6 "><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="40" height="40" viewBox="0,0,256,256"><g fill="#ffffff" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><g transform="scale(8.53333,8.53333)"><path d="M9.99805,3c-3.859,0 -6.99805,3.14195 -6.99805,7.00195v10c0,3.859 3.14195,6.99805 7.00195,6.99805h10c3.859,0 6.99805,-3.14195 6.99805,-7.00195v-10c0,-3.859 -3.14195,-6.99805 -7.00195,-6.99805zM22,7c0.552,0 1,0.448 1,1c0,0.552 -0.448,1 -1,1c-0.552,0 -1,-0.448 -1,-1c0,-0.552 0.448,-1 1,-1zM15,9c3.309,0 6,2.691 6,6c0,3.309 -2.691,6 -6,6c-3.309,0 -6,-2.691 -6,-6c0,-3.309 2.691,-6 6,-6zM15,11c-2.20914,0 -4,1.79086 -4,4c0,2.20914 1.79086,4 4,4c2.20914,0 4,-1.79086 4,-4c0,-2.20914 -1.79086,-4 -4,-4z"></path></g></g></svg></a>
+            </li>
+            <li>
+                <a href="https://www.tiktok.com/@be_elle6" class="mr-4 hover:underline md:mr-6"><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="40" height="40" viewBox="0,0,256,256"><g fill="#ffffff" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><g transform="scale(8.53333,8.53333)"><path d="M24,4h-18c-1.105,0 -2,0.895 -2,2v18c0,1.105 0.895,2 2,2h18c1.105,0 2,-0.895 2,-2v-18c0,-1.105 -0.896,-2 -2,-2zM22.689,13.474c-0.13,0.012 -0.261,0.02 -0.393,0.02c-1.495,0 -2.809,-0.768 -3.574,-1.931c0,3.049 0,6.519 0,6.577c0,2.685 -2.177,4.861 -4.861,4.861c-2.684,-0.001 -4.861,-2.178 -4.861,-4.862c0,-2.685 2.177,-4.861 4.861,-4.861c0.102,0 0.201,0.009 0.3,0.015v2.396c-0.1,-0.012 -0.197,-0.03 -0.3,-0.03c-1.37,0 -2.481,1.111 -2.481,2.481c0,1.37 1.11,2.481 2.481,2.481c1.371,0 2.581,-1.08 2.581,-2.45c0,-0.055 0.024,-11.17 0.024,-11.17h2.289c0.215,2.047 1.868,3.663 3.934,3.811z"></path></g></g></svg></a>
+            </li>
+            <li>
+                <a href="https://wa.me/22997853512" class="mr-4 hover:underline md:mr-6 "><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="40" height="40" viewBox="0,0,256,256"><g fill="#ffffff" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><g transform="scale(8.53333,8.53333)"><path d="M15,3c-6.627,0 -12,5.373 -12,12c0,2.25121 0.63234,4.35007 1.71094,6.15039l-1.60352,5.84961l5.97461,-1.56836c1.74732,0.99342 3.76446,1.56836 5.91797,1.56836c6.627,0 12,-5.373 12,-12c0,-6.627 -5.373,-12 -12,-12zM10.89258,9.40234c0.195,0 0.39536,-0.00119 0.56836,0.00781c0.214,0.005 0.44692,0.02067 0.66992,0.51367c0.265,0.586 0.84202,2.05608 0.91602,2.20508c0.074,0.149 0.12644,0.32453 0.02344,0.51953c-0.098,0.2 -0.14897,0.32105 -0.29297,0.49805c-0.149,0.172 -0.31227,0.38563 -0.44727,0.51563c-0.149,0.149 -0.30286,0.31238 -0.13086,0.60938c0.172,0.297 0.76934,1.27064 1.65234,2.05664c1.135,1.014 2.09263,1.32561 2.39063,1.47461c0.298,0.149 0.47058,0.12578 0.64258,-0.07422c0.177,-0.195 0.74336,-0.86411 0.94336,-1.16211c0.195,-0.298 0.39406,-0.24644 0.66406,-0.14844c0.274,0.098 1.7352,0.8178 2.0332,0.9668c0.298,0.149 0.49336,0.22275 0.56836,0.34375c0.077,0.125 0.07708,0.72006 -0.16992,1.41406c-0.247,0.693 -1.45991,1.36316 -2.00391,1.41016c-0.549,0.051 -1.06136,0.24677 -3.56836,-0.74023c-3.024,-1.191 -4.93108,-4.28828 -5.08008,-4.48828c-0.149,-0.195 -1.21094,-1.61031 -1.21094,-3.07031c0,-1.465 0.76811,-2.18247 1.03711,-2.48047c0.274,-0.298 0.59492,-0.37109 0.79492,-0.37109z"></path></g></g></svg></a>
+            </li>
+        </ul>
+        <span class="text-center text-sm text-gray-300 sm:text-center">© 2024 <a href="#" class="hover:underline">BeElle™</a>. Tous droits réservés.</span>
+    </div>
+    </footer>
 </html>
 
-{% endblock %}
 
-{% block javascripts %}
 {% endblock %}

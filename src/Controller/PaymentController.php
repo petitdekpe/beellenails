@@ -34,7 +34,7 @@ class PaymentController extends AbstractController
 		/** @var \FedaPay\Transaction $transaction */
 		$transaction = $this->fedapayService->initTransaction(
 			//montant
-			100,
+			5000,
 			//description 
 			'Acompte sur Prestation',
 			//utilisateur
@@ -62,8 +62,11 @@ class PaymentController extends AbstractController
 	{
 		$transactionID = $request->get('id');
 		$status = $request->get('status');
-
+		$payment = $repository->findOneBy(['transactionID' => $transactionID]);
+		$rendezvou = $payment->getRendezvous();
 		if ($status !== 'approved') {
+			$rendezvou->setStatus('Tentative échoué');
+			$this->entityManager->flush();
 			return $this->render('rendezvous/payment/error.html.twig', [
 				'status' => $status,
 			]);
@@ -89,6 +92,12 @@ class PaymentController extends AbstractController
 		$transaction = $this->fedapayService->getTransaction($transactionID);
 		$rendezvou = $payment->getRendezvous();
 		$rendezvou->setPaid(true);
+		// Mettre à jour la variable 'status' dans rdv en fonction du statut du paiement
+			if ($status === 'approved') {
+				$rendezvou->setStatus('Rendez-vous pris');
+			} else {
+				$rendezvou->setStatus('Tentative échoué');
+			}
 
 		$userEmail = $rendezvou->getUser()->getEmail();
 
@@ -96,15 +105,15 @@ class PaymentController extends AbstractController
 		$email = (new Email())
 		->from('votrerendezvousy@beellenails.com')
 		->to($userEmail)
-		->subject('Votre Rendez-vous !')
+		->subject('Informations de rendez-vous!')
 		->html($this->renderView(
 			'emails/rendezvous_created.html.twig',
 			['rendezvous' => $rendezvou]
 		));
 		$email = (new Email())
-		->from('votrerendezvousy@beellenails.com')
+		->from('votrerendezvous@beellenails.com')
 		->to('murielahodode@gmail.com')
-		->subject('Votre Rendez-vous !')
+		->subject('Nouveau Rendez-vous !')
 		->html($this->renderView(
 			'emails/rendezvous_created.html.twig',
 			['rendezvous' => $rendezvou]

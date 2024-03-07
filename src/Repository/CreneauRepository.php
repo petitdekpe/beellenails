@@ -24,35 +24,19 @@ class CreneauRepository extends ServiceEntityRepository
 
     public function findAvailableSlots(\DateTimeInterface $selectedDate): array
 {
-    // Récupère les créneaux associés aux rendez-vous pour la date sélectionnée
-    $takenSlots = $this->createQueryBuilder('c')
-        ->select('c.id')
-        ->innerJoin('c.rendezvouses', 'r')
-        ->andWhere('r.day = :selectedDate')
-        ->andWhere('r.Paid IS NOT NULL') // Filtrer les rendez-vous avec Paid non null
+    return $this->createQueryBuilder('c')
+        ->leftJoin('c.rendezvouses', 'r', 'WITH', 'r.day = :selectedDate')
+        ->andWhere('r.id IS NULL OR (r.Paid IS NULL OR r.Paid != :paidValue) OR r.status = :cancelledStatus')
         ->setParameter('selectedDate', $selectedDate->format('Y-m-d'))
+        ->setParameter('paidValue', 1)
+        ->setParameter('cancelledStatus', 'Annulé')
         ->getQuery()
         ->getResult();
-
-    // Récupère tous les créneaux
-    $allSlots = $this->createQueryBuilder('c')
-        ->select('c')
-        ->getQuery()
-        ->getResult();
-
-    // Supprime les créneaux associés aux rendez-vous de la liste complète des créneaux
-    foreach ($takenSlots as $takenSlot) {
-        foreach ($allSlots as $key => $slot) {
-            if ($slot->getId() === $takenSlot['id']) {
-                unset($allSlots[$key]);
-                break;
-            }
-        }
-    }
-
-    // Retourne les créneaux restants comme créneaux disponibles
-    return $allSlots;
 }
+
+
+
+    
 
 
 

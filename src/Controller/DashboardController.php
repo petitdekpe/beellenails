@@ -19,7 +19,7 @@ class DashboardController extends AbstractController
         // Exemple de récupération des rendez-vous depuis la base de données
         // Pas besoin de répéter l'injection de dépendance pour le repository
         // $rendezvousRepository = $this->getDoctrine()->getRepository(Rendezvous::class);
-        $rendezvousList = $rendezvousRepository->findAll();
+        $rendezvousList = $rendezvousRepository->findPaidRendezvous();
 
         // Initialiser un tableau pour stocker les événements
         $events = [];
@@ -29,13 +29,21 @@ class DashboardController extends AbstractController
             $startDateTime = \DateTime::createFromFormat('Y-m-d H:i:s', $rendezvous->getDay()->format('Y-m-d') . ' ' . $rendezvous->getCreneau()->getStartTime()->format('H:i:s'));
             $endDateTime = \DateTime::createFromFormat('Y-m-d H:i:s', $rendezvous->getDay()->format('Y-m-d') . ' ' . $rendezvous->getCreneau()->getEndTime()->format('H:i:s'));
 
+            $color = 'blue'; // Couleur par défaut
+
+            // Si le statut du rendez-vous est "Rendez-vous pris", définissez la couleur sur rouge
+            if ($rendezvous->getStatus() === 'Rendez-vous pris') {
+            $color = 'red';
+            }
+
             $event = [
                 'id' => $rendezvous->getId(),
                 'title' => $rendezvous->getUser()->getNom() . ' ' . $rendezvous->getUser()->getPrenom(),
                 'prestation' => $rendezvous->getPrestation()->getTitle(),
                 'start' => $startDateTime->format('Y-m-d H:i:s'),
                 'end' => $endDateTime->format('Y-m-d H:i:s'), // Ajoutez cet attribut si vous avez une date de fin
-                'image'=>$rendezvous->getImageName()
+                'image'=>$rendezvous->getImageName(),
+                'color' => $color, // Définir la couleur de l'événement
                 // Autres champs de rendez-vous à ajouter en tant que propriétés d'événement
             ];
 
