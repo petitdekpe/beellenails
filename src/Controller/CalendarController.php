@@ -31,6 +31,7 @@ class CalendarController extends AbstractController
             $request->getSession()->set('creneau',  $form->get('creneau')->getData());
             $request->getSession()->set('prestation',  $form->get('prestation')->getData());
             
+            $rendezvou->setStatus("Tentative échoué");
             
             $entityManager->persist($rendezvou);
             $entityManager->flush();

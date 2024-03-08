@@ -22,13 +22,13 @@ class RecapController extends AbstractController
         $form->handleRequest($request);
         
         $user = $this->getUser(); 
+        $rendezvou->setUser($user);
+        $entityManager->persist($rendezvou);
+        $entityManager->flush();
         // Ajouter l'utilisateur actuel au rendez-vous
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $rendezvou->setUser($user);
-            $entityManager->persist($rendezvou);
-            $entityManager->flush();
-
+            
             return $this->redirectToRoute('payment_init', ['rendezvou' => $rendezvou->getId()]);
         }
 
