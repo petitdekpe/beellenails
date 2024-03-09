@@ -26,13 +26,18 @@ class CreneauRepository extends ServiceEntityRepository
 {
     return $this->createQueryBuilder('c')
         ->leftJoin('c.rendezvouses', 'r', 'WITH', 'r.day = :selectedDate')
-        ->andWhere('r.id IS NULL OR (r.Paid IS NULL OR r.Paid != :paidValue) OR r.status = :cancelledStatus')
+        ->andWhere('r.id IS NULL OR c.id NOT IN (
+            SELECT cr.id FROM App\Entity\Creneau cr
+            INNER JOIN cr.rendezvouses re
+            WHERE re.day = :selectedDate
+            AND re.status IN (:statuses)
+        )')
         ->setParameter('selectedDate', $selectedDate->format('Y-m-d'))
-        ->setParameter('paidValue', 1)
-        ->setParameter('cancelledStatus', 'Annulé')
+        ->setParameter('statuses', ['Rendez-vous pris', 'Rendez-vous confirmé'])
         ->getQuery()
         ->getResult();
 }
+
 
 
 

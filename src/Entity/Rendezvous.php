@@ -57,7 +57,7 @@ class Rendezvous
     private \DateTimeInterface $created_at;
 
     #[ORM\Column(type: 'datetime')]
-    private \DateTimeInterface $updated_at;
+    public \DateTimeInterface $updated_at;
 
     public function __construct()
     {

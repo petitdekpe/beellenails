@@ -23,6 +23,7 @@ class RecapController extends AbstractController
         
         $user = $this->getUser(); 
         $rendezvou->setUser($user);
+        $rendezvou->setStatus("Tentative échoué");
         $entityManager->persist($rendezvou);
         $entityManager->flush();
         // Ajouter l'utilisateur actuel au rendez-vous

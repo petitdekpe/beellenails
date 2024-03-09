@@ -106,14 +106,14 @@ class PaymentController extends AbstractController
 			//	$rendezvou->setStatus('Echec du paiement');
 			//}
 
-			$rendezvou->setStatus($status === 'approved' ? 'Rendez-vous pris' : 'Echec du paiement');
+		$rendezvou->setStatus($status === 'approved' ? 'Rendez-vous pris' : 'Echec du paiement');
 
 		$userEmail = $rendezvou->getUser()->getEmail();
 
 		// Définition des destinataires et des messages d'e-mail
 		$emailData = [
 			['to' => $userEmail, 'subject' => 'Informations de rendez-vous!', 'template' => 'emails/rendezvous_created.html.twig'],
-			['to' => 'jy.ahouanvoedo@gmail.com', 'subject' => 'Nouveau Rendez-vous !', 'template' => 'emails/rendezvous_created_admin.html.twig']
+			['to' => 'murielahodode@gmail.com', 'subject' => 'Nouveau Rendez-vous !', 'template' => 'emails/rendezvous_created_admin.html.twig']
 		];
 
 		// Envoyer les e-mails

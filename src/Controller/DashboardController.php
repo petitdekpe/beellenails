@@ -2,9 +2,12 @@
 
 namespace App\Controller;
 
+use App\Form\AdminAddRdvType;
 use App\Repository\UserRepository;
 use App\Repository\PrestationRepository;
 use App\Repository\RendezvousRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\Rendezvous; // Import de l'entité Rendezvous
@@ -85,5 +88,31 @@ class DashboardController extends AbstractController
             'users' => $userRepository->findAll(),
         ]);
     }
+
+    #[Route('/dashboard/rendezvous/add', name: 'app_admin_rdv')]
+    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $rendezvous = new Rendezvous();
+        $form = $this->createForm(AdminAddRdvType::class, $rendezvous);
+        $form->handleRequest($request);
+        
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $rendezvous->setStatus("Rendez-vous confirmé");
+            $rendezvous->setImageName("default.png");
+
+            $entityManager->persist($rendezvous);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('app_dashboard_rendezvous', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('dashboard/rendezvous/add.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
+    
+
 
 }
