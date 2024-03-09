@@ -34,7 +34,7 @@ class PaymentController extends AbstractController
 		/** @var \FedaPay\Transaction $transaction */
 		$transaction = $this->fedapayService->initTransaction(
 			//montant
-			100,
+			5000,
 			//description 
 			'Acompte sur Prestation',
 			//utilisateur

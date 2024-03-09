@@ -100,6 +100,8 @@ class DashboardController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $rendezvous->setStatus("Rendez-vous confirmé");
             $rendezvous->setImageName("default.png");
+            $rendezvous->setPaid("1");
+
 
             $entityManager->persist($rendezvous);
             $entityManager->flush();
@@ -108,6 +110,30 @@ class DashboardController extends AbstractController
         }
 
         return $this->render('dashboard/rendezvous/add.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/dashboard/rendezvous/new', name: 'app_admin_rdv_new')]
+    public function newadd(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $rendezvous = new Rendezvous();
+        $form = $this->createForm(AdminAddRdvType::class, $rendezvous);
+        $form->handleRequest($request);
+        
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $rendezvous->setStatus("Rendez-vous confirmé");
+            $rendezvous->setImageName("default.png");
+            $rendezvous->setPaid("1");
+
+            $entityManager->persist($rendezvous);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('app_dashboard_rendezvous', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('dashboard/rendezvous/_form.html.twig', [
             'form' => $form->createView(),
         ]);
     }

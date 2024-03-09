@@ -22,15 +22,16 @@ class RendezvousRepository extends ServiceEntityRepository
     }
 
     public function findPaidRendezvous()
-{
-    return $this->createQueryBuilder('r')
-        ->andWhere('r.Paid = :paidValue')
-        ->andWhere('r.status != :cancelledStatus')
-        ->setParameter('paidValue', 1)
-        ->setParameter('cancelledStatus', 'Annulé')
-        ->getQuery()
-        ->getResult();
-}
+    {
+        return $this->createQueryBuilder('r')
+            ->andWhere('r.Paid = :paidValue OR r.status IN (:statuses)')
+            ->setParameter('paidValue', 1)
+            ->setParameter('statuses', ['Rendez-vous pris', 'Rendez-vous confirmé'])
+            ->getQuery()
+            ->getResult();
+    }
+
+
 
 
 //    /**
