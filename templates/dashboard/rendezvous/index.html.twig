@@ -30,13 +30,14 @@
                 <table class="w-full text-sm text-left text-gray-500">
                     <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                         <tr>
-                            <th scope="col" class="px-4 py-3">Date</th>
+                            <th scope="col" class="px-4 py-3">Date Rdv</th>
                             <th scope="col" class="px-4 py-3">Creneau</th>
-                            <th scope="col" class="px-4 py-3">User</th>
+                            <th scope="col" class="px-4 py-3">Client</th>
                             <th scope="col" class="px-4 py-3">Prestation</th>
                             <th scope="col" class="px-4 py-3">Status</th>
                             <th scope="col" class="px-4 py-3">Image</th>
-                            <th scope="col" class="px-4 py-3">Updated At</th>
+                            <th scope="col" class="px-4 py-3">Dernière modification</th>
+                            <th scope="col" class="px-4 py-3">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -55,6 +56,15 @@
                                 {% endif %}
                             </td>
                             <td class="px-4 py-3">{{ rendezvous.updated_at|date('d-m-Y H:i:s') }}</td>
+                            <td class="px-4 py-3">
+                                {% if rendezvous.status != "Annulé" %}
+                                    <a href="{{ path('app_admin_rdv_edit', {'id': rendezvous.id}) }}" class="font-medium text-pink-600 hover:underline">Reporter</a>
+                                    <a href="{{ path('app_admin_rdv_cancel', {'id': rendezvous.id}) }}" class="font-medium text-pink-600 hover:underline">Annuler</a>
+                                {% else %}
+                                    <span class="opacity-50 cursor-not-allowed">Reporter</span>
+                                    <span class="opacity-50 cursor-not-allowed">Annuler</span>
+                                {% endif %}
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>

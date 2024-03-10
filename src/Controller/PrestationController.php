@@ -59,7 +59,7 @@ class PrestationController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_prestation_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_dashboard_prestation', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('prestation/edit.html.twig', [
@@ -76,6 +76,6 @@ class PrestationController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('app_prestation_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_dashboard_prestation', [], Response::HTTP_SEE_OTHER);
     }
 }

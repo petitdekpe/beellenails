@@ -1,4 +1,45 @@
-{{ form_start(form) }}  
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
-{{ form_end(form) }}
+{# templates/prestation/new.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}New Prestation{% endblock %}
+
+{% block body %}
+    <div class="max-w-md mx-auto">
+    <div class="relative overflow-hidden w-full min-h-[90px] bg-white rounded-lg"></div>
+        
+        {{ form_start(form, {'attr': {'class': 'mb-4'}}) }}
+        <div class="mb-4">
+            {{ form_label(form.Title, null, {'label_attr': {'class': 'block text-gray-700 font-bold mb-2'}}) }}
+            {{ form_widget(form.Title, {'attr': {'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5', 'for':'base-input'}}) }}
+        </div>
+        <div class="mb-4">
+            {{ form_label(form.CategoryPrestation, 'Choisissez une Category', {'label_attr': {'class': 'block text-gray-700 font-bold mb-2'}}) }}
+            {{ form_widget(form.CategoryPrestation, {'attr': {'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'}}) }}
+        </div>
+        <div class="mb-4">
+            {{ form_label(form.description, null, {'label_attr': {'class': 'block text-gray-700 font-bold mb-2'}}) }}
+            {{ form_widget(form.description, {'attr': {'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5', 'for':'base-input'}}) }}
+        </div>
+        <div class="mb-4">
+            {{ form_label(form.inclus, null, {'label_attr': {'class': 'block text-gray-700 font-bold mb-2'}}) }}
+            {{ form_widget(form.inclus, {'attr': {'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5', 'for':'base-input'}}) }}
+        </div>
+        <div class="mb-4">
+            {{ form_label(form.price, null, {'label_attr': {'class': 'block text-gray-700 font-bold mb-2'}}) }}
+            {{ form_widget(form.price, {'attr': {'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5', 'for':'base-input'}}) }}
+        </div>
+        <div class="mb-4">
+            {{ form_label(form.duration, null, {'label_attr': {'class': 'block text-gray-700 font-bold mb-2'}}) }}
+            {{ form_widget(form.duration, {'attr': {'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'}}) }}
+        </div>
+        <div class="mb-4">
+            {{ form_label(form.image, null, {'label_attr': {'class': 'block text-gray-700 font-bold mb-2'}}) }}
+            {{ form_widget(form.image, {'attr': {'class':'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5', 'aria-describedby':'user_avatar_help', 'id':'user_avatar', 'type':'file'}}) }}
+        </div>
+        <div class="mb-4">
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Enregistrer</button>
+        </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

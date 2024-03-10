@@ -110,23 +110,26 @@ class PaymentController extends AbstractController
 
 		$userEmail = $rendezvou->getUser()->getEmail();
 
-		// Définition des destinataires et des messages d'e-mail
-		$emailData = [
-			['to' => $userEmail, 'subject' => 'Informations de rendez-vous!', 'template' => 'emails/rendezvous_created.html.twig'],
-			['to' => 'murielahodode@gmail.com', 'subject' => 'Nouveau Rendez-vous !', 'template' => 'emails/rendezvous_created_admin.html.twig']
-		];
+		$email = (new Email())
+                        ->from('beellenailscare@beellenails.com')
+                        ->to($userEmail)
+                        ->subject('Informations de rendez-vous!')
+                        ->html($this->renderView(
+                            'emails/rendezvous_created.html.twig',
+                            ['rendezvou' => $rendezvou]
+                        ));
+    	$mailer->send($email);
+		
+		$email = (new Email())
+                        ->from('beellenailscare@beellenails.com')
+                        ->to('petitdekpe@gmail.com')
+                        ->subject('Nouveau Rendez-vous !')
+                        ->html($this->renderView(
+                            'emails/rendezvous_created_admin.html.twig',
+                            ['rendezvous' => $rendezvou]
+                        ));
+    	$mailer->send($email);
 
-		// Envoyer les e-mails
-		foreach ($emailData as $data) {
-			$email = (new Email())
-				->from('beellenailscare@beellenails.com')
-				->to($data['to'])
-				->subject($data['subject'])
-				->html($this->renderView($data['template'], ['rendezvous' => $rendezvou]));
-
-		}
-
-		$mailer->send($email);
 
         // TODO : consulter la variable $transaction pour les infos de FEDAPAY
 

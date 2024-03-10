@@ -31,6 +31,26 @@ class RendezvousRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * Find upcoming appointments with status 'Rendez-vous pris' or 'Rendez-vous confirmé'
+     * and date in two days from now.
+     *
+     * @return RendezVous[] Returns an array of RendezVous objects
+     */
+    public function findUpcomingAppointments()
+    {
+        $twoDaysFromNow = new \DateTime('+2 days');
+        $statusCriteria = ['Rendez-vous pris', 'Rendez-vous confirmé'];
+
+        return $this->createQueryBuilder('r')
+            ->andWhere('r.status IN (:statuses)')
+            ->andWhere('r.day = :day')
+            ->setParameter('statuses', $statusCriteria)
+            ->setParameter('day', $twoDaysFromNow->format('Y-m-d')) // Assuming 'day' field is stored as date without time
+            ->getQuery()
+            ->getResult();
+    }
+
 
 
 

@@ -3,11 +3,15 @@
 namespace App\Controller;
 
 use App\Form\AdminAddRdvType;
+use Symfony\Component\Mime\Email;
+use App\Form\RendezvousModifyType;
 use App\Repository\UserRepository;
+use App\Repository\PaymentRepository;
 use App\Repository\PrestationRepository;
 use App\Repository\RendezvousRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\Rendezvous; // Import de l'entité Rendezvous
@@ -89,8 +93,16 @@ class DashboardController extends AbstractController
         ]);
     }
 
+    #[Route('/dashboard/transactions', name: 'app_dashboard_transactions', methods: ['GET'])]
+    public function payment(PaymentRepository $paymentRepository): Response
+    {
+        return $this->render('dashboard/payment.html.twig', [
+            'payments' => $paymentRepository->findAll(),
+        ]);
+    }
+
     #[Route('/dashboard/rendezvous/add', name: 'app_admin_rdv')]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, MailerInterface $mailer): Response
     {
         $rendezvous = new Rendezvous();
         $form = $this->createForm(AdminAddRdvType::class, $rendezvous);
@@ -105,6 +117,18 @@ class DashboardController extends AbstractController
 
             $entityManager->persist($rendezvous);
             $entityManager->flush();
+
+            $userEmail = $rendezvous->getUser()->getEmail();
+
+            $email = (new Email())
+                            ->from('beellenailscare@beellenails.com')
+                            ->to($userEmail)
+                            ->subject('Informations de rendez-vous!')
+                            ->html($this->renderView(
+                                'emails/rendezvous_created.html.twig',
+                                ['rendezvou' => $rendezvous]
+                            ));
+            $mailer->send($email);
 
             return $this->redirectToRoute('app_dashboard_rendezvous', [], Response::HTTP_SEE_OTHER);
         }
@@ -114,30 +138,66 @@ class DashboardController extends AbstractController
         ]);
     }
 
-    #[Route('/dashboard/rendezvous/new', name: 'app_admin_rdv_new')]
-    public function newadd(Request $request, EntityManagerInterface $entityManager): Response
+    #[Route('/dashboard/rendezvous/{id}/edit', name: 'app_admin_rdv_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, Rendezvous $rendezvou, EntityManagerInterface $entityManager, MailerInterface $mailer): Response
     {
-        $rendezvous = new Rendezvous();
-        $form = $this->createForm(AdminAddRdvType::class, $rendezvous);
+        // Création d'un formulaire personnalisé avec seulement les champs 'day' et 'creneau'
+        $form = $this->createForm(RendezvousModifyType::class, $rendezvou);
         $form->handleRequest($request);
-        
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $rendezvous->setStatus("Rendez-vous confirmé");
-            $rendezvous->setImageName("default.png");
-            $rendezvous->setPaid("1");
-
-            $entityManager->persist($rendezvous);
+    
+        if ($form->isSubmitted()) {
+            // Persistance des changements en base de données
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_dashboard_rendezvous', [], Response::HTTP_SEE_OTHER);
-        }
+            // Récupérer l'adresse e-mail de l'utilisateur à partir du rendez-vous
+        $userEmail = $rendezvou->getUser()->getEmail();
 
-        return $this->render('dashboard/rendezvous/_form.html.twig', [
+        // Envoyer l'e-mail après la création du rendez-vous
+        $email = (new Email())
+        ->from('beellenailscare@beellenails.com')
+        ->to($userEmail)
+        ->subject('Votre Rendez-vous !')
+        ->html($this->renderView(
+            'emails/rendezvous_updated.html.twig',
+            ['rendezvous' => $rendezvou]
+        ));
+        $mailer->send($email);
+    
+            return $this->redirectToRoute('app_dashboard_rendezvous');
+        }
+    
+        return $this->render('rendezvous/edit.html.twig', [
+            'rendezvou' => $rendezvou,
             'form' => $form->createView(),
         ]);
     }
 
+    #[Route('/dashboard/rendezvous/{id}/cancel', name: 'app_admin_rdv_cancel', methods: ['GET', 'POST'])]
+    public function cancel(Request $request, Rendezvous $rendezvou, EntityManagerInterface $entityManager, MailerInterface $mailer): Response
+    {
+        $rendezvou->setStatus("Annulé");
+
+        $entityManager->persist($rendezvou);
+        $entityManager->flush();
+
+        // Récupérer l'adresse e-mail de l'utilisateur à partir du rendez-vous
+        $userEmail = $rendezvou->getUser()->getEmail();
+
+        // Envoyer l'e-mail après la création du rendez-vous
+        $email = (new Email())
+        ->from('beellenailscare@beellenails.com')
+        ->to($userEmail)
+        ->subject('Rendez-vous Annulé !')
+        ->html($this->renderView(
+            'emails/rendezvous_canceled.html.twig',
+            ['rendezvous' => $rendezvou]
+        ));
+
+    $mailer->send($email);
+
+        return $this->redirectToRoute('app_dashboard_rendezvous');
+    }
+    
     
 
 

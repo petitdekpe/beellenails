@@ -12,7 +12,7 @@
                     Durée
                 </th>
                 <th scope="col" class="px-6 py-3">
-                    Categorie
+                    Catégorie
                 </th>
                 <th scope="col" class="px-6 py-3">
                     Image
@@ -42,8 +42,7 @@
                 </td>
                 <td class="px-6 py-4 text-right">
                     <!--a href="{#{ path('edit_prestation', {'id': prestation.getId()}) }#}" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a-->
-                    <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Modifier</a>
-                    <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Supprimer</a>
+                    <a href="{{path('app_prestation_edit', {'id': prestation.getId()})}}" class="font-medium text-red-600  hover:underline">Modifier</a>
                 </td>
             </tr>
             {% endfor %}

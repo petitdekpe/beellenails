@@ -75,7 +75,7 @@ class RendezvousController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_rendezvous_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Rendezvous $rendezvou, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, Rendezvous $rendezvou, EntityManagerInterface $entityManager, MailerInterface $mailer): Response
     {
         // Création d'un formulaire personnalisé avec seulement les champs 'day' et 'creneau'
         $form = $this->createForm(RendezvousModifyType::class, $rendezvou);
@@ -90,13 +90,14 @@ class RendezvousController extends AbstractController
 
         // Envoyer l'e-mail après la création du rendez-vous
         $email = (new Email())
-        ->from('noreply@beellenails.com')
+        ->from('beellenailscare@beellenails.com')
         ->to($userEmail)
         ->subject('Votre Rendez-vous !')
         ->html($this->renderView(
             'emails/rendezvous_updated.html.twig',
             ['rendezvous' => $rendezvou]
         ));
+        $mailer->send($email);
     
             return $this->redirectToRoute('app_users', [], Response::HTTP_SEE_OTHER);
         }
@@ -120,9 +121,9 @@ class RendezvousController extends AbstractController
 
         // Envoyer l'e-mail après la création du rendez-vous
         $email = (new Email())
-        ->from('noreply@beellenails.com')
+        ->from('beellenailscare@beellenails.com')
         ->to($userEmail)
-        ->subject('Votre Rendez-vous !')
+        ->subject('Rendez-vous Annulé !')
         ->html($this->renderView(
             'emails/rendezvous_canceled.html.twig',
             ['rendezvous' => $rendezvou]
