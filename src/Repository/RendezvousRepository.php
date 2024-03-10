@@ -24,12 +24,12 @@ class RendezvousRepository extends ServiceEntityRepository
     public function findPaidRendezvous()
     {
         return $this->createQueryBuilder('r')
-            ->andWhere('r.Paid = :paidValue OR r.status IN (:statuses)')
-            ->setParameter('paidValue', 1)
+            ->andWhere('r.status IN (:statuses)')
             ->setParameter('statuses', ['Rendez-vous pris', 'Rendez-vous confirmé'])
             ->getQuery()
             ->getResult();
     }
+
 
     /**
      * Find upcoming appointments with status 'Rendez-vous pris' or 'Rendez-vous confirmé'
