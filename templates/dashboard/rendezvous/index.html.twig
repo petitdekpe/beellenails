@@ -34,6 +34,7 @@
                             <th scope="col" class="px-4 py-3">Creneau</th>
                             <th scope="col" class="px-4 py-3">Client</th>
                             <th scope="col" class="px-4 py-3">Prestation</th>
+                            <th scope="col" class="px-4 py-3">Ajout</th>
                             <th scope="col" class="px-4 py-3">Status</th>
                             <th scope="col" class="px-4 py-3">Image</th>
                             <th scope="col" class="px-4 py-3">Dernière modification</th>
@@ -47,6 +48,11 @@
                             <td class="px-4 py-3">{{ rendezvous.creneau }}</td>
                             <td class="px-4 py-3">{{ rendezvous.user }}</td>
                             <td class="px-4 py-3">{{ rendezvous.prestation }}</td>
+                            <td class="px-4 py-3">
+                                {% for supplement in rendezvous.supplement %}
+                                    {{ supplement.nom }}{% if not loop.last %}, {% endif %}
+                                {% endfor %}
+                            </td>
                             <td class="px-4 py-3">{{ rendezvous.status }}</td>
                             <td class="px-4 py-3">
                                 {% if rendezvous.image %}

@@ -9,16 +9,13 @@
                     Email
                 </th>
                 <th scope="col" class="px-6 py-3">
-                    Phone
+                    Numéro de téléphone
                 </th>
                 <th scope="col" class="px-6 py-3">
-                    Birthday
+                    Anniversaire
                 </th>
                 <th scope="col" class="px-6 py-3">
                     Genre
-                </th>
-                <th scope="col" class="px-6 py-3">
-                    <span class="sr-only">Edit</span>
                 </th>
             </tr>
         </thead>
@@ -35,13 +32,10 @@
                     {{ user.getPhone() }}
                 </td>
                 <td class="px-6 py-4">
-                    {{ user.getBirthday()|date("Y-m-d") }}
+                    {{ user.getBirthday() }}
                 </td>
                 <td class="px-6 py-4">
                     {{ user.getGenre() }}
-                </td>
-                <td class="px-6 py-4 text-right">
-                    <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
                 </td>
             </tr>
             {% endfor %}

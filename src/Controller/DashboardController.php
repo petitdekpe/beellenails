@@ -2,10 +2,13 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use App\Form\AdminAddRdvType;
 use Symfony\Component\Mime\Email;
+use App\Form\RegistrationFormType;
 use App\Form\RendezvousModifyType;
 use App\Repository\UserRepository;
+use App\Security\AppAuthenticator;
 use App\Repository\PaymentRepository;
 use App\Repository\PrestationRepository;
 use App\Repository\RendezvousRepository;
@@ -16,6 +19,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\Rendezvous; // Import de l'entité Rendezvous
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
 
 class DashboardController extends AbstractController
 {
@@ -198,7 +203,45 @@ class DashboardController extends AbstractController
         return $this->redirectToRoute('app_dashboard_rendezvous');
     }
     
-    
+    #[Route('/dashboard/inscription', name: 'app_dashboard_add_user')]
+    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager, AppAuthenticator $appAuthenticator, UserAuthenticatorInterface $userAuthenticator, MailerInterface $mailer): Response
+    {
+        $user = new User();
+        $form = $this->createForm(RegistrationFormType::class, $user);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // encode the plain password
+            $user->setPassword(
+                $userPasswordHasher->hashPassword(
+                    $user,
+                    $form->get('plainPassword')->getData()
+                )
+            );
+
+            $entityManager->persist($user);
+            $entityManager->flush();
+            // do anything else you need here, like send an email
+                        // Envoyer l'e-mail de création de compte
+                        $email = (new Email())
+                        ->from('beellenailscare@beellenails.com')
+                        ->to($user->getEmail())
+                        ->subject('Votre inscription sur BeElleNails')
+                        ->html($this->renderView(
+                            'registration/email.html.twig',
+                            ['user' => $user]
+                        ));
+        
+                    $mailer->send($email);
+        
+                    return $this->redirectToRoute('app_dashboard_user');
+            
+        }
+
+        return $this->render('dashboard/user/adduser.html.twig', [
+            'registrationForm' => $form->createView(),
+        ]);
+    }
 
 
 }
