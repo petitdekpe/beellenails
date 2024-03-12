@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Entity\Rendezvous; 
 use App\Form\AdminAddRdvType;
 use Symfony\Component\Mime\Email;
 use App\Form\RegistrationFormType;
@@ -17,7 +18,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Entity\Rendezvous; // Import de l'entité Rendezvous
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
@@ -25,6 +26,7 @@ use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
 class DashboardController extends AbstractController
 {
     #[Route('/dashboard', name: 'app_dashboard')]
+    #[IsGranted("ROLE_ADMIN")]
     public function index(RendezvousRepository $rendezvousRepository): Response
     {
 
@@ -86,7 +88,8 @@ class DashboardController extends AbstractController
     public function rendezvous(RendezvousRepository $rendezvousRepository): Response
     {
         return $this->render('dashboard/rendezvous.html.twig', [
-            'rendezvouses' => $rendezvousRepository->findAll(),
+            //'rendezvouses' => $rendezvousRepository->findAll(),
+            'rendezvouses' => $rendezvousRepository->findBy([], ['updated_at' => 'DESC']),
         ]);
     }
 
@@ -177,6 +180,7 @@ class DashboardController extends AbstractController
         ]);
     }
 
+
     #[Route('/dashboard/rendezvous/{id}/cancel', name: 'app_admin_rdv_cancel', methods: ['GET', 'POST'])]
     public function cancel(Request $request, Rendezvous $rendezvou, EntityManagerInterface $entityManager, MailerInterface $mailer): Response
     {
@@ -241,6 +245,17 @@ class DashboardController extends AbstractController
         return $this->render('dashboard/user/adduser.html.twig', [
             'registrationForm' => $form->createView(),
         ]);
+    }
+
+
+    #[Route('/dashboard/rendezvous/{id}/confirm', name: 'app_admin_rdv_confirm', methods: ['GET', 'POST'])]
+    public function confirm(Rendezvous $rendezvous, EntityManagerInterface $entityManager, MailerInterface $mailer): Response
+    {
+        // Modifier le statut du rendez-vous en "Rendez-vous confirmé"
+        $rendezvous->setStatus('Rendez-vous confirmé');
+        $entityManager->flush();
+        // Redirection vers la liste des rendez-vous
+        return $this->redirectToRoute('app_dashboard_rendezvous');
     }
 
 

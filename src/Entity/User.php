@@ -205,10 +205,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 			'firstname' => $this->getPrenom(),
 			'lastname' => $this->getNom(),
 			'email' => $this->getEmail(),
-			'phone_number' => [
+			/*'phone_number' => [
 				"number" => "+229" . $this->getPhone(),
 				"country" => "bj",
-			],
+			],*/
 		];
 	}
 

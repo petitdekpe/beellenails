@@ -1,8 +1,8 @@
-<section class="bg-gray-50 p-3 sm:p-5">
-    <div class="mx-auto max-w-screen-xl px-4 lg:px-12">
+<section class="bg-gray-50 py-3 sm:py-5">
+    <div class="mx-auto max-w-screen-xl px-2 lg:px-2">
         <!-- Start coding here -->
         <div class="bg-white relative shadow-md sm:rounded-lg overflow-hidden">
-            <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">
+            <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-2">
                 <div class="w-full md:w-1/2">
                     <form class="flex items-center">
                         <label for="simple-search" class="sr-only">Search</label>
@@ -64,11 +64,21 @@
                             <td class="px-4 py-3">{{ rendezvous.updated_at|date('d-m-Y H:i:s') }}</td>
                             <td class="px-4 py-3">
                                 {% if rendezvous.status != "Annulé" %}
-                                    <a href="{{ path('app_admin_rdv_edit', {'id': rendezvous.id}) }}" class="font-medium text-pink-600 hover:underline">Reporter</a>
-                                    <a href="{{ path('app_admin_rdv_cancel', {'id': rendezvous.id}) }}" class="font-medium text-pink-600 hover:underline">Annuler</a>
+                                <div class="flex felx-col items-center">
+                                    <a href="{{ path('app_admin_rdv_edit', {'id': rendezvous.id}) }}" class="font-medium text-pink-600 hover:underline px-2">Reporter</a>
+                                    <a href="{{ path('app_admin_rdv_cancel', {'id': rendezvous.id}) }}" class="font-medium text-pink-600 hover:underline px-2">Annuler</a>
+                                    {% if rendezvous.status != "Rendez-vous confirmé" %}
+                                    <a href="{{ path('app_admin_rdv_confirm', {'id': rendezvous.id}) }}" class="font-medium text-pink-600 hover:underline px-2"><button type="button" class="text-white bg-pink-700 hover:bg-pink-500 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-4 py-2 text-center">Confirmer</button></a>
+                                    {% else %}
+                                    <span class="opacity-50 cursor-not-allowed px-2"><button type="button" class="text-white bg-pink-700 hover:bg-pink-500 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-4 py-2 text-center">Confirmer</button></span>
+                                    {% endif %}
+                                </div>
                                 {% else %}
-                                    <span class="opacity-50 cursor-not-allowed">Reporter</span>
-                                    <span class="opacity-50 cursor-not-allowed">Annuler</span>
+                                <div class="flex felx-col items-center">
+                                    <span class="opacity-50 cursor-not-allowed px-2">Reporter</span>
+                                    <span class="opacity-50 cursor-not-allowed px-2">Annuler</span>
+                                    <span class="opacity-50 cursor-not-allowed px-2"><button type="button" class="text-white bg-pink-700 hover:bg-pink-500 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-4 py-2 text-center">Confirmer</button></span>
+                                </div>
                                 {% endif %}
                             </td>
                         </tr>
