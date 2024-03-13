@@ -33,7 +33,7 @@ class CreneauRepository extends ServiceEntityRepository
             AND re.status IN (:statuses)
         )')
         ->setParameter('selectedDate', $selectedDate->format('Y-m-d'))
-        ->setParameter('statuses', ['Rendez-vous pris', 'Rendez-vous confirmé'])
+        ->setParameter('statuses', ['Rendez-vous pris', 'Rendez-vous confirmé', 'Réservé'])
         ->getQuery()
         ->getResult();
 }

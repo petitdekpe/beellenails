@@ -25,7 +25,7 @@ class RendezvousRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('r')
             ->andWhere('r.status IN (:statuses)')
-            ->setParameter('statuses', ['Rendez-vous pris', 'Rendez-vous confirmé'])
+            ->setParameter('statuses', ['Rendez-vous pris', 'Rendez-vous confirmé', 'Réservé'])
             ->getQuery()
             ->getResult();
     }

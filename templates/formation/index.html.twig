@@ -1,0 +1,145 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nos formations{% endblock %}
+
+{% block body %}
+
+
+
+<section class="bg-white py-10 px-8">
+<div class="relative overflow-hidden w-full min-h-[45px] bg-white rounded-lg"></div>
+<h1 class="text-2xl mb-2 text-2xl font-bold tracking-tight text-pink-700 mt-10">Be Elle Nails Académie</h1>
+<div>
+    <p class="mt-2 text-gray-600 text-justify">
+    L’académie de formation en prothésie ongulaire de <span class="text-pink-700">Be Elle</span>  dispense des formations professionnelles au métier de prothésiste ongulaire. 
+    </p>
+    <p class="mt-2 text-gray-600 text-justify">
+    Nos modules de perfectionnement sont destinées aux professionnels désirant prendre soins des ongles naturels de leurs clientes et améliorer la qualité de leurs prestations. 
+    </p>
+    <p class="mt-2 text-gray-600 text-justify">
+    Notre formation complète est destiné aux débutants désirant apprendre et exercer de façon professionnelle le métier de prothésiste ongulaire. 
+    </p>
+    <p class="mt-2 text-gray-600 text-justify">
+    Les formations sont dispensées par <span class="text-pink-700">Muriel AHODODE Epse ASSOGBA</span>, propriétaire de l’institut et prothésiste ongulaire spécialisé dans le traitement des ongles naturels. 
+    Formée aux quatre coins du monde auprès des formateurs les plus performants, elle transmet de façon professionnelle et détaillée son expérience et son expertise pendant chaque session de formation. Très portée sur le détail, la qualité et le professionnalisme elle continue de se former aux techniques les plus révolutionnaires et récentes pour former à son tour des professionnels qualifiés et actualisés en prothésie ongulaire.
+    </p>
+    <p class="mt-2 text-xl text-pink-700 text-justify">Comment se passe nos sessions de perfectionnement ?</p>
+    <ul class="mt-2 space-y-1 text-gray-600 list-disc list-inside text-justify">
+    <li>La formation est composée de plusieurs leçons vidéos préenregistrées auxquelles vous avez accès après inscription.</li>
+    <li>Après l’inscription vous recevez un support pédagogique pour la session.</li>
+    <li>Des devoirs techniques à effectuer et à envisager en correction sont donnés à la fin de chaque leçon.</li>
+    <li>Vous avez accès à un groupe télégram dans lequel la formatrice répond à toutes vos questions au quotidien.</li>
+    <li>Des cours en direct sont programmés avec la formatrice pour répondre à toutes vos questions ou consultations.</li>
+    <li>Une attestation de formation vous est délivrée à la fin de chaque module pour attester de vos performances pendant la formation.</li>
+    </ul>
+    <p class="mt-2 text-gray-600 text-justify">Chaque module se fait en 7 semaines et le matériel à utiliser pendant la pratique si vous êtes sur place est inclus dans le tarif.</p>
+
+</div>
+
+
+<h1 class="text-2xl mb-2 text-2xl font-bold tracking-tight text-pink-700 mt-10">Nos formations</h1>
+    <!-- Card Grid -->
+    <div class="grid grid-flow-row gap-4 text-neutral-600 grid-cols-2 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {% for formation in formations %}
+            <!-- Card Item -->
+            <div class="my-2 rounded shadow-lg shadow-gray-200 duration-300 hover:-translate-y-1">
+                <!-- Clickable Area -->
+                    <figure>
+                        <!-- Image -->
+                        <img src="{{ asset( vich_uploader_asset(formation, 'image')) }}" class="rounded-t h-40 w-full object-cover" />
+
+                        <figcaption class="flex flex-col px-4 pb-2">
+                            <!-- Title -->
+                            <p class="text-sm mb-1 font-bold leading-relaxed text-gray-800">
+                                {{ formation.Nom }}
+                                <!-- Post Title -->
+                            </p>
+
+                            <!-- Description -->
+                            <small class="leading-5 text-gray-500">
+                                Prérequis: {{ formation.Prérequis }} minutes
+                                <!-- Post Description -->
+                            </small>
+
+                            <!-- Description -->
+                            <small class="leading-5 text-gray-500">
+                                {{ formation.Cout }} FCFA
+                                <!-- Post Description -->
+                            </small>
+                            <p class="mt-2.5">
+                            <button data-modal-target="modal{{ formation.id }}" data-modal-toggle="modal{{ formation.id }}" class="cursor-pointer block text-white bg-pink-700 hover:bg-pink-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center" type="button">
+                                Voir plus
+                            </button>
+                            </p>
+                            <!-- Main modal -->
+                        </figcaption>
+                    </figure>
+            </div>
+            <!-- Main modal -->
+        <div id="modal{{ formation.id }}" data-modal-backdrop="static" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+            <div class="relative p-4 w-full max-w-2xl max-h-full">
+                <!-- Modal content -->
+                <div class="relative bg-white rounded-lg shadow">
+                    <!-- Modal header -->
+                    <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t">
+                        <h3 class="text-xl font-semibold text-gray-900">
+                            {{ formation.Nom }}
+                        </h3>
+                        <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center" data-modal-hide="modal{{ formation.id }}">
+                            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                            </svg>
+                            <span class="sr-only">Fermer</span>
+                        </button>
+                    </div>
+                    <!-- Modal body -->
+                    <div class="p-4 md:p-5 space-y-4">
+                        <p class="text-base leading-relaxed text-gray-500">
+                            {{ formation.description }}
+                        </p>
+                        <p class="text-base leading-relaxed text-gray-500">
+                            <span class="font-bold">Prérequis:</span><br>
+                            {{ formation.Prérequis }}
+                        </p>
+                        <p class="text-base leading-relaxed text-gray-500">
+                            <span class="font-bold">Objectif pédagogique:</span><br>
+                            {{ formation.Objectif }}
+                        </p>
+                        <p class="text-base leading-relaxed text-gray-500">
+                            <span class="font-bold">Suivi et évaluation des résultats:</span><br>
+                            {{ formation.Suivi }}
+                        </p>
+                            <span class="font-bold">Programme de Formation:</span><br>
+                            {{ formation.Programme }}
+                        </p>
+                        
+                        <p class="text-base leading-relaxed text-gray-500">
+                           <span class="font-bold">Prix:</span> {{ formation.Cout }} FCFA
+                          
+                        </p>
+                    </div>
+                    <!-- Modal footer -->
+                    <div class="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b ">
+                        <a href="{{ path('app_new_rendezvous', {
+                            'formation' : formation.id, 
+                        }) }}">
+                        <button data-modal-hide="modal{{ formation.id }}" type="button" class="text-white bg-pink-700 hover:bg-pink-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Prendre Rendez-vous</button>
+                        </a>
+                        <a href="https://wa.me/22997853512">
+                        <button data-modal-hide="modal{{ formation.id }}" type="button" class="ms-3 text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10">Nous contacter</button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+            {% else %}
+            <p class="font-normal text-gray-700 ">Aucune formation</p>
+            {% endfor %}
+    </div>
+    
+</section>
+    
+
+    <!--a href="{{ path('app_formation_new') }}">Créer une nouvelle formation</a-->
+</div>
+{% endblock %}

@@ -11,6 +11,7 @@ use App\Form\RendezvousModifyType;
 use App\Repository\UserRepository;
 use App\Security\AppAuthenticator;
 use App\Repository\PaymentRepository;
+use App\Repository\FormationRepository;
 use App\Repository\PrestationRepository;
 use App\Repository\RendezvousRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -207,56 +208,67 @@ class DashboardController extends AbstractController
         return $this->redirectToRoute('app_dashboard_rendezvous');
     }
     
-    #[Route('/dashboard/inscription', name: 'app_dashboard_add_user')]
-    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager, AppAuthenticator $appAuthenticator, UserAuthenticatorInterface $userAuthenticator, MailerInterface $mailer): Response
-    {
-        $user = new User();
-        $form = $this->createForm(RegistrationFormType::class, $user);
-        $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            // encode the plain password
-            $user->setPassword(
-                $userPasswordHasher->hashPassword(
-                    $user,
-                    $form->get('plainPassword')->getData()
-                )
-            );
+    // Ajouter un client
+            #[Route('/dashboard/inscription', name: 'app_dashboard_add_user')]
+            public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager, AppAuthenticator $appAuthenticator, UserAuthenticatorInterface $userAuthenticator, MailerInterface $mailer): Response
+            {
+                $user = new User();
+                $form = $this->createForm(RegistrationFormType::class, $user);
+                $form->handleRequest($request);
 
-            $entityManager->persist($user);
-            $entityManager->flush();
-            // do anything else you need here, like send an email
-                        // Envoyer l'e-mail de création de compte
-                        $email = (new Email())
-                        ->from('beellenailscare@beellenails.com')
-                        ->to($user->getEmail())
-                        ->subject('Votre inscription sur BeElleNails')
-                        ->html($this->renderView(
-                            'registration/email.html.twig',
-                            ['user' => $user]
-                        ));
-        
-                    $mailer->send($email);
-        
-                    return $this->redirectToRoute('app_dashboard_user');
-            
-        }
+                if ($form->isSubmitted() && $form->isValid()) {
+                    // encode the plain password
+                    $user->setPassword(
+                        $userPasswordHasher->hashPassword(
+                            $user,
+                            $form->get('plainPassword')->getData()
+                        )
+                    );
 
-        return $this->render('dashboard/user/adduser.html.twig', [
-            'registrationForm' => $form->createView(),
-        ]);
-    }
+                    $entityManager->persist($user);
+                    $entityManager->flush();
+                    // do anything else you need here, like send an email
+                                // Envoyer l'e-mail de création de compte
+                                $email = (new Email())
+                                ->from('beellenailscare@beellenails.com')
+                                ->to($user->getEmail())
+                                ->subject('Votre inscription sur BeElleNails')
+                                ->html($this->renderView(
+                                    'registration/email.html.twig',
+                                    ['user' => $user]
+                                ));
+                
+                            $mailer->send($email);
+                
+                            return $this->redirectToRoute('app_dashboard_user');
+                    
+                }
 
+                return $this->render('dashboard/user/adduser.html.twig', [
+                    'registrationForm' => $form->createView(),
+                ]);
+            }
 
-    #[Route('/dashboard/rendezvous/{id}/confirm', name: 'app_admin_rdv_confirm', methods: ['GET', 'POST'])]
-    public function confirm(Rendezvous $rendezvous, EntityManagerInterface $entityManager, MailerInterface $mailer): Response
-    {
-        // Modifier le statut du rendez-vous en "Rendez-vous confirmé"
-        $rendezvous->setStatus('Rendez-vous confirmé');
-        $entityManager->flush();
-        // Redirection vers la liste des rendez-vous
-        return $this->redirectToRoute('app_dashboard_rendezvous');
-    }
+    // Modifier le statut d'un rendez-vous
+            #[Route('/dashboard/rendezvous/{id}/confirm', name: 'app_admin_rdv_confirm', methods: ['GET', 'POST'])]
+            public function confirm(Rendezvous $rendezvous, EntityManagerInterface $entityManager, MailerInterface $mailer): Response
+            {
+                // Modifier le statut du rendez-vous en "Rendez-vous confirmé"
+                $rendezvous->setStatus('Rendez-vous confirmé');
+                $entityManager->flush();
+                // Redirection vers la liste des rendez-vous
+                return $this->redirectToRoute('app_dashboard_rendezvous');
+            }
+
+    // Afficher la liste des formations dans le dashboard
+            #[Route('/dashboard/formation', name: 'app_dashboard_formation', methods: ['GET'])]
+            public function formation(FormationRepository $formationRepository): Response
+            {
+                return $this->render('dashboard/formation.html.twig', [
+                    'formations' => $formationRepository->findAll(),
+                ]);
+            }
 
 
 }
