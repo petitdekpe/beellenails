@@ -27,6 +27,9 @@
             <li>
                 <a href="{{ path('app_prestation_index') }}" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-red-500 md:p-0 {% if app.request.attributes.get('_route') == 'app_prestation_index' %} md:text-red-500 {% endif %}">Nos prestations</a>
             </li>
+            <li>
+                <a href="{{ path('app_formation_index') }}" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-red-500 md:p-0 {% if app.request.attributes.get('_route') == 'app_formation_index' %} md:text-red-500 {% endif %}">Nos formations</a>
+            </li>
             
             <li>
                 <a href="https://wa.me/22997853512" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-red-500 md:p-0 {% if app.request.attributes.get('_route') == 'contact_route_name' %} md:text-red-500 {% endif %}">Contact</a>
