@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Repository\FormationRepository;
 use Symfony\Component\HttpFoundation\File\File;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
-use Vich\UploaderBundle\Mapping\Annotation\UploadableField;
+
 
 #[ORM\Entity(repositoryClass: FormationRepository::class)]
 #[Vich\Uploadable]
@@ -22,7 +22,7 @@ class Formation
     private ?string $Nom = null;
 
     #[ORM\Column(length: 700, nullable: true)]
-    private ?string $Prérequis = null;
+    private ?string $Prerequis = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $Objectif = null;
@@ -36,10 +36,10 @@ class Formation
     #[ORM\Column]
     private ?int $Cout = null;
 
-    #[UploadableField(mapping: 'formation', fileNameProperty: 'imageName')]
+    #[Vich\UploadableField(mapping: 'formation', fileNameProperty: 'imageName')]
     private ?File $image = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(length: 255)]
     private ?string $imageName = null;
 
     #[ORM\Column(type: Types::TEXT)]
@@ -62,14 +62,14 @@ class Formation
         return $this;
     }
 
-    public function getPrérequis(): ?string
+    public function getPrerequis(): ?string
     {
-        return $this->Prérequis;
+        return $this->Prerequis;
     }
 
-    public function setPrérequis(?string $Prérequis): static
+    public function setPrerequis(?string $Prerequis): static
     {
-        $this->Prérequis = $Prérequis;
+        $this->Prerequis = $Prerequis;
 
         return $this;
     }
