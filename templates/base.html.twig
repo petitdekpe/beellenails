@@ -59,6 +59,17 @@
         {{ include('nav.html.twig') }}
     {% endif %}
         {% block body %}{% endblock %}
+
+
+    <!-- Affichage des messages flash -->
+    {% for type, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ type }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+
     </body>
 
     <footer class="p-4 bg-pink-700 md:p-8 lg:p-10">

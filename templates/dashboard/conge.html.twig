@@ -1,0 +1,268 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Tableau de bord{% endblock %}</title>
+
+        <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+        <link rel="manifest" href="/favicon/site.webmanifest">
+        <link rel="mask-icon" href="/favicon/safari-pinned-tab.svg" color="#5bbad5">
+        <meta name="msapplication-TileColor" content="#da532c">
+        <meta name="theme-color" content="#ffffff">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.js"></script>
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
+        <script src="https://npmcdn.com/flatpickr/dist/l10n/fr.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+
+        
+        <style>
+        /* Pour les libellés des mois */
+        .fc-toolbar-title, .fc-col-header-cell-cushion {
+            text-transform: capitalize;
+        }
+        </style>
+        
+         <script src="https://cdn.fedapay.com/checkout.js?v=1.1.7"></script>
+         <script src="/js/preline.js"></script>
+        
+        <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
+        <script src='fullcalendar/core/locales/fr.global.js'></script>
+
+        
+        
+    </head>
+
+
+
+{% block body %}
+
+    <button data-drawer-target="default-sidebar" data-drawer-toggle="default-sidebar" aria-controls="default-sidebar" type="button" class="inline-flex items-center p-2 mt-2 ms-3 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
+    <span class="sr-only">Open sidebar</span>
+    <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+    <path clip-rule="evenodd" fill-rule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"></path>
+    </svg>
+    </button>
+
+    <aside id="default-sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0" aria-label="Sidebar">
+    <div class="h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
+        <ul class="space-y-2 font-medium">
+            <li class="flex items-center justify-center">
+                <img src="{{ asset('assets/logooff.png') }}" class="h-32" alt="Logo">
+            </li>
+            <li>
+                <a href="#" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 21">
+                    <path d="M120-520v-320h320v320H120Zm0 400v-320h320v320H120Zm400-400v-320h320v320H520Zm0 400v-320h320v320H520ZM200-600h160v-160H200v160Zm400 0h160v-160H600v160Zm0 400h160v-160H600v160Zm-400 0h160v-160H200v160Zm400-400Zm0 240Zm-240 0Zm0-240Z"/>
+                </svg>
+                <span class="ms-3">Tableau de bord</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ path('app_dashboard') }}" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M580-240q-42 0-71-29t-29-71q0-42 29-71t71-29q42 0 71 29t29 71q0 42-29 71t-71 29ZM200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-80h80v80h320v-80h80v80h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm0 0v-80 80Z" fill="currentColor"/>
+                    </svg>
+                <span class="flex-1 ms-3 whitespace-nowrap">Agenda</span>
+                <!--span class="inline-flex items-center justify-center px-2 ms-3 text-sm font-medium text-gray-800 bg-gray-100 rounded-full dark:bg-gray-700 dark:text-gray-300">Pro</span-->
+                </a>
+            </li>
+            <li>
+                <a href="{{ path('app_dashboard_rendezvous') }}" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 21">
+                    <path d="M200-640h560v-80H200v80Zm0 0v-80 80Zm0 560q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-80h80v80h320v-80h80v80h40q33 0 56.5 23.5T840-720v227q-19-9-39-15t-41-9v-43H200v400h252q7 22 16.5 42T491-80H200Zm520 40q-83 0-141.5-58.5T520-240q0-83 58.5-141.5T720-440q83 0 141.5 58.5T920-240q0 83-58.5 141.5T720-40Zm67-105 28-28-75-75v-112h-40v128l87 87Z"/>
+                </svg>
+                <span class="flex-1 ms-3 whitespace-nowrap">Rendez-vous</span>
+                <!--span class="inline-flex items-center justify-center w-3 h-3 p-3 ms-3 text-sm font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">3</span-->
+                </a>
+            </li>
+            <li>
+                <a href="{{ path('app_dashboard_prestation') }}" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                <svg class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
+                    <path d="M14 2a3.963 3.963 0 0 0-1.4.267 6.439 6.439 0 0 1-1.331 6.638A4 4 0 1 0 14 2Zm1 9h-1.264A6.957 6.957 0 0 1 15 15v2a2.97 2.97 0 0 1-.184 1H19a1 1 0 0 0 1-1v-1a5.006 5.006 0 0 0-5-5ZM6.5 9a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9ZM8 10H5a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-2a5.006 5.006 0 0 0-5-5Z"/>
+                </svg>
+                <span class="flex-1 ms-3 whitespace-nowrap">Prestations</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ path('app_dashboard_user') }}" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                <svg class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 20">
+                    <path d="M17 5.923A1 1 0 0 0 16 5h-3V4a4 4 0 1 0-8 0v1H2a1 1 0 0 0-1 .923L.086 17.846A2 2 0 0 0 2.08 20h13.84a2 2 0 0 0 1.994-2.153L17 5.923ZM7 9a1 1 0 0 1-2 0V7h2v2Zm0-5a2 2 0 1 1 4 0v1H7V4Zm6 5a1 1 0 1 1-2 0V7h2v2Z"/>
+                </svg>
+                <span class="flex-1 ms-3 whitespace-nowrap">Clients</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ path('app_dashboard_transactions') }}" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                <svg class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 20">
+                    <path d="M17 5.923A1 1 0 0 0 16 5h-3V4a4 4 0 1 0-8 0v1H2a1 1 0 0 0-1 .923L.086 17.846A2 2 0 0 0 2.08 20h13.84a2 2 0 0 0 1.994-2.153L17 5.923ZM7 9a1 1 0 0 1-2 0V7h2v2Zm0-5a2 2 0 1 1 4 0v1H7V4Zm6 5a1 1 0 1 1-2 0V7h2v2Z"/>
+                </svg>
+                <span class="flex-1 ms-3 whitespace-nowrap">Paiements</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ path('app_dashboard_formation') }}" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                <svg class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 20">
+                    <path d="M17 5.923A1 1 0 0 0 16 5h-3V4a4 4 0 1 0-8 0v1H2a1 1 0 0 0-1 .923L.086 17.846A2 2 0 0 0 2.08 20h13.84a2 2 0 0 0 1.994-2.153L17 5.923ZM7 9a1 1 0 0 1-2 0V7h2v2Zm0-5a2 2 0 1 1 4 0v1H7V4Zm6 5a1 1 0 1 1-2 0V7h2v2Z"/>
+                </svg>
+                <span class="flex-1 ms-3 whitespace-nowrap">Formations</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ path('create_conge') }}" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                <svg class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 20">
+                    <path d="M17 5.923A1 1 0 0 0 16 5h-3V4a4 4 0 1 0-8 0v1H2a1 1 0 0 0-1 .923L.086 17.846A2 2 0 0 0 2.08 20h13.84a2 2 0 0 0 1.994-2.153L17 5.923ZM7 9a1 1 0 0 1-2 0V7h2v2Zm0-5a2 2 0 1 1 4 0v1H7V4Zm6 5a1 1 0 1 1-2 0V7h2v2Z"/>
+                </svg>
+                <span class="flex-1 ms-3 whitespace-nowrap">Congés</span>
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    </aside>
+
+    <div class="sm:ml-64">
+        <div class="relative overflow-hidden w-full min-h-[70px] bg-pink-500"></div>
+        <div class="flex flex-row justify-between items-center">
+            <h4 class="text-2xl font-bold p-4">Congés</h4>
+            <a href="{{ path('app_dashboard_add_user') }}" class="text-sm p-4">
+            
+            </a>
+        </div>
+        <div class="px-4">
+
+            <div class="max-w-xl mx-8">
+                {{ form_start(form) }}
+
+                <ol class="relative border-s border-gray-200">
+
+                    <li class="ms-6">
+                        <span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -start-3 ring-8 ring-white">
+                            <svg class="w-2.5 h-2.5 text-blue-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
+                            </svg>
+                        </span>
+                        <h3 class="mb-1 text-lg font-semibold text-gray-900">{{ form_label(form.date, 'Date du rendez-vous') }}</h3>
+                        <time class="block mb-2 text-sm font-normal leading-none text-gray-400"></time>
+                        <input
+                            name="{{ field_name(form.date) }}"
+                            value="{{ field_value(form.date) }}"
+                            placeholder="Cliquez pour choisir un jour de congé"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5"
+                            id="datepicker"
+                        >
+                        
+                    </li>
+                </ol>
+                    
+                    <button type="submit" class="btn btn-primary mt-5 text-white bg-pink-700 hover:bg-pink-500 focus:ring-4 focus:outline-none  font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center">Enregistrer</button>
+                    {{ form_widget(form._token) }}
+                    {{ form_end(form, {'render_rest': false}) }}
+            </div>
+        </div>
+
+{% endblock %}
+
+{%  block javascripts %}
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
+    <script> 
+        flatpickr("#datepicker", {
+            defaultDate: null,
+            enableTime: false,
+            dateFormat: "Y-m-d",
+            altInput: true,
+            altFormat: "j F Y",
+            inline: true,
+            locale: "fr",
+            minDate: "today",
+            disable: [
+            function(date) {
+                // Retourne true pour désactiver les samedis
+                return (date.getDay() === 6);
+            },
+            function(date) {
+                // Retourne true pour désactiver les dimanches
+                return (date.getDay() === 0);
+            }
+            ],
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var datePicker = document.getElementById('datepicker');
+            datePicker.addEventListener('change', function() {
+                var selectedDate = datePicker.value;
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', '/get-available-slots', true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === XMLHttpRequest.DONE) {
+                        if (xhr.status === 200) {
+                            var slots = JSON.parse(xhr.responseText);
+                            updateSlotsDropdown(slots);
+                        } else {
+                            console.error('Erreur lors de la récupération des créneaux disponibles');
+                        }
+                    }
+                };
+                xhr.send('date=' + selectedDate);
+            });
+            
+            function updateSlotsDropdown(slots) {
+                var slotsDropdown = document.getElementById('pre_rendezvous_creneau');
+                slotsDropdown.innerHTML = ''; // Efface les options actuelles
+                var selectElement = document.createElement('select'); // Crée un élément select
+                selectElement.id = 'pre_rendezvous_creneau';
+                selectElement.name = 'pre_rendezvous[creneau]'; // Ajoute le nom
+                selectElement.className = 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5'; // Ajoute les classes
+                slots.forEach(function(slot) {
+                    var option = document.createElement('option');
+                    option.value = slot.id;
+                    option.text = slot.libelle;
+                    selectElement.appendChild(option);
+                });
+                slotsDropdown.replaceWith(selectElement); // Remplace la liste existante par le nouveau select
+            }
+        });
+    </script> 
+
+
+{% endblock %}
+
+{% block stylesheets %}
+    <style>
+    /* Media queries pour ajuster Flatpickr avec Tailwind CSS */
+    .flatpickr-calendar {
+            width: 300px; /* Ajustez la largeur selon vos besoins */
+            font-size: 14px; /* Ajustez la taille de la police selon vos besoins */
+        }
+    /* Pour les écrans moyens et plus grands */
+    @media (min-width: 640px) {
+        /* Ajustement de la taille de l'élément Flatpickr */
+    .flatpickr-calendar {
+            width: 300px; /* Ajustez la largeur selon vos besoins */
+            font-size: 16px; /* Ajustez la taille de la police selon vos besoins */
+        }
+    }
+    .flatpickr-calendar .flatpickr-day.today {
+            
+            border: none !important; /* Pour supprimer la bordure */
+        }
+
+    /* Pour les écrans plus petits */
+    @media (max-width: 767px) {
+        /* Ajustement de la taille de l'élément Flatpickr pour les petits écrans */
+        
+    }
+    </style>
+{% endblock %}
+

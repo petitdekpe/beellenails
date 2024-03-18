@@ -95,6 +95,7 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
 <script> 
     flatpickr("#datepicker", {
+        defaultDate: null,
         enableTime: false,
         dateFormat: "Y-m-d",
         altInput: true,
@@ -182,6 +183,11 @@
         width: 300px; /* Ajustez la largeur selon vos besoins */
         font-size: 16px; /* Ajustez la taille de la police selon vos besoins */
     }
+}
+
+.flatpickr-calendar .flatpickr-day.today {
+    background-color: transparent !important; /* Pour rendre le fond transparent */
+    border: none !important; /* Pour supprimer la bordure */
 }
 
 /* Pour les écrans plus petits */

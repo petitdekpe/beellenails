@@ -9,6 +9,8 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Repository\RendezvousRepository;
 use Symfony\Component\HttpFoundation\File\File;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 #[ORM\Entity(repositoryClass: RendezvousRepository::class)]
 #[Vich\Uploadable]
@@ -19,6 +21,8 @@ class Rendezvous
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Assert\NotBlank(groups: ['with_prestation'])]
+    #[Assert\NotBlank(groups: ['without_prestation'], allowNull: true)]
     #[ORM\ManyToOne(inversedBy: 'rendezvouses')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Prestation $prestation = null;
