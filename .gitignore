@@ -20,4 +20,3 @@
 ###< symfony/phpunit-bridge ###
 
 # Ignorer le contenu du dossier public\assets\images
-/public/assets/images/**/*
