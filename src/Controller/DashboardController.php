@@ -107,6 +107,7 @@ class DashboardController extends AbstractController
                 'rendezvouses' => $rendezvousRepository->findBy([], ['updated_at' => 'DESC']),
             ]);
         }
+        
     //Liste des clients
         #[Route('/dashboard/clients', name: 'app_dashboard_user', methods: ['GET'])]
         public function user(UserRepository $userRepository): Response
@@ -123,9 +124,11 @@ class DashboardController extends AbstractController
         public function payment(PaymentRepository $paymentRepository): Response
         {
             return $this->render('dashboard/payment.html.twig', [
-                'payments' => $paymentRepository->findAll(),
+                //'payments' => $paymentRepository->findAll(),
+                'payments' => $paymentRepository->findBy([], ['updatedAt' => 'DESC']),
             ]);
         }
+
     //Ajouter un rendez-vous
         #[Route('/dashboard/rendezvous/add', name: 'app_admin_rdv')]
         public function new(Request $request, EntityManagerInterface $entityManager, MailerInterface $mailer): Response
