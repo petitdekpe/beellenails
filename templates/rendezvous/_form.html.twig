@@ -6,7 +6,7 @@
 
 <h5 class="text-xl text-center font-normal mb-5">Prenez connaissance de la description, du contenu et des tarifs des prestations en cliquant <a class="text-pink-500 underline" href="{{ path('app_prestation_index') }}">ici</a></h5>
 
-{{ form_start(form) }}
+{{ form_start(form, {'attr': {'id': 'monformulaire'}}) }}
   <ol class="relative border-s border-gray-200">
 
     <li class="ms-6">
@@ -93,7 +93,7 @@
 {%  block javascripts %}
 
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
-<script> 
+<script>
     flatpickr("#datepicker", {
         defaultDate: null,
         enableTime: false,
@@ -115,6 +115,29 @@
         ],
     });
 </script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Sélection du formulaire
+        var form = document.querySelector('#monformulaire');
+
+        // Écoute de l'événement de soumission du formulaire
+        form.addEventListener('submit', function(event) {
+            // Sélection du champ de date
+            var datePicker = document.getElementById('datepicker');
+            
+            // Vérification si une date a été sélectionnée
+            if (!datePicker.value) {
+                // Empêcher le formulaire de se soumettre
+                event.preventDefault();
+
+                // Afficher un message d'erreur ou effectuer une autre action
+                alert('Veuillez sélectionner une date de rendez-vous.');
+            }
+        });
+    });
+</script>
+
+
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
