@@ -74,6 +74,7 @@
                         {% set appointment_time = appointment.day|date("U") %}
                         {% set time_difference = appointment_time - current_time %}
                         {% set within_48_hours = time_difference < (48 * 3600) %}
+                        {% set appointment_passed = current_time > appointment_time %}
                         
                         <tr class="odd:bg-white even:bg-gray-50 border-b">
                             <td class="px-6 py-4">{{ appointment.day|date('d/m/Y') }}</td>
@@ -81,23 +82,24 @@
                             <td class="px-6 py-4">{{ appointment.prestation.Title }}</td>
                             <td class="px-6 py-4">{{ appointment.status }}</td>
                             <td class="px-6 py-4">
-                                {% if appointment.status != "Annulé" %}
-                                    {% if within_48_hours %}
-                                        <span class="opacity-50 cursor-not-allowed">Reporter</span>
-                                        <a href="{{ path('app_rendezvous_cancel', {'id': appointment.id}) }}" class="font-medium text-pink-600 hover:underline">Annuler</a>
-                                    {% else %}
-                                        <a href="{{ path('app_rendezvous_edit', {'id': appointment.id}) }}" class="font-medium text-pink-600 hover:underline">Reporter</a>
-                                        <a href="{{ path('app_rendezvous_cancel', {'id': appointment.id}) }}" class="font-medium text-pink-600 hover:underline">Annuler</a>
-                                    {% endif %}
-                                {% else %}
+                                {% if appointment.status == "Annulé" %}
                                     <span class="opacity-50 cursor-not-allowed">Reporter</span>
                                     <span class="opacity-50 cursor-not-allowed">Annuler</span>
+                                {% elseif appointment_passed %}
+                                    <span class="opacity-50 cursor-not-allowed">Fait</span>
+                                {% elseif within_48_hours %}
+                                    <span class="opacity-50 cursor-not-allowed">Reporter</span>
+                                    <span class="opacity-50 cursor-not-allowed">Annuler</span>
+                                {% else %}
+                                    <a href="{{ path('app_rendezvous_edit', {'id': appointment.id}) }}" class="font-medium text-pink-600 hover:underline">Reporter</a>
+                                    <a href="{{ path('app_rendezvous_cancel', {'id': appointment.id}) }}" class="font-medium text-pink-600 hover:underline">Annuler</a>
                                 {% endif %}
                             </td>
                         </tr>
                     {% endfor %}
                 {% endif %}
             </tbody>
+
         </table>
     </div>
 
