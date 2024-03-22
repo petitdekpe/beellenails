@@ -70,6 +70,11 @@
                     </tr>
                 {% else %}
                     {% for appointment in appointments %}
+                        {% set current_time = "now"|date("U") %}
+                        {% set appointment_time = appointment.day|date("U") %}
+                        {% set time_difference = appointment_time - current_time %}
+                        {% set within_48_hours = time_difference < (48 * 3600) %}
+                        
                         <tr class="odd:bg-white even:bg-gray-50 border-b">
                             <td class="px-6 py-4">{{ appointment.day|date('d/m/Y') }}</td>
                             <td class="px-6 py-4">{{ appointment.creneau.libelle }}</td>
@@ -77,8 +82,13 @@
                             <td class="px-6 py-4">{{ appointment.status }}</td>
                             <td class="px-6 py-4">
                                 {% if appointment.status != "Annulé" %}
-                                    <a href="{{ path('app_rendezvous_edit', {'id': appointment.id}) }}" class="font-medium text-pink-600 hover:underline">Reporter</a>
-                                    <a href="{{ path('app_rendezvous_cancel', {'id': appointment.id}) }}" class="font-medium text-pink-600 hover:underline">Annuler</a>
+                                    {% if within_48_hours %}
+                                        <span class="opacity-50 cursor-not-allowed">Reporter</span>
+                                        <a href="{{ path('app_rendezvous_cancel', {'id': appointment.id}) }}" class="font-medium text-pink-600 hover:underline">Annuler</a>
+                                    {% else %}
+                                        <a href="{{ path('app_rendezvous_edit', {'id': appointment.id}) }}" class="font-medium text-pink-600 hover:underline">Reporter</a>
+                                        <a href="{{ path('app_rendezvous_cancel', {'id': appointment.id}) }}" class="font-medium text-pink-600 hover:underline">Annuler</a>
+                                    {% endif %}
                                 {% else %}
                                     <span class="opacity-50 cursor-not-allowed">Reporter</span>
                                     <span class="opacity-50 cursor-not-allowed">Annuler</span>
