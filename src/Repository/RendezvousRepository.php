@@ -39,7 +39,7 @@ class RendezvousRepository extends ServiceEntityRepository
      */
     public function findUpcomingAppointments()
     {
-        $twoDaysFromNow = new \DateTime('+2 days');
+        $twoDaysFromNow = new \DateTime('+1 days');
         $statusCriteria = ['Rendez-vous pris', 'Rendez-vous confirmé'];
 
         return $this->createQueryBuilder('r')

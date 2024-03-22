@@ -35,6 +35,8 @@ class SendReminderEmailsCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $upcomingAppointments = $this->rendezVousRepository->findUpcomingAppointments();
+        $emailCount = 0;
+        $recipients = [];
 
         foreach ($upcomingAppointments as $appointment) {
             $user = $appointment->getUser();
@@ -48,9 +50,15 @@ class SendReminderEmailsCommand extends Command
                 ));
 
             $this->mailer->send($email);
+            $emailCount++;
+            $recipients[] = $user->getNom().' '.$user->getPrenom();
         }
 
-        $output->writeln('Les rappels par e-mail ont été envoyés avec succès.');
+        $output->writeln(sprintf('Les rappels par e-mail ont été envoyés avec succès. Nombre de mails envoyés : %d', $emailCount));
+        $output->writeln('Liste des destinataires :');
+        foreach ($recipients as $recipient) {
+            $output->writeln($recipient);
+        }
 
         return Command::SUCCESS;
     }
