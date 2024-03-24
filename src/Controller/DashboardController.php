@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Form\SearchType;
+use App\Model\SearchData;
 use App\Entity\Rendezvous; 
 use App\Form\DateCongeType;
 use App\Form\AdminAddRdvType;
@@ -100,8 +102,15 @@ class DashboardController extends AbstractController
         }
     //Liste des rendez-vous (order by updated_at)
         #[Route('/dashboard/rendezvous', name: 'app_dashboard_rendezvous', methods: ['GET'])]
-        public function rendezvous(RendezvousRepository $rendezvousRepository): Response
+        public function rendezvous(RendezvousRepository $rendezvousRepository, Request $request): Response
         {
+            $searchData = new SearchData();
+            $form = $this->createForm(SearchType::class, $searchData);
+
+            $form->handleRequest($request);
+            if ($form->isSubmitted() && $form->isValid()) {
+                
+            }
             return $this->render('dashboard/rendezvous.html.twig', [
                 //'rendezvouses' => $rendezvousRepository->findAll(),
                 'rendezvouses' => $rendezvousRepository->findBy([], ['updated_at' => 'DESC']),
