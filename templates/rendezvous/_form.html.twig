@@ -135,7 +135,49 @@
             }
         });
     });
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var form = document.querySelector('#monformulaire');
+
+        form.addEventListener('submit', function(event) {
+            var categorieField = document.getElementById('rendezvous_categorie');
+
+            if (!categorieField.value) {
+                event.preventDefault();
+                alert('Veuillez choisir une catégorie de prestation.');
+            }
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var form = document.querySelector('#monformulaire');
+
+        form.addEventListener('submit', function(event) {
+            var categorieField = document.getElementById('rendezvous_prestation');
+
+            if (!categorieField.value) {
+                event.preventDefault();
+                alert('Veuillez choisir une prestation.');
+            }
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var form = document.querySelector('#monformulaire');
+
+        form.addEventListener('submit', function(event) {
+            var categorieField = document.getElementById('rendezvous_creneau');
+
+            if (!categorieField.value) {
+                event.preventDefault();
+                alert('Veuillez choisir un creneau valide.');
+            }
+        });
+    });
+
 </script>
+
 
 
 
