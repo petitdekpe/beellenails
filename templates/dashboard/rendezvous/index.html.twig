@@ -56,7 +56,7 @@
                             <td class="px-4 py-3">{{ rendezvous.status }}</td>
                             <td class="px-4 py-3">
                                 {% if rendezvous.imageName %}
-                                <img src="{{ vich_uploader_asset(rendezvous, 'image') }}" alt="RendezvousImage" style="max-width: 40px;">
+                                <a href="{{ vich_uploader_asset(rendezvous, 'image') }}"><img src="{{ vich_uploader_asset(rendezvous, 'image') }}" alt="RendezvousImage" style="max-width: 40px;"></a>
                                 {% else %}
                                 No image available
                                 {% endif %}
