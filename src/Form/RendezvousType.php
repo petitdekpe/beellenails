@@ -52,11 +52,11 @@ class RendezvousType extends AbstractType
             'attr' => ['class' => 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5'],
             'label' => 'Choisissez une prestation'
         ])
-        ->add('creneau', EntityType::class, [
+        ->add('creneau', ChoiceType::class, [
             'label' => 'Choisissez un créneau',
-            'class' => Creneau::class,
-            'choice_label' => 'libelle',
-            'required'=> true,
+            'choices' => [],
+            'required' => true,
+            'placeholder' => 'Choisissez une date d\'abord',
             'attr' => ['class' => 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5'],
         ])
         ->add('supplement', EntityType::class, [
