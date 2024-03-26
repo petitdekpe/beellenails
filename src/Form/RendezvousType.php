@@ -57,7 +57,7 @@ class RendezvousType extends AbstractType
             'class' => Creneau::class,
             'choice_label' => 'libelle',
             'required'=> true,
-            'attr' => ['class' => 'opacity-50 cursor-not-allowed bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5'],
+            'attr' => ['class' => 'hidden bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5'],
         ])
         ->add('supplement', EntityType::class, [
             'class' => Supplement::class,
