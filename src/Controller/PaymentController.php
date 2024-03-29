@@ -114,7 +114,7 @@ class PaymentController extends AbstractController
         $status = $data['status'];
         $payment = $repository->findOneBy(['transactionID' => $transactionID]);
         if ($payment === null) {
-            return $this->json(['status' => 'error'], 400);
+            return $this->json(['status' => $status], 400);
         }
         $rendezvou = $payment->getRendezvous();
 
@@ -170,6 +170,7 @@ class PaymentController extends AbstractController
                 ->setMode($transaction->mode ?? '');
 
             $this->entityManager->flush();
+            return $this->json(['status' => $status]);
         }
 
         return $this->json(['status' => $status], 400);
