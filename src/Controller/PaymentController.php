@@ -170,7 +170,7 @@ class PaymentController extends AbstractController
             $this->entityManager->flush();
         }
 
-        return $this->json(['status' => 'error'], 200);
+        return $this->json(['status' => $status], 400);
     }
 
 }
