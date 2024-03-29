@@ -59,9 +59,9 @@ class PaymentController extends AbstractController
     #[Route('/rendezvous/payment/callback', name: 'payment_callback')]
     public function callback(Request $request, PaymentRepository $repository, UserInterface $user, MailerInterface $mailer): Response
     {
-        $transactionID = $request->get('id');
+        $transaction = $request->get('id');
         $status = $request->get('status');
-        $payment = $repository->findOneBy(['transactionID' => $transactionID]);
+        $payment = $repository->findOneBy(['transactionID' => $transaction]);
         $rendezvou = $payment->getRendezvous();
         if ($status !== 'approved') {
             $rendezvou->setStatus('Tentative échoué');
@@ -71,7 +71,7 @@ class PaymentController extends AbstractController
             ]);
         }
 
-        $payment = $repository->findOneBy(['transactionID' => $transactionID]);
+        $payment = $repository->findOneBy(['transactionID' => $transaction]);
 
         if ($payment === null) {
             $this->addFlash('error', 'Rendez-vous inconnue !. Veuillez réessayer.');
