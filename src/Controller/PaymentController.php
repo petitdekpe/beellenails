@@ -122,6 +122,8 @@ class PaymentController extends AbstractController
             $rendezvou->setStatus('Échec du paiement');
             $payment->setStatus($status);
             $this->entityManager->flush();
+            return $this->json(['status' => $status], 200);
+
         } else if ($status == 'approved') {
             $transaction = $this->fedapayService->getTransaction($transactionID);
             if ($rendezvou->getStatus() === 'Rendez-vous pris' || $rendezvou->isPaid()) {
