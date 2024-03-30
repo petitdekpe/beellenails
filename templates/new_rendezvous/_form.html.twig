@@ -3,7 +3,7 @@
 {% block body %}
 
 <div class="max-w-xl mx-8">
-{{ form_start(form) }}
+{{ form_start(form, {'attr': {'id': 'monformulaire'}}) }}
 
   <ol class="relative border-s border-gray-200">
 
@@ -30,7 +30,7 @@
                 <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
             </svg>
         </span>
-        <h3 class="mb-1 text-lg font-semibold text-gray-900">{{form_label(form.creneau, 'Choisissez votre creneau')}}</h3>
+        <h3 class="my-2 text-lg font-semibold text-gray-900">{{form_label(form.creneau, 'Choisissez votre créneau')}} - <span class="text-sm font-normal text-gray-900"> Choisir une date d'abord</span></h3>
         <time class="block mb-2 text-sm font-normal leading-none text-gray-400"></time>
         <div id="creneaux-container">
             <p class="text-base font-normal text-gray-500" id="test"> {{ form_widget(form.creneau) }} </p>
@@ -94,6 +94,83 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Sélection du formulaire
+        var form = document.querySelector('#monformulaire');
+
+        // Écoute de l'événement de soumission du formulaire
+        form.addEventListener('submit', function(event) {
+            // Sélection du champ de date
+            var datePicker = document.getElementById('datepicker');
+            
+            // Vérification si une date a été sélectionnée
+            if (!datePicker.value) {
+                // Empêcher le formulaire de se soumettre
+                event.preventDefault();
+
+                // Afficher un message d'erreur ou effectuer une autre action
+                alert('Veuillez sélectionner une date de rendez-vous.');
+            }
+        });
+    });
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var form = document.querySelector('#monformulaire');
+
+        form.addEventListener('submit', function(event) {
+            var categorieField = document.getElementById('pre_rendezvous_categorie');
+
+            if (!categorieField.value) {
+                event.preventDefault();
+                alert('Veuillez choisir une catégorie de prestation.');
+            }
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var form = document.querySelector('#monformulaire');
+
+        form.addEventListener('submit', function(event) {
+            var categorieField = document.getElementById('pre_rendezvous_prestation');
+
+            if (!categorieField.value) {
+                event.preventDefault();
+                alert('Veuillez choisir une prestation.');
+            }
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var form = document.querySelector('#monformulaire');
+
+        form.addEventListener('submit', function(event) {
+            var categorieField = document.getElementById('pre_rendezvous_creneau');
+
+            if (!categorieField.value) {
+                event.preventDefault();
+                alert('Plus de créneau libre pour cette date. Choisissez une date avec des créneaux libres affichés.');
+            }
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+    var form = document.querySelector('#monformulaire');
+
+    form.addEventListener('submit', function(event) {
+        var categorieField = document.getElementById('pre_rendezvous_creneau');
+
+        // Vérifier si aucun créneau n'est sélectionné
+        if (categorieField.value === '' || categorieField.value === null) {
+            event.preventDefault();
+            alert('Plus de créneau libre pour cette date. Choisissez une date avec des créneaux libres affichés.');
+        }
+    });
+});
+
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
         var datePicker = document.getElementById('datepicker');
         datePicker.addEventListener('change', function() {
             var selectedDate = datePicker.value;
@@ -114,20 +191,31 @@
         });
         
         function updateSlotsDropdown(slots) {
-            var slotsDropdown = document.getElementById('pre_rendezvous_creneau');
-            slotsDropdown.innerHTML = ''; // Efface les options actuelles
+        var slotsDropdown = document.getElementById('pre_rendezvous_creneau');
+        slotsDropdown.innerHTML = ''; // Efface les options actuelles
+
+        // Si la liste de créneaux est vide
+        if (slots.length === 0) {
+            var noSlotsOption = document.createElement('option');
+            noSlotsOption.text = 'Aucun Créneau Disponible Pour Cette Date';
+            noSlotsOption.disabled = true; // Désactive l'option pour qu'elle ne soit pas sélectionnable
+            slotsDropdown.appendChild(noSlotsOption);
+        } else {
             var selectElement = document.createElement('select'); // Crée un élément select
             selectElement.id = 'pre_rendezvous_creneau';
             selectElement.name = 'pre_rendezvous[creneau]'; // Ajoute le nom
             selectElement.className = 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5'; // Ajoute les classes
+
             slots.forEach(function(slot) {
                 var option = document.createElement('option');
                 option.value = slot.id;
                 option.text = slot.libelle;
                 selectElement.appendChild(option);
             });
+
             slotsDropdown.replaceWith(selectElement); // Remplace la liste existante par le nouveau select
         }
+    }
     });
 </script>
 

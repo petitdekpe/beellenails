@@ -171,7 +171,7 @@
 
             if (!categorieField.value) {
                 event.preventDefault();
-                alert('Veuillez choisir un creneau valide.');
+                alert('Plus de créneau libre pour cette date. Choisissez une date avec des créneaux libres affichés.');
             }
         });
     });
@@ -185,7 +185,7 @@
         // Vérifier si aucun créneau n'est sélectionné
         if (categorieField.value === '' || categorieField.value === null) {
             event.preventDefault();
-            alert('Veuillez choisir un créneau valide.');
+            alert('Plus de créneau libre pour cette date. Choisissez une date avec des créneaux libres affichés.');
         }
     });
 });
