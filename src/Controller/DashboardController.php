@@ -5,8 +5,10 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Form\SearchType;
 use App\Model\SearchData;
+use App\Entity\Prestation;
 use App\Entity\Rendezvous; 
 use App\Form\DateCongeType;
+use App\Form\PrestationType;
 use App\Form\AdminAddRdvType;
 use Symfony\Component\Mime\Email;
 use App\Form\RegistrationFormType;
@@ -168,7 +170,7 @@ class DashboardController extends AbstractController
                                 ));
                 $mailer->send($email);
 
-                return $this->redirectToRoute('app_dashboard_rendezvous', [], Response::HTTP_SEE_OTHER);
+                return $this->redirectToRoute('app_dashboard_prstation_new', [], Response::HTTP_SEE_OTHER);
             }
 
             return $this->render('dashboard/rendezvous/add.html.twig', [
@@ -300,6 +302,7 @@ class DashboardController extends AbstractController
             }
 
     //Prendre des congés (un jour)
+
         #[Route('dashboard/create-conge', name: 'create_conge')]
         public function createRendezvous(Request $request, EntityManagerInterface $entityManager, RendezvousRepository $rendezvousRepository, CreneauRepository $creneauRepository, PrestationRepository $prestationRepository): Response
         {
@@ -354,6 +357,26 @@ class DashboardController extends AbstractController
             ]);
         }
     
-    
+    //Ajouter une prestation
+
+            #[Route('dashboard/prestation/new', name: 'app_prestation_new', methods: ['GET', 'POST'])]
+            public function addprestation(Request $request, EntityManagerInterface $entityManager): Response
+            {
+                $prestation = new Prestation();
+                $form = $this->createForm(PrestationType::class, $prestation);
+                $form->handleRequest($request);
+
+                if ($form->isSubmitted() && $form->isValid()) {
+                    $entityManager->persist($prestation);
+                    $entityManager->flush();
+
+                    return $this->redirectToRoute('app_prestation_index', [], Response::HTTP_SEE_OTHER);
+                }
+
+                return $this->render('prestation/new.html.twig', [
+                    'prestation' => $prestation,
+                    'form' => $form,
+                ]);
+            }
 
     }

@@ -147,27 +147,25 @@
                         <table class="w-full text-sm text-left text-gray-500">
                             <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                                 <tr>
+                                    <th scope="col" class="px-4 py-3">Client</th>
                                     <th scope="col" class="px-4 py-3">Description</th>
                                     <th scope="col" class="px-4 py-3">Montant</th>
-                                    <th scope="col" class="px-4 py-3">Devise</th>
                                     <th scope="col" class="px-4 py-3">Statut</th>
                                     <th scope="col" class="px-4 py-3">Numéro de téléphone</th>
                                     <th scope="col" class="px-4 py-3">Date de création</th>
-                                    <th scope="col" class="px-4 py-3">Actions</th>
+                                    <th scope="col" class="px-4 py-3">Dernière modification</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for payment in payments %}
                                 <tr class="border-b">
+                                    <td class="px-4 py-3">{{ payment.customer }}</td>
                                     <td class="px-4 py-3">{{ payment.description }}</td>
-                                    <td class="px-4 py-3">{{ payment.amount }}</td>
-                                    <td class="px-4 py-3">{{ payment.currency }}</td>
+                                    <td class="px-4 py-3">{{ payment.amount }} FCFA</td>
                                     <td class="px-4 py-3">{{ payment.status }}</td>
                                     <td class="px-4 py-3">{{ payment.phoneNumber }}</td>
                                     <td class="px-4 py-3">{{ payment.createdAt|date('d-m-Y H:i:s') }}</td>
-                                    <td class="px-4 py-3">
-                                        <!-- Ajoutez vos liens d'action ici -->
-                                    </td>
+                                    <td class="px-4 py-3">{{ payment.updatedAt|date('d-m-Y H:i:s') }}</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
