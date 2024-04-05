@@ -170,7 +170,7 @@ class DashboardController extends AbstractController
                                 ));
                 $mailer->send($email);
 
-                return $this->redirectToRoute('app_dashboard_prstation_new', [], Response::HTTP_SEE_OTHER);
+                return $this->redirectToRoute('app_dashboard_rendezvous', [], Response::HTTP_SEE_OTHER);
             }
 
             return $this->render('dashboard/rendezvous/add.html.twig', [

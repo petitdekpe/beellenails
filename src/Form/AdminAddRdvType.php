@@ -29,7 +29,7 @@ class AdminAddRdvType extends AbstractType
             'class' => User::class,
             'required'=> true,
             'placeholder' => 'Choisir un(e) client(e)',
-            'attr' => ['class' => 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5'],
+            'attr' => ['class' => 'js-example-basic-single bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5'],
             'label' => 'Choisissez un(e) client(e)'
         ])
         ->add('day', DateType::class, [
