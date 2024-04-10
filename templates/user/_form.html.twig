@@ -1,0 +1,32 @@
+{{ form_start(form, {'attr': {'id': 'myForm'}}) }}
+<div class="max-w-xl mx-8">
+    <ol class="relative border-s border-gray-200">
+        <li class="mb-10 ms-6">
+            <h3 class="mb-1 text-lg font-semibold text-gray-900">{{ form_label(form.email, 'Email') }}</h3>
+            <p class="text-base font-normal text-gray-500">{{ form_widget(form.email, {'attr': {'class': 'input flow-input'}}) }}</p>
+        </li>
+        <li class="mb-10 ms-6">
+            <h3 class="mb-1 text-lg font-semibold text-gray-900">{{ form_label(form.Nom, 'Nom') }}</h3>
+            <p class="text-base font-normal text-gray-500">{{ form_widget(form.Nom, {'attr': {'class': 'input flow-input'}}) }}</p>
+        </li>
+        <li class="mb-10 ms-6">
+            <h3 class="mb-1 text-lg font-semibold text-gray-900">{{ form_label(form.Prenom, 'Prenom') }}</h3>
+            <p class="text-base font-normal text-gray-500">{{ form_widget(form.Prenom, {'attr': {'class': 'input flow-input'}}) }}</p>
+        </li>
+        <li class="mb-10 ms-6">
+            <h3 class="mb-1 text-lg font-semibold text-gray-900">{{ form_label(form.Phone, 'Phone') }}</h3>
+            <p class="text-base font-normal text-gray-500">{{ form_widget(form.Phone, {'attr': {'class': 'input flow-input'}}) }}</p>
+        </li>
+        <li class="mb-10 ms-6">
+            <h3 class="mb-1 text-lg font-semibold text-gray-900">{{ form_label(form.birthday, 'Birthday') }}</h3>
+            <p class="text-base font-normal text-gray-500">{{ form_widget(form.birthday, {'attr': {'class': 'input flow-input'}}) }}</p>
+        </li>
+        <li class="ms-6">
+            <h3 class="mb-1 text-lg font-semibold text-gray-900">{{ form_label(form.genre, 'Genre') }}</h3>
+            <p class="text-base font-normal text-gray-500">{{ form_widget(form.genre, {'attr': {'class': 'select flow-select'}}) }}</p>
+        </li>
+    </ol>
+</div>
+<button type="submit" class="btn btn-primary mt-5 text-white bg-pink-700 hover:bg-pink-500 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center">Enregistrer</button>
+{{ form_widget(form._token) }}
+{{ form_end(form, {'render_rest': false}) }}

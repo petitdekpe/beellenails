@@ -1,0 +1,49 @@
+<?php
+
+namespace App\Form;
+
+use App\Entity\User;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\BirthdayType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+
+class User1Type extends AbstractType
+{
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder
+            ->add('email', EmailType::class, [
+                'attr' => ['class' => 'input flow-input'],
+            ])
+            ->add('Nom', TextType::class, [
+                'attr' => ['class' => 'input flow-input'],
+            ])
+            ->add('Prenom', TextType::class, [
+                'attr' => ['class' => 'input flow-input'],
+            ])
+            ->add('Phone', TextType::class, [
+                'attr' => ['class' => 'input flow-input'],
+            ])
+            ->add('birthday', BirthdayType::class, [
+                'attr' => ['class' => 'input flow-input'],
+            ])
+            ->add('genre', ChoiceType::class, [
+                'choices' => [
+                    'Male' => 'male',
+                    'Female' => 'female',
+                ],
+                'attr' => ['class' => 'select flow-select'],
+            ]);
+    }
+
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => User::class,
+        ]);
+    }
+}

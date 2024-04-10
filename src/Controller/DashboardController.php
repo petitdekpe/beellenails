@@ -359,7 +359,7 @@ class DashboardController extends AbstractController
     
     //Ajouter une prestation
 
-            #[Route('dashboard/prestation/new', name: 'app_prestation_new', methods: ['GET', 'POST'])]
+            #[Route('dashboard/prestation/new', name: 'app_dashboard_prestation_new', methods: ['GET', 'POST'])]
             public function addprestation(Request $request, EntityManagerInterface $entityManager): Response
             {
                 $prestation = new Prestation();

@@ -1,4 +1,15 @@
 <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+    <form class="flex items-center mx-auto max-w-screen-xl px-2 lg:px-2">
+        <label for="simple-search" class="sr-only">Rechercher</label>
+        <div class="relative w-full">
+            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <svg aria-hidden="true" class="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                </svg>
+            </div>
+            <input type="text" id="simple-search" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2" placeholder="Rechercher" required="">
+        </div>
+    </form>
     <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
@@ -32,13 +43,46 @@
                     {{ user.getPhone() }}
                 </td>
                 <td class="px-6 py-4">
-                    {{ user.getBirthday() }}
+                    {% if user.getBirthday() is not empty %}
+                        {{ user.getBirthday()|date('d/m/Y') }}
+                    {% else %}
+                        Aucun
+                    {% endif %}
                 </td>
                 <td class="px-6 py-4">
-                    {{ user.getGenre() }}
+                    
+                    {% if user.getGenre() is not empty %}
+                        {{ user.getGenre() }}
+                    {% else %}
+                        Non défini
+                    {% endif %}
                 </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('simple-search');
+    const tableRows = document.querySelectorAll('tbody tr');
+
+    searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.trim().toLowerCase();
+
+        tableRows.forEach(row => {
+            const nom = row.querySelector('td:nth-child(1)').textContent.trim().toLowerCase();
+            const email = row.querySelector('td:nth-child(2)').textContent.trim().toLowerCase();
+            const phone = row.querySelector('td:nth-child(3)').textContent.trim().toLowerCase();
+            const birthday = row.querySelector('td:nth-child(4)').textContent.trim().toLowerCase();
+            const genre = row.querySelector('td:nth-child(5)').textContent.trim().toLowerCase();
+
+            if (nom.includes(searchTerm) || email.includes(searchTerm) || phone.includes(searchTerm) || birthday.includes(searchTerm) || genre.includes(searchTerm)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+});
+</script>
