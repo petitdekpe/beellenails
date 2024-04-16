@@ -33,7 +33,7 @@ class PrestationController extends AbstractController
             $entityManager->persist($prestation);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_prestation_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_dashboard_prestation', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('prestation/new.html.twig', [

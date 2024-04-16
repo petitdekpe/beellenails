@@ -28,6 +28,9 @@
                 <th scope="col" class="px-6 py-3">
                     Genre
                 </th>
+                <th scope="col" class="px-6 py-3">
+                    Actions
+                </th>
             </tr>
         </thead>
         <tbody>
@@ -56,6 +59,9 @@
                     {% else %}
                         Non défini
                     {% endif %}
+                </td>
+                 <td class="px-6 py-4">
+                    <a href="{{path('app_user_edit', {'id': user.getId()})}}" class="font-medium text-red-600  hover:underline">Modifier</a>
                 </td>
             </tr>
             {% endfor %}

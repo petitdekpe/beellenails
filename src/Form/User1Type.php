@@ -17,26 +17,26 @@ class User1Type extends AbstractType
     {
         $builder
             ->add('email', EmailType::class, [
-                'attr' => ['class' => 'input flow-input'],
+                'attr' => ['class' => 'input flow-input bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5'],
             ])
             ->add('Nom', TextType::class, [
-                'attr' => ['class' => 'input flow-input'],
+                'attr' => ['class' => 'input flow-input bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5'],
             ])
             ->add('Prenom', TextType::class, [
-                'attr' => ['class' => 'input flow-input'],
+                'attr' => ['class' => 'input flow-input bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5'],
             ])
             ->add('Phone', TextType::class, [
-                'attr' => ['class' => 'input flow-input'],
+                'attr' => ['class' => 'input flow-input bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5'],
             ])
             ->add('birthday', BirthdayType::class, [
                 'attr' => ['class' => 'input flow-input'],
             ])
             ->add('genre', ChoiceType::class, [
                 'choices' => [
-                    'Male' => 'male',
-                    'Female' => 'female',
+                    'Masculin' => 'M',
+                    'Féminin' => 'F',
                 ],
-                'attr' => ['class' => 'select flow-select'],
+                'attr' => ['class' => 'select flow-select bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5'],
             ]);
     }
 
