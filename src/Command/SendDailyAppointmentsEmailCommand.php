@@ -35,8 +35,7 @@ class SendDailyAppointmentsEmailCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $tomorrow = new \DateTime('+1 day');
-        $appointments = $this->rendezvousRepository->findByDay($tomorrow);
+        $appointments = $this->rendezvousRepository->findTomorrowAppointments();
 
         $email = (new Email())
             ->from('beellenailscare@beellenails.com')
@@ -52,4 +51,5 @@ class SendDailyAppointmentsEmailCommand extends Command
 
         return Command::SUCCESS;
     }
+
 }

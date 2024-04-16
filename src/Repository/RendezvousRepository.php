@@ -51,6 +51,19 @@ class RendezvousRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function findTomorrowAppointments()
+    {
+        $tomorrow = new \DateTime('tomorrow');
+        $statusCriteria = ['Rendez-vous pris', 'Rendez-vous confirmé'];
+
+        return $this->createQueryBuilder('r')
+            ->andWhere('r.status IN (:statuses)')
+            ->andWhere('r.day = :day')
+            ->setParameter('statuses', $statusCriteria)
+            ->setParameter('day', $tomorrow->format('Y-m-d')) // Assuming 'day' field is stored as date without time
+            ->getQuery()
+            ->getResult();
+    }
 
 
 
