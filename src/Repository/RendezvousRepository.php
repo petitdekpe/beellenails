@@ -61,6 +61,7 @@ class RendezvousRepository extends ServiceEntityRepository
             ->andWhere('r.day = :day')
             ->setParameter('statuses', $statusCriteria)
             ->setParameter('day', $tomorrow->format('Y-m-d')) // Assuming 'day' field is stored as date without time
+            ->orderBy('r.creneau', 'ASC')
             ->getQuery()
             ->getResult();
     }

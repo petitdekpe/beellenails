@@ -35,9 +35,9 @@ class PaymentController extends AbstractController
         $transaction = $this->fedapayService->initTransaction(
         //montant
             5000,
-            //description
+        //description
             'Acompte sur Prestation',
-            //utilisateur
+        //utilisateur
             $user
         );
 
@@ -63,6 +63,7 @@ class PaymentController extends AbstractController
         $status = $request->get('status');
         $payment = $repository->findOneBy(['transactionID' => $transaction]);
         $rendezvou = $payment->getRendezvous();
+        
         if ($status !== 'approved') {
             $rendezvou->setStatus('Tentative échoué');
             $this->entityManager->flush();
@@ -93,11 +94,15 @@ class PaymentController extends AbstractController
                 ]);
             }
         }
+
         $payment
             ->setUpdatedAt(new \DateTime('now'))
+            ->setStatus($status)
             ->setFees($transaction->fees ?? 0)
             ->setMode($transaction->mode ?? '');
-
+        $rendezvou
+            ->setStatus('Rendez-vous pris');
+        
         $this->entityManager->flush();
 
         return $this->render('rendezvous/payment/done.html.twig', [

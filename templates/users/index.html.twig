@@ -21,7 +21,7 @@
             <p><strong>Prénom:</strong> {{app.user.prenom}}</p>
         </li>
         <li class="w-full px-4 py-2 border-b border-gray-200 rounded-t-lg">
-            <p><strong>Date de naissance:</strong> {{app.user.birthday}}</p>
+            <p><strong>Date de naissance:</strong> {{app.user.birthday|date('d/m/Y')}}</p>
         </li>
         <li class="w-full px-4 py-2 border-b border-gray-200 rounded-t-lg">
             <p><strong>Genre:</strong> {{app.user.genre}}</p>

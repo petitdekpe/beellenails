@@ -14,6 +14,7 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormBuilderInterface;
 use Vich\UploaderBundle\Form\Type\VichImageType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -32,17 +33,20 @@ class RendezvousType extends AbstractType
                 'html5' => false,
                 'format' => 'yyyy-MM-dd',
                 'attr' => ['class' => 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5', 'id' => 'datepicker'],
-
-            // Vous pouvez également ajouter d'autres options de champ ici si nécessaire
         ])
         ->add('categorie', EntityType::class, [
             'label' => 'Choisissez une catégorie de prestation',
             'class' => CategoryPrestation::class,
             'choice_label' => 'NomCategory',
-            'required'=> false,
+            'required' => true,
             'placeholder' => 'Sélectionnez une catégorie',
             'attr' => ['class' => 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5'],
-            'mapped' => false, // Ceci signifie que le champ n'est pas lié à une propriété de l'entité Rendez-vous
+            'mapped' => false,
+            'constraints' => [
+                new NotBlank([
+                    'message' => 'Veuillez sélectionner une catégorie',
+                ]),
+            ],
         ])
         ->add('prestation', EntityType::class, [
             'class' => Prestation::class,
@@ -86,11 +90,16 @@ class RendezvousType extends AbstractType
             $form->add('prestation', EntityType::class, [
                 'class' => Prestation::class,
                 'choices'=> $prestation,
-                'required'=> false,
+                'required'=> true,
                 'choice_label' => 'Title',
                 'placeholder' => 'Prestation (Choisir une catégorie)',
                 'attr' => ['class' => 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5'],
-                'label' => 'Choisissez une prestation'
+                'label' => 'Choisissez une prestation',
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Veuillez sélectionner une prestation',
+                    ]),
+                ],
             ]);
         }; 
 

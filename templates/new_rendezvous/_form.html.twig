@@ -7,56 +7,95 @@
 
   <ol class="relative border-s border-gray-200">
 
-    <li class="ms-6">
-        <span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -start-3 ring-8 ring-white">
-            <svg class="w-2.5 h-2.5 text-blue-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
-            </svg>
-        </span>
-        <h3 class="mb-1 text-lg font-semibold text-gray-900">{{ form_label(form.day, 'Date du rendez-vous') }}</h3>
-        <time class="block mb-2 text-sm font-normal leading-none text-gray-400"></time>
-        <input
-            name="{{ field_name(form.day) }}"
-            value="{{ field_value(form.day) }}"
-            placeholder="Cliquez pour choisir une date de rendez-vous"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5"
-            id="datepicker"
-        >
-        
-    </li>
-    <li class="ms-6">
-        <span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -start-3 ring-8 ring-white">
-            <svg class="w-2.5 h-2.5 text-blue-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
-            </svg>
-        </span>
-        <h3 class="my-2 text-lg font-semibold text-gray-900">{{form_label(form.creneau, 'Choisissez votre créneau')}} - <span class="text-sm font-normal text-gray-900"> Choisir une date d'abord</span></h3>
-        <time class="block mb-2 text-sm font-normal leading-none text-gray-400"></time>
-        <div id="creneaux-container">
-            <p class="text-base font-normal text-gray-500" id="test"> {{ form_widget(form.creneau) }} </p>
-        </div>
-    </li>
-    <li class="mb-10 ms-6">
-        <span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -start-3 ring-8 ring-white">
-            <svg class="w-2.5 h-2.5 text-blue-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
-            </svg>
-        </span>
-        <h3 class="mb-1 text-lg font-semibold text-gray-900">{{form_label(form.supplement, 'Choisissez votre supplément')}}</h3>
-        <time class="block mb-2 text-sm font-normal leading-none text-gray-400"></time>
-        <p class="text-base font-normal text-gray-500" id="test"> {{ form_widget(form.supplement) }} </p>
-    </li>
-    <li class="ms-6">
-        <span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -start-3 ring-8 ring-white">
-            <svg class="w-2.5 h-2.5 text-blue-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
-            </svg>
-        </span>
-        <h3 class="mb-1 text-lg font-semibold text-gray-900">{{form_label(form.image)}}</h3>
-        <time class="block mb-2 text-sm font-normal leading-none text-gray-400"></time>
-        <p class="text-base font-normal text-gray-500"> {{ form_widget(form.image) }} </p>
-        <p> {{ form_help(form.image) }} </p>
-    </li>
+<li
+	class="ms-6">
+	{# Vérifie s'il y a des erreurs pour ce champ #}
+	{% set hasErrors = form_errors(form.day)|length > 0 %}
+	{# Ajoute une classe "text-red" si des erreurs sont présentes #}
+	{% set labelClass = hasErrors ? 'text-red-700 dark:text-red-500' : 'text-gray-900' %}
+
+	<span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -start-3 ring-8 ring-white">
+		<svg class="w-2.5 h-2.5 text-blue-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewbox="0 0 20 20">
+			<path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
+		</svg>
+	</span>
+	<h3 class="mb-1 text-lg font-semibold">
+		{{ form_label(form.day, 'Date du rendez-vous') }}
+		{# Affiche le message d'erreur à côté du label s'il y en a #}
+		{% if hasErrors %}
+			<span class="text-red-600 dark:text-red-500 ml-2 font-normal">
+				|
+				{{ form_errors(form.day) }}
+			</span>
+		{% endif %}
+	</h3>
+
+	{# Ajouter une classe "border-red" si des erreurs sont présentes #}
+	{% set inputClass = hasErrors ? 'border border-red-500' : 'border border-gray-300' %}
+	<input name="{{ field_name(form.day) }}" value="{{ field_value(form.day) }}" placeholder="Cliquez pour choisir une date de rendez-vous" class="bg-gray-50 {{ inputClass }} text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" id="datepicker">
+</li>
+
+<li
+	class="ms-6">
+	{# Vérifier s'il y a des erreurs pour ce champ #}
+	{% set hasErrors = form_errors(form.creneau)|length > 0 %}
+
+	{# Ajouter une classe "text-red" si des erreurs sont présentes #}
+	{% set labelClass = hasErrors ? 'text-red-700 dark:text-red-500' : 'text-gray-900' %}
+
+	<span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -start-3 ring-8 ring-white">
+		<svg class="w-2.5 h-2.5 text-blue-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewbox="0 0 20 20">
+			<path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
+		</svg>
+	</span>
+	<h3 class="my-2 text-lg font-semibold text-gray-900">
+		{{form_label(form.creneau, 'Choisissez votre créneau')}}
+		-
+		<span class="text-sm font-normal text-gray-900">
+			Choisir une date d'abord</span>
+		{% if hasErrors %}
+			<span class="text-red-600 dark:text-red-500 ml-2 font-normal">
+				|
+				{{ form_errors(form.creneau) }}
+			</span>
+		{% endif %}
+	</h3>
+	<time class="block mb-2 text-sm font-normal leading-none text-gray-400"></time>
+	<div id="slots-container">
+		<p class="text-base font-normal text-gray-500" id="test">
+			{{ form_widget(form.creneau) }}
+		</p>
+	</div>
+</li>
+
+<li class="mb-10 ms-6">
+	<span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -start-3 ring-8 ring-white">
+		<svg class="w-2.5 h-2.5 text-blue-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewbox="0 0 20 20">
+			<path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
+		</svg>
+	</span>
+	<h3 class="mb-1 text-lg font-semibold text-gray-900">{{form_label(form.supplement, 'Choisissez votre supplément')}}</h3>
+	<time class="block mb-2 text-sm font-normal leading-none text-gray-400"></time>
+	<p class="text-base font-normal text-gray-500" id="test">
+		{{ form_widget(form.supplement) }}
+	</p>
+</li>
+<li class="ms-6">
+	<span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -start-3 ring-8 ring-white">
+		<svg class="w-2.5 h-2.5 text-blue-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewbox="0 0 20 20">
+			<path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
+		</svg>
+	</span>
+	<h3 class="mb-1 text-lg font-semibold text-gray-900">{{form_label(form.image)}}</h3>
+	<time class="block mb-2 text-sm font-normal leading-none text-gray-400"></time>
+	<p class="text-base font-normal text-gray-500">
+		{{ form_widget(form.image) }}
+	</p>
+	<p>
+		{{ form_help(form.image) }}
+	</p>
+</li>
+
 </ol>
     
     <button type="submit" class="btn btn-primary mt-5 text-white bg-pink-700 hover:bg-pink-500 focus:ring-4 focus:outline-none  font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center">Enregistrer</button>
@@ -64,81 +103,6 @@
 {{ form_end(form, {'render_rest': false}) }}
 </div>
 
-<div id="alerte-date" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-    <!-- Contenu de l'alerte de date -->
-    <div class="relative p-4 w-full max-w-2xl max-h-full my-15">
-        <div class="relative bg-white rounded-lg shadow">
-            <div class="flex items-center justify-between p-4 md:p-5 border-b bg-red-700 rounded-t">
-                <h3 class="text-xl font-semibold text-white bg-red-700">
-                    Information
-                </h3>
-                <button type="button" class="text-white bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center" onclick="closeModal('alerte-date')">
-                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
-                    </svg>
-                    <span class="sr-only">Fermer la modal</span>
-                </button>
-            </div>
-            <!-- Modal body -->
-            <div class="p-4 md:p-5 space-y-4">
-                <p class="text-base leading-relaxed text-gray-500">
-                   Veuillez choisir une date de rendez-vous.
-                </p>
-            </div>
-            
-        </div>
-    </div>
-</div>
-
-<div id="alerte-prestation" data-modal-backdrop="static" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-    <!-- Contenu de l'alerte de prestation -->
-    <div class="relative p-4 w-full max-w-2xl max-h-full my-15">
-        <div class="relative bg-white rounded-lg shadow">
-            <div class="flex items-center justify-between p-4 md:p-5 border-b bg-red-700 rounded-t">
-                <h3 class="text-xl font-semibold text-white bg-red-700">
-                    Information
-                </h3>
-                <button type="button" class="text-white bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center" onclick="closeModal('alerte-prestation')">
-                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
-                    </svg>
-                    <span class="sr-only">Fermer la modal</span>
-                </button>
-            </div>
-            <!-- Modal body -->
-            <div class="p-4 md:p-5 space-y-4">
-                <p class="text-base leading-relaxed text-gray-500">
-                    Veuillez choisir une prestation.
-                </p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div id="alerte-creneau" data-modal-backdrop="static" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-    <!-- Contenu de l'alerte de créneau -->
-    <div class="relative p-4 w-full max-w-2xl max-h-full my-15">
-        <div class="relative bg-white rounded-lg shadow">
-            <div class="flex items-center justify-between p-4 md:p-5 border-b bg-red-700 rounded-t">
-                <h3 class="text-xl font-semibold text-white bg-red-700">
-                    Information
-                </h3>
-                <button type="button" class="text-white bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center" onclick="closeModal('alerte-creneau')">
-                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
-                    </svg>
-                    <span class="sr-only">Fermer la modal</span>
-                </button>
-            </div>
-            <!-- Modal body -->
-            <div class="p-4 md:p-5 space-y-4">
-                <p class="text-base leading-relaxed text-gray-500">
-                    Veuillez choisir un créneau.
-                </p>
-            </div>
-        </div>
-    </div>
-</div>
 
 
 {% endblock %}
@@ -168,140 +132,13 @@
     });
 </script>
 
-<!--script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Sélection du formulaire
-        var form = document.querySelector('#monformulaire');
-
-        // Écoute de l'événement de soumission du formulaire
-        form.addEventListener('submit', function(event) {
-            // Sélection du champ de date
-            var datePicker = document.getElementById('datepicker');
-            
-            // Vérification si une date a été sélectionnée
-            if (!datePicker.value) {
-                // Empêcher le formulaire de se soumettre
-                event.preventDefault();
-
-                // Afficher un message d'erreur ou effectuer une autre action
-                alert('Veuillez sélectionner une date de rendez-vous.');
-            }
-        });
-    });
-
-
-    document.addEventListener('DOMContentLoaded', function() {
-        var form = document.querySelector('#monformulaire');
-
-        form.addEventListener('submit', function(event) {
-            var categorieField = document.getElementById('pre_rendezvous_categorie');
-
-            if (!categorieField.value) {
-                event.preventDefault();
-                alert('Veuillez choisir une catégorie de prestation.');
-            }
-        });
-    });
-
-    document.addEventListener('DOMContentLoaded', function() {
-        var form = document.querySelector('#monformulaire');
-
-        form.addEventListener('submit', function(event) {
-            var categorieField = document.getElementById('pre_rendezvous_prestation');
-
-            if (!categorieField.value) {
-                event.preventDefault();
-                alert('Veuillez choisir une prestation.');
-            }
-        });
-    });
-
-    document.addEventListener('DOMContentLoaded', function() {
-        var form = document.querySelector('#monformulaire');
-
-        form.addEventListener('submit', function(event) {
-            var categorieField = document.getElementById('pre_rendezvous_creneau');
-
-            if (!categorieField.value) {
-                event.preventDefault();
-                alert('Plus de créneau libre pour cette date. Choisissez une date avec des créneaux libres affichés.');
-            }
-        });
-    });
-
-    document.addEventListener('DOMContentLoaded', function() {
-    var form = document.querySelector('#monformulaire');
-
-    form.addEventListener('submit', function(event) {
-        var categorieField = document.getElementById('pre_rendezvous_creneau');
-
-        // Vérifier si aucun créneau n'est sélectionné
-        if (categorieField.value === '' || categorieField.value === null) {
-            event.preventDefault();
-            alert('Plus de créneau libre pour cette date. Choisissez une date avec des créneaux libres affichés.');
-        }
-    });
-});
-
-</script-->
-
-<script>
-    function afficherModal(id) {
-        var modal = document.getElementById(id);
-        modal.classList.remove('hidden');
-    }
-
-    function closeModal(id) {
-        var modal = document.getElementById(id);
-        modal.classList.add('hidden');
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        var form = document.querySelector('#monformulaire');
-
-        form.addEventListener('submit', function(event) {
-            var datePicker = document.getElementById('datepicker');
-            if (!datePicker.value) {
-                event.preventDefault();
-                afficherModal('alerte-date');
-            }
-        });
-
-        form.addEventListener('submit', function(event) {
-            var categorieField = document.getElementById('rendezvous_prestation');
-
-            if (!categorieField.value) {
-                event.preventDefault();
-                afficherModal('alerte-prestation');
-            }
-        });
-    
-        form.addEventListener('submit', function(event) {
-            var categorieField = document.getElementById('rendezvous_creneau');
-
-            if (!categorieField.value) {
-                event.preventDefault();
-                afficherModal('alerte-creneau');
-            }
-        });
-
-        form.addEventListener('submit', function(event) {
-            var categorieField = document.getElementById('rendezvous_creneau');
-
-            // Vérifier si aucun créneau n'est sélectionné
-            if (categorieField.value === '' || categorieField.value === null) {
-                event.preventDefault();
-                afficherModal('alerte-creneau');
-            }
-        });
-
-
-    });
-</script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         var datePicker = document.getElementById('datepicker');
+        var slotsContainer = document.getElementById('slots-container');
+
+
         datePicker.addEventListener('change', function() {
             var selectedDate = datePicker.value;
             var xhr = new XMLHttpRequest();
@@ -321,15 +158,16 @@
         });
         
         function updateSlotsDropdown(slots) {
-        var slotsDropdown = document.getElementById('pre_rendezvous_creneau');
-        slotsDropdown.innerHTML = ''; // Efface les options actuelles
+        slotsContainer.innerHTML = ''; // Efface le contenu du conteneur
 
         // Si la liste de créneaux est vide
         if (slots.length === 0) {
-            var noSlotsOption = document.createElement('option');
-            noSlotsOption.text = 'Aucun Créneau Disponible Pour Cette Date';
-            noSlotsOption.disabled = true; // Désactive l'option pour qu'elle ne soit pas sélectionnable
-            slotsDropdown.appendChild(noSlotsOption);
+            var noSlotsParagraph = document.createElement('p');
+            noSlotsParagraph.textContent = 'Aucun créneau disponible pour cette date';
+            noSlotsParagraph.className = 'text-red-600 dark:text-red-500 mt-2'; // Ajoutez des classes si nécessaire
+
+            // Ajoute le paragraphe au conteneur
+            slotsContainer.appendChild(noSlotsParagraph);
         } else {
             var selectElement = document.createElement('select'); // Crée un élément select
             selectElement.id = 'pre_rendezvous_creneau';
@@ -343,7 +181,8 @@
                 selectElement.appendChild(option);
             });
 
-            slotsDropdown.replaceWith(selectElement); // Remplace la liste existante par le nouveau select
+            // Ajoute le nouvel élément select au conteneur
+            slotsContainer.appendChild(selectElement);
         }
     }
     });

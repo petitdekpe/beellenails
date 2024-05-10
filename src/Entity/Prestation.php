@@ -6,6 +6,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\PrestationRepository;
+use phpDocumentor\Reflection\Types\Void_;
 use Symfony\Component\HttpFoundation\File\File;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
@@ -44,6 +45,9 @@ class Prestation
 
     #[ORM\Column(length: 800, nullable: true)]
     private ?string $inclus = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $updatedAt = null;
 
     public function __construct()
     {
@@ -102,11 +106,12 @@ class Prestation
         return $this->image;
     }
 
-    public function setImage(File $image): static
+    public function setImage(File $image = null): void
     {
         $this->image = $image;
-
-        return $this;
+        if ($image) {
+            $this->updatedAt = new \DateTimeImmutable('now');
+        }
     }
 
     public function getImageName(): ?string
@@ -114,9 +119,21 @@ class Prestation
         return $this->imageName;
     }
 
-    public function setImageName(string $imageName): static
+    public function setImageName(string $image): static
     {
-        $this->imageName = $imageName;
+        $this->imageName = $image;
+
+        return $this;
+    }
+
+    public function getUpdatedAt()
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(\DateTimeImmutable $datetime)
+    {
+        $this->updatedAt = $datetime;
 
         return $this;
     }

@@ -7,3 +7,6 @@ controllers:
 get_available_slots:
     path: '/get-available-slots'
     controller: 'App\Controller\CalendarController::getAvailableSlots'
+
+meta_image:
+    path: '/assets/metatags.png'

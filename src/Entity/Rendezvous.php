@@ -33,10 +33,11 @@ class Rendezvous
     #[ORM\Column(length: 255)]
     private ?string $ImageName = null;
 
-    
+    #[Assert\NotBlank(message:'Veuillez choisir une date de rendez-vous')]
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $day = null;
 
+    #[Assert\NotBlank(message: 'Plus de créneau libre pour cette date. Choisissez une date avec des créneaux libres affichés.')]
     #[ORM\ManyToOne(inversedBy: 'rendezvouses')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Creneau $creneau = null;
