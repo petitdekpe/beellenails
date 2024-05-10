@@ -23,20 +23,29 @@ class CreneauRepository extends ServiceEntityRepository
     }
 
     public function findAvailableSlots(\DateTimeInterface $selectedDate): array
-{
-    return $this->createQueryBuilder('c')
-        ->leftJoin('c.rendezvouses', 'r', 'WITH', 'r.day = :selectedDate')
-        ->andWhere('r.id IS NULL OR c.id NOT IN (
+    {
+        $currentTime = new \DateTime(); // Heure actuelle
+
+        // Définir l'heure actuelle plus deux heures
+        $twoHoursLater = clone $currentTime;
+        $twoHoursLater->modify('+2 hours');
+
+        return $this->createQueryBuilder('c')
+            ->leftJoin('c.rendezvouses', 'r', 'WITH', 'r.day = :selectedDate')
+            ->andWhere('r.id IS NULL OR c.id NOT IN (
             SELECT cr.id FROM App\Entity\Creneau cr
             INNER JOIN cr.rendezvouses re
             WHERE re.day = :selectedDate
             AND re.status IN (:statuses)
         )')
-        ->setParameter('selectedDate', $selectedDate->format('Y-m-d'))
-        ->setParameter('statuses', ['Rendez-vous pris', 'Rendez-vous confirmé', 'Congé'])
-        ->getQuery()
-        ->getResult();
-}
+            ->andWhere('( :selectedDate != CURRENT_DATE() OR c.startTime > :twoHoursLater )') // Vérifie si la date sélectionnée est différente de la date actuelle, ou si l'heure de début est supérieure à l'heure actuelle plus deux heures
+            ->setParameter('selectedDate', $selectedDate->format('Y-m-d'))
+            ->setParameter('statuses', ['Rendez-vous pris', 'Rendez-vous confirmé', 'Congé'])
+            ->setParameter('twoHoursLater', $twoHoursLater->format('H:i:s'))
+            ->getQuery()
+            ->getResult();
+    }
+
 
 
 
