@@ -21,7 +21,7 @@ class Rendezvous
     #[ORM\Column]
     private ?int $id = null;
 
-    #[Assert\NotBlank(groups: ['with_prestation'])]
+    #[Assert\NotBlank(groups: ['with_prestation'], message: 'Veuillez choisir une prestation')]
     #[Assert\NotBlank(groups: ['without_prestation'], allowNull: true)]
     #[ORM\ManyToOne(inversedBy: 'rendezvouses')]
     #[ORM\JoinColumn(nullable: false)]

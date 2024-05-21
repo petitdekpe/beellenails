@@ -36,14 +36,6 @@ class PreRendezvousType extends AbstractType
                 'format' => 'yyyy-MM-dd',
                 'attr' => ['class' => 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5', 'id' => 'datepicker'],
             ])
-            ->add('prestation', EntityType::class, [
-                'class' => Prestation::class,
-                'required' => true,
-                'choice_label' => 'Title',
-                'placeholder' => 'Choisir une prestation',
-                'attr' => ['class' => 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5'],
-                'label' => 'Choisissez une prestation'
-            ])
             ->add('creneau', EntityType::class, [
                 'label' => 'Choisissez un créneau',
                 'class' => Creneau::class,

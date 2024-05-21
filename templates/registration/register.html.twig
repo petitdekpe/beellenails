@@ -10,7 +10,7 @@
       <a href="#" class="flex items-center mb-6 text-2xl font-semibold text-gray-900">
           <img class="w-40 h-40 sm: mr-2 md:max-w-md" src="/assets/logooff.png" alt="logo">  
       </a>
-      <div class="w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0">
+      <div class="w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0 mb-10">
           <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
               <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
                   Créez votre compte
@@ -28,7 +28,8 @@
                       {{ form_row(registrationForm.Prenom) }}
                   </div>
                   <div>
-                     {{ form_row(registrationForm.Phone) }}
+                    {{ form_label(registrationForm.Phone, 'Numéro de Téléphone') }}
+                    <input name="{{ field_name(registrationForm.Phone) }}" value="{{ field_value(registrationForm.Phone) }}" placeholder="Numéro de téléphone sans tirets et sans espaces" type="tel" pattern="[0-9]*" inputmode="numeric" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5">
                   </div>
                   <div>
                        {{ form_row(registrationForm.email) }}

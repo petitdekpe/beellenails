@@ -38,7 +38,7 @@ class RendezvousType extends AbstractType
             'label' => 'Choisissez une catégorie de prestation',
             'class' => CategoryPrestation::class,
             'choice_label' => 'NomCategory',
-            'required' => true,
+            //'required' => true,
             'placeholder' => 'Sélectionnez une catégorie',
             'attr' => ['class' => 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5'],
             'mapped' => false,
@@ -50,7 +50,7 @@ class RendezvousType extends AbstractType
         ])
         ->add('prestation', EntityType::class, [
             'class' => Prestation::class,
-            'required'=> true,
+            //'required'=> true,
             'choice_label' => 'Title',
             'placeholder' => 'Choisir une prestation',
             'attr' => ['class' => 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5'],
