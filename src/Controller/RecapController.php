@@ -45,7 +45,7 @@ class RecapController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            return $this->redirectToRoute('payment_init', ['rendezvou' => $rendezvou->getId()]);
+            return $this->redirectToRoute('payment_form', ['rendezvou' => $rendezvou->getId()]);
         }
 
         // Récupérer les suppléments associés à ce rendez-vous

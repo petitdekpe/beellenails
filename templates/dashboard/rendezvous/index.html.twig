@@ -50,7 +50,7 @@
                             <td class="px-4 py-3">{{ rendezvous.prestation }}</td>
                             <td class="px-4 py-3">
                                 {% for supplement in rendezvous.supplement %}
-                                    {{ supplement.nom }}{% if not loop.last %}, {% endif %}
+                                    {{ supplement.id }}{% if not loop.last %}, {% endif %}
                                 {% endfor %}
                             </td>
                             <td class="px-4 py-3">{{ rendezvous.status }}</td>
@@ -61,7 +61,7 @@
                                 No image available
                                 {% endif %}
                             </td>
-                            <td class="px-4 py-3">{{ rendezvous.updated_at|date('d-m-Y H:i:s') }}</td>
+                            <td class="px-4 py-3">{{ rendezvous.updated_at|date('d-m-Y H:i:s') }} GMT</td>
                             <td class="px-4 py-3">
                                 {% if rendezvous.status != "Annulé" %}
                                 <div class="flex felx-col items-center">

@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Payment Confirmation
+{% endblock %}
+
+{% block body %}
+	<h1>Payment Confirmation</h1>
+
+	<p>Transaction reference:
+		{{ payment.transactionReference }}</p>
+	<button id="callbackButton">Check Payment Status</button>
+
+	<script>
+		document.getElementById('callbackButton').addEventListener('click', function () {
+fetch('{{ path('payment_callback') }}', {
+method: 'POST',
+headers: {
+'Content-Type': 'application/json'
+},
+body: JSON.stringify(
+{reference: '{{ payment.transactionReference }}'}
+)
+}).then(response => response.json()).then(data => {
+if (data.status === 'approved') {
+alert('Payment approved!');
+window.location.href = '{{ path('payment_done', { reference: payment.transactionReference }) }}';
+} else {
+alert('Payment status: ' + data.status);
+}
+});
+});
+	</script>
+{% endblock %}
+

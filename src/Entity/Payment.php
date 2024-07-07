@@ -12,12 +12,8 @@ class Payment
 {
 	public const STATUS = [
 		'pending' => 'En attente',
-		'approved' => 'Approuvée',
-		'declined' => 'Déclinée',
-		'canceled' => 'Annulée',
-		'refunded' => 'Remboursée',
-		'transferred' => 'Transférée',
-		'invalid' => "Invalide",
+		'successful' => 'Approuvée',
+		'failed' => 'Annulée',
 	];
 
 	#[ORM\Id]

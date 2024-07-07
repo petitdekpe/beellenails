@@ -8,6 +8,11 @@ parameters:
     app.fedapay_public_key: '%env(FEDAPAY_PUBLIC_KEY)%'
     app.fedapay_env: '%env(FEDAPAY_ENV)%'
 
+    feexpay.shop_id: '%env(FEEXPAY_SHOPID)%'
+    feexpay.token: '%env(FEEXPAY_TOKEN)%'
+    feexpay.callback_url: '%env(FEEXPAY_CALLBACK)%'
+    feexpay.mode: '%env(FEEXPAY_ENV)%'
+
 services:
     # Autoriser l'auto-câblage pour l'entité Rendezvous
     App\Entity\Rendezvous: ~
@@ -38,3 +43,8 @@ services:
             $privateKey: '%app.fedapay_private_key%'
             $publicKey: '%app.fedapay_public_key%'
             $fedapayEnv: '%app.fedapay_env%'
+
+    App\Service\FeexpayService:
+        arguments:
+            $apiKey: '%env(FEEXPAY_API_KEY)%'
+            $shopId: '%env(FEEXPAY_SHOP_ID)%'

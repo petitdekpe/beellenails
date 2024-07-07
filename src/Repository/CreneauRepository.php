@@ -24,11 +24,18 @@ class CreneauRepository extends ServiceEntityRepository
 
     public function findAvailableSlots(\DateTimeInterface $selectedDate): array
     {
-        $currentTime = new \DateTime(); // Heure actuelle
+        // Définir le fuseau horaire du serveur (Europe/Paris)
+        $serverTimezone = new \DateTimeZone('Europe/Paris');
 
-        // Définir l'heure actuelle plus deux heures
+        // Définir votre fuseau horaire local (Europe/Paris dans cet exemple, ajustez si nécessaire)
+        $localTimezone = new \DateTimeZone('Africa/Porto-Novo');
+
+        // Obtenir l'heure actuelle du serveur en Europe/Paris
+        $currentTime = new \DateTime('now', $serverTimezone);
+
+        // Ajouter deux heures à l'heure actuelle du serveur
         $twoHoursLater = clone $currentTime;
-        $twoHoursLater->modify('+2 hours');
+        $twoHoursLater->modify('+1 hours');
 
         return $this->createQueryBuilder('c')
             ->leftJoin('c.rendezvouses', 'r', 'WITH', 'r.day = :selectedDate')
@@ -38,13 +45,14 @@ class CreneauRepository extends ServiceEntityRepository
             WHERE re.day = :selectedDate
             AND re.status IN (:statuses)
         )')
-            ->andWhere('( :selectedDate != CURRENT_DATE() OR c.startTime > :twoHoursLater )') // Vérifie si la date sélectionnée est différente de la date actuelle, ou si l'heure de début est supérieure à l'heure actuelle plus deux heures
+            ->andWhere('( :selectedDate != CURRENT_DATE() OR c.startTime > :twoHoursLater )')
             ->setParameter('selectedDate', $selectedDate->format('Y-m-d'))
             ->setParameter('statuses', ['Rendez-vous pris', 'Rendez-vous confirmé', 'Congé'])
             ->setParameter('twoHoursLater', $twoHoursLater->format('H:i:s'))
             ->getQuery()
             ->getResult();
     }
+
 
 
 
