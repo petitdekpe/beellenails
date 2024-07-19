@@ -82,11 +82,11 @@
                             <td class="px-6 py-4">{{ appointment.prestation.Title }}</td>
                             <td class="px-6 py-4">{{ appointment.status }}</td>
                             <td class="px-6 py-4">
-                                {% if appointment.status == "Annulé" %}
+                                {% if appointment.status == "Annulé" or appointment.status == "Tentative échouée" or appointment.status == "Tentative échoué" %}
                                     <span class="opacity-50 cursor-not-allowed">Reporter</span>
                                     <span class="opacity-50 cursor-not-allowed">Annuler</span>
                                 {% elseif appointment_passed %}
-                                    <span class="opacity-50 cursor-not-allowed">Fait</span>
+                                    <span class="opacity-50 cursor-not-allowed">Délai passé</span>
                                 {% elseif within_48_hours %}
                                     <span class="opacity-50 cursor-not-allowed">Reporter</span>
                                     <span class="opacity-50">Annuler</span>

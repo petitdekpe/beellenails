@@ -2515,21 +2515,21 @@
         },
         {
             "name": "feexpay/feexpay-php",
-            "version": "1.0.9",
+            "version": "1.0.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/La-Vedette-Media/feexpay-php-sdk.git",
-                "reference": "3accbd7d624906d1e27b2290d1ba6ad1a4b007fd"
+                "reference": "09cd506c84b5e90d3c494b0c8884f446fea08c8d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/La-Vedette-Media/feexpay-php-sdk/zipball/3accbd7d624906d1e27b2290d1ba6ad1a4b007fd",
-                "reference": "3accbd7d624906d1e27b2290d1ba6ad1a4b007fd",
+                "url": "https://api.github.com/repos/La-Vedette-Media/feexpay-php-sdk/zipball/09cd506c84b5e90d3c494b0c8884f446fea08c8d",
+                "reference": "09cd506c84b5e90d3c494b0c8884f446fea08c8d",
                 "shasum": ""
             },
             "type": "library",
             "extra": {
-                "version": "1.0.9"
+                "version": "1.0.10"
             },
             "autoload": {
                 "psr-4": {
@@ -2549,9 +2549,9 @@
             "description": "Php sdk of Feexpay - Online payment solution by credit card and mobile money\"",
             "support": {
                 "issues": "https://github.com/La-Vedette-Media/feexpay-php-sdk/issues",
-                "source": "https://github.com/La-Vedette-Media/feexpay-php-sdk/tree/1.0.9"
+                "source": "https://github.com/La-Vedette-Media/feexpay-php-sdk/tree/1.0.10"
             },
-            "time": "2024-05-28T04:16:08+00:00"
+            "time": "2024-07-07T20:23:59+00:00"
         },
         {
             "name": "jms/metadata",

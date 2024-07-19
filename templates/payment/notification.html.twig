@@ -64,14 +64,14 @@
 
 		<!--h1 class="text-xl font-bold my-5 mx-5">Paiement échoué</h1-->
         <div class="flex justify-center">
-		<div class="mx-8 mt-5 text-justify text-sm w-1/2">
+		<div class="mx-8 mt-5 text-justify text-sm w-2/3">
 			Une requête USSD a été lancée pour votre paiement. Veuillez suivre les étapes ci-dessous pour compléter votre transaction : 
             Suivez les instructions dans la notification pour approuver ou annuler la transaction.
-            Une fois que vous avez <span class="text-green-500">approuvé</span> ou <span class="text-red-500">annulé</span> la transaction, cliquez sur le bouton "Terminer le paiement"** ci-dessous pour confirmer l'état de votre paiement.
+            Une fois que vous avez <strong><span class="text-green-500">Approuvé</span></strong> le paiement, cliquez sur le bouton <strong>Validez la réservation</strong> ci-dessous pour confirmer l'état de votre paiement.
 			<div class="mt-5 flex justify-center">
             <form action="{{ path('payment_callback', { reference: reference }) }}" method="post">
                     <input type="hidden" name="transactionID" value="{{ payment.token }}">
-                    <button class="btn cursor-pointer block text-white bg-pink-700 hover:bg-pink-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center" type="submit">Terminer le paiement</button>
+                    <button class="btn cursor-pointer block text-white bg-pink-700 hover:bg-pink-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center" type="submit">Valider la réservation</button>
             </form>
             </div>
 
@@ -79,8 +79,8 @@
         </div>
 
         <div class="mb-5 flex justify-center">
-		<p class="mx-8 text-justify text-sm w-1/2">
-            <strong>**Prenez soin de répondre à la requête avant de cliquer sur le bouton "Terminer le paiement".</strong>
+		<p class="mx-8 text-justify text-sm w-2/3">
+            <strong><span class="text-4xl">⚠</span> Veuillez cliquer sur le bouton <span class="text-red-500">« Valider la réservation »</span> après votre paiement pour terminer le processus et bloquer votre rendez-vous.</strong>
 		</p>
         </div>
 

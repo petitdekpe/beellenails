@@ -12,8 +12,12 @@ class Payment
 {
 	public const STATUS = [
 		'pending' => 'En attente',
-		'successful' => 'Approuvée',
-		'failed' => 'Annulée',
+		'approved' => 'Approuvée',
+		'declined' => 'Déclinée',
+		'canceled' => 'Annulée',
+		'refunded' => 'Remboursée',
+		'transferred' => 'Transférée',
+		'invalid' => "Invalide",
 	];
 
 	#[ORM\Id]
@@ -217,8 +221,7 @@ class Payment
 			->setUpdatedAt(new \DateTime($transaction->updated_at))
 			->setReference($transaction->reference)
 			->setDescription($transaction->description)
-			->setStatus($transaction->status)
-		;
+			->setStatus($transaction->status);
 
 		return $this;
 	}

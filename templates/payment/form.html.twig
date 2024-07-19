@@ -47,7 +47,8 @@
 
 		{% block stylesheets %}{% endblock %}
 
-		{% block javascripts %}{% endblock %}
+		{% block javascripts %}
+		{% endblock %}
 
 	</head>
 
@@ -64,7 +65,7 @@
 		<!--h1 class="text-xl font-bold my-5 mx-5">Paiement échoué</h1-->
 		<div class="flex justify-center">
 		<div class="mx-15 mt-5 text-justify text-sm w-1/2">
-			<form id="paymentForm" action="{{ path('store_phone_number', { rendezvou: rendezvous.id }) }}" method="post">
+			<form id="paymentForm" action="{{ path('store_phone_number', { rendezvou: rendezvous.id }) }}" method="post" onsubmit="formatPhoneNumber()">
 
 				<!--div>
 					<label for="phoneNumber">Numéro de paiement</label>
@@ -81,6 +82,27 @@
 				</div>
 				</div>
 			</form>
+			<script>
+        function formatPhoneNumber() {
+            var phoneNumberInput = document.getElementById('phoneNumber');
+            var phoneNumber = phoneNumberInput.value;
+
+            // Remove spaces
+            phoneNumber = phoneNumber.replace(/\s+/g, '');
+
+            // Remove leading "00229", "+229", or "229"
+            if (phoneNumber.startsWith('00229')) {
+                phoneNumber = phoneNumber.substring(5);
+            } else if (phoneNumber.startsWith('+229')) {
+                phoneNumber = phoneNumber.substring(4);
+            } else if (phoneNumber.startsWith('229')) {
+                phoneNumber = phoneNumber.substring(3);
+            }
+
+            phoneNumberInput.value = phoneNumber;
+        }
+    </script>
+
 		</div>
 		</div>
 
