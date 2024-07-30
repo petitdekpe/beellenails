@@ -80,32 +80,49 @@ class RendezvousController extends AbstractController
         // Création d'un formulaire personnalisé avec seulement les champs 'day' et 'creneau'
         $form = $this->createForm(RendezvousModifyType::class, $rendezvou);
         $form->handleRequest($request);
-    
-        if ($form->isSubmitted()) {
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Vérification de l'existence d'un rendez-vous pris ou confirmé
+            if ($this->isRendezvousExist($entityManager, $rendezvou)) {
+                $this->addFlash('error', 'Un rendez-vous est déjà pris ou confirmé pour cette date et ce créneau.');
+                return $this->redirectToRoute('app_rendezvous_edit', ['id' => $rendezvou->getId()]);
+            }
+
             // Persistance des changements en base de données
             $entityManager->flush();
 
             // Récupérer l'adresse e-mail de l'utilisateur à partir du rendez-vous
-        $userEmail = $rendezvou->getUser()->getEmail();
+            $userEmail = $rendezvou->getUser()->getEmail();
 
-        // Envoyer l'e-mail après la création du rendez-vous
-        $email = (new Email())
-        ->from('beellenailscare@beellenails.com')
-        ->to($userEmail)
-        ->subject('Votre Rendez-vous !')
-        ->html($this->renderView(
-            'emails/rendezvous_updated.html.twig',
-            ['rendezvous' => $rendezvou]
-        ));
-        $mailer->send($email);
-    
+            // Envoyer l'e-mail après la modification du rendez-vous
+            $email = (new Email())
+                ->from('beellenailscare@beellenails.com')
+                ->to($userEmail)
+                ->subject('Votre Rendez-vous a été modifié')
+                ->html($this->renderView(
+                    'emails/rendezvous_updated.html.twig',
+                    ['rendezvous' => $rendezvou]
+                ));
+            $mailer->send($email);
+
             return $this->redirectToRoute('app_users', [], Response::HTTP_SEE_OTHER);
         }
-    
+
         return $this->render('rendezvous/edit.html.twig', [
             'rendezvou' => $rendezvou,
             'form' => $form->createView(),
         ]);
+    }
+
+    private function isRendezvousExist(EntityManagerInterface $entityManager, Rendezvous $rendezvou): bool
+    {
+        $existingRendezvous = $entityManager->getRepository(Rendezvous::class)->findOneBy([
+            'day' => $rendezvou->getDay(),
+            'creneau' => $rendezvou->getCreneau(),
+            'status' => ['Rendez-vous pris', 'Rendez-vous confirmé']
+        ]);
+
+        return $existingRendezvous !== null;
     }
 
     #[Route('/{id}/cancel', name: 'app_rendezvous_cancel', methods: ['GET', 'POST'])]

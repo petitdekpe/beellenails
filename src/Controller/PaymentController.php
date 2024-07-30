@@ -152,7 +152,7 @@ class PaymentController extends AbstractController
 
             $email = (new Email())
                 ->from('beellenailscare@beellenails.com')
-                ->to('murielahodode@gmail.com')
+                ->to('jy.ahouanvoedo@gmail.com')
                 ->subject('Nouveau Rendez-vous !')
                 ->html($this->renderView(
                     'emails/rendezvous_created_admin.html.twig',

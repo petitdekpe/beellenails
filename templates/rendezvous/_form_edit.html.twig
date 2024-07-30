@@ -18,7 +18,7 @@
                 <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
             </svg>
         </span>
-        <h3 class="mb-1 text-lg font-semibold text-gray-900">{{ form_label(form.day, 'Date du rendez-vous') }}</h3>
+        <h3 class="mb-1 text-lg font-semibold text-gray-900">{{ form_label(form.day, 'Date du rendez-vous (choisir une date)') }}</h3>
         <time class="block mb-2 text-sm font-normal leading-none text-gray-400"></time>
         <input name="{{ field_name(form.day) }}" value="{{ field_value(form.day) }}" placeholder="Cliquez pour choisir une date de rendez-vous" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" id="datepicker">
     </li>
@@ -49,6 +49,7 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
 <script> 
     flatpickr("#datepicker", {
+        defaultDate: null,
         enableTime: false,
         dateFormat: "Y-m-d",
         altInput: true,
@@ -56,6 +57,8 @@
         inline: true,
         locale: "fr",
         minDate: "today",
+        altInputClass: "flatpickr-alt-input bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5",
+
         disable: [
         function(date) {
             // Retourne true pour désactiver les samedis
@@ -66,12 +69,33 @@
             return (date.getDay() === 0);
         }
         ],
+        onReady: function(selectedDates, dateStr, instance) {
+            // Retirer la classe active initialement
+            instance.calendarContainer.querySelectorAll('.flatpickr-day').forEach(function(dayElem) {
+                dayElem.classList.remove('today');
+            });
+        },
+        onChange: function(selectedDates, dateStr, instance) {
+            // Appliquer la classe active à la date sélectionnée
+            instance.calendarContainer.querySelectorAll('.flatpickr-day').forEach(function(dayElem) {
+                dayElem.classList.remove('selected');
+                if (dayElem.dateObj && selectedDates.length > 0 && dayElem.dateObj.getTime() === selectedDates[0].getTime()) {
+                    dayElem.classList.add('selected');
+                }
+            });
+        }
     });
 </script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         var datePicker = document.getElementById('datepicker');
+        var datePicket = document.querySelector('.flatpickr-alt-input');
+        var slotsDropdown = document.getElementById('rendezvous_modify_creneau');
+
+        datePicket.value = '';
+        slotsDropdown.selectedIndex = 0;
+
         datePicker.addEventListener('change', function() {
             var selectedDate = datePicker.value;
             var xhr = new XMLHttpRequest();
@@ -89,21 +113,15 @@
             };
             xhr.send('date=' + selectedDate);
         });
-        
+
         function updateSlotsDropdown(slots) {
-            var slotsDropdown = document.getElementById('rendezvous_modify_creneau');
-            slotsDropdown.innerHTML = ''; // Efface les options actuelles
-            var selectElement = document.createElement('select'); // Crée un élément select
-            selectElement.id = 'rendezvous_modify_creneau';
-            selectElement.name = 'rendezvous_modify[creneau]'; // Ajoute le nom
-            selectElement.className = 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5'; // Ajoute les classes
+            slotsDropdown.innerHTML = '';
             slots.forEach(function(slot) {
                 var option = document.createElement('option');
                 option.value = slot.id;
                 option.text = slot.libelle;
-                selectElement.appendChild(option);
+                slotsDropdown.appendChild(option);
             });
-            slotsDropdown.replaceWith(selectElement); // Remplace la liste existante par le nouveau select
         }
     });
 </script>
@@ -130,6 +148,21 @@
 @media (max-width: 767px) {
     /* Ajustement de la taille de l'élément Flatpickr pour les petits écrans */
     
+}
+.flatpickr-calendar .flatpickr-day.today {
+    background-color: transparent !important; /* Pour rendre le fond transparent */
+    border: none !important; /* Pour supprimer la bordure */
+}
+.flatpickr-day.selected {
+    background-color: transparent;
+    border-color: transparent;
+    color: black;
+}
+.flatpickr-day.selected:hover,
+.flatpickr-day.selected:focus {
+    background-color: #264653;
+    border-color: transparent;
+    color: white;
 }
 </style>
 {% endblock %}

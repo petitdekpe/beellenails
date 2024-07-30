@@ -35,6 +35,14 @@
             {{ form_widget(form.image, {'attr': {'class':'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5', 'aria-describedby':'user_avatar_help', 'id':'user_avatar', 'type':'file'}}) }}
         </div>
         <div class="mb-4">
+            {{ form_label(form.image2, null, {'label_attr': {'class': 'block text-gray-700 font-bold mb-2'}}) }}
+            {{ form_widget(form.image2, {'attr': {'class':'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5', 'aria-describedby':'user_avatar_help', 'id':'user_avatar', 'type':'file'}}) }}
+        </div>
+        <div class="mb-4">
+            {{ form_label(form.image3, null, {'label_attr': {'class': 'block text-gray-700 font-bold mb-2'}}) }}
+            {{ form_widget(form.image3, {'attr': {'class':'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5', 'aria-describedby':'user_avatar_help', 'id':'user_avatar', 'type':'file'}}) }}
+        </div>
+        <div class="mb-4">
             <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Enregistrer</button>
         </div>
         {{ form_end(form) }}

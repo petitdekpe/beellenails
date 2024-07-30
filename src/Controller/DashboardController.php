@@ -111,11 +111,24 @@ class DashboardController extends AbstractController
 
             $form->handleRequest($request);
             if ($form->isSubmitted() && $form->isValid()) {
-                
+                // Ajoutez ici votre logique de recherche si nécessaire
             }
+
+            $rendezvouses = $rendezvousRepository->findBy([], ['updated_at' => 'DESC']);
+
+            // Grouper les rendez-vous par jour
+            $rendezvousByDay = [];
+            foreach ($rendezvouses as $rendezvous) {
+                $day = $rendezvous->getUpdatedAt()->format('Y-m-d');
+                if (!isset($rendezvousByDay[$day])) {
+                    $rendezvousByDay[$day] = [];
+                }
+                $rendezvousByDay[$day][] = $rendezvous;
+            }
+
             return $this->render('dashboard/rendezvous.html.twig', [
-                //'rendezvouses' => $rendezvousRepository->findAll(),
-                'rendezvouses' => $rendezvousRepository->findBy([], ['updated_at' => 'DESC']),
+                //'form' => $form->createView(),
+                'rendezvousByDay' => $rendezvousByDay,
             ]);
         }
         

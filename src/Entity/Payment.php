@@ -18,6 +18,8 @@ class Payment
 		'refunded' => 'Remboursée',
 		'transferred' => 'Transférée',
 		'invalid' => "Invalide",
+		'successful' => 'Approuvée',
+		'failed' => 'Annulée',
 	];
 
 	#[ORM\Id]

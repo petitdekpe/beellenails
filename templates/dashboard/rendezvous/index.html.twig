@@ -1,6 +1,6 @@
 <section class="bg-gray-50 py-3 sm:py-5">
     <div class="mx-auto max-w-screen-xl px-2 lg:px-2">
-        <!-- Start coding here -->
+        
         <div class="bg-white relative shadow-md sm:rounded-lg overflow-hidden">
             <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-2">
                 <div class="w-full md:w-1/2">
@@ -26,66 +26,93 @@
                     <a>
                 </div>
             </div>
+            
             <div class="overflow-x-auto">
-                <table class="w-full text-sm text-left text-gray-500">
-                    <thead class="text-xs text-gray-700 uppercase bg-gray-50">
-                        <tr>
-                            <th scope="col" class="px-4 py-3">Date Rdv</th>
-                            <th scope="col" class="px-4 py-3">Creneau</th>
-                            <th scope="col" class="px-4 py-3">Client</th>
-                            <th scope="col" class="px-4 py-3">Prestation</th>
-                            <th scope="col" class="px-4 py-3">Ajout</th>
-                            <th scope="col" class="px-4 py-3">Status</th>
-                            <th scope="col" class="px-4 py-3">Image</th>
-                            <th scope="col" class="px-4 py-3">Dernière modification</th>
-                            <th scope="col" class="px-4 py-3">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for rendezvous in rendezvouses %}
-                        <tr class="border-b">
-                            <td class="px-4 py-3">{{ rendezvous.day|date('d-m-Y') }}</td>
-                            <td class="px-4 py-3">{{ rendezvous.creneau }}</td>
-                            <td class="px-4 py-3">{{ rendezvous.user }}</td>
-                            <td class="px-4 py-3">{{ rendezvous.prestation }}</td>
-                            <td class="px-4 py-3">
-                                {% for supplement in rendezvous.supplement %}
-                                    {{ supplement.id }}{% if not loop.last %}, {% endif %}
-                                {% endfor %}
-                            </td>
-                            <td class="px-4 py-3">{{ rendezvous.status }}</td>
-                            <td class="px-4 py-3">
-                                {% if rendezvous.imageName %}
-                                <a href="{{ vich_uploader_asset(rendezvous, 'image') }}"><img src="{{ vich_uploader_asset(rendezvous, 'image') }}" alt="RendezvousImage" style="max-width: 40px;"></a>
-                                {% else %}
-                                No image available
-                                {% endif %}
-                            </td>
-                            <td class="px-4 py-3">{{ rendezvous.updated_at|date('d-m-Y H:i:s') }} GMT</td>
-                            <td class="px-4 py-3">
-                                {% if rendezvous.status != "Annulé" %}
-                                <div class="flex felx-col items-center">
-                                    <a href="{{ path('app_admin_rdv_edit', {'id': rendezvous.id}) }}" class="font-medium text-pink-600 hover:underline px-2">Reporter</a>
-                                    <a href="{{ path('app_admin_rdv_cancel', {'id': rendezvous.id}) }}" class="font-medium text-pink-600 hover:underline px-2">Annuler</a>
-                                    {% if rendezvous.status != "Rendez-vous confirmé" %}
-                                    <a href="{{ path('app_admin_rdv_confirm', {'id': rendezvous.id}) }}" class="font-medium text-pink-600 hover:underline px-2"><button type="button" class="text-white bg-pink-700 hover:bg-pink-500 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-4 py-2 text-center">Confirmer</button></a>
+                {% for day, rendezvouses in rendezvousByDay %}
+                    <h2 class="text-lg font-bold mx-5 my-5">{{ day|date('d-m-Y') }}</h2>
+        
+                    <table class="w-full text-sm text-left text-gray-500">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-4 py-3">Date Rdv</th>
+                                <th scope="col" class="px-4 py-3">Creneau</th>
+                                <th scope="col" class="px-4 py-3">Client</th>
+                                <th scope="col" class="px-4 py-3">Prestation</th>
+                                <th scope="col" class="px-4 py-3">Ajout</th>
+                                <th scope="col" class="px-4 py-3">Status</th>
+                                <th scope="col" class="px-4 py-3">Image</th>
+                                <th scope="col" class="px-4 py-3">Dernière modification</th>
+                                <th scope="col" class="px-4 py-3">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for rendezvous in rendezvouses %}
+                            <tr class="border-b">
+                                <td class="px-4 py-3">{{ rendezvous.day|date('d-m-Y') }}</td>
+                                <td class="px-4 py-3">{{ rendezvous.creneau }}</td>
+                                <td class="px-4 py-3">{{ rendezvous.user }}</td>
+                                <td class="px-4 py-3">{{ rendezvous.prestation }}</td>
+                                <td class="px-4 py-3">
+                                    {% if rendezvous.supplement is empty %}
+                                        Aucun
                                     {% else %}
-                                    <span class="opacity-50 cursor-not-allowed px-2"><button type="button" class="text-white bg-pink-700 hover:bg-pink-500 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-4 py-2 text-center">Confirmer</button></span>
+                                        {% for supplement in rendezvous.supplement %}
+                                            {{ supplement.title }}{% if not loop.last %}, {% endif %}
+                                        {% endfor %}
                                     {% endif %}
-                                </div>
-                                {% else %}
-                                <div class="flex felx-col items-center">
-                                    <span class="opacity-50 cursor-not-allowed px-2">Reporter</span>
-                                    <span class="opacity-50 cursor-not-allowed px-2">Annuler</span>
-                                    <span class="opacity-50 cursor-not-allowed px-2"><button type="button" class="text-white bg-pink-700 hover:bg-pink-500 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-4 py-2 text-center">Confirmer</button></span>
-                                </div>
-                                {% endif %}
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                                </td>
+                                <td class="px-4 py-3">{{ rendezvous.status }}</td>
+                                <td class="px-4 py-3">
+                                    {% if rendezvous.imageName %}
+                                    <a href="{{ vich_uploader_asset(rendezvous, 'image') }}">
+                                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#BE185D"><path d="M480-320q75 0 127.5-52.5T660-500q0-75-52.5-127.5T480-680q-75 0-127.5 52.5T300-500q0 75 52.5 127.5T480-320Zm0-72q-45 0-76.5-31.5T372-500q0-45 31.5-76.5T480-608q45 0 76.5 31.5T588-500q0 45-31.5 76.5T480-392Zm0 192q-146 0-266-81.5T40-500q54-137 174-218.5T480-800q146 0 266 81.5T920-500q-54 137-174 218.5T480-200Z"/></svg>
+                                    </a>
+                                    {% else %}
+                                    Aucune image
+                                    {% endif %}
+                                </td>
+                                <td class="px-4 py-3">{{ rendezvous.updated_at|date('d-m-Y H:i:s') }} GMT</td>
+                                <td class="px-4 py-3">
+                                    {% if rendezvous.status != "Annulé" %}
+                                    <div class="flex items-center space-x-2">
+                                        <a href="{{ path('app_admin_rdv_edit', {'id': rendezvous.id}) }}" class="font-medium text-pink-600 hover:underline px-2" title="Reporter">
+                                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#BE185D"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-80h80v80h320v-80h80v80h40q33 0 56.5 23.5T840-720v200h-80v-40H200v400h280v80H200Zm360 0v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q8 9 12.5 20t4.5 22q0 11-4 22.5T903-300L683-80H560Zm263-224 37-39-37-37-38 38 38 38Z"/></svg>
+                                        </a>
+                                        <a href="{{ path('app_admin_rdv_cancel', {'id': rendezvous.id}) }}" class="font-medium text-pink-600 hover:underline px-2" title="Annuler">
+                                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#BE185D"><path d="m376-320 104-104 104 104 56-56-104-104 104-104-56-56-104 104-104-104-56 56 104 104-104 104 56 56ZM160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h640q33 0 56.5 23.5T880-720v480q0 33-23.5 56.5T800-160H160Z"/></svg>
+                                        </a>
+                                        {% if rendezvous.status != "Rendez-vous confirmé" %}
+                                        <a href="{{ path('app_admin_rdv_confirm', {'id': rendezvous.id}) }}" class="font-medium text-pink-600 hover:underline px-2" title="Confirmer">
+                                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#BE185D"><path d="m424-312 282-282-56-56-226 226-114-114-56 56 170 170ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Z"/></svg>
+                                        </a>
+                                        {% else %}
+                                        <span class="opacity-50 cursor-not-allowed px-2" title="Confirmer">
+                                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#BE185D"><path d="m424-312 282-282-56-56-226 226-114-114-56 56 170 170ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Z"/></svg>
+                                        </span>
+                                        {% endif %}
+                                    </div>
+                                    {% else %}
+                                    <div class="flex items-center space-x-2">
+                                        <span class="opacity-50 cursor-not-allowed px-2" title="Reporter" >
+                                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#BE185D"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-80h80v80h320v-80h80v80h40q33 0 56.5 23.5T840-720v200h-80v-40H200v400h280v80H200Zm360 0v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q8 9 12.5 20t4.5 22q0 11-4 22.5T903-300L683-80H560Zm263-224 37-39-37-37-38 38 38 38Z"/></svg>
+                                        </span>
+                                        <span class="opacity-50 cursor-not-allowed px-2" title="Annuler">
+                                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#BE185D"><path d="m376-320 104-104 104 104 56-56-104-104 104-104-56-56-104 104-104-104-56 56 104 104-104 104 56 56ZM160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h640q33 0 56.5 23.5T880-720v480q0 33-23.5 56.5T800-160H160Z"/></svg>
+                                        </span>
+                                        <span class="opacity-50 cursor-not-allowed px-2" title="Confirmer">
+                                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#BE185D"><path d="m424-312 282-282-56-56-226 226-114-114-56 56 170 170ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Z"/></svg>
+                                        </span>
+                                    </div>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+        
+                {% endfor %}
             </div>
+
         </div>
     </div>
 </section>

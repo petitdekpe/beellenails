@@ -34,6 +34,18 @@ class Prestation
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $imageName = null;
 
+    #[Vich\UploadableField(mapping: 'prestation', fileNameProperty:'imageName2')]
+    private ?File $image2 = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $imageName2 = null;
+
+    #[Vich\UploadableField(mapping: 'prestation', fileNameProperty:'imageName3')]
+    private ?File $image3 = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $imageName3 = null;
+
     #[ORM\OneToMany(mappedBy: 'prestation', targetEntity: Rendezvous::class)]
     private Collection $rendezvouses;
 
@@ -106,7 +118,7 @@ class Prestation
         return $this->image;
     }
 
-    public function setImage(File $image = null): void
+    public function setImage(?File $image = null): void
     {
         $this->image = $image;
         if ($image) {
@@ -119,9 +131,59 @@ class Prestation
         return $this->imageName;
     }
 
-    public function setImageName(string $image): static
+    public function setImageName(?string $image): static
     {
         $this->imageName = $image;
+
+        return $this;
+    }
+
+    public function getImage2(): ?File
+    {
+        return $this->image2;
+    }
+
+    public function setImage2(File $image2 = null): void
+    {
+        $this->image2 = $image2;
+        if ($image2) {
+            $this->updatedAt = new \DateTimeImmutable('now');
+        }
+    }
+
+    public function getImageName2(): ?string
+    {
+        return $this->imageName2;
+    }
+
+    public function setImageName2(string $image2): static
+    {
+        $this->imageName2 = $image2;
+
+        return $this;
+    }
+
+    public function getImage3(): ?File
+    {
+        return $this->image3;
+    }
+
+    public function setImage3(File $image3 = null): void
+    {
+        $this->image3 = $image3;
+        if ($image3) {
+            $this->updatedAt = new \DateTimeImmutable('now');
+        }
+    }
+
+    public function getImageName3(): ?string
+    {
+        return $this->imageName3;
+    }
+
+    public function setImageName3(string $image3): static
+    {
+        $this->imageName3 = $image3;
 
         return $this;
     }

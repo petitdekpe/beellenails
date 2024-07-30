@@ -30,6 +30,14 @@ class PrestationType extends AbstractType
             ->add('image', VichImageType::class, [
                 'label' => 'Image', 
             ])
+            ->add('image2', VichImageType::class, [
+                'label' => 'Image 2',
+                'required' => false,
+            ])
+            ->add('image3', VichImageType::class, [
+                'label' => 'Image 3',
+                'required' => false,
+            ])
             ->add('CategoryPrestation', EntityType::class, [
                 'label' => 'Choisissez une Categorie',
                 'class' => CategoryPrestation::class,
