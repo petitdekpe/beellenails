@@ -16,22 +16,27 @@
         <script src="https://cdn.tailwindcss.com"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.js"></script>
 
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
+        <script src="https://npmcdn.com/flatpickr/dist/l10n/fr.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
-        {% block stylesheets %}
+
+        
         <style>
         /* Pour les libellés des mois */
         .fc-toolbar-title, .fc-col-header-cell-cushion {
             text-transform: capitalize;
         }
         </style>
-        {% endblock %}
+        
          <script src="https://cdn.fedapay.com/checkout.js?v=1.1.7"></script>
          <script src="/js/preline.js"></script>
-        {% block javascripts %}
+        
         <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
         <script src='fullcalendar/core/locales/fr.global.js'></script>
 
-        {% endblock %}
+        
         
     </head>
 
@@ -39,12 +44,12 @@
 
 {% block body %}
 
-<button data-drawer-target="default-sidebar" data-drawer-toggle="default-sidebar" aria-controls="default-sidebar" type="button" class="inline-flex items-center p-2 mt-2 ms-3 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
-   <span class="sr-only">Open sidebar</span>
-   <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-   <path clip-rule="evenodd" fill-rule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"></path>
-   </svg>
-</button>
+    <button data-drawer-target="default-sidebar" data-drawer-toggle="default-sidebar" aria-controls="default-sidebar" type="button" class="inline-flex items-center p-2 mt-2 ms-3 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
+    <span class="sr-only">Open sidebar</span>
+    <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+    <path clip-rule="evenodd" fill-rule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"></path>
+    </svg>
+    </button>
 
 <aside id="default-sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0" aria-label="Sidebar">
 	<div class="h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
@@ -146,18 +151,193 @@
 </aside>
 
 
-<div class="sm:ml-64">
-    <div class="relative overflow-hidden w-full min-h-[70px] bg-pink-500"></div>
-    <div class="flex flex-row justify-between items-center">
-        <h4 class="text-2xl font-bold p-4">Clients</h4>
-        <a href="{{ path('app_dashboard_add_user') }}" class="text-sm p-4">
-          <button type="button" class="text-white bg-pink-700 hover:bg-pink-500 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-4 py-2 text-center">
-             Ajouter un client
-          </button>
-        </a>
-    </div>
-    <div class="px-4">{{ include('dashboard/user/index.html.twig') }}</div>
-</div>
+    <div class="sm:ml-64">
+        <div class="relative overflow-hidden w-full min-h-[70px] bg-pink-500"></div>
+        <div class="flex flex-row justify-between items-center">
+            <h4 class="text-2xl font-bold p-4">Congés</h4>
+            <a href="{{ path('app_dashboard_add_user') }}" class="text-sm p-4">
+            
+            </a>
+        </div>
+        <div class="px-4">
+
+            <div class="max-w-xl mx-8">
+                {{ form_start(form) }}
+
+                <ol class="relative border-s border-gray-200">
+
+                    <li class="ms-6">
+                        <span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -start-3 ring-8 ring-white">
+                            <svg class="w-2.5 h-2.5 text-blue-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
+                            </svg>
+                        </span>
+                        <h3 class="mb-1 text-lg font-semibold text-gray-900">{{ form_label(form.start_date, 'Date de début de congé') }}</h3>
+                        <time class="block mb-2 text-sm font-normal leading-none text-gray-400"></time>
+                        <input
+                            name="{{ field_name(form.start_date) }}"
+                            value="{{ field_value(form.start_date) }}"
+                            placeholder="Cliquez pour choisir un jour de congé"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5"
+                            id="datepicker_start"
+                        >
+                        
+                    </li>
+                    <li class="ms-6">
+                        <span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -start-3 ring-8 ring-white">
+                            <svg class="w-2.5 h-2.5 text-blue-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
+                            </svg>
+                        </span>
+                        <h3 class="mb-1 text-lg font-semibold text-gray-900">{{ form_label(form.end_date, 'Date de fin de congé') }}</h3>
+                        <time class="block mb-2 text-sm font-normal leading-none text-gray-400"></time>
+                        <input
+                            name="{{ field_name(form.end_date) }}"
+                            value="{{ field_value(form.end_date) }}"
+                            placeholder="Cliquez pour choisir un jour de congé"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5"
+                            id="datepicker_end"
+                        >
+                        
+                    </li>
+                </ol>
+                    
+<button type="submit" class="btn btn-primary mt-5 text-white bg-pink-700 hover:bg-pink-500 focus:ring-4 focus:outline-none  font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center" onclick="return validateDates()">Enregistrer</button>
+
+                    {{ form_widget(form._token) }}
+                    {{ form_end(form, {'render_rest': false}) }}
+
+                    <script>
+                        function validateDates() {
+                            const startDate = new Date(document.getElementById("datepicker_start").value);
+                            const endDate = new Date(document.getElementById("datepicker_end").value);
+
+                            if (startDate >= endDate) {
+                                alert("La date de début doit être antérieure à la date de fin.");
+                                return false; // Empêche la soumission du formulaire
+                            }
+
+                            return true; // Permet la soumission du formulaire
+                        }
+                    </script>
+            </div>
+        </div>
+
+{% endblock %}
+
+{%  block javascripts %}
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
+    <script> 
+        flatpickr("#datepicker_start", {
+            defaultDate: null,
+            enableTime: false,
+            dateFormat: "Y-m-d",
+            altInput: true,
+            altFormat: "j F Y",
+            inline: true,
+            locale: "fr",
+            minDate: "today",
+            disable: [
+            function(date) {
+                // Retourne true pour désactiver les samedis
+                return (date.getDay() === 1);
+            },
+            function(date) {
+                // Retourne true pour désactiver les dimanches
+                return (date.getDay() === 0);
+            }
+            ],
+        });
+        flatpickr("#datepicker_end", {
+            defaultDate: null,
+            enableTime: false,
+            dateFormat: "Y-m-d",
+            altInput: true,
+            altFormat: "j F Y",
+            inline: true,
+            locale: "fr",
+            minDate: "today",
+            disable: [
+            function(date) {
+                // Retourne true pour désactiver les samedis
+                return (date.getDay() === 1);
+            },
+            function(date) {
+                // Retourne true pour désactiver les dimanches
+                return (date.getDay() === 0);
+            }
+            ],
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var datePicker = document.getElementById('datepicker');
+            datePicker.addEventListener('change', function() {
+                var selectedDate = datePicker.value;
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', '/get-available-slots', true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === XMLHttpRequest.DONE) {
+                        if (xhr.status === 200) {
+                            var slots = JSON.parse(xhr.responseText);
+                            updateSlotsDropdown(slots);
+                        } else {
+                            console.error('Erreur lors de la récupération des créneaux disponibles');
+                        }
+                    }
+                };
+                xhr.send('date=' + selectedDate);
+            });
+            
+            function updateSlotsDropdown(slots) {
+                var slotsDropdown = document.getElementById('pre_rendezvous_creneau');
+                slotsDropdown.innerHTML = ''; // Efface les options actuelles
+                var selectElement = document.createElement('select'); // Crée un élément select
+                selectElement.id = 'pre_rendezvous_creneau';
+                selectElement.name = 'pre_rendezvous[creneau]'; // Ajoute le nom
+                selectElement.className = 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5'; // Ajoute les classes
+                slots.forEach(function(slot) {
+                    var option = document.createElement('option');
+                    option.value = slot.id;
+                    option.text = slot.libelle;
+                    selectElement.appendChild(option);
+                });
+                slotsDropdown.replaceWith(selectElement); // Remplace la liste existante par le nouveau select
+            }
+        });
+    </script> 
 
 
 {% endblock %}
+
+{% block stylesheets %}
+    <style>
+    /* Media queries pour ajuster Flatpickr avec Tailwind CSS */
+    .flatpickr-calendar {
+            width: 300px; /* Ajustez la largeur selon vos besoins */
+            font-size: 14px; /* Ajustez la taille de la police selon vos besoins */
+        }
+    /* Pour les écrans moyens et plus grands */
+    @media (min-width: 640px) {
+        /* Ajustement de la taille de l'élément Flatpickr */
+    .flatpickr-calendar {
+            width: 300px; /* Ajustez la largeur selon vos besoins */
+            font-size: 16px; /* Ajustez la taille de la police selon vos besoins */
+        }
+    }
+    .flatpickr-calendar .flatpickr-day.today {
+            
+            border: none !important; /* Pour supprimer la bordure */
+        }
+
+    /* Pour les écrans plus petits */
+    @media (max-width: 767px) {
+        /* Ajustement de la taille de l'élément Flatpickr pour les petits écrans */
+        
+    }
+    </style>
+{% endblock %}
+

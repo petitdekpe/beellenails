@@ -10,6 +10,7 @@ use App\Entity\Rendezvous;
 use App\Form\DateCongeType;
 use App\Form\PrestationType;
 use App\Form\AdminAddRdvType;
+use App\Form\PeriodCongeType;
 use Symfony\Component\Mime\Email;
 use App\Form\RegistrationFormType;
 use App\Form\RendezvousModifyType;
@@ -155,7 +156,7 @@ class DashboardController extends AbstractController
 
     //Ajouter un rendez-vous
         #[Route('/dashboard/rendezvous/add', name: 'app_admin_rdv')]
-        public function new(Request $request, EntityManagerInterface $entityManager, MailerInterface $mailer): Response
+        public function new(Request $request, EntityManagerInterface $entityManager, MailerInterface$mailer, RendezvousRepository $rendezvousRepository): Response
         {
             $rendezvous = new Rendezvous();
             $form = $this->createForm(AdminAddRdvType::class, $rendezvous);
@@ -163,6 +164,20 @@ class DashboardController extends AbstractController
             
 
             if ($form->isSubmitted() && $form->isValid()) {
+            // Vérifier si un rendez-vous avec le même jour et créneau existe déjà
+            $existingRendezvous = $rendezvousRepository->findOneBy([
+                'day' => $rendezvous->getDay(),
+                'creneau' => $rendezvous->getCreneau(),
+                'status' => 'Rendez-vous pris'
+            ]);
+
+            if ($existingRendezvous) {
+                // Si un rendez-vous existe déjà, rediriger vers la page de prise de rendez-vous ou afficher un message d'erreur
+                $this->addFlash('warning', 'Un rendez-vous pour ce jour et créneau existe déjà.');
+                return $this->redirectToRoute('app_calendar');
+            }
+
+        // Continuer si aucun rendez-vous en conflit n'est trouvé
                 $rendezvous->setStatus("Rendez-vous confirmé");
                 $rendezvous->setImageName("default.png");
                 $rendezvous->setPaid("1");
@@ -369,7 +384,71 @@ class DashboardController extends AbstractController
                 'form' => $form->createView(),
             ]);
         }
-    
+    //Prendre des congés (une période)
+
+        #[Route('dashboard/create-conges', name: 'create_conges')]
+        public function createConges(Request $request, EntityManagerInterface $entityManager, RendezvousRepository $rendezvousRepository, CreneauRepository $creneauRepository, PrestationRepository $prestationRepository): Response
+        {
+            $form = $this->createForm(PeriodCongeType::class, null, [
+                'validation_groups' => ['Default', 'without_prestation']
+            ]);
+            $form->handleRequest($request);
+
+            if ($form->isSubmitted() && $form->isValid()) {
+                $startDate = $form->get('start_date')->getData();
+                $endDate = $form->get('end_date')->getData();
+
+                $period = new \DatePeriod(
+                        $startDate,
+                        new \DateInterval('P1D'),
+                        $endDate->modify('+1 day') // pour inclure la date de fin
+                    );
+
+                foreach ($period as $date) {
+                    // Vérifier s'il y a des rendez-vous confirmés ou pris pour chaque date
+                    $rendezvousExistants = $rendezvousRepository->findBy([
+                        'day' => $date,
+                        'status' => ['Rendez-vous confirmé', 'Rendez-vous pris', 'Congé']
+                    ]);
+
+                    if (!empty($rendezvousExistants)) {
+                        $this->addFlash('warning', "Des rendez-vous sont déjà prévus pour le {$date->format('d/m/Y')}. Veuillez annuler les rendez-vous existants.");
+                        return $this->redirectToRoute('app_dashboard', ['message' => "Des rendez-vous sont déjà prévus pour le {$date->format('d/m/Y')}. Veuillez annuler les rendez-vous existants."]);
+                    }
+
+                    // Récupérer la prestation avec l'ID 1
+                    $prestation = $prestationRepository->find(1);
+
+                    // Récupérer la liste des créneaux disponibles
+                    $creneaux = $creneauRepository->findAll();
+                    $user = $this->getUser(); // Récupérer l'utilisateur connecté
+
+                    foreach ($creneaux as $creneau) {
+                        // Créer un rendez-vous pour chaque créneau avec le statut "Congé"
+                        $rendezvous = new Rendezvous();
+                        $rendezvous->setDay($date);
+                        $rendezvous->setCreneau($creneau);
+                        $rendezvous->setStatus("Congé");
+                        $rendezvous->setImageName("default.png");
+                        $rendezvous->setUser($user);
+                        $rendezvous->setPrestation($prestation);
+
+                        $entityManager->persist($rendezvous);
+                    }
+                }
+
+                $entityManager->flush();
+
+                $this->addFlash('success', 'Les congés ont été créés avec succès.');
+
+                return $this->redirectToRoute('app_dashboard', ['message' => 'Les congés ont été créés avec succès.']);
+            }
+
+            return $this->render('dashboard/conges.html.twig', [
+                'form' => $form->createView(),
+            ]);
+        }
+
     //Ajouter une prestation
 
             #[Route('dashboard/prestation/new', name: 'app_dashboard_prestation_new', methods: ['GET', 'POST'])]

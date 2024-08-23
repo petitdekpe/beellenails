@@ -141,30 +141,32 @@
             <div class="max-w-xl mx-8">
                 {{ form_start(form) }}
 
-                <ol class="relative border-s border-gray-200">
+                    <ol class="relative border-s border-gray-200">
 
-                    <li class="ms-6">
-                        <span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -start-3 ring-8 ring-white">
-                            <svg class="w-2.5 h-2.5 text-blue-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
-                            </svg>
-                        </span>
-                        <h3 class="mb-1 text-lg font-semibold text-gray-900">{{ form_label(form.date, 'Date du rendez-vous') }}</h3>
-                        <time class="block mb-2 text-sm font-normal leading-none text-gray-400"></time>
-                        <input
-                            name="{{ field_name(form.date) }}"
-                            value="{{ field_value(form.date) }}"
-                            placeholder="Cliquez pour choisir un jour de congé"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5"
-                            id="datepicker"
-                        >
-                        
-                    </li>
-                </ol>
+                        <li class="ms-6">
+                            <span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -start-3 ring-8 ring-white">
+                                <svg class="w-2.5 h-2.5 text-blue-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
+                                </svg>
+                            </span>
+                            <h3 class="mb-1 text-lg font-semibold text-gray-900">{{ form_label(form.date, 'Date du congé') }}</h3>
+                            <time class="block mb-2 text-sm font-normal leading-none text-gray-400"></time>
+                            <input
+                                name="{{ field_name(form.date) }}"
+                                value="{{ field_value(form.date) }}"
+                                placeholder="Cliquez pour choisir un jour de congé"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5"
+                                id="datepicker"
+                            >
+                            
+                        </li>
+                    </ol>
                     
                     <button type="submit" class="btn btn-primary mt-5 text-white bg-pink-700 hover:bg-pink-500 focus:ring-4 focus:outline-none  font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center">Enregistrer</button>
+
                     {{ form_widget(form._token) }}
                     {{ form_end(form, {'render_rest': false}) }}
+
             </div>
         </div>
 
