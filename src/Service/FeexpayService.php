@@ -2,33 +2,85 @@
 
 namespace App\Service;
 
-use Feexpay\FeexpayPhp\FeexpayClass;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class FeexpayService
 {
-    private $feexpay;
+    private $client;
+    private $apiKey;
+    private $shopId;
+    private $jsonDecoder;
 
-    public function __construct(string $shopId, string $token, string $callbackUrl, string $mode, string $errorCallbackUrl)
+    public function __construct(HttpClientInterface $client, string $apiKey, string $shopId)
     {
-        $this->feexpay = new FeexpayClass($shopId, $token, $callbackUrl, $mode, $errorCallbackUrl);
+        $this->client = $client;
+        $this->apiKey = $apiKey;
+        $this->shopId = $shopId;
+        $this->jsonDecoder = new JsonEncoder();
     }
 
-    public function paiementLocal(
-        float $amount,
-        string $phoneNumber,
-        string $operatorName,
-        string $fullname,
-        string $email,
-        string $callback_info,
-        string $custom_id,
-        string $otp = ""
-    )
+    public function requestToPayMtn(string $phoneNumber, float $amount): array
     {
-        return $this->feexpay->paiementLocal($amount, $phoneNumber, $operatorName, $fullname, $email, $callback_info, $custom_id, $otp);
+        $response = $this->client->request('POST', 'https://api.feexpay.me/api/transactions/public/requesttopay/mtn', [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->apiKey,
+                'Content-Type' => 'application/json',
+            ],
+            'json' => [
+                'shop' => $this->shopId,
+                'amount' => $amount,
+                'phoneNumber' => $phoneNumber,
+            ],
+        ]);
+
+        $content = $response->getContent();
+        return $this->jsonDecoder->decode($content, JsonEncoder::FORMAT);
     }
 
-    public function getPaiementStatus($response)
+    public function requestToPayMoov(string $phoneNumber, float $amount): array
     {
-        return $this->feexpay->getPaiementStatus($response);
+        $response = $this->client->request('POST', 'https://api.feexpay.me/api/transactions/public/requesttopay/moov', [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->apiKey,
+                'Content-Type' => 'application/json',
+            ],
+            'json' => [
+                'shop' => $this->shopId,
+                'amount' => $amount,
+                'phoneNumber' => $phoneNumber,
+            ],
+        ]);
+
+        $content = $response->getContent();
+        return $this->jsonDecoder->decode($content, JsonEncoder::FORMAT);
+    }
+
+    public function getTransactionStatus(string $reference): array
+    {
+        $url = 'https://api.feexpay.me/api/transactions/public/single/status/' . $reference;
+        $response = $this->client->request('GET', $url, [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->apiKey,
+            ],
+        ]);
+
+        $content = $response->getContent();
+        $decodedResponse = $this->jsonDecoder->decode($content, JsonEncoder::FORMAT);
+
+        // Map FeexPay statuses to your application statuses
+        $statusMap = [
+            'PENDING' => 'pending',
+            'IN PENDING STATE' => 'pending',
+            'SUCCESSFUL' => 'successful',
+            'FAILED' => 'failed',
+        ];
+
+        $status = $decodedResponse['status'] ?? null;
+
+        return [
+            'status' => $statusMap[$status] ?? 'invalid',
+            'reference' => $decodedResponse['reference'] ?? null,
+        ];
     }
 }

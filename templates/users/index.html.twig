@@ -1,108 +1,160 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Mon Profil{% endblock %}
+{% block title %}Mon Profil
+{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+	<style>
+		.example-wrapper {
+			margin: 1em auto;
+			max-width: 800px;
+			width: 95%;
+			font: 18px / 1.5 sans-serif;
+		}
+		.example-wrapper code {
+			background: #F5F5F5;
+			padding: 2px 6px;
+		}
+	</style>
 
-<div class="relative overflow-hidden w-full min-h-[90px] bg-white rounded-lg"></div>
+	<div class="relative overflow-hidden w-full min-h-[90px] bg-white rounded-lg"></div>
 
-<div class="mx-10">
-    <h5 class="text-xl font-semibold my-5">Informations personnelles</h5>
+	<div class="mx-10">
+		<h5 class="text-xl font-semibold my-5">Informations personnelles</h5>
 
-    <ul class="w-full text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg">
-        <li class="w-full px-4 py-2 border-b border-gray-200 rounded-t-lg">
-            <p><strong>Nom:</strong> {{app.user.nom}}</p>
-        </li>
-        <li class="w-full px-4 py-2 border-b border-gray-200 rounded-t-lg">
-            <p><strong>Prénom:</strong> {{app.user.prenom}}</p>
-        </li>
-        <li class="w-full px-4 py-2 border-b border-gray-200 rounded-t-lg">
-            <p><strong>Date de naissance:</strong> {{app.user.birthday|date('d/m/Y')}}</p>
-        </li>
-        <li class="w-full px-4 py-2 border-b border-gray-200 rounded-t-lg">
-            <p><strong>Genre:</strong> {{app.user.genre}}</p>
-        </li>
-        <li class="w-full px-4 py-2 border-b border-gray-200 rounded-t-lg">
-            <p><strong>Adresse e-mail:</strong> {{app.user.email}}</p>
-        </li>
-        <li class="w-full px-4 py-2 border-b border-gray-200 rounded-t-lg">
-            <p><strong>Téléphone:</strong> {{app.user.phone}}</p>
-        </li>
-    </ul>
-    <a href="{{ path('app_logout') }}">
-         <button type="button" class="mt-10 text-white bg-pink-700 hover:bg-pink-500 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-4 py-2 text-center">Déconnexion</button>
-    </a>
-    <!--p class="text-sm text-right font-normal text-pink-500 underline my-2">Modifier les informations</p-->
+		<ul class="w-full text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg">
+			<li class="w-full px-4 py-2 border-b border-gray-200 rounded-t-lg">
+				<p>
+					<strong>Nom:</strong>
+					{{ app.user.nom }}</p>
+			</li>
+			<li class="w-full px-4 py-2 border-b border-gray-200 rounded-t-lg">
+				<p>
+					<strong>Prénom:</strong>
+					{{ app.user.prenom }}</p>
+			</li>
+			<li class="w-full px-4 py-2 border-b border-gray-200 rounded-t-lg">
+				<p>
+					<strong>Date de naissance:</strong>
+					{{ app.user.birthday|date('d/m/Y') }}</p>
+			</li>
+			<li class="w-full px-4 py-2 border-b border-gray-200 rounded-t-lg">
+				<p>
+					<strong>Genre:</strong>
+					{{ app.user.genre }}</p>
+			</li>
+			<li class="w-full px-4 py-2 border-b border-gray-200 rounded-t-lg">
+				<p>
+					<strong>Adresse e-mail:</strong>
+					{{ app.user.email }}</p>
+			</li>
+			<li class="w-full px-4 py-2 border-b border-gray-200 rounded-t-lg">
+				<p>
+					<strong>Téléphone:</strong>
+					{{ app.user.phone }}</p>
+			</li>
+		</ul>
+		<a href="{{ path('app_logout') }}">
+			<button type="button" class="mt-10 text-white bg-pink-700 hover:bg-pink-500 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-4 py-2 text-center">Déconnexion</button>
+		</a>
 
-    <h5 class="text-xl font-semibold my-5">Mes rendez-vous</h5>
+		<h5 class="text-xl font-semibold my-5">Mes rendez-vous</h5>
 
-    <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-        <table class="w-full text-sm text-left rtl:text-right text-gray-500">
-            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
-                <tr>
-                    <th scope="col" class="px-6 py-3">
-                        Date
-                    </th>
-                    <th scope="col" class="px-6 py-3">
-                        Créneau
-                    </th>
-                    <th scope="col" class="px-6 py-3">
-                        Prestation
-                    </th>
-                    <th scope="col" class="px-6 py-3">
-                        Statut
-                    </th>
-                    <th scope="col" class="px-6 py-3">
-                        Action
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                {% if appointments is empty %}
-                    <tr>
-                        <td colspan="4" class="px-6 py-4 text-center">
-                            Aucun Rendez-vous!
-                        </td>
-                    </tr>
-                {% else %}
-                    {% for appointment in appointments %}
-                        {% set current_time = "now"|date("U") %}
-                        {% set appointment_time = appointment.day|date("U") %}
-                        {% set time_difference = appointment_time - current_time %}
-                        {% set within_48_hours = time_difference < (48 * 3600) %}
-                        {% set appointment_passed = current_time > appointment_time %}
-                        
-                        <tr class="odd:bg-white even:bg-gray-50 border-b">
-                            <td class="px-6 py-4">{{ appointment.day|date('d/m/Y') }}</td>
-                            <td class="px-6 py-4">{{ appointment.creneau.libelle }}</td>
-                            <td class="px-6 py-4">{{ appointment.prestation.Title }}</td>
-                            <td class="px-6 py-4">{{ appointment.status }}</td>
-                            <td class="px-6 py-4">
-                                {% if appointment.status == "Annulé" or appointment.status == "Tentative échouée" or appointment.status == "Tentative échoué" %}
-                                    <span class="opacity-50 cursor-not-allowed">Reporter</span>
-                                    <span class="opacity-50 cursor-not-allowed">Annuler</span>
-                                {% elseif appointment_passed %}
-                                    <span class="opacity-50 cursor-not-allowed">Délai passé</span>
-                                {% elseif within_48_hours %}
-                                    <span class="opacity-50 cursor-not-allowed">Reporter</span>
-                                    <span class="opacity-50">Annuler</span>
-                                {% else %}
-                                    <a href="{{ path('app_rendezvous_edit', {'id': appointment.id}) }}" class="font-medium text-pink-600 hover:underline">Reporter</a>
-                                    <a href="{{ path('app_rendezvous_cancel', {'id': appointment.id}) }}" class="font-medium text-pink-600 hover:underline">Annuler</a>
-                                {% endif %}
-                            </td>
-                        </tr>
-                    {% endfor %}
-                {% endif %}
-            </tbody>
+		<div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+			<table class="w-full text-sm text-left rtl:text-right text-gray-500">
+				<thead class="text-xs text-gray-700 uppercase bg-gray-50">
+					<tr>
+						<th scope="col" class="px-6 py-3">Date</th>
+						<th scope="col" class="px-6 py-3">Créneau</th>
+						<th scope="col" class="px-6 py-3">Prestation</th>
+						<th scope="col" class="px-6 py-3">Statut</th>
+						<th scope="col" class="px-6 py-3">Action</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% if appointments is empty %}
+						<tr>
+							<td colspan="5" class="px-6 py-4 text-center">
+								Aucun Rendez-vous!
+							</td>
+						</tr>
+					{% else %}
+						{% for appointment in appointments %}
+							{# Manually adjust current_time to Africa/Porto-Novo timezone #}
+							{% set current_time = "now"|date_modify("+1 hour")|date("U") %}
 
-        </table>
-    </div>
+							{# Combine date and time #}
+							{% set start_time = appointment.creneau.startTime|date("H:i:s") %}
+							{% set appointment_time = appointment.day|date("Y-m-d") ~ ' ' ~ start_time %}
+							{% set appointment_time_unix = appointment_time|date("U") %}
 
+							{% set time_difference = appointment_time_unix - current_time %}
+							{% set within_48_hours = time_difference < (48 * 3600) %}
+							{% set appointment_passed = current_time > appointment_time_unix %}
 
-</div>
+							{# Calcul du temps restant avant le rendez-vous #}
+							{% set days_left = (time_difference // 86400) %}
+							{% set hours_left = ((time_difference % 86400) // 3600) %}
+							{% set minutes_left = ((time_difference % 3600) // 60) %}
+
+							{# Calcul de la date et heure limite de report (48 heures avant le rendez-vous) #}
+							{% set report_limit_time_unix = appointment_time_unix - (48 * 3600) %}
+							{% set report_limit_time = report_limit_time_unix|date('d/m/Y H:i:s') %}
+
+							{# Calcul du temps restant avant la date limite de report #}
+							{% set report_time_difference = report_limit_time_unix - current_time %}
+							{% set report_days_left = (report_time_difference // 86400) %}
+							{% set report_hours_left = ((report_time_difference % 86400) // 3600) %}
+							{% set report_minutes_left = ((report_time_difference % 3600) // 60) %}
+
+							<tr class="odd:bg-white even:bg-gray-50 border-b">
+								<td class="px-6 py-4">{{ appointment.day|date('d/m/Y') }}</td>
+								<td class="px-6 py-4">{{ appointment.creneau.libelle }}</td>
+								<td class="px-6 py-4">{{ appointment.prestation.Title }}</td>
+								<td class="px-6 py-4">{{ appointment.status }}</td>
+								<td
+									class="px-6 py-4">
+
+									{# Affichage de la date et heure limite de report #}
+									{% if not appointment_passed %}
+										<p>Reporter avant:
+											{{ report_limit_time }}</p>
+										{# Affichage du temps restant pour reporter #}
+										{% if report_time_difference > 0 %}
+											<p>Temps restant pour reporter :
+												{% if report_days_left > 0 %}
+													{{ report_days_left }}
+													jour(s),
+												{% endif %}
+												{{ report_hours_left }}
+												heure(s),
+												{{ report_minutes_left }}
+												minute(s)
+											</p>
+										{% endif %}
+									{% endif %}
+
+									{% if appointment.status == "Annulé" %}
+										<span class="opacity-50 cursor-not-allowed">Reporter</span>
+										<span class="opacity-50 cursor-not-allowed">Annuler</span>
+									{% elseif appointment.status == "Tentative échouée" or appointment.status == "Tentative échoué" %}
+										<span class="opacity-50 cursor-not-allowed">Aucun</span>
+									{% elseif appointment_passed %}
+										<span class="opacity-50 cursor-not-allowed">Délai passé</span>
+									{% elseif within_48_hours %}
+										<span class="opacity-50 cursor-not-allowed">Reporter</span>
+										<a href="{{ path('app_rendezvous_cancel', {'id': appointment.id}) }}" class="font-medium text-pink-600 hover:underline">Annuler</a>
+									{% else %}
+										<a href="{{ path('app_rendezvous_edit', {'id': appointment.id}) }}" class="font-medium text-pink-600 hover:underline">Reporter</a>
+										<a href="{{ path('app_rendezvous_cancel', {'id': appointment.id}) }}" class="font-medium text-pink-600 hover:underline">Annuler</a>
+									{% endif %}
+								</td>
+							</tr>
+						{% endfor %}
+					{% endif %}
+				</tbody>
+			</table>
+		</div>
+	</div>
 {% endblock %}
+

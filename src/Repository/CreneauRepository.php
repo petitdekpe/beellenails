@@ -31,7 +31,7 @@ class CreneauRepository extends ServiceEntityRepository
         $localTimezone = new \DateTimeZone('Africa/Porto-Novo');
 
         // Obtenir l'heure actuelle du serveur en Europe/Paris
-        $currentTime = new \DateTime('now', $serverTimezone);
+        $currentTime = new \DateTime('now');
 
         // Ajouter deux heures à l'heure actuelle du serveur
         $twoHoursLater = clone $currentTime;

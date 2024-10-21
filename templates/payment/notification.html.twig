@@ -69,7 +69,7 @@
             Suivez les instructions dans la notification pour approuver ou annuler la transaction.
             Une fois que vous avez <strong><span class="text-green-500">Approuvé</span></strong> le paiement, cliquez sur le bouton <strong>Validez la réservation</strong> ci-dessous pour confirmer l'état de votre paiement.
 			<div class="mt-5 flex justify-center">
-            <form action="{{ path('payment_callback', { reference: reference }) }}" method="post">
+            <form action="{{ path('payment_callback_feex', { reference: reference }) }}" method="post">
                     <input type="hidden" name="transactionID" value="{{ payment.token }}">
                     <button class="btn cursor-pointer block text-white bg-pink-700 hover:bg-pink-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center" type="submit">Valider la réservation</button>
             </form>
