@@ -12,15 +12,16 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class PaymentController extends AbstractController
 {
-    public function __construct(private readonly FedapayService $fedapayService, private readonly EntityManagerInterface $entityManager)
-    {
-    }
+    public function __construct(
+        private readonly FedapayService $fedapayService,
+        private readonly EntityManagerInterface $entityManager
+    ) {}
 
     /**
      * @throws \Exception
@@ -59,119 +60,110 @@ class PaymentController extends AbstractController
     #[Route('/rendezvous/payment/callback', name: 'payment_callback')]
     public function callback(Request $request, PaymentRepository $repository, UserInterface $user, MailerInterface $mailer): Response
     {
-        $transaction = $request->get('id');
+        $transactionID = $request->get('id');
         $status = $request->get('status');
-        $payment = $repository->findOneBy(['transactionID' => $transaction]);
-        $rendezvou = $payment->getRendezvous();
 
-        if ($status !== 'approved') {
-            $rendezvou->setStatus('Tentative échoué');
-            $this->entityManager->flush();
-            return $this->render('rendezvous/payment/error.html.twig', [
-                'status' => $status,
-            ]);
-        }
+        $this->entityManager->beginTransaction();
+        try {
+            $payment = $repository->findOneBy(['transactionID' => $transactionID]);
+            $this->entityManager->lock($payment, \Doctrine\DBAL\LockMode::PESSIMISTIC_WRITE);
 
-        $payment = $repository->findOneBy(['transactionID' => $transaction]);
+            $rendezvous = $payment->getRendezvous();
 
-        if ($payment === null) {
-            $this->addFlash('error', 'Rendez-vous inconnue !. Veuillez réessayer.');
-            return $this->render('rendezvous/payment/error.html.twig', [
-                'status' => "invalid",
-            ]);
-        } else {
-            if ($payment->getStatus() == 'approved') {
-                $this->addFlash('error', 'Rendez-vous invalide !');
+            if ($payment->getStatus() === 'approved' || $rendezvous->getStatus() === 'Rendez-vous pris') {
+                $this->entityManager->commit();
+                $this->addFlash('error', 'Rendez-vous déjà confirmé !');
                 return $this->render('rendezvous/payment/done.html.twig', [
                     'payment' => $payment,
                     'status'  => $status,
                 ]);
             }
-            if ($payment->getStatus() !== 'pending') {
-                $this->addFlash('error', 'Rendez-vous invalide !');
+
+            if ($status !== 'approved') {
+                $rendezvous->setStatus('Tentative échouée');
+                $this->entityManager->flush();
+                $this->entityManager->commit();
                 return $this->render('rendezvous/payment/error.html.twig', [
-                    'status' => "invalid",
+                    'status' => $status,
                 ]);
             }
+
+            $payment->setUpdatedAt(new \DateTime('now'))->setStatus($status);
+            $rendezvous->setStatus('Rendez-vous pris');
+
+            $this->entityManager->flush();
+            $this->entityManager->commit();
+
+            return $this->render('rendezvous/payment/done.html.twig', [
+                'payment' => $payment,
+                'status'  => $status,
+            ]);
+        } catch (\Exception $e) {
+            $this->entityManager->rollback();
+            throw $e;
         }
-
-        $payment
-            ->setUpdatedAt(new \DateTime('now'))
-            ->setStatus($status)
-            ->setFees($transaction->fees ?? 0)
-            ->setMode($transaction->mode ?? '');
-        $rendezvou
-            ->setStatus('Rendez-vous pris');
-
-        $this->entityManager->flush();
-
-        return $this->render('rendezvous/payment/done.html.twig', [
-            'payment' => $payment,
-            'status'  => $status,
-        ]);
     }
 
     #[Route('/payment/callback', name: 'feda_callback', methods: ['POST'], format: 'json')]
-    public function fedaCallback(Request $request, PaymentRepository $repository, MailerInterface $mailer): ?Response
+    public function fedaCallback(Request $request, PaymentRepository $repository, MailerInterface $mailer): Response
     {
         $data = json_decode($request->getContent(), true)['entity'];
         $transactionID = $data['id'];
         $status = $data['status'];
-        $payment = $repository->findOneBy(['transactionID' => $transactionID]);
-        if ($payment === null) {
-            return $this->json(['status' => $status], 400);
-        }
-        $rendezvou = $payment->getRendezvous();
 
-        if ($status == 'canceled' || $status == 'declined') {
-            $rendezvou->setStatus('Échec du paiement');
-            $payment->setStatus($status);
-            $this->entityManager->flush();
-            return $this->json(['status' => $status], 200);
-        } else if ($status == 'approved') {
-            $transaction = $this->fedapayService->getTransaction($transactionID);
-            if ($rendezvou->getStatus() === 'Rendez-vous pris' || $rendezvou->isPaid()) {
-                return $this->json(['status' => 'done']);
+        $this->entityManager->beginTransaction();
+        try {
+            $payment = $repository->findOneBy(['transactionID' => $transactionID]);
+
+            if ($payment === null) {
+                return $this->json(['status' => $status], 400);
             }
-            $rendezvou->setPaid(true);
 
+            $this->entityManager->lock($payment, \Doctrine\DBAL\LockMode::PESSIMISTIC_WRITE);
+            $rendezvous = $payment->getRendezvous();
 
-            $rendezvou->setStatus('Rendez-vous pris');
+            if ($rendezvous->getStatus() === 'Rendez-vous pris') {
+                $this->entityManager->commit();
+                return $this->json(['status' => 'already_taken'], 200);
+            }
 
-            $userEmail = $rendezvou->getUser()->getEmail();
+            if ($status === 'canceled' || $status === 'declined') {
+                $rendezvous->setStatus('Échec du paiement');
+                $payment->setStatus($status);
+            } elseif ($status === 'approved') {
+                $transaction = $this->fedapayService->getTransaction($transactionID);
 
-            $email = (new Email())
-                ->from('beellenailscare@beellenails.com')
-                ->to($userEmail)
-                ->subject('Informations de rendez-vous!')
-                ->html($this->renderView(
-                    'emails/rendezvous_created.html.twig',
-                    ['rendezvou' => $rendezvou]
-                ));
-            $mailer->send($email);
+                $rendezvous->setPaid(true);
+                $rendezvous->setStatus('Rendez-vous pris');
 
-            $email = (new Email())
-                ->from('beellenailscare@beellenails.com')
-                ->to('murielahodode@gmail.com')
-                ->subject('Nouveau Rendez-vous !')
-                ->html($this->renderView(
-                    'emails/rendezvous_created_admin.html.twig',
-                    ['rendezvous' => $rendezvou]
-                ));
-            $mailer->send($email);
+                $userEmail = $rendezvous->getUser()->getEmail();
+                $email = (new Email())
+                    ->from('beellenailscare@beellenails.com')
+                    ->to($userEmail)
+                    ->subject('Informations de rendez-vous!')
+                    ->html($this->renderView('emails/rendezvous_created.html.twig', [
+                        'rendezvous' => $rendezvous
+                    ]));
+                $mailer->send($email);
 
-            $status = $transaction->status;
+                $adminEmail = (new Email())
+                    ->from('beellenailscare@beellenails.com')
+                    ->to('murielahodode@gmail.com')
+                    ->subject('Nouveau Rendez-vous !')
+                    ->html($this->renderView('emails/rendezvous_created_admin.html.twig', [
+                        'rendezvous' => $rendezvous
+                    ]));
+                $mailer->send($adminEmail);
 
-            $payment
-                ->setUpdatedAt(new \DateTime('now'))
-                ->setStatus($status)
-                ->setFees($transaction->fees ?? 0)
-                ->setMode($transaction->mode ?? '');
+                $payment->setUpdatedAt(new \DateTime('now'))->setStatus($status);
+            }
 
             $this->entityManager->flush();
+            $this->entityManager->commit();
             return $this->json(['status' => $status]);
+        } catch (\Exception $e) {
+            $this->entityManager->rollback();
+            throw $e;
         }
-
-        return $this->json(['status' => $status], 400);
     }
 }
