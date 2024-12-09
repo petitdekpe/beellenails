@@ -71,7 +71,7 @@
                                     Aucune image
                                     {% endif %}
                                 </td>
-                                <td class="px-4 py-3">{{ rendezvous.updated_at|date('d-m-Y H:i:s') }} GMT</td>
+                                <td class="px-4 py-3">{# {{ rendezvous.updated_at|date('d-m-Y H:i:s') }} #} En maintenance !!!</td>
                                 <td class="px-4 py-3">
                                     {% if rendezvous.status != "Annulé" %}
                                     <div class="flex items-center space-x-2">
@@ -126,18 +126,28 @@ document.addEventListener('DOMContentLoaded', function() {
         const searchTerm = this.value.trim().toLowerCase();
 
         tableRows.forEach(row => {
-            const date = row.querySelector('td:nth-child(1)').textContent.trim().toLowerCase();
-            const creneau = row.querySelector('td:nth-child(2)').textContent.trim().toLowerCase();
-            const client = row.querySelector('td:nth-child(3)').textContent.trim().toLowerCase();
-            const prestation = row.querySelector('td:nth-child(4)').textContent.trim().toLowerCase();
+            const dateCell = row.querySelector('td:nth-child(1)');
+            const creneauCell = row.querySelector('td:nth-child(2)');
+            const clientCell = row.querySelector('td:nth-child(3)');
+            const prestationCell = row.querySelector('td:nth-child(4)');
 
-            if (date.includes(searchTerm) || creneau.includes(searchTerm) || client.includes(searchTerm) || prestation.includes(searchTerm)) {
-                row.style.display = '';
+            if (dateCell && creneauCell && clientCell && prestationCell) {
+                const date = dateCell.textContent.trim().toLowerCase();
+                const creneau = creneauCell.textContent.trim().toLowerCase();
+                const client = clientCell.textContent.trim().toLowerCase();
+                const prestation = prestationCell.textContent.trim().toLowerCase();
+
+                if (date.includes(searchTerm) || creneau.includes(searchTerm) || client.includes(searchTerm) || prestation.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
             } else {
-                row.style.display = 'none';
+                row.style.display = 'none'; // Optionnel : Cacher les lignes avec des cellules manquantes
             }
         });
     });
 });
+
 
 </script>

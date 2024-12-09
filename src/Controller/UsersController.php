@@ -21,7 +21,7 @@ class UsersController extends AbstractController
         $user = $this->getUser();
 
         // Get the appointments for the logged-in user
-        $appointments = $rendezvousRepository->findBy(['User' => $user], ['day' => 'DESC']);
+        $appointments = $rendezvousRepository->findBy(['user' => $user], ['day' => 'DESC']);
 
         return $this->render('users/index.html.twig', [
             'controller_name' => 'UsersController',
