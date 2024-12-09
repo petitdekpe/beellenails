@@ -46,5 +46,8 @@ services:
 
     App\Service\FeexpayService:
         arguments:
-            $apiKey: '%env(FEEXPAY_API_KEY)%'
+            $token: '%env(FEEXPAY_API_KEY)%'
             $shopId: '%env(FEEXPAY_SHOP_ID)%'
+            $callbackUrl: '%env(FEEXPAY_CALLBACK_URL)%'
+            $errorCallbackUrl: '%env(FEEXPAY_ERROR_CALLBACK_URL)%'
+            $mode: '%env(FEEXPAY_MODE)%'

@@ -7,6 +7,7 @@ use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -31,6 +32,11 @@ class RegistrationFormType extends AbstractType
         ->add('email', null, [
             'attr' => ['class' => 'bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5'],
             'label' => 'Adresse mail',
+            'constraints' => [
+                new Email([
+                    'message' => 'Veuillez saisir une adresse e-mail valide.',
+                ]),
+            ],
         ])
         ->add('Phone', null, [
             'attr' => ['class' => 'bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5'],

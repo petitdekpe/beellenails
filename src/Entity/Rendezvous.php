@@ -11,7 +11,6 @@ use Symfony\Component\HttpFoundation\File\File;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Symfony\Component\Validator\Constraints as Assert;
 
-
 #[ORM\Entity(repositoryClass: RendezvousRepository::class)]
 #[Vich\Uploadable]
 class Rendezvous
@@ -31,26 +30,26 @@ class Rendezvous
     private ?File $image = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $ImageName = null;
+    private ?string $imageName = null;
 
-    #[Assert\NotBlank(message:'Veuillez choisir une date de rendez-vous')]
+    #[Assert\NotBlank(message: 'Veuillez choisir une date de rendez-vous')]
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $day = null;
 
-    #[Assert\NotBlank(message: 'Plus de créneau libre pour cette date. Choisissez une date avec des créneaux libres affichés.')]
+    #[Assert\NotBlank(message: 'Plus de créneau libre pour cette date. Choisissez une date avec des créneaux libres affichés.')]
     #[ORM\ManyToOne(inversedBy: 'rendezvouses')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Creneau $creneau = null;
 
     #[ORM\ManyToOne(inversedBy: 'rendezvouses')]
     #[ORM\JoinColumn(nullable: true)]
-    private ?User $User = null;
+    private ?User $user = null;
 
-    #[ORM\OneToOne(mappedBy: 'rendezvou')]
-    private ?Payment $payment = null;
+    #[ORM\OneToMany(mappedBy: 'rendezvous', targetEntity: Payment::class, cascade: ['persist', 'remove'])]
+    private Collection $payments;
 
     #[ORM\Column(nullable: true)]
-    private ?bool $Paid = null;
+    private ?bool $paid = null;
 
     #[ORM\ManyToMany(targetEntity: Supplement::class, inversedBy: 'rendezvouses')]
     private Collection $supplement;
@@ -58,20 +57,19 @@ class Rendezvous
     #[ORM\Column(nullable: true)]
     private ?string $status = null;
 
-    #[ORM\Column(type: 'datetime')]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private \DateTimeInterface $created_at;
 
-    #[ORM\Column(type: 'datetime')]
-    public \DateTimeInterface $updated_at;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private \DateTimeInterface $updated_at;
 
     public function __construct()
     {
+        $this->payments = new ArrayCollection();
         $this->supplement = new ArrayCollection();
-        $this->created_at = new \DateTime(); // Initialisez la date et l'heure de création
-        $this->updated_at = new \DateTime(); // Initialisez la date et l'heure de mise à jour
-
+        $this->created_at = new \DateTime();
+        $this->updated_at = new \DateTime();
     }
-
 
     public function getId(): ?int
     {
@@ -83,7 +81,7 @@ class Rendezvous
         return $this->status;
     }
 
-    public function setStatus(?string $status): static
+    public function setStatus(?string $status): self
     {
         $this->status = $status;
 
@@ -95,7 +93,7 @@ class Rendezvous
         return $this->prestation;
     }
 
-    public function setPrestation(?Prestation $prestation): static
+    public function setPrestation(?Prestation $prestation): self
     {
         $this->prestation = $prestation;
 
@@ -107,7 +105,7 @@ class Rendezvous
         return $this->image;
     }
 
-    public function setImage(File $image): static
+    public function setImage(?File $image): self
     {
         $this->image = $image;
 
@@ -116,12 +114,12 @@ class Rendezvous
 
     public function getImageName(): ?string
     {
-        return $this->ImageName;
+        return $this->imageName;
     }
 
-    public function setImageName(string $ImageName): static
+    public function setImageName(string $imageName): self
     {
-        $this->ImageName = $ImageName;
+        $this->imageName = $imageName;
 
         return $this;
     }
@@ -131,10 +129,10 @@ class Rendezvous
         return $this->day;
     }
 
-    public function setDay($day): static
+    public function setDay(?\DateTimeInterface $day): self
     {
         $this->day = $day;
-        $this->updateTimestamps(); // Mettez à jour les timestamps
+        $this->updateTimestamps();
 
         return $this;
     }
@@ -144,69 +142,76 @@ class Rendezvous
         return $this->creneau;
     }
 
-    public function setCreneau(?Creneau $creneau): static
+    public function setCreneau(?Creneau $creneau): self
     {
         $this->creneau = $creneau;
-        $this->updateTimestamps(); // Mettez à jour les timestamps
+        $this->updateTimestamps();
 
         return $this;
     }
 
     public function getUser(): ?User
     {
-        return $this->User;
+        return $this->user;
     }
 
-    public function setUser(?User $User): static
+    public function setUser(?User $user): self
     {
-        $this->User = $User;
+        $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Payment>
+     */
+    public function getPayments(): Collection
+    {
+        return $this->payments;
+    }
+
+    public function addPayment(Payment $payment): self
+    {
+        if (!$this->payments->contains($payment)) {
+            $this->payments->add($payment);
+            $payment->setRendezvous($this);
+        }
+
+        return $this;
+    }
+
+    public function removePayment(Payment $payment): self
+    {
+        if ($this->payments->removeElement($payment)) {
+            if ($payment->getRendezvous() === $this) {
+                $payment->setRendezvous(null);
+            }
+        }
 
         return $this;
     }
 
     public function isPaid(): ?bool
     {
-        return $this->Paid;
+        return $this->paid;
     }
 
-    public function setPaid(?bool $Paid): static
+    public function setPaid(?bool $paid): self
     {
-        $this->Paid = $Paid;
+        $this->paid = $paid;
 
         return $this;
     }
 
-    public function getPayment(): ?Payment
-	{
-		return $this->payment;
-	}
-
-	public function setPayment(?Payment $payment): self
-        {
-        // unset the owning side of the relation if necessary
-            if ($payment === null && $this->payment !== null) {
-                $this->payment->setRendezvous(null);
-            }
-                                                
-        // set the owning side of the relation if necessary
-            if ($payment !== null && $payment->getRendezvous() !== $this) {
-                $payment->setRendezvous($this);
-            }
-                                                
-                $this->payment = $payment;
-                                                
-            return $this;
-        }
-
     /**
-     * @return Collection<int, supplement>
+     * @return Collection<int, Supplement>
      */
     public function getSupplement(): Collection
     {
         return $this->supplement;
     }
 
-    public function addSupplement(supplement $supplement): static
+    public function addSupplement(Supplement $supplement): self
     {
         if (!$this->supplement->contains($supplement)) {
             $this->supplement->add($supplement);
@@ -215,7 +220,7 @@ class Rendezvous
         return $this;
     }
 
-    public function removeSupplement(supplement $supplement): static
+    public function removeSupplement(Supplement $supplement): self
     {
         $this->supplement->removeElement($supplement);
 
@@ -234,6 +239,6 @@ class Rendezvous
 
     public function updateTimestamps(): void
     {
-        $this->updated_at = new \DateTime(); // Mettez à jour updated_at lors de la modification
+        $this->updated_at = new \DateTime();
     }
 }

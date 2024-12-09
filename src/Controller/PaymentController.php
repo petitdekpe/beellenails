@@ -54,7 +54,10 @@ class PaymentController extends AbstractController
         $this->entityManager->persist($payment);
         $this->entityManager->flush();
 
-        return $this->redirect($token->url);
+        return $this->render('redirect.html.twig', [
+            'redirect_url' => $token->url
+        ]);
+
     }
 
     #[Route('/rendezvous/payment/callback', name: 'payment_callback')]

@@ -49,7 +49,7 @@ class Payment
 	#[ORM\JoinColumn(nullable: false)]
 	private ?User $customer = null;
 
-	#[ORM\OneToOne(inversedBy: 'payment', cascade: ['persist', 'remove'])]
+	#[ORM\ManyToOne(inversedBy: 'payments', cascade: ['persist', 'remove'])]
 	private ?Rendezvous $rendezvou = null;
 
 	#[ORM\Column]
