@@ -101,7 +101,7 @@ class RendezvousController extends AbstractController
                 ->subject('Votre Rendez-vous a été modifié')
                 ->html($this->renderView(
                     'emails/rendezvous_updated.html.twig',
-                    ['rendezvous' => $rendezvou]
+                    ['rendezvou' => $rendezvou]
                 ));
             $mailer->send($email);
 
