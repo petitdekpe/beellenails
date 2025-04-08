@@ -31,18 +31,18 @@
                 {% for day, rendezvouses in rendezvousByDay %}
                     <h2 class="text-lg font-bold mx-5 my-5">{{ day|date('d-m-Y') }}</h2>
         
-                    <table class="w-full text-sm text-left text-gray-500">
+                    <table class="w-85 text-sm text-left text-gray-500" style="margin: 20px;">
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                             <tr>
-                                <th scope="col" class="px-4 py-3">Date Rdv</th>
-                                <th scope="col" class="px-4 py-3">Creneau</th>
-                                <th scope="col" class="px-4 py-3">Client</th>
-                                <th scope="col" class="px-4 py-3">Prestation</th>
-                                <th scope="col" class="px-4 py-3">Ajout</th>
-                                <th scope="col" class="px-4 py-3">Status</th>
-                                <th scope="col" class="px-4 py-3">Image</th>
-                                <th scope="col" class="px-4 py-3">Dernière modification</th>
-                                <th scope="col" class="px-4 py-3">Actions</th>
+                                <th scope="col" class="px-4 py-3" style="width: 5%;">Date Rdv</th>
+                                <th scope="col" class="px-4 py-3" style="width: 5%;">Creneau</th>
+                                <th scope="col" class="px-4 py-3" style="width: 15%;">Client</th>
+                                <th scope="col" class="px-4 py-3" style="width: 15%;">Prestation</th>
+                                <th scope="col" class="px-4 py-3" style="width: 10%;">Ajout</th>
+                                <th scope="col" class="px-4 py-3" style="width: 5%;">Status</th>
+                                <th scope="col" class="px-4 py-3" style="width: 5%;">Image</th>
+                                <th scope="col" class="px-4 py-3" style="width: 15%;">Dernière modification</th>
+                                <th scope="col" class="px-4 py-3" style="width: 10%;">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -71,7 +71,7 @@
                                     Aucune image
                                     {% endif %}
                                 </td>
-                                <td class="px-4 py-3">{# {{ rendezvous.updated_at|date('d-m-Y H:i:s') }} #} En maintenance !!!</td>
+                                <td class="px-4 py-3"> {{ rendezvous.updatedAt|date('d-m-Y H:i:s') }} </td>
                                 <td class="px-4 py-3">
                                     {% if rendezvous.status != "Annulé" %}
                                     <div class="flex items-center space-x-2">

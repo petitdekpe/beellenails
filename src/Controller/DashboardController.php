@@ -194,7 +194,7 @@ class DashboardController extends AbstractController
                                 ->subject('Informations de rendez-vous!')
                                 ->html($this->renderView(
                                     'emails/rendezvous_created.html.twig',
-                                    ['rendezvou' => $rendezvous]
+                                    ['rendezvous' => $rendezvous]
                                 ));
                 $mailer->send($email);
 
@@ -227,7 +227,7 @@ class DashboardController extends AbstractController
             ->subject('Votre Rendez-vous !')
             ->html($this->renderView(
                 'emails/rendezvous_updated.html.twig',
-                ['rendezvous' => $rendezvou]
+                ['rendezvou' => $rendezvou]
             ));
             $mailer->send($email);
         

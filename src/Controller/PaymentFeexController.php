@@ -20,8 +20,8 @@ class PaymentFeexController extends AbstractController
     public function payMobile(): Response
     {
         $response = $this->feexPayService->paiementLocal(
-            100,                // Montant
-            '22990765870',       // Numéro de téléphone
+            5000,                // Montant
+            '2290196693363',       // Numéro de téléphone
             'MTN',               // Réseau autorisé
             'Jon Doe',           // Nom complet du client
             'jondoe@gmail.com',   // Email du client
