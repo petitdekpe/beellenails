@@ -1,51 +1,54 @@
 <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-    <table class="w-full text-sm text-left rtl:text-right text-gray-500">
-        <thead class="text-xs text-white uppercase bg-pink-500">
-            <tr>
-                <th scope="col" class="px-6 py-3">
-                    Nom de la Prestation
-                </th>
-                <th scope="col" class="px-6 py-3">
-                    Prix
-                </th>
-                <th scope="col" class="px-6 py-3">
-                    Durée
-                </th>
-                <th scope="col" class="px-6 py-3">
-                    Catégorie
-                </th>
-                <th scope="col" class="px-6 py-3">
-                    Image
-                </th>
-                <th scope="col" class="px-6 py-3">
-                    <span class="sr-only">Actions</span>
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for prestation in prestations %}
-            <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                    {{ prestation.getTitle() }}
-                </td>
-                <td class="px-6 py-4">
-                    {{ prestation.getPrice() }} FCFA
-                </td>
-                <td class="px-6 py-4">
-                    {{ prestation.getDuration() }} min
-                </td>
-                <td class="px-6 py-4">
-                    {{ prestation.getCategoryPrestation() }}
-                </td>
-                <td class="px-6 py-4">
-                    <img src="{{ vich_uploader_asset(prestation, 'image') }}" alt="{{ prestation.getTitle() }}" style="max-width: 40px;">
-                </td>
-                <td class="px-6 py-4 text-right">
-                    <!--a href="{#{ path('edit_prestation', {'id': prestation.getId()}) }#}" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a-->
-                    <a href="{{path('app_prestation_edit', {'id': prestation.getId()})}}" class="font-medium text-red-600  hover:underline">Modifier</a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+	<table class="w-full text-sm text-left rtl:text-right text-gray-500">
+		<thead class="text-xs text-white uppercase bg-pink-500">
+			<tr>
+				<th scope="col" class="px-6 py-3">
+					Nom de la Prestation
+				</th>
+				<th scope="col" class="px-6 py-3">
+					Prix
+				</th>
+				<th scope="col" class="px-6 py-3">
+					Durée
+				</th>
+				<th scope="col" class="px-6 py-3">
+					Catégorie
+				</th>
+				<th scope="col" class="px-6 py-3">
+					Image
+				</th>
+				<th scope="col" class="px-6 py-3">
+					<span class="sr-only">Actions</span>
+				</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for prestation in prestations %}
+				<tr class="bg-white border-b hover:bg-gray-50">
+					<td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+						{{ prestation.getTitle() }}
+					</td>
+					<td class="px-6 py-4">
+						{{ prestation.getPrice() }}
+						FCFA
+					</td>
+					<td class="px-6 py-4">
+						{{ prestation.getDuration() }}
+						min
+					</td>
+					<td class="px-6 py-4">
+						{{ prestation.getCategoryPrestation() }}
+					</td>
+					<td class="px-6 py-4">
+						<img src="{{ vich_uploader_asset(prestation, 'image') }}" alt="{{ prestation.getTitle() }}" style="max-width: 40px;">
+					</td>
+					<td
+						class="px-6 py-4 text-right">
+						<!--a href="{#{ path('edit_prestation', {'id': prestation.getId()}) }#}" class="font-medium text-blue-600 hover:underline">Edit</a-->
+						<a href="{{path('app_prestation_edit', {'id': prestation.getId()})}}" class="font-medium text-red-600  hover:underline">Modifier</a>
+					</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
 </div>

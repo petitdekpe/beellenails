@@ -1,94 +1,153 @@
 <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-    <form class="flex items-center mx-auto max-w-screen-xl px-2 lg:px-2">
-        <label for="simple-search" class="sr-only">Rechercher</label>
-        <div class="relative w-full">
-            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                <svg aria-hidden="true" class="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
-                </svg>
-            </div>
-            <input type="text" id="simple-search" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2" placeholder="Rechercher" required="">
-        </div>
-    </form>
-    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-            <tr>
-                <th scope="col" class="px-6 py-3">
-                    Nom
-                </th>
-                <th scope="col" class="px-6 py-3">
-                    Email
-                </th>
-                <th scope="col" class="px-6 py-3">
-                    Numéro de téléphone
-                </th>
-                <th scope="col" class="px-6 py-3">
-                    Anniversaire
-                </th>
-                <th scope="col" class="px-6 py-3">
-                    Genre
-                </th>
-                <th scope="col" class="px-6 py-3">
-                    Actions
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for user in users %}
-            <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                    {{ user.getNom() }} {{ user.getPrenom() }}
-                </td>
-                <td class="px-6 py-4">
-                    {{ user.getEmail() }}
-                </td>
-                <td class="px-6 py-4">
-                    {{ user.getPhone() }}
-                </td>
-                <td class="px-6 py-4">
-                    {% if user.getBirthday() is not empty %}
-                        {{ user.getBirthday()|date('d/m/Y') }}
-                    {% else %}
-                        Aucun
-                    {% endif %}
-                </td>
-                <td class="px-6 py-4">
-                    
-                    {% if user.getGenre() is not empty %}
-                        {{ user.getGenre() }}
-                    {% else %}
-                        Non défini
-                    {% endif %}
-                </td>
-                 <td class="px-6 py-4">
-                    <a href="{{path('app_user_edit', {'id': user.getId()})}}" class="font-medium text-red-600  hover:underline">Modifier</a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+	<form class="flex items-center mx-auto max-w-screen-xl px-2 lg:px-2">
+		<label for="simple-search" class="sr-only">Rechercher</label>
+		<div class="relative w-full">
+			<div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+				<svg aria-hidden="true" class="w-5 h-5 text-gray-500" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+					<path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
+				</svg>
+			</div>
+			<input type="text" id="simple-search" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2" placeholder="Rechercher" required="">
+		</div>
+	</form>
+	<table class="w-full text-sm text-left rtl:text-right text-gray-500">
+		<thead class="text-xs text-gray-700 uppercase bg-gray-50">
+			<tr>
+				<th scope="col" class="px-6 py-3">
+					Nom
+				</th>
+				<th scope="col" class="px-6 py-3">
+					Email
+				</th>
+				<th scope="col" class="px-6 py-3">
+					Numéro de téléphone
+				</th>
+				<th scope="col" class="px-6 py-3">
+					Anniversaire
+				</th>
+				<th scope="col" class="px-6 py-3">
+					Genre
+				</th>
+				<th scope="col" class="px-6 py-3">
+					Actions
+				</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for user in users %}
+				<tr class="bg-white border-b hover:bg-gray-50">
+					<td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+						{{ user.getNom() }}
+						{{ user.getPrenom() }}
+					</td>
+					<td class="px-6 py-4">
+						{{ user.getEmail() }}
+					</td>
+					<td class="px-6 py-4">
+						{{ user.getPhone() }}
+					</td>
+					<td class="px-6 py-4">
+						{% if user.getBirthday() is not empty %}
+							{{ user.getBirthday()|date('d/m/Y') }}
+						{% else %}
+							Aucun
+						{% endif %}
+					</td>
+					<td class="px-6 py-4">
+
+						{% if user.getGenre() is not empty %}
+							{{ user.getGenre() }}
+						{% else %}
+							Non défini
+						{% endif %}
+					</td>
+					<td class="px-6 py-4">
+						<a href="{{path('app_user_edit', {'id': user.getId()})}}" class="font-medium text-red-600  hover:underline">Modifier</a>
+					</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
 </div>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const searchInput = document.getElementById('simple-search');
-    const tableRows = document.querySelectorAll('tbody tr');
+	document.addEventListener('DOMContentLoaded', () => {
+const searchInput = document.getElementById('simple-search');
+const tableBody = document.querySelector('tbody');
+const tableRows = Array.from(tableBody.querySelectorAll('tr'));
+const ITEMS_PER_PAGE = 10;
+let currentPage = 1;
+let filteredRows = [... tableRows];
 
-    searchInput.addEventListener('input', function() {
-        const searchTerm = this.value.trim().toLowerCase();
+const paginationContainer = document.createElement('div');
+paginationContainer.className = 'flex justify-center items-center mt-4 space-x-2 text-sm';
+tableBody.parentNode.insertAdjacentElement('afterend', paginationContainer);
 
-        tableRows.forEach(row => {
-            const nom = row.querySelector('td:nth-child(1)').textContent.trim().toLowerCase();
-            const email = row.querySelector('td:nth-child(2)').textContent.trim().toLowerCase();
-            const phone = row.querySelector('td:nth-child(3)').textContent.trim().toLowerCase();
-            const birthday = row.querySelector('td:nth-child(4)').textContent.trim().toLowerCase();
-            const genre = row.querySelector('td:nth-child(5)').textContent.trim().toLowerCase();
+function hideAllRows() {
+tableRows.forEach(row => row.style.display = 'none');
+}
 
-            if (nom.includes(searchTerm) || email.includes(searchTerm) || phone.includes(searchTerm) || birthday.includes(searchTerm) || genre.includes(searchTerm)) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
-        });
-    });
+function paginate(rows) {
+const totalPages = Math.max(1, Math.ceil(rows.length / ITEMS_PER_PAGE));
+if (currentPage > totalPages) 
+currentPage = 1;
+
+
+hideAllRows();
+
+rows.forEach((row, index) => {
+row.style.display = (index >= (currentPage - 1) * ITEMS_PER_PAGE && index < currentPage * ITEMS_PER_PAGE) ? '' : 'none';
+});
+
+renderPaginationControls(totalPages);
+}
+
+function renderPaginationControls(totalPages) {
+paginationContainer.innerHTML = '';
+
+const prevBtn = document.createElement('button');
+prevBtn.textContent = 'Précédent';
+prevBtn.className = 'px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50';
+prevBtn.disabled = currentPage === 1;
+prevBtn.addEventListener('click', () => {
+if (currentPage > 1) {
+currentPage--;
+paginate(filteredRows);
+}
+});
+
+const nextBtn = document.createElement('button');
+nextBtn.textContent = 'Suivant';
+nextBtn.className = 'px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50';
+nextBtn.disabled = currentPage >= totalPages;
+nextBtn.addEventListener('click', () => {
+if (currentPage < totalPages) {
+currentPage++;
+paginate(filteredRows);
+}
+});
+
+const info = document.createElement('span');
+info.textContent = `Page ${currentPage} sur ${totalPages}`;
+
+paginationContainer.append(prevBtn, info, nextBtn);
+}
+
+function filterRows() {
+const searchTerm = searchInput.value.trim().toLowerCase();
+
+filteredRows = tableRows.filter(row => {
+const cells = row.querySelectorAll('td');
+return Array.from(cells).some(cell => cell.textContent.trim().toLowerCase().includes(searchTerm));
+});
+
+currentPage = 1;
+paginate(filteredRows);
+}
+
+// Initial load
+filterRows();
+
+// On search
+searchInput.addEventListener('input', filterRows);
 });
 </script>

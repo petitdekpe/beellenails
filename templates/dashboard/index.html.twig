@@ -1,284 +1,211 @@
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Tableau de bord{% endblock %}</title>
+<!DOCTYPE html>
+<html lang="fr">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<title>
+			{% block title %}Tableau de bord
+			{% endblock %}
+		</title>
 
-        <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
-        <link rel="manifest" href="/favicon/site.webmanifest">
-        <link rel="mask-icon" href="/favicon/safari-pinned-tab.svg" color="#5bbad5">
-        <meta name="msapplication-TileColor" content="#da532c">
-        <meta name="theme-color" content="#ffffff">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<!-- Favicon -->
+		<link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+		<link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+		<link rel="manifest" href="/favicon/site.webmanifest">
+		<link rel="mask-icon" href="/favicon/safari-pinned-tab.svg" color="#5bbad5">
+		<meta name="msapplication-TileColor" content="#da532c">
+		<meta
+		name="theme-color" content="#ffffff">
 
+		<!-- Tailwind & Flowbite -->
+		<script src="https://cdn.tailwindcss.com"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.js"></script>
 
-        <script src="https://cdn.tailwindcss.com"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.js"></script>
+		{% block stylesheets %}
+			<style>
+				.fc-toolbar-title,
+				.fc-col-header-cell-cushion {
+					text-transform: capitalize;
+				}
+				.fc .fc-button {
+					background-color: rgb(236 72 153);
+					color: white;
+					border: none;
+					border-radius: 0.375rem;
+					padding: 0.5rem 1rem;
+					font-weight: 500;
+				}
+				.fc .fc-button:hover,
+				.fc .fc-button-active {
+					background-color: rgb(219 39 119);
+					color: white;
+				}
+				.fc {
+					background-color: white;
+					border-radius: 0.5rem;
+					padding: 1rem;
+					box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+				}
+				.fc-event {
+					cursor: pointer;
+					white-space: normal !important;
+					overflow-wrap: break-word;
+				}
+				.fc-daygrid-event:hover {
+					background-color: #fef3c7;
+				}
+			</style>
+		{% endblock %}
 
+		<script src="https://cdn.fedapay.com/checkout.js?v=1.1.7"></script>
+		<script src="/js/preline.js"></script>
 
-        {% block stylesheets %}
-        <style>
-        /* Pour les libellés des mois */
-        .fc-toolbar-title, .fc-col-header-cell-cushion {
-            text-transform: capitalize;
-        }
-        </style>
-        {% endblock %}
-         <script src="https://cdn.fedapay.com/checkout.js?v=1.1.7"></script>
-         <script src="/js/preline.js"></script>
-        {% block javascripts %}
-        <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
-        <script src='fullcalendar/core/locales/fr.global.js'></script>
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                var calendarEl = document.getElementById('calendar');
-                var calendar = new FullCalendar.Calendar(calendarEl, {
-        events: {{ eventsJson | raw }},
-        initialView: 'dayGridMonth',
-        firstDay: 1,
-        hiddenDays: [0, 1],
-        headerToolbar: {
-            left: 'prev,next',
-            center: 'title',
-            right: 'dayGridMonth,timeGridWeek,timeGridDay'
-        },
-        buttonText: {
-            today: 'Aujourd\'hui',
-            month: 'Mois',
-            timeGridWeek: 'Semaine',
-            day: 'Jour'
-        },
-        locale: 'fr',
-        views: {
-            timeGridWeek: {
-                type: 'timeGrid',
-                duration: { days: 7 },
-                slotDuration: '00:30:00',
-                slotLabelFormat: {
-                    hour: 'numeric',
-                    minute: '2-digit',
-                    omitZeroMinute: false,
-                    hour12: false
-                },
-                slotMinTime: '09:00:00', // Heure de début des créneaux
-                slotMaxTime: '19:00:00', // Heure de fin des créneaux
-                scrollTime: '09:00'
-            },
-            timeGridDay: {
-                type: 'timeGrid',
-                duration: { days: 1 },
-                slotDuration: '00:30:00',
-                slotLabelFormat: {
-                    hour: 'numeric',
-                    minute: '2-digit',
-                    omitZeroMinute: false,
-                    hour12: false
-                },
-                businessHours: [
-                    {
-                        daysOfWeek: [1, 2, 3, 4, 5],
-                        startTime: '09:00',
-                        endTime: '12:00'
-                    },
-                    {
-                        daysOfWeek: [1, 2, 3, 4, 5],
-                        startTime: '13:00',
-                        endTime: '17:30'
-                    }
-                ],
-                slotMinTime: '09:00:00', // Heure de début des créneaux
-                slotMaxTime: '19:00:00', // Heure de fin des créneaux
-                scrollTime: '09:00'
-            }
-        },
-        eventMouseEnter: function(info) {
-            var rendezvous = info.event;
+		{% block javascripts %}
+			<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+			<script src="fullcalendar/core/locales/fr.global.js"></script>
+			<script>
+				document.addEventListener('DOMContentLoaded', function () {
+const calendarEl = document.getElementById('calendar');
+const calendar = new FullCalendar.Calendar(calendarEl, {
+events: {{ eventsJson | raw }},
+initialView: 'dayGridMonth',
+firstDay: 1,
+hiddenDays: [
+0, 1
+],
+headerToolbar: {
+left: 'prev,next',
+center: 'title',
+right: 'dayGridMonth,timeGridWeek,timeGridDay'
+},
+buttonText: {
+today: 'Aujourd\'hui',
+month: 'Mois',
+timeGridWeek: 'Semaine',
+day: 'Jour'
+},
+locale: 'fr',
+views: {
+timeGridWeek: {
+type: 'timeGrid',
+duration: {
+days: 7
+},
+slotDuration: '00:30:00',
+slotLabelFormat: {
+hour: 'numeric',
+minute: '2-digit',
+omitZeroMinute: false,
+hour12: false
+},
+slotMinTime: '09:00:00',
+slotMaxTime: '19:00:00',
+scrollTime: '09:00'
+},
+timeGridDay: {
+type: 'timeGrid',
+duration: {
+days: 1
+},
+slotDuration: '00:30:00',
+slotLabelFormat: {
+hour: 'numeric',
+minute: '2-digit',
+omitZeroMinute: false,
+hour12: false
+},
+businessHours: [
+{
+daysOfWeek: [
+1,
+2,
+3,
+4,
+5
+],
+startTime: '09:00',
+endTime: '12:00'
+}, {
+daysOfWeek: [
+1,
+2,
+3,
+4,
+5
+],
+startTime: '13:00',
+endTime: '17:30'
+}
+],
+slotMinTime: '09:00:00',
+slotMaxTime: '19:00:00',
+scrollTime: '09:00'
+}
+},
+eventMouseEnter(info) {
+const {event, jsEvent} = info;
+const box = document.createElement('div');
+box.className = 'absolute z-50 inline-block w-64 text-sm text-gray-700 transition-opacity duration-300 bg-white border border-gray-200 rounded-lg shadow-lg opacity-0';
+box.innerHTML = `
+            <div class="p-3">
+              <p class="text-base font-semibold text-gray-900">${
+event.title
+}</p>
+              <p class="mb-2"><strong>Prestation :</strong> ${
+event.extendedProps.prestation
+}</p>
+              <p class="mb-2"><strong>Début :</strong> ${
+event.start.toLocaleString()
+}</p>
+              <p><strong>Fin :</strong> ${
+event.end.toLocaleString()
+}</p>
+            </div>`;
+box.style.left = jsEvent.pageX + 'px';
+box.style.top = jsEvent.pageY + 'px';
+document.body.appendChild(box);
+setTimeout(() => box.classList.add('opacity-100'), 50);
+event.setExtendedProp('detailBox', box);
+},
+eventMouseLeave(info) {
+const box = info.event.extendedProps.detailBox;
+if (box) {
+box.remove();
+info.event.setExtendedProp('detailBox', null);
+}
+},
+eventClick(info) {
+const imageUrl = `/assets/images/rendezvous/${
+info.event.extendedProps.image
+}`;
+window.location.href = imageUrl;
+}
+});
+calendar.render();
+});
+			</script>
+		{% endblock %}
+	</head>
+	<body class="bg-gray-100">
+		{% block body %}
+			<div class="flex min-h-screen">
+				{% include '_sidebar.html.twig' %}
+				<!-- Main content -->
+				<main class="flex-1 p-6">
+					{% if app.request.query.has('message') %}
+						<div class="p-4 mb-4 text-sm text-red-800 bg-red-100 border border-red-300 rounded">
+							<strong>Attention :</strong>
+							{{ app.request.query.get('message') }}
+						</div>
+					{% endif %}
 
-            var detailBox = document.createElement('div');
-            detailBox.className = 'absolute z-10 inline-block w-64 text-sm text-gray-500 transition-opacity duration-300 bg-white border border-gray-200 rounded-lg shadow-sm opacity-0';
-            detailBox.setAttribute('role', 'tooltip');
-            detailBox.innerHTML = `
-                <div class="p-3">
-                    <p class="text-base font-semibold leading-none text-gray-900 dark:text-white">
-                        ${rendezvous.title}
-                    </p>
-                    <p class="mb-3 text-sm font-normal">
-                        <strong>Prestation:</strong> ${rendezvous.extendedProps.prestation}
-                    </p>
-                    <p class="mb-3 text-sm font-normal">
-                        <strong>Début:</strong> ${rendezvous.start.toLocaleString()}
-                    </p>
-                    <p class="mb-3 text-sm font-normal">
-                        <strong>Fin:</strong> ${rendezvous.end.toLocaleString()}
-                    </p>
-                </div>
-                <div data-popper-arrow></div>
-            `;
-
-            detailBox.style.position = 'absolute';
-            detailBox.style.left = info.jsEvent.pageX + 'px';
-            detailBox.style.top = info.jsEvent.pageY + 'px';
-
-            document.body.appendChild(detailBox);
-
-            setTimeout(function() {
-                detailBox.classList.add('opacity-100');
-            }, 50);
-
-            rendezvous.setExtendedProp('detailBox', detailBox);
-        },
-        eventMouseLeave: function(info) {
-            var rendezvous = info.event;
-            var detailBox = rendezvous.extendedProps.detailBox;
-            if (detailBox) {
-                detailBox.remove();
-                rendezvous.setExtendedProp('detailBox', null);
-            }
-        },
-        eventClick: function(info) {
-            var rendezvous = info.event;
-            var imageUrl = '/assets/images/rendezvous/' + rendezvous.extendedProps.image;
-            window.location.href = imageUrl;
-        },
-    });
-
-                calendar.render();
-            });
-        </script>
-
-        {% endblock %}
-        
-    </head>
-
-
-
-{% block body %}
-
-<button data-drawer-target="default-sidebar" data-drawer-toggle="default-sidebar" aria-controls="default-sidebar" type="button" class="inline-flex items-center p-2 mt-2 ms-3 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
-   <span class="sr-only">Open sidebar</span>
-   <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-   <path clip-rule="evenodd" fill-rule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"></path>
-   </svg>
-</button>
-
-<aside id="default-sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0" aria-label="Sidebar">
-   <div class="h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
-      <ul class="space-y-2 font-medium">
-         <li class="flex items-center justify-center">
-            <img src="{{ asset('assets/logooff.png') }}" class="h-32" alt="Logo">
-         </li>
-         <li>
-            <a href="#" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-               <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 21">
-                <path d="M120-520v-320h320v320H120Zm0 400v-320h320v320H120Zm400-400v-320h320v320H520Zm0 400v-320h320v320H520ZM200-600h160v-160H200v160Zm400 0h160v-160H600v160Zm0 400h160v-160H600v160Zm-400 0h160v-160H200v160Zm400-400Zm0 240Zm-240 0Zm0-240Z"/>
-               </svg>
-               <span class="ms-3">Tableau de bord</span>
-            </a>
-         </li>
-         <li>
-            <a href="{{ path('app_dashboard') }}" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-                <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M580-240q-42 0-71-29t-29-71q0-42 29-71t71-29q42 0 71 29t29 71q0 42-29 71t-71 29ZM200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-80h80v80h320v-80h80v80h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm0 0v-80 80Z" fill="currentColor"/>
-                </svg>
-               <span class="flex-1 ms-3 whitespace-nowrap">Agenda</span>
-               <!--span class="inline-flex items-center justify-center px-2 ms-3 text-sm font-medium text-gray-800 bg-gray-100 rounded-full dark:bg-gray-700 dark:text-gray-300">Pro</span-->
-            </a>
-         </li>
-         <li>
-            <a href="{{ path('app_dashboard_rendezvous') }}" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-               <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 21">
-                <path d="M200-640h560v-80H200v80Zm0 0v-80 80Zm0 560q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-80h80v80h320v-80h80v80h40q33 0 56.5 23.5T840-720v227q-19-9-39-15t-41-9v-43H200v400h252q7 22 16.5 42T491-80H200Zm520 40q-83 0-141.5-58.5T520-240q0-83 58.5-141.5T720-440q83 0 141.5 58.5T920-240q0 83-58.5 141.5T720-40Zm67-105 28-28-75-75v-112h-40v128l87 87Z"/>
-               </svg>
-               <span class="flex-1 ms-3 whitespace-nowrap">Rendez-vous</span>
-               <!--span class="inline-flex items-center justify-center w-3 h-3 p-3 ms-3 text-sm font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">3</span-->
-            </a>
-         </li>
-         <li>
-            <a href="{{ path('app_dashboard_prestation') }}" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-               <svg class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
-                  <path d="M14 2a3.963 3.963 0 0 0-1.4.267 6.439 6.439 0 0 1-1.331 6.638A4 4 0 1 0 14 2Zm1 9h-1.264A6.957 6.957 0 0 1 15 15v2a2.97 2.97 0 0 1-.184 1H19a1 1 0 0 0 1-1v-1a5.006 5.006 0 0 0-5-5ZM6.5 9a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9ZM8 10H5a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-2a5.006 5.006 0 0 0-5-5Z"/>
-               </svg>
-               <span class="flex-1 ms-3 whitespace-nowrap">Prestations</span>
-            </a>
-         </li>
-         <li>
-            <a href="{{ path('app_dashboard_user') }}" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-               <svg class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 20">
-                  <path d="M17 5.923A1 1 0 0 0 16 5h-3V4a4 4 0 1 0-8 0v1H2a1 1 0 0 0-1 .923L.086 17.846A2 2 0 0 0 2.08 20h13.84a2 2 0 0 0 1.994-2.153L17 5.923ZM7 9a1 1 0 0 1-2 0V7h2v2Zm0-5a2 2 0 1 1 4 0v1H7V4Zm6 5a1 1 0 1 1-2 0V7h2v2Z"/>
-               </svg>
-               <span class="flex-1 ms-3 whitespace-nowrap">Clients</span>
-            </a>
-         </li>
-         <li>
-            <a href="{{ path('app_dashboard_transactions') }}" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-               <svg class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 20">
-                  <path d="M17 5.923A1 1 0 0 0 16 5h-3V4a4 4 0 1 0-8 0v1H2a1 1 0 0 0-1 .923L.086 17.846A2 2 0 0 0 2.08 20h13.84a2 2 0 0 0 1.994-2.153L17 5.923ZM7 9a1 1 0 0 1-2 0V7h2v2Zm0-5a2 2 0 1 1 4 0v1H7V4Zm6 5a1 1 0 1 1-2 0V7h2v2Z"/>
-               </svg>
-               <span class="flex-1 ms-3 whitespace-nowrap">Paiements</span>
-            </a>
-         </li>
-         <li>
-            <button type="button" class="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700" aria-controls="dropdown-example" data-collapse-toggle="dropdown-example">
-                  <svg class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 21">
-                     <path d="M15 12a1 1 0 0 0 .962-.726l2-7A1 1 0 0 0 17 3H3.77L3.175.745A1 1 0 0 0 2.208 0H1a1 1 0 0 0 0 2h.438l.6 2.255v.019l2 7 .746 2.986A3 3 0 1 0 9 17a2.966 2.966 0 0 0-.184-1h2.368c-.118.32-.18.659-.184 1a3 3 0 1 0 3-3H6.78l-.5-2H15Z"/>
-                  </svg>
-                  <span class="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap">Formations</span>
-                  <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
-                  </svg>
-            </button>
-            <ul id="dropdown-example" class="hidden py-2 space-y-2">
-                  <li>
-                     <a href="{{ path('app_dashboard_formation') }}" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Liste</a>
-                  </li>
-                  <li>
-                     <a href="{{ path('app_formation_new')}}" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Ajouter</a>
-                  </li>
-            </ul>
-         </li>
-         <li>
-            <button type="button" class="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700" aria-controls="dropdown-example2" data-collapse-toggle="dropdown-example2">
-                  <svg class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 21">
-                     <path d="M15 12a1 1 0 0 0 .962-.726l2-7A1 1 0 0 0 17 3H3.77L3.175.745A1 1 0 0 0 2.208 0H1a1 1 0 0 0 0 2h.438l.6 2.255v.019l2 7 .746 2.986A3 3 0 1 0 9 17a2.966 2.966 0 0 0-.184-1h2.368c-.118.32-.18.659-.184 1a3 3 0 1 0 3-3H6.78l-.5-2H15Z"/>
-                  </svg>
-                  <span class="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap">Congés</span>
-                  <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
-                  </svg>
-            </button>
-            <ul id="dropdown-example2" class="hidden py-2 space-y-2">
-                  <li>
-                     <a href="{{ path('create_conge') }}" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Journée</a>
-                  </li>
-                  <li>
-                     <a href="{{ path('create_conges')}}" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Période</a>
-                  </li>
-            </ul>
-         </li>
-         
-      </ul>
-   </div>
-</aside>
-
-<div class="sm:ml-64">
-    <div class="relative overflow-hidden w-full min-h-[70px] bg-pink-500"></div>
-    <div class="relative overflow-hidden w-full min-h-[70px] bg-white"></div>
-    {% if app.request.query.has('message') %}
-        <div class="flex items-center p-4 mb-4 mx-4 text-sm text-red-800 border border-red-300 rounded-lg bg-red-50" role="alert">
-            <svg class="flex-shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
-            </svg>
-            <span class="sr-only">Info</span>
-            <div>
-                <span class="font-medium">Attention !</span> {{ app.request.query.get('message') }}
-            </div>
-        </div>
-    {% endif %}
-    <p class="p-4 text-2xl font-semibold mt-10">Bonjour, {{app.user}}</p>
-    <p class="p-4">Voici votre agenda</p>
-    <div class="px-20" id='calendar'></div>
-</div>
-
-{% endblock %}
-
+					<h1 class="text-2xl font-semibold mb-2">Bonjour,
+						{{ app.user }}</h1>
+					<p class="mb-6">Voici votre agenda :</p>
+					<div id="calendar" class="rounded-lg border border-gray-200 bg-white p-4 shadow-md max-w-5xl mx-auto h-[600px] overflow-hidden"></div>
+				</main>
+			</div>
+		{% endblock %}
+	</body>
+</html>

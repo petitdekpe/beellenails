@@ -24,11 +24,15 @@ class Supplement
     #[ORM\ManyToMany(targetEntity: Rendezvous::class, mappedBy: 'supplement')]
     private Collection $rendezvouses;
 
-    public function __toString()
+    public function __toString(): string
     {
-        return $this->title;
+        // Formatage du prix en milliers, avec séparateur d'espaces, et ajout de "F CFA"
+        $formattedPrice = number_format($this->price, 0, '', ' ') . 'F CFA';
+
+        return sprintf('%s (%s)', $this->title, $formattedPrice);
     }
-    
+
+
     public function __construct()
     {
         $this->rendezvouses = new ArrayCollection();

@@ -33,12 +33,11 @@
 				margin-bottom: 15px;
 			}
 			.disabled-link {
-			pointer-events: none; /* Empêche les interactions */
-			color: gray; /* Apparence grisée */
-			cursor: not-allowed;
-			opacity: 0.5;
+				pointer-events: none; /* Empêche les interactions */
+				color: gray; /* Apparence grisée */
+				cursor: not-allowed;
+				opacity: 0.5;
 			}
-
 		</style>
 	</head>
 	<body>
@@ -54,7 +53,7 @@
 						<img src="../assets/feda-logo.svg" alt="Fedapay">
 						<span>Fedapay</span>
 					</a>
-					<a href="{{ path('payment_mobile', { rendezvou: rendezvous.id }) }}" class="col btn payment-button border border-2 ms-3">disabled-link
+					<a href="{{ path('feexpay_form', { rendezvou: rendezvous.id }) }}" class="col btn payment-button border border-2 ms-3">
 						<img src="../assets/feexpay-logo.png" alt="Feexpay">
 						<span>Feexpay</span>
 					</a>
@@ -65,4 +64,3 @@
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 	</body>
 </html>
-

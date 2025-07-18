@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+{% block title %}Paiement FeexPay
+{% endblock %}
+
+{% block body %}
+	<div class="relative overflow-hidden w-full min-h-[90px] bg-white rounded-lg"></div>
+	<section class="bg-gray-50 py-6">
+		<div class="max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
+			<h1 class="text-xl font-bold text-gray-900 mb-4">Paiement avec FeexPay</h1>
+			{{ form_start(form, {
+        'method': 'POST',
+        'action': path('feexpay_payment_init', {'rendezvou': rendezvous.id}),
+        
+        }) }}
+			{{ form_row(form.phone) }}
+			{{ form_row(form.operator) }}
+			<button class="btn btn-primary">Valider et payer</button>
+			{{ form_end(form) }}
+		</div>
+	</section>
+{% endblock %}

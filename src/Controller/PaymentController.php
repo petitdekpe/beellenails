@@ -49,7 +49,8 @@ class PaymentController extends AbstractController
             ->setRendezvous($rendezvou)
             ->setCustomer($user)
             ->setPhoneNumber($user->getPhone())
-            ->setToken($token->token);
+            ->setToken($token->token)
+            ->setProvider('fedapay');
         $this->entityManager->persist($user);
         $this->entityManager->persist($payment);
         $this->entityManager->flush();
@@ -57,7 +58,6 @@ class PaymentController extends AbstractController
         return $this->render('redirect.html.twig', [
             'redirect_url' => $token->url
         ]);
-
     }
 
     #[Route('/rendezvous/payment/callback', name: 'payment_callback')]

@@ -25,7 +25,7 @@ class PreRendezvousType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $prestation = $options['prestation'];
-        
+
         $builder
             ->add('day', DateType::class, [
                 'label' => 'Date du rendez-vous',
@@ -45,7 +45,9 @@ class PreRendezvousType extends AbstractType
             ])
             ->add('supplement', EntityType::class, [
                 'class' => Supplement::class,
-                'choice_label' => 'title',
+                'choice_label' => function (Supplement $supplement) {
+                    return sprintf('%s (%s F CFA)', $supplement->getTitle(), number_format($supplement->getPrice(), 0, '', ' '));
+                },
                 'expanded' => true,
                 'multiple' => true,
                 'attr' => [
@@ -62,7 +64,6 @@ class PreRendezvousType extends AbstractType
                 'attr' => ['class' => 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5'],
                 'help' => 'Ajouter une photo de vos ongles des mains ou des pieds, naturels sans capsules et sans vernis afin que nous puissions les analyser. Dans le cas où vous souhaiteriez venir avec une pose non faites chez nous pour une dépose avant votre prestation, un supplément de 10.000f sera facturé pour la dépose complète.'
             ]);
-
     }
 
     public function configureOptions(OptionsResolver $resolver): void

@@ -1,50 +1,87 @@
 <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-    <table class="w-full text-sm text-left rtl:text-right text-gray-500">
-        <thead class="text-xs text-white uppercase bg-pink-500">
-            <tr>
-                <th scope="col" class="px-6 py-3">
-                    Nom de la Formation
-                </th>
-                <th scope="col" class="px-6 py-3">
-                    Description
-                </th>
-                <th scope="col" class="px-6 py-3">
-                    Prix
-                </th>
-                <th scope="col" class="px-6 py-3">
-                    Prérequis
-                </th>
-                <th scope="col" class="px-6 py-3">
-                    Image
-                </th>
-                <th scope="col" class="px-6 py-3">
-                    <span class="sr-only">Actions</span>
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for formation in formations %}
-            <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap ">
-                    {{ formation.getNom() }}
-                </td>
-                 <td class="px-6 py-4">
-                    {{ formation.getDescription() }}
-                </td>
-                <td class="px-6 py-4">
-                    {{ formation.getCout() }} FCFA
-                </td>
-                <td class="px-6 py-4">
-                    {{ formation.getPrerequis() }}
-                </td>
-                <td class="px-6 py-4">
-                    <img src="{{ vich_uploader_asset(formation, 'image') }}" alt="{{ formation.getNom() }}" style="max-width: 40px;">
-                </td>
-                <td class="px-6 py-4 text-right">
-                    <a href="{{ path('app_formation_edit', {'id': formation.getId()}) }}" class="font-medium text-red-600  hover:underline">Modifier</a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+	<table id="formations-table" class="w-full text-sm text-left rtl:text-right text-gray-700">
+		<thead class="text-xs text-white uppercase bg-pink-500">
+			<tr>
+				<th scope="col" class="px-6 py-3">Nom de la Formation</th>
+				<th scope="col" class="px-6 py-3">Description</th>
+				<th scope="col" class="px-6 py-3">Prix</th>
+				<th scope="col" class="px-6 py-3">Prérequis</th>
+				<th scope="col" class="px-6 py-3">Image</th>
+				<th scope="col" class="px-6 py-3">
+					<span class="sr-only">Actions</span>
+				</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for formation in formations %}
+				<tr class="bg-white border-b hover:bg-gray-50">
+					<td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">{{ formation.getNom() }}</td>
+					<td class="px-6 py-4">{{ formation.getDescription() }}</td>
+					<td class="px-6 py-4">{{ formation.getCout() }}
+						FCFA</td>
+					<td class="px-6 py-4">{{ formation.getPrerequis() }}</td>
+					<td class="px-6 py-4">
+						<img src="{{ vich_uploader_asset(formation, 'image') }}" alt="{{ formation.getNom() }}" class="w-10 h-auto rounded">
+					</td>
+					<td class="px-6 py-4 text-right">
+						<a href="{{ path('app_formation_edit', {'id': formation.getId()}) }}" class="font-medium text-red-600 hover:underline">Modifier</a>
+					</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<div id="pagination-controls" class="flex justify-center items-center gap-4 mt-4 text-sm"></div>
 </div>
+
+<script>
+	document.addEventListener('DOMContentLoaded', () => {
+const table = document.getElementById('formations-table');
+const tbody = table.querySelector('tbody');
+const rows = Array.from(tbody.querySelectorAll('tr'));
+const ITEMS_PER_PAGE = 10;
+let currentPage = 1;
+
+const pagination = document.getElementById('pagination-controls');
+
+function renderPaginationControls(totalPages) {
+pagination.innerHTML = '';
+
+const prev = document.createElement('button');
+prev.textContent = 'Précédent';
+prev.className = 'px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50';
+prev.disabled = currentPage === 1;
+prev.onclick = () => {
+currentPage--;
+renderPage();
+};
+
+const next = document.createElement('button');
+next.textContent = 'Suivant';
+next.className = 'px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50';
+next.disabled = currentPage === totalPages;
+next.onclick = () => {
+currentPage++;
+renderPage();
+};
+
+const info = document.createElement('span');
+info.textContent = `Page ${currentPage} sur ${totalPages}`;
+
+pagination.append(prev, info, next);
+}
+
+function renderPage() {
+const totalPages = Math.ceil(rows.length / ITEMS_PER_PAGE);
+const start = (currentPage - 1) * ITEMS_PER_PAGE;
+const end = currentPage * ITEMS_PER_PAGE;
+
+rows.forEach((row, index) => {
+row.style.display = (index >= start && index < end) ? '' : 'none';
+});
+
+renderPaginationControls(totalPages);
+}
+
+renderPage();
+});
+</script>

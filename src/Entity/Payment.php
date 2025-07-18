@@ -10,17 +10,36 @@ use App\Repository\PaymentRepository;
 #[ORM\Entity(repositoryClass: PaymentRepository::class)]
 class Payment
 {
-	public const STATUS = [
-		'pending' => 'En attente',
-		'approved' => 'Approuvée',
-		'declined' => 'Déclinée',
-		'canceled' => 'Annulée',
-		'refunded' => 'Remboursée',
+	public const STATUS = self::STATUS_LABELS;
+
+	public const STATUS_LABELS = [
+		'pending'     => 'En attente',
+		'approved'    => 'Approuvée',
+		'declined'    => 'Déclinée',
+		'canceled'    => 'Annulée',
+		'refunded'    => 'Remboursée',
 		'transferred' => 'Transférée',
-		'invalid' => "Invalide",
-		'successful' => 'Approuvée',
-		'failed' => 'Annulée',
+		'invalid'     => 'Invalide',
+		'successful'  => 'Approuvée',
+		'failed'      => 'Annulée',
 	];
+
+	public const STATUS_FEDEX = [
+		'pending',
+		'approved',
+		'declined',
+		'canceled',
+		'refunded',
+		'transferred',
+		'invalid'
+	];
+
+	public const STATUS_FEEXPAY = [
+		'PENDING'     => 'pending',
+		'SUCCESSFUL'  => 'successful',
+		'FAILED'      => 'failed'
+	];
+
 
 	#[ORM\Id]
 	#[ORM\GeneratedValue]
@@ -261,6 +280,49 @@ class Payment
 	{
 		$this->fees = $fees;
 
+		return $this;
+	}
+
+	public static function convertFeexStatus(string $status): string
+	{
+		return self::STATUS_FEEXPAY[$status] ?? 'invalid';
+	}
+	public function initializeForFeexPay(
+		string $transactionID,
+		string $reference,
+		string $phoneNumber,
+		User $customer,
+		Rendezvous $rendezvous,
+		string $mode,
+		string $provider
+	): self {
+		$this->transactionID = $transactionID;
+		$this->reference = $reference;
+		$this->phoneNumber = $phoneNumber;
+		$this->customer = $customer;
+		$this->rendezvou = $rendezvous;
+		$this->amount = 5000;
+		$this->currency = 'XOF';
+		$this->status = 'pending';
+		$this->mode = $mode;
+		$this->provider = $provider; // <-- Attribut ajouté
+		$this->createdAt = new \DateTimeImmutable();
+
+		return $this;
+	}
+	// src/Entity/Payment.php
+
+	#[ORM\Column(type: 'string', length: 20)]
+	private string $provider;
+
+	public function getProvider(): string
+	{
+		return $this->provider;
+	}
+
+	public function setProvider(string $provider): self
+	{
+		$this->provider = $provider;
 		return $this;
 	}
 }

@@ -1,0 +1,68 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Paiement lancé
+{% endblock %}
+
+{% block javascripts %}
+	<script>
+		const reference = "{{ reference }}";
+const maxAttempts = 30;
+let attempts = 0;
+
+const checkStatus = () => {
+attempts++;
+fetch(`/payment/feexpay/status/${reference}?attempt=${attempts}`).then(response => response.json()).then(data => {
+const status = data.status;
+
+if (status === 'successful') {
+window.location.href = `/rendezvous/payment/done/${reference}`;
+} else if (status === 'failed') {
+window.location.href = `/rendezvous/payment/error/${reference}`;
+} else {
+if (attempts >= maxAttempts) {
+window.location.href = `/rendezvous/payment/error/${reference}`;
+} else {
+setTimeout(checkStatus, 10000);
+}
+}
+}).catch(error => {
+console.error("Erreur lors de la vérification du statut :", error);
+window.location.href = '/rendezvous/payment/error';
+});
+};
+
+// Démarrer après 10 secondes
+setTimeout(checkStatus, 10000);
+	</script>
+{% endblock %}
+
+{% block body %}
+	<div class="flex flex-col items-center justify-center min-h-screen bg-gray-50 px-4 py-16">
+		<div class="text-center max-w-md">
+			<h2 class="text-2xl font-bold text-gray-800 mb-4">Paiement en cours...</h2>
+			<p class="text-gray-600 mb-6">Nous avons bien lancé la transaction. Merci de patienter pendant que nous vérifions son statut.</p>
+
+			<!-- Loader stylisé (bouton désactivé avec spinner) -->
+			<button disabled type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 inline-flex items-center">
+				<svg aria-hidden="true" role="status" class="inline w-4 h-4 me-3 text-white animate-spin" viewbox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<path d="M100 50.5908C100 78.2051 77.6142 100.591 ..." fill="#E5E7EB"/>
+					<path d="M93.9676 39.0409C96.393 38.4038 ..." fill="currentColor"/>
+				</svg>
+				Chargement...
+			</button>
+
+			<!-- Informations de debug (facultatives) -->
+			<div class="mt-8 text-sm text-gray-400">
+				<p>Référence :
+					<span class="text-gray-800 font-semibold">{{ reference }}</span>
+				</p>
+				<p>Status initial :
+					<span class="text-gray-700">{{ response.status }}</span>
+				</p>
+				<p>Message :
+					<span class="text-gray-700">{{ response.message }}</span>
+				</p>
+			</div>
+		</div>
+	</div>
+{% endblock %}

@@ -1,0 +1,84 @@
+<aside class="w-64 bg-white shadow-md hidden sm:block">
+	<div class="h-full overflow-y-auto px-4 py-6">
+		<div class="flex justify-center mb-6">
+			<img src="{{ asset('assets/logooff.png') }}" class="h-20" alt="Logo">
+		</div>
+
+		{% set route = app.request.attributes.get('_route') %}
+		<ul class="space-y-2 text-sm font-medium">
+
+			<li>
+				<a href="{{ path('app_dashboard') }}" class="flex items-center p-2 rounded {{ route == 'app_dashboard' ? 'bg-gray-100 font-semibold' : 'hover:bg-gray-100 text-gray-900' }}">
+					🗓 Agenda
+				</a>
+			</li>
+
+			<li>
+				<a href="{{ path('app_dashboard_rendezvous') }}" class="flex items-center p-2 rounded {{ route == 'app_dashboard_rendezvous' ? 'bg-gray-100 font-semibold' : 'hover:bg-gray-100 text-gray-900' }}">
+					📅 Rendez-vous
+				</a>
+			</li>
+
+			<li>
+				<a href="{{ path('app_dashboard_prestation') }}" class="flex items-center p-2 rounded {{ route == 'app_dashboard_prestation' ? 'bg-gray-100 font-semibold' : 'hover:bg-gray-100 text-gray-900' }}">
+					💼 Prestations
+				</a>
+			</li>
+
+			<li>
+				<a href="{{ path('app_dashboard_user') }}" class="flex items-center p-2 rounded {{ route == 'app_dashboard_user' ? 'bg-gray-100 font-semibold' : 'hover:bg-gray-100 text-gray-900' }}">
+					👥 Clients
+				</a>
+			</li>
+
+			<li>
+				<a href="{{ path('app_dashboard_transactions') }}" class="flex items-center p-2 rounded {{ route == 'app_dashboard_transactions' ? 'bg-gray-100 font-semibold' : 'hover:bg-gray-100 text-gray-900' }}">
+					💳 Paiements
+				</a>
+			</li>
+
+			{% set formation_active = route starts with 'app_dashboard_formation' or route starts with 'app_formation_' %}
+			<li>
+				<details class="group" {% if formation_active %} open {% endif %}>
+					<summary class="flex items-center p-2 rounded cursor-pointer {{ formation_active ? 'bg-gray-100 font-semibold' : 'hover:bg-gray-100 text-gray-900' }}">
+						🎓 Formations
+					</summary>
+					<ul class="ml-4 mt-2 space-y-1">
+						<li>
+							<a href="{{ path('app_dashboard_formation') }}" class="block px-2 py-1 rounded {{ route == 'app_dashboard_formation' ? 'bg-pink-100 font-medium' : 'hover:bg-gray-100' }}">
+								Liste
+							</a>
+						</li>
+						<li>
+							<a href="{{ path('app_formation_new') }}" class="block px-2 py-1 rounded {{ route == 'app_formation_new' ? 'bg-pink-100 font-medium' : 'hover:bg-gray-100' }}">
+								Ajouter
+							</a>
+						</li>
+					</ul>
+				</details>
+			</li>
+
+			{% set conge_active = route starts with 'create_conge' %}
+			<li>
+				<details class="group" {% if conge_active %} open {% endif %}>
+					<summary class="flex items-center p-2 rounded cursor-pointer {{ conge_active ? 'bg-gray-100 font-semibold' : 'hover:bg-gray-100 text-gray-900' }}">
+						🌴 Congés
+					</summary>
+					<ul class="ml-4 mt-2 space-y-1">
+						<li>
+							<a href="{{ path('create_conge') }}" class="block px-2 py-1 rounded {{ route == 'create_conge' ? 'bg-pink-100 font-medium' : 'hover:bg-gray-100' }}">
+								Journée
+							</a>
+						</li>
+						<li>
+							<a href="{{ path('create_conges') }}" class="block px-2 py-1 rounded {{ route == 'create_conges' ? 'bg-pink-100 font-medium' : 'hover:bg-gray-100' }}">
+								Période
+							</a>
+						</li>
+					</ul>
+				</details>
+			</li>
+
+		</ul>
+	</div>
+</aside>
