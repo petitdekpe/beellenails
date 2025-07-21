@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="fr">
+	<head>
+		<meta charset="UTF-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<title>Rendez-vous annulé par le client</title>
+		<style>:root
+		{
+			--primary: #7a1ee9;
+			--text: #1a1a1a;
+			--text-muted: #666666;
+			--border: #eeeeee;
+			--bg: #ffffff;
+		}
+
+		* {
+			box-sizing: border-box;
+			margin: 0;
+			padding: 0;
+		}
+
+		body {
+			font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+			background-color: var(--bg);
+			color: var(--text);
+			line-height: 1.6;
+		}
+
+		.container {
+			max-width: 600px;
+			margin: auto;
+			padding: 40px 24px;
+		}
+
+		.logo {
+			text-align: center;
+			margin-bottom: 24px;
+		}
+
+		.hero-image {
+			width: 100%;
+			border-radius: 12px;
+			overflow: hidden;
+			margin-bottom: 32px;
+		}
+
+		.hero-image img {
+			width: 100%;
+			display: block;
+		}
+
+		h1 {
+			font-size: 24px;
+			font-weight: 600;
+			margin-bottom: 16px;
+		}
+
+		p {
+			font-size: 16px;
+			margin-bottom: 16px;
+		}
+
+		.cta-button {
+			display: inline-block;
+			background-color: var(--primary);
+			color: white;
+			text-decoration: none;
+			padding: 14px 24px;
+			border-radius: 24px;
+			font-weight: 600;
+			margin: 32px 0;
+			text-align: center;
+		}
+
+		.footer {
+			text-align: center;
+			font-size: 14px;
+			color: var(--text-muted);
+			margin-top: 48px;
+			border-top: 1px solid var(--border);
+			padding-top: 32px;
+		}
+
+		.footer .social-icons {
+			margin: 16px 0;
+		}
+
+		.footer .social-icons a {
+			margin: 0 10px;
+			display: inline-block;
+		}
+
+		.footer .social-icons img {
+			width: 24px;
+			height: 24px;
+		}
+
+		.footer-links {
+			margin-top: 16px;
+			font-size: 13px;
+			color: var(--text-muted);
+		}
+
+		.footer-links a {
+			color: var(--primary);
+			text-decoration: none;
+			margin: 0 8px;
+		}
+
+		a {
+			color: var(--primary);
+			text-decoration: none;
+		}
+
+		/* ======= Responsive Design ======= */
+		@media(max-width: 480px) {
+			.container {
+				padding: 24px 16px;
+			}
+
+			h1 {
+				font-size: 20px;
+			}
+
+			p {
+				font-size: 15px;
+			}
+
+			.cta-button {
+				display: block;
+				width: 100%;
+				text-align: center;
+				padding: 14px 0;
+			}
+
+			.footer .social-icons img {
+				width: 20px;
+				height: 20px;
+			}
+
+			.footer-links {
+				display: flex;
+				flex-direction: column;
+				gap: 6px;
+			}
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+
+		<div class="logo">
+			<img src="https://your-image-source/logo.png" alt="Circo Logo" width="40"/>
+		</div>
+
+		<div class="hero-image">
+			<img src="https://your-image-source/hero.jpg" alt="Hero Banner"/>
+		</div>
+
+		<h1>Bonjour,</h1>
+
+		<p>Nous vous informons qu’un client a annulé un rendez-vous réservé via notre plateforme.</p>
+
+		<p>
+			<strong>Nom du client :</strong>
+			{{ rendezvous.user.fullName }}</p>
+		<p>
+			<strong>Email :</strong>
+			{{ rendezvous.user.email }}</p>
+		<p>
+			<strong>Prestation concernée :</strong>
+			{{ rendezvous.prestation }}</p>
+		<p>
+			<strong>Date prévue :</strong>
+			{{ rendezvous.day|date("d/m/Y") }}</p>
+		<p>
+			<strong>Créneau horaire :</strong>
+			{{ rendezvous.creneau }}</p>
+
+		<p>Le rendez-vous a été annulé par le client. Vous pouvez consulter l’ensemble de vos rendez-vous en cliquant ci-dessous.</p>
+
+		<a href="https://beellenails.com/admin/rendezvous" class="cta-button">Voir tous les rendez-vous</a>
+
+		<p>Merci de votre compréhension.</p>
+
+		<p>Bien cordialement,<br/>
+			<a href="#">L’équipe Be Elle Nails</a>
+		</p>
+
+		<div class="footer">
+			<div class="social-icons">
+				<a href="#"><img src="https://your-image-source/instagram-icon.png" alt="Instagram"/></a>
+				<a href="#"><img src="https://your-image-source/facebook-icon.png" alt="Facebook"/></a>
+			</div>
+			<p>© 2025 Be Elle Nails. Tous droits réservés.</p>
+			<div class="footer-links">
+				<a href="#">Politique de confidentialité</a>
+				<a href="#">Conditions d'utilisation</a>
+				<a href="#">Centre d’aide</a>
+				<a href="#">Se désabonner</a>
+			</div>
+		</div>
+	</div>
+</body></html>

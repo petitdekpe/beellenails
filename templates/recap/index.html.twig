@@ -1,53 +1,81 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Recap Rendez-vous{% endblock %}
+{% block title %}Recap Rendez-vous
+{% endblock %}
 
 {% block body %}
 
-{% set day = app.session.get('day') %}
-{% set creneau = app.session.get('creneau') %}
-{% set prestation = app.session.get('prestation') %}
-{% set total = prestation.price %}
+	{% set day = app.session.get('day') %}
+	{% set creneau = app.session.get('creneau') %}
+	{% set prestation = app.session.get('prestation') %}
+	{% set total = prestation.price %}
 
-{% for supplement in supplements %}
-    {% set total = total + supplement.price %}
-{% endfor %}
+	{% for supplement in supplements %}
+		{% set total = total + supplement.price %}
+	{% endfor %}
 
 
-<div class="relative overflow-hidden w-full min-h-[90px] bg-white rounded-lg"></div>
-<h1 class="text-2xl font-bold my-5 mx-5 text-center">Confirmer votre rendez-vous avec un acompte</h1>
-    <h2 class="text-xl font-bold my-5 text-justify mx-8">Bonjour {{app.user.Prenom}} {{app.user.Nom}},</h2>
-    <h2 class="text-xl font-semibold text-justify mx-8">Vous avez choisi de faire : </h2>
-    <p class="mx-8">La prestation <strong>{{ prestation }}</strong> avec ajout(s): 
-    {% for supplement in supplements %}
-        {{ supplement.title }}{% if not loop.last %}, {% endif %}
-    {% endfor %}, le <strong>{{ day|date("d/m/Y") }} à {{ creneau }}</strong>. 
-    Le prix total facturé pour cette prestation est de <strong>{{ total }} FCFA.</strong>
-    </p>
-    <p class="mx-8 mt-5 text-justify">Un acompte de <strong>5.000f</strong> est nécessaire pour confirmer votre rendez-vous. L’acompte représente une avance et sera défalquée de votre facture après prestation. Veuillez prendre connaissance de notre Politique d’annulation et de report ainsi que de nos règles de fonctionnement avant de confirmer votre rendez-vous.</p>
+	<div class="relative overflow-hidden w-full min-h-[90px] bg-white rounded-lg"></div>
+	<h1 class="text-2xl font-bold my-5 mx-5 text-center">Confirmer votre rendez-vous avec un acompte</h1>
+	<h2 class="text-xl font-bold my-5 text-justify mx-8">Bonjour
+		{{app.user.Prenom}}
+		{{app.user.Nom}},</h2>
+	<h2 class="text-xl font-semibold text-justify mx-8">Vous avez choisi de faire :
+	</h2>
+	<p class="mx-8">La prestation
+		<strong>{{ prestation }}</strong>
+		avec ajout(s):
+		{% for supplement in supplements %}
+			{{ supplement.title }}
+			{% if not loop.last %},
+			{% endif %}
+		{% endfor %}, le
+		<strong>{{ day|date("d/m/Y") }}
+			à
+			{{ creneau }}</strong>. 
+						    Le prix total facturé pour cette prestation est de
+		<strong>{{ total }}
+			FCFA.</strong>
+	</p>
+	<p class="mx-8 mt-5 text-justify">Un acompte de
+		<strong>5.000f</strong>
+		est nécessaire pour confirmer votre rendez-vous. L’acompte représente une avance et sera défalquée de votre facture après prestation. Veuillez prendre connaissance de notre Politique d’annulation et de report ainsi que de nos règles de fonctionnement avant de confirmer votre rendez-vous.</p>
 
-<h1 class="text-2xl font-bold my-5 mx-5 text-center">POLITIQUE D’ANNULATION ET DE REPORT</h1>
-    <p class="mx-8 mt-5 text-justify">
-        L'acompte est non remboursable en cas d’annulation.
-        Pour reporter votre rendez-vous veuillez le faire 48h à l'avance en nous laissant un message whatsapp au <a href="https://wa.me/22997853512">+22997853512</a>. Passez le délai de 48h votre acompte ne sera malheureusement pas réutilisable pour un autre rendez-vous.
-        En cas de doute subsistant sur l'état de vos ongles malgré la photo envoyée, veuillez nous contacter directement pour éviter une annulation le jour de votre rendez-vous.
-    </p>
+	<h1 class="text-2xl font-bold my-5 mx-5 text-center">POLITIQUE D’ANNULATION ET DE REPORT</h1>
+	<p class="mx-8 mt-5 text-justify">
+		L'acompte est non remboursable en cas d’annulation.
+				        Pour reporter votre rendez-vous veuillez le faire 48h à l'avance en nous laissant un message whatsapp au
+		<a href="https://wa.me/22997853512">+22997853512</a>. Passez le délai de 48h votre acompte ne sera malheureusement pas réutilisable pour un autre rendez-vous.
+						        En cas de doute subsistant sur l'état de vos ongles malgré la photo envoyée, veuillez nous contacter directement pour éviter une annulation le jour de votre rendez-vous.
+	</p>
 
-<h1 class="text-2xl font-bold my-5 mx-5 text-center">REGLES DE FONCTIONNEMENT</h1>
-    <p class="mx-8 mt-5 text-justify">
-        Veuillez être très ponctuelle s'il vous plaît car tout retard de plus de 15 minutes annoncé ou pas pourrait annuler votre rendez-vous.
-        Si vous avez annoncé un retard et qu’il n’excède pas 15 minutes, la prestation à faire devra être adaptée au temps restant de votre créneau.
-        <br>
-        Les enfants ne sont pas acceptés pour des raisons de sécurité.
-        <br>
-        Aucun remplissage d’une prestation faite ailleurs n’est acceptée.
-    </p>
+	<h1 class="text-2xl font-bold my-5 mx-5 text-center">REGLES DE FONCTIONNEMENT</h1>
+	<p class="mx-8 mt-5 text-justify">
+		Veuillez être très ponctuelle s'il vous plaît car tout retard de plus de 15 minutes annoncé ou pas pourrait annuler votre rendez-vous.
+				        Si vous avez annoncé un retard et qu’il n’excède pas 15 minutes, la prestation à faire devra être adaptée au temps restant de votre créneau.
+		<br>
+		Les enfants ne sont pas acceptés pour des raisons de sécurité.
+		<br>
+		Aucun remplissage d’une prestation faite ailleurs n’est acceptée.
+	</p>
+	<br>
+	<br>
 
-    <div class="mx-8 mt-5 flex justify-center">
-    {{ form_start(form, {'attr': {'class': 'flex flex-col justify-center'}}) }}  
-    {{ form_widget(form) }}
-    <button class="btn cursor-pointer block mx-8 mt-5 text-white bg-pink-700 hover:bg-pink-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center">{{ button_label|default('Passer au paiement') }}</button>
-    {{ form_end(form) }} 
-    </div>
+	<h5 class="text-xl text-center font-normal mb-5">
+		En cas de
+		<strong class="text-pink-500">difficultés</strong>
+		à booker votre rendez-vous sur le site, consultez les disponibilités, choisissez le créneau voulu et contactez nous
+		<strong>
+			<a class="text-pink-500 underline" href="https://wa.me/22997853512">ICI</a>
+		</strong>
+		pour confirmer votre rendez-vous.
+	</h5>
+
+	<div class="mx-8 mt-5 flex justify-center">
+		{{ form_start(form, {'attr': {'class': 'flex flex-col justify-center'}}) }}
+		{{ form_widget(form) }}
+		<button class="btn cursor-pointer block mx-8 mt-5 text-white bg-pink-700 hover:bg-pink-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center">{{ button_label|default('Passer au paiement') }}</button>
+		{{ form_end(form) }}
+	</div>
 
 {% endblock %}

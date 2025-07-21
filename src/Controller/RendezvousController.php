@@ -58,7 +58,7 @@ class RendezvousController extends AbstractController
             $mailer->send($email);
 
             return $this->redirectToRoute('app_rendezvous_index', [], Response::HTTP_SEE_OTHER);
-        } 
+        }
 
         return $this->render('rendezvous/new.html.twig', [
             'rendezvou' => $rendezvou,
@@ -138,16 +138,26 @@ class RendezvousController extends AbstractController
 
         // Envoyer l'e-mail après la création du rendez-vous
         $email = (new Email())
-        ->from('beellenailscare@beellenails.com')
-        ->to($userEmail)
-        ->subject('Rendez-vous Annulé !')
-        ->html($this->renderView(
-            'emails/rendezvous_canceled.html.twig',
-            ['rendezvous' => $rendezvou]
-        ));
+            ->from('beellenailscare@beellenails.com')
+            ->to($userEmail)
+            ->subject('Rendez-vous Annulé !')
+            ->html($this->renderView(
+                'emails/rendezvous_canceled.html.twig',
+                ['rendezvous' => $rendezvou]
+            ));
 
-    $mailer->send($email);
+        $mailer->send($email);
 
+        // Email admin
+        $emailAdmin = (new Email())
+            ->from('beellenailscare@beellenails.com')
+            ->to('jy.ahouanvoedo@gmail.com')
+            ->subject('Un rendez-vous a été annulé')
+            ->html($this->renderView(
+                'emails/rendezvous_canceled_admin.html.twig',
+                ['rendezvous' => $rendezvou]
+            ));
+        $mailer->send($emailAdmin);
         return $this->redirectToRoute('app_users', [], Response::HTTP_SEE_OTHER);
     }
 

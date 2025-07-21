@@ -11,13 +11,12 @@ use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Annotation\Route;
 
 class PaymentFeexController extends AbstractController
 {
-    /**
-     * Affiche le formulaire FeexPay pour un rendez-vous donné.
-     */
     #[Route('/payment/feexpay/form/{rendezvou}', name: 'feexpay_form')]
     public function form(Request $request, Rendezvous $rendezvou): Response
     {
@@ -29,9 +28,6 @@ class PaymentFeexController extends AbstractController
         ]);
     }
 
-    /**
-     * Initialise le paiement FeexPay et enregistre la transaction localement.
-     */
     #[Route('/payment/feexpay/init/{rendezvou}', name: 'feexpay_payment_init', methods: ['POST'])]
     public function init(
         Request $request,
@@ -53,9 +49,8 @@ class PaymentFeexController extends AbstractController
         $data = $form->getData();
         $user = $rendezvou->getUser();
 
-
         $response = $feexpayService->paiementLocal(
-            100, // montant fixe
+            5000,
             $data['phone'],
             $data['operator'],
             $user->__toString(),
@@ -92,16 +87,14 @@ class PaymentFeexController extends AbstractController
         ]);
     }
 
-    /**
-     * Vérifie le statut d'un paiement auprès de FeexPay (appelé via JS).
-     */
     #[Route('/payment/feexpay/status/{reference}', name: 'feexpay_payment_status', methods: ['GET'])]
     public function status(
         string $reference,
         FeexpayService $feexpayService,
         EntityManagerInterface $em,
         LoggerInterface $logger,
-        Request $request
+        Request $request,
+        MailerInterface $mailer
     ): Response {
         $payment = $em->getRepository(Payment::class)->findOneBy(['reference' => $reference]);
 
@@ -116,16 +109,32 @@ class PaymentFeexController extends AbstractController
             $feexStatus = $result['status'];
             $internalStatus = Payment::convertFeexStatus($feexStatus);
 
-            $payment
-                ->setStatus($internalStatus)
-                ->setUpdatedAt(new \DateTime());
-
+            $payment->setStatus($internalStatus)->setUpdatedAt(new \DateTime());
             $rendezvous = $payment->getRendezvous();
 
             if ($internalStatus === 'successful') {
-                $rendezvous
-                    ->setPaid(true)
-                    ->setStatus('Rendez-vous pris');
+                $rendezvous->setPaid(true)->setStatus('Rendez-vous pris');
+
+                // Envoi d'email au client
+                $userEmail = $rendezvous->getUser()->getEmail();
+                $email = (new Email())
+                    ->from('beellenailscare@beellenails.com')
+                    ->to($userEmail)
+                    ->subject('Informations de rendez-vous!')
+                    ->html($this->renderView('emails/rendezvous_created.html.twig', [
+                        'rendezvous' => $rendezvous
+                    ]));
+                $mailer->send($email);
+
+                // Envoi d'email à l'admin
+                $adminEmail = (new Email())
+                    ->from('beellenailscare@beellenails.com')
+                    ->to('murielahodode@gmail.com')
+                    ->subject('Nouveau Rendez-vous !')
+                    ->html($this->renderView('emails/rendezvous_created_admin.html.twig', [
+                        'rendezvous' => $rendezvous
+                    ]));
+                $mailer->send($adminEmail);
             } elseif ($internalStatus === 'failed') {
                 $rendezvous->setStatus('Échec du paiement');
             } elseif ($internalStatus === 'canceled') {
