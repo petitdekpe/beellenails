@@ -67,7 +67,8 @@ class DashboardController extends AbstractController
                 $color = 'red'; // Définir le titre à "Congé" si le statut est "Congé"
             } else {
                 // Utilisez le titre existant (nom et prénom de l'utilisateur)
-                $title = $rendezvous->getUser()->getNom() . ' ' . $rendezvous->getUser()->getPrenom();
+                //$title = $rendezvous->getUser()->getNom() . ' ' . $rendezvous->getUser()->getPrenom();
+                $title = $rendezvous->getUser()?->getFullName() ?? 'Utilisateur inconnu';
             }
 
             $event = [
