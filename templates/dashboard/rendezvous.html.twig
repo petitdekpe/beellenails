@@ -1,67 +1,374 @@
-<!DOCTYPE html>
-<html lang="fr">
-	<head>
-		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-		<title>
-			{% block title %}Tableau de bord
-			{% endblock %}
-		</title>
+{% extends 'base.html.twig' %}
 
-		<!-- Favicon -->
-		<link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
-		<link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
-		<link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
-		<link rel="manifest" href="/favicon/site.webmanifest">
-		<link rel="mask-icon" href="/favicon/safari-pinned-tab.svg" color="#5bbad5">
-		<meta name="msapplication-TileColor" content="#da532c">
-		<meta
-		name="theme-color" content="#ffffff">
+{% block title %}Dashboard - Rendez-vous{% endblock %}
 
-		<!-- Tailwind & Flowbite -->
-		<script src="https://cdn.tailwindcss.com"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.js"></script>
+{% block body %}
+<div class="min-h-screen bg-gray-50">
+    <div class="flex">
+        <!-- Sidebar -->
+        {% include '_sidebar.html.twig' %}
+        
+        <!-- Main Content -->
+        <div class="flex-1 lg:ml-8">
+            <div class="px-4 py-6 sm:px-6 lg:px-8">
+                <!-- Header -->
+                <div class="mb-6">
+                    <h1 class="text-2xl font-bold text-gray-900">Gestion des rendez-vous</h1>
+                    <p class="text-sm text-gray-600">{{ rendezvous.getTotalItemCount }} rendez-vous au total</p>
+                </div>
 
-		{% block stylesheets %}
-			<style>
-				.fc-toolbar-title,
-				.fc-col-header-cell-cushion {
-					text-transform: capitalize;
-				}
-			</style>
-		{% endblock %}
+                <!-- Filtres -->
+                <div class="bg-white rounded-lg shadow mb-6">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                            <h2 class="text-lg font-medium text-gray-900">Filtrer et rechercher</h2>
+                            <a href="{{ path('app_admin_rdv') }}" class="inline-flex items-center px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white font-medium rounded-lg transition-colors">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                                </svg>
+                                Ajouter un rendez-vous
+                            </a>
+                        </div>
+                    </div>
+                    <div class="px-6 py-4">
+                        <form method="GET" class="space-y-4">
+                            <!-- Première ligne : Recherche et Statut -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="search" class="block text-sm font-medium text-gray-700 mb-1">Rechercher par nom du client</label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                            </svg>
+                                        </div>
+                                        <input type="text" 
+                                               name="search" 
+                                               value="{{ search }}" 
+                                               id="search"
+                                               class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-pink-500 focus:border-pink-500" 
+                                               placeholder="Nom ou prénom du client...">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Statut du rendez-vous</label>
+                                    <select name="status" id="status" class="block w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500">
+                                        <option value="all" {% if not status or status == 'all' %}selected{% endif %}>Tous les statuts</option>
+                                        <option value="Rendez-vous pris" {% if status == 'Rendez-vous pris' %}selected{% endif %}>Rendez-vous pris</option>
+                                        <option value="Rendez-vous confirmé" {% if status == 'Rendez-vous confirmé' %}selected{% endif %}>Rendez-vous confirmé</option>
+                                        <option value="Annulé" {% if status == 'Annulé' %}selected{% endif %}>Annulé</option>
+                                        <option value="Reporté" {% if status == 'Reporté' %}selected{% endif %}>Reporté</option>
+                                        <option value="Paiement en attente" {% if status == 'Paiement en attente' %}selected{% endif %}>Paiement en attente</option>
+                                        <option value="Échec du paiement" {% if status == 'Échec du paiement' %}selected{% endif %}>Échec du paiement</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <!-- Deuxième ligne : Dates de rendez-vous -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="rdv_date_from" class="block text-sm font-medium text-gray-700 mb-1">Date de RDV - Du</label>
+                                    <input type="date" name="rdv_date_from" id="rdv_date_from" value="{{ rdv_date_from }}" class="block w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500">
+                                </div>
+                                <div>
+                                    <label for="rdv_date_to" class="block text-sm font-medium text-gray-700 mb-1">Date de RDV - Au</label>
+                                    <input type="date" name="rdv_date_to" id="rdv_date_to" value="{{ rdv_date_to }}" class="block w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500">
+                                </div>
+                            </div>
+                            
+                            <!-- Troisième ligne : Dates de modification -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="modified_from" class="block text-sm font-medium text-gray-700 mb-1">Dernière modif - Du</label>
+                                    <input type="date" name="modified_from" id="modified_from" value="{{ modified_from }}" class="block w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500">
+                                </div>
+                                <div>
+                                    <label for="modified_to" class="block text-sm font-medium text-gray-700 mb-1">Dernière modif - Au</label>
+                                    <input type="date" name="modified_to" id="modified_to" value="{{ modified_to }}" class="block w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500">
+                                </div>
+                            </div>
+                            
+                            <!-- Boutons -->
+                            <div class="flex gap-2">
+                                <button type="submit" class="bg-pink-600 hover:bg-pink-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                                    Filtrer
+                                </button>
+                                <a href="{{ path('app_dashboard_rendezvous') }}" class="bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                                    Réinitialiser
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
 
-		<script src="https://cdn.fedapay.com/checkout.js?v=1.1.7"></script>
-		<script src="/js/preline.js"></script>
+                <!-- Liste des rendez-vous -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900">
+                            📅 Liste des rendez-vous
+                            {% if status and status != 'all' %}
+                                <span class="text-sm font-normal text-gray-500">({{ status }})</span>
+                            {% endif %}
+                            {% if search %}
+                                <span class="text-sm font-normal text-gray-500">(recherche: "{{ search }}")</span>
+                            {% endif %}
+                        </h3>
+                    </div>
+                    <div class="overflow-hidden">
+                        {% if rendezvous|length > 0 %}
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead class="bg-pink-50">
+                                        <tr>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-pink-600 uppercase tracking-wider">
+                                                Rendez-vous
+                                            </th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-pink-600 uppercase tracking-wider">
+                                                Client
+                                            </th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-pink-600 uppercase tracking-wider">
+                                                Prestation
+                                            </th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-pink-600 uppercase tracking-wider">
+                                                Statut
+                                            </th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-pink-600 uppercase tracking-wider">
+                                                Dernière modif
+                                            </th>
+                                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-pink-600 uppercase tracking-wider">
+                                                Actions
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200">
+                                        {% for rdv in rendezvous %}
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4">
+                                                    <div>
+                                                        <div class="text-sm font-medium text-gray-900">
+                                                            {{ rdv.day|date('d/m/Y') }}
+                                                        </div>
+                                                        <div class="text-sm text-gray-500">{{ rdv.creneau.startTime|date('H:i') }} - {{ rdv.creneau.endTime|date('H:i') }}</div>
+                                                        {% if rdv.supplement|length > 0 %}
+                                                            <div class="text-xs text-blue-600">+ {{ rdv.supplement|length }} supplément(s)</div>
+                                                        {% endif %}
+                                                    </div>
+                                                </td>
+                                                <td class="px-6 py-4">
+                                                    <div class="flex items-center">
+                                                        <div class="flex-shrink-0 h-8 w-8">
+                                                            <div class="h-8 w-8 rounded-full bg-pink-100 flex items-center justify-center">
+                                                                <span class="text-xs font-medium text-pink-600">
+                                                                    {{ rdv.user.Prenom|slice(0, 1)|upper }}{{ rdv.user.Nom|slice(0, 1)|upper }}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="ml-3">
+                                                            <div class="text-sm font-medium text-gray-900">
+                                                                {{ rdv.user.fullName }}
+                                                            </div>
+                                                            <div class="text-sm text-gray-500">{{ rdv.user.email }}</div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="px-6 py-4">
+                                                    <div class="text-sm font-medium text-gray-900">{{ rdv.prestation.Title }}</div>
+                                                    <div class="text-sm text-gray-500">{{ rdv.prestation.duration }} min</div>
+                                                    {% if rdv.imageName %}
+                                                        <div class="text-xs text-green-600">📷 Image jointe</div>
+                                                    {% endif %}
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    {% set status_colors = {
+                                                        'Rendez-vous pris': 'bg-blue-100 text-blue-800',
+                                                        'Rendez-vous confirmé': 'bg-green-100 text-green-800',
+                                                        'Annulé': 'bg-red-100 text-red-800',
+                                                        'Reporté': 'bg-orange-100 text-orange-800',
+                                                        'Paiement en attente': 'bg-yellow-100 text-yellow-800',
+                                                        'Échec du paiement': 'bg-red-200 text-red-900',
+                                                        'Tentative échoué': 'bg-red-100 text-red-800',
+                                                        'Tentative échouée': 'bg-red-100 text-red-800',
+                                                        'Congé': 'bg-purple-100 text-purple-800'
+                                                    } %}
+                                                    {% set status_class = status_colors[rdv.status] ?: 'bg-gray-100 text-gray-800' %}
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ status_class }}">
+                                                        {{ rdv.status }}
+                                                    </span>
+                                                    {% if rdv.paid %}
+                                                        <div class="text-xs text-green-600 mt-1">✅ Payé</div>
+                                                    {% endif %}
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm text-gray-900">{{ rdv.updatedAt|date('d/m/Y') }}</div>
+                                                    <div class="text-xs text-gray-500">{{ rdv.updatedAt|date('H:i') }}</div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                    <div class="flex items-center justify-end space-x-2">
+                                                        {% set isCancelled = rdv.status == 'Annulé' %}
+                                                        {% set isConfirmed = rdv.status == 'Rendez-vous confirmé' %}
+                                                        {% set status = rdv.status|lower %}
+                                                        {% set onlyConfirmAllowed = status in ['paiement en attente', 'échec du paiement'] or status starts with 'tentative échou' %}
+                                                        
+                                                        {% if rdv.imageName %}
+                                                            <a href="{{ vich_uploader_asset(rdv, 'image') }}" target="_blank" 
+                                                               class="text-blue-600 hover:text-blue-900 transition-colors" 
+                                                               title="Voir l'image">
+                                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                                                </svg>
+                                                            </a>
+                                                        {% endif %}
+                                                        
+                                                        {% if not isCancelled and (not onlyConfirmAllowed or not isConfirmed) %}
+                                                            <a href="{{ path('app_admin_rdv_edit', {'id': rdv.id}) }}" 
+                                                               class="text-orange-600 hover:text-orange-900 transition-colors" 
+                                                               title="Reporter">
+                                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                                                </svg>
+                                                            </a>
+                                                        {% endif %}
+                                                        
+                                                        {% if not isCancelled and not onlyConfirmAllowed %}
+                                                            <a href="{{ path('app_admin_rdv_cancel', {'id': rdv.id}) }}" 
+                                                               class="text-red-600 hover:text-red-900 transition-colors" 
+                                                               title="Annuler">
+                                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                                                </svg>
+                                                            </a>
+                                                        {% endif %}
+                                                        
+                                                        {% if not isConfirmed %}
+                                                            <a href="{{ path('app_admin_rdv_confirm', {'id': rdv.id}) }}" 
+                                                               class="text-green-600 hover:text-green-900 transition-colors" 
+                                                               title="Confirmer">
+                                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                                                </svg>
+                                                            </a>
+                                                        {% endif %}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <!-- Pagination -->
+                            {% if rendezvous.getTotalItemCount > 0 %}
+                                <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+                                    <div class="flex-1 flex justify-between sm:hidden">
+                                        {% if rendezvous.getCurrentPageNumber > 1 %}
+                                            <a href="{{ path('app_dashboard_rendezvous', app.request.query.all|merge({'page': rendezvous.getCurrentPageNumber - 1})) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                                                Précédent
+                                            </a>
+                                        {% endif %}
+                                        {% if rendezvous.getCurrentPageNumber < rendezvous.getPageCount %}
+                                            <a href="{{ path('app_dashboard_rendezvous', app.request.query.all|merge({'page': rendezvous.getCurrentPageNumber + 1})) }}" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                                                Suivant
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                    <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                                        <div>
+                                            {% set itemsPerPage = rendezvous.getItemNumberPerPage %}
+                                            {% set currentPage = rendezvous.getCurrentPageNumber %}
+                                            {% set totalItems = rendezvous.getTotalItemCount %}
+                                            {% set startItem = ((currentPage - 1) * itemsPerPage) + 1 %}
+                                            {% set endItem = (currentPage * itemsPerPage) > totalItems ? totalItems : (currentPage * itemsPerPage) %}
+                                            
+                                            <p class="text-sm text-gray-700">
+                                                Affichage de
+                                                <span class="font-medium">{{ startItem }}</span>
+                                                à
+                                                <span class="font-medium">{{ endItem }}</span>
+                                                sur
+                                                <span class="font-medium">{{ totalItems }}</span>
+                                                résultats
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                                                {% if rendezvous.getCurrentPageNumber > 1 %}
+                                                    <a href="{{ path('app_dashboard_rendezvous', app.request.query.all|merge({'page': rendezvous.getCurrentPageNumber - 1})) }}" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                                        <span class="sr-only">Précédent</span>
+                                                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                                            <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                                        </svg>
+                                                    </a>
+                                                {% endif %}
 
-		{% block javascripts %}
-			<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
-			<script src='fullcalendar/core/locales/fr.global.js'></script>
-		{% endblock %}
-	</head>
-	<body class="bg-gray-100">
-		<div class="flex min-h-screen w-full">
-			{% block body %}
+                                                {% set startPage = rendezvous.getCurrentPageNumber - 2 %}
+                                                {% set endPage = rendezvous.getCurrentPageNumber + 2 %}
+                                                {% if startPage < 1 %}
+                                                    {% set startPage = 1 %}
+                                                {% endif %}
+                                                {% if endPage > rendezvous.getPageCount %}
+                                                    {% set endPage = rendezvous.getPageCount %}
+                                                {% endif %}
 
-				<!-- Menu mobile toggle -->
-				<button data-drawer-target="default-sidebar" data-drawer-toggle="default-sidebar" aria-controls="default-sidebar" type="button" class="inline-flex items-center p-2 mt-2 ms-3 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200">
-					<span class="sr-only">Ouvrir le menu</span>
-					<svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-						<path clip-rule="evenodd" fill-rule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"/>
-					</svg>
-				</button>
+                                                {% for page in startPage..endPage %}
+                                                    {% if page == rendezvous.getCurrentPageNumber %}
+                                                        <span class="bg-pink-50 border-pink-500 text-pink-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                                                            {{ page }}
+                                                        </span>
+                                                    {% else %}
+                                                        <a href="{{ path('app_dashboard_rendezvous', app.request.query.all|merge({'page': page})) }}" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                                                            {{ page }}
+                                                        </a>
+                                                    {% endif %}
+                                                {% endfor %}
 
-				<!-- Sidebar -->
-				{% include '_sidebar.html.twig' %}
-
-				<!-- Contenu principal -->
-				<div class="flex-1">
-					<div class="relative overflow-hidden w-full min-h-[70px] bg-pink-500"></div>
-					<h4 class="text-2xl font-bold p-4">Rendez-vous</h4>
-					<div class="px-2">{{ include('dashboard/rendezvous/index.html.twig') }}</div>
-				</div>
-
-			{% endblock %}
-		</div>
-	</body>
-</html>
+                                                {% if rendezvous.getCurrentPageNumber < rendezvous.getPageCount %}
+                                                    <a href="{{ path('app_dashboard_rendezvous', app.request.query.all|merge({'page': rendezvous.getCurrentPageNumber + 1})) }}" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                                        <span class="sr-only">Suivant</span>
+                                                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                                        </svg>
+                                                    </a>
+                                                {% endif %}
+                                            </nav>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% else %}
+                            <div class="px-6 py-12 text-center">
+                                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                                <h3 class="mt-2 text-sm font-medium text-gray-900">Aucun rendez-vous trouvé</h3>
+                                <p class="mt-1 text-sm text-gray-500">
+                                    {% if search or status != 'all' or rdv_date_from or rdv_date_to or modified_from or modified_to %}
+                                        Essayez de modifier vos filtres.
+                                    {% else %}
+                                        Aucun rendez-vous n'a encore été créé.
+                                    {% endif %}
+                                </p>
+                                {% if search or status != 'all' or rdv_date_from or rdv_date_to or modified_from or modified_to %}
+                                    <div class="mt-6">
+                                        <a href="{{ path('app_dashboard_rendezvous') }}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700">
+                                            Réinitialiser les filtres
+                                        </a>
+                                    </div>
+                                {% else %}
+                                    <div class="mt-6">
+                                        <a href="{{ path('app_admin_rdv') }}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700">
+                                            <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                                            </svg>
+                                            Créer un rendez-vous
+                                        </a>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,70 +1,215 @@
-<html>
-	<head>
-		<meta charset="UTF-8">
-		<title>
-			{% block title %}Tableau de bord
-			{% endblock %}
-		</title>
+{% extends 'base.html.twig' %}
 
-		<link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
-		<link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
-		<link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
-		<link rel="manifest" href="/favicon/site.webmanifest">
-		<link rel="mask-icon" href="/favicon/safari-pinned-tab.svg" color="#5bbad5">
-		<meta name="msapplication-TileColor" content="#da532c">
-		<meta name="theme-color" content="#ffffff">
-		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+{% block title %}Dashboard - Prestations{% endblock %}
 
+{% block body %}
+<div class="min-h-screen bg-gray-50">
+    <div class="flex">
+        <!-- Sidebar -->
+        {% include '_sidebar.html.twig' %}
+        
+        <!-- Main Content -->
+        <div class="flex-1 lg:ml-8">
+            <div class="px-4 py-6 sm:px-6 lg:px-8">
+                <!-- Header -->
+                <div class="mb-6">
+                    <h1 class="text-2xl font-bold text-gray-900">Gestion des prestations</h1>
+                    <p class="text-sm text-gray-600">{{ prestations|length }} prestation(s) disponible(s)</p>
+                </div>
 
-		<script src="https://cdn.tailwindcss.com"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.js"></script>
+                <!-- Barre de recherche et actions -->
+                <div class="bg-white rounded-lg shadow mb-6">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                            <h2 class="text-lg font-medium text-gray-900">Rechercher et filtrer</h2>
+                            <a href="{{ path('app_prestation_new') }}" class="inline-flex items-center px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white font-medium rounded-lg transition-colors">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                                </svg>
+                                Ajouter une prestation
+                            </a>
+                        </div>
+                    </div>
+                    <div class="px-6 py-4">
+                        <form method="GET" class="space-y-4">
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                    </svg>
+                                </div>
+                                <input type="text" 
+                                       name="search" 
+                                       value="{{ search }}" 
+                                       class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-pink-500 focus:border-pink-500" 
+                                       placeholder="Rechercher par nom de prestation..."
+                                       id="search-input">
+                            </div>
+                            <div class="flex gap-2">
+                                <button type="submit" class="bg-pink-600 hover:bg-pink-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                                    Rechercher
+                                </button>
+                                <a href="{{ path('app_dashboard_prestation') }}" class="bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                                    Réinitialiser
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
 
+                <!-- Liste des prestations -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900">
+                            💅 Liste des prestations 
+                            {% if search %}
+                                <span class="text-sm font-normal text-gray-500">(résultats pour "{{ search }}")</span>
+                            {% endif %}
+                        </h3>
+                    </div>
+                    <div class="overflow-hidden">
+                        {% if prestations|length > 0 %}
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead class="bg-pink-50">
+                                        <tr>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-pink-600 uppercase tracking-wider">
+                                                Prestation
+                                            </th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-pink-600 uppercase tracking-wider">
+                                                Prix
+                                            </th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-pink-600 uppercase tracking-wider">
+                                                Durée
+                                            </th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-pink-600 uppercase tracking-wider">
+                                                Catégorie
+                                            </th>
+                                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-pink-600 uppercase tracking-wider">
+                                                Actions
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200">
+                                        {% for prestation in prestations %}
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4">
+                                                    <div class="flex items-center">
+                                                        <div class="flex-shrink-0 h-12 w-12">
+                                                            <img class="h-12 w-12 rounded-lg object-cover" 
+                                                                 src="{{ vich_uploader_asset(prestation, 'image') }}" 
+                                                                 alt="{{ prestation.Title }}"
+                                                                 onerror="this.src='/assets/images/formations/default.png'">
+                                                        </div>
+                                                        <div class="ml-4">
+                                                            <div class="text-sm font-medium text-gray-900">
+                                                                {{ prestation.Title }}
+                                                            </div>
+                                                            {% if prestation.description %}
+                                                                <div class="text-sm text-gray-500 truncate max-w-xs">
+                                                                    {{ prestation.description|slice(0, 50) }}{% if prestation.description|length > 50 %}...{% endif %}
+                                                                </div>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm font-semibold text-gray-900">{{ prestation.price|number_format(0, ',', ' ') }} FCFA</div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                        {{ prestation.duration }} min
+                                                    </span>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                                        {{ prestation.categoryPrestation ?: 'Non définie' }}
+                                                    </span>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                    <div class="flex items-center justify-end space-x-2">
+                                                        <a href="{{ path('app_prestation_show', {'id': prestation.id}) }}" 
+                                                           class="text-blue-600 hover:text-blue-900 transition-colors" 
+                                                           title="Voir">
+                                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                                            </svg>
+                                                        </a>
+                                                        <a href="{{ path('app_prestation_edit', {'id': prestation.id}) }}" 
+                                                           class="text-pink-600 hover:text-pink-900 transition-colors" 
+                                                           title="Modifier">
+                                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                                            </svg>
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="px-6 py-12 text-center">
+                                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                                </svg>
+                                <h3 class="mt-2 text-sm font-medium text-gray-900">
+                                    {% if search %}
+                                        Aucune prestation trouvée
+                                    {% else %}
+                                        Aucune prestation disponible
+                                    {% endif %}
+                                </h3>
+                                <p class="mt-1 text-sm text-gray-500">
+                                    {% if search %}
+                                        Essayez avec d'autres mots-clés ou réinitialisez la recherche.
+                                    {% else %}
+                                        Commencez par créer votre première prestation.
+                                    {% endif %}
+                                </p>
+                                <div class="mt-6">
+                                    {% if search %}
+                                        <a href="{{ path('app_dashboard_prestation') }}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700">
+                                            Réinitialiser la recherche
+                                        </a>
+                                    {% else %}
+                                        <a href="{{ path('app_prestation_new') }}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700">
+                                            <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                                            </svg>
+                                            Créer une prestation
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-		{% block stylesheets %}
-			<style>
-				/* Pour les libellés des mois */
-				.fc-toolbar-title,
-				.fc-col-header-cell-cushion {
-					text-transform: capitalize;
-				}
-			</style>
-		{% endblock %}
-		<script src="https://cdn.fedapay.com/checkout.js?v=1.1.7"></script>
-		<script src="/js/preline.js"></script>
-		{% block javascripts %}
-			<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
-			<script src='fullcalendar/core/locales/fr.global.js'></script>
+<script>
+// Auto-focus sur le champ de recherche si vide
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('search-input');
+    if (searchInput && !searchInput.value) {
+        searchInput.focus();
+    }
+});
 
-		{% endblock %}
-
-	</head>
-
-	<body class="bg-gray-100">
-		<div class="flex min-h-screen w-full">
-			{% block body %}
-
-				<button data-drawer-target="default-sidebar" data-drawer-toggle="default-sidebar" aria-controls="default-sidebar" type="button" class="inline-flex items-center p-2 mt-2 ms-3 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
-					<span class="sr-only">Open sidebar</span>
-					<svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-						<path clip-rule="evenodd" fill-rule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"></path>
-					</svg>
-				</button>
-
-				{% include '_sidebar.html.twig' %}
-
-				<div class="flex-1">
-					<div class="relative overflow-hidden w-full min-h-[70px] bg-pink-500"></div>
-					<div class="flex flex-row justify-between items-center">
-						<h4 class="text-2xl font-bold p-4">Prestations</h4>
-						<a href="{{ path('app_prestation_new') }}" class="text-sm p-4">
-							<button type="button" class="text-white bg-pink-700 hover:bg-pink-500 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-4 py-2 text-center">
-								Ajouter une prestation
-							</button>
-						</a>
-					</div>
-					<div class="px-4">{{ include('dashboard/prestation/index.html.twig') }}</div>
-				</div>
-			</div>
-		{% endblock %}
-	</body>
-</html></body></html>
+// Soumission automatique après un délai de frappe
+let searchTimeout;
+document.getElementById('search-input').addEventListener('input', function(e) {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+        if (e.target.value.length >= 2 || e.target.value.length === 0) {
+            e.target.form.submit();
+        }
+    }, 500);
+});
+</script>
+{% endblock %}

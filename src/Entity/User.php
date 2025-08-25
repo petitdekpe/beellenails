@@ -53,9 +53,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $genre = null;
 
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $created_at = null;
+
     public function __construct()
     {
         $this->rendezvouses = new ArrayCollection();
+        $this->created_at = new \DateTime();
     }
 
     public function __toString()
@@ -267,6 +271,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setGenre(?string $genre): static
     {
         $this->genre = $genre;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->created_at;
+    }
+
+    public function setCreatedAt(\DateTimeInterface $created_at): static
+    {
+        $this->created_at = $created_at;
 
         return $this;
     }

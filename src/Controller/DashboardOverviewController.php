@@ -88,15 +88,12 @@ class DashboardOverviewController extends AbstractController
             ->getQuery()
             ->getResult();
 
-        // 5. Liste des clients créés dans la période (premier RDV dans la période)
-        $newClients = $rendezvousRepository->createQueryBuilder('r')
-            ->select('DISTINCT u.id, u.Nom, u.Prenom, u.email')
-            ->join('r.user', 'u')
-            ->where('r.created_at BETWEEN :start AND :end')
-            ->andWhere('NOT EXISTS (SELECT r2.id FROM App\\Entity\\Rendezvous r2 WHERE r2.user = u AND r2.created_at < :start)')
+        // 5. Liste des clients créés dans la période (par date de création de compte)
+        $newClients = $userRepository->createQueryBuilder('u')
+            ->where('u.created_at BETWEEN :start AND :end')
             ->setParameter('start', $startDate->format('Y-m-d 00:00:00'))
             ->setParameter('end', $endDate->format('Y-m-d 23:59:59'))
-            ->orderBy('r.created_at', 'DESC')
+            ->orderBy('u.created_at', 'DESC')
             ->getQuery()
             ->getResult();
 

@@ -1,211 +1,276 @@
-<!DOCTYPE html>
-<html lang="fr">
-	<head>
-		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-		<title>
-			{% block title %}Tableau de bord
-			{% endblock %}
-		</title>
+{% extends 'base.html.twig' %}
 
-		<!-- Favicon -->
-		<link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
-		<link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
-		<link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
-		<link rel="manifest" href="/favicon/site.webmanifest">
-		<link rel="mask-icon" href="/favicon/safari-pinned-tab.svg" color="#5bbad5">
-		<meta name="msapplication-TileColor" content="#da532c">
-		<meta
-		name="theme-color" content="#ffffff">
+{% block title %}Dashboard - Agenda{% endblock %}
 
-		<!-- Tailwind & Flowbite -->
-		<script src="https://cdn.tailwindcss.com"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.js"></script>
+{% block stylesheets %}
+<style>
+    .fc-toolbar-title,
+    .fc-col-header-cell-cushion {
+        text-transform: capitalize;
+    }
+    .fc .fc-button {
+        background-color: rgb(236 72 153);
+        color: white;
+        border: none;
+        border-radius: 0.375rem;
+        padding: 0.5rem 1rem;
+        font-weight: 500;
+    }
+    .fc .fc-button:hover,
+    .fc .fc-button-active {
+        background-color: rgb(219 39 119);
+        color: white;
+    }
+    .fc {
+        background-color: white;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .fc-event {
+        cursor: pointer;
+        white-space: normal !important;
+        overflow-wrap: break-word;
+    }
+    .fc-daygrid-event:hover {
+        background-color: #fef3c7;
+    }
+</style>
+{% endblock %}
 
-		{% block stylesheets %}
-			<style>
-				.fc-toolbar-title,
-				.fc-col-header-cell-cushion {
-					text-transform: capitalize;
-				}
-				.fc .fc-button {
-					background-color: rgb(236 72 153);
-					color: white;
-					border: none;
-					border-radius: 0.375rem;
-					padding: 0.5rem 1rem;
-					font-weight: 500;
-				}
-				.fc .fc-button:hover,
-				.fc .fc-button-active {
-					background-color: rgb(219 39 119);
-					color: white;
-				}
-				.fc {
-					background-color: white;
-					border-radius: 0.5rem;
-					padding: 1rem;
-					box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-				}
-				.fc-event {
-					cursor: pointer;
-					white-space: normal !important;
-					overflow-wrap: break-word;
-				}
-				.fc-daygrid-event:hover {
-					background-color: #fef3c7;
-				}
-			</style>
-		{% endblock %}
+{% block body %}
+<div class="min-h-screen bg-gray-50">
+    <div class="flex">
+        <!-- Sidebar -->
+        {% include '_sidebar.html.twig' %}
+        
+        <!-- Main Content -->
+        <div class="flex-1 lg:ml-8">
+            <div class="px-4 py-6 sm:px-6 lg:px-8">
+                <!-- Header -->
+                <div class="mb-6">
+                    <h1 class="text-2xl font-bold text-gray-900">🗓 Agenda</h1>
+                    <p class="text-sm text-gray-600">Visualisez et gérez vos rendez-vous</p>
+                </div>
 
-		<script src="https://cdn.fedapay.com/checkout.js?v=1.1.7"></script>
-		<script src="/js/preline.js"></script>
+                <!-- Flash Messages -->
+                {% if app.request.query.has('message') %}
+                    <div class="mb-6 p-4 text-sm text-red-800 bg-red-50 border border-red-200 rounded-lg">
+                        <div class="flex items-center">
+                            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                            </svg>
+                            <strong>Attention :</strong>
+                            <span class="ml-1">{{ app.request.query.get('message') }}</span>
+                        </div>
+                    </div>
+                {% endif %}
 
-		{% block javascripts %}
-			<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
-			<script src="fullcalendar/core/locales/fr.global.js"></script>
-			<script>
-				document.addEventListener('DOMContentLoaded', function () {
-const calendarEl = document.getElementById('calendar');
-const calendar = new FullCalendar.Calendar(calendarEl, {
-events: {{ eventsJson | raw }},
-initialView: 'dayGridMonth',
-firstDay: 1,
-hiddenDays: [
-0, 1
-],
-headerToolbar: {
-left: 'prev,next',
-center: 'title',
-right: 'dayGridMonth,timeGridWeek,timeGridDay'
-},
-buttonText: {
-today: 'Aujourd\'hui',
-month: 'Mois',
-timeGridWeek: 'Semaine',
-day: 'Jour'
-},
-locale: 'fr',
-views: {
-timeGridWeek: {
-type: 'timeGrid',
-duration: {
-days: 7
-},
-slotDuration: '00:30:00',
-slotLabelFormat: {
-hour: 'numeric',
-minute: '2-digit',
-omitZeroMinute: false,
-hour12: false
-},
-slotMinTime: '09:00:00',
-slotMaxTime: '19:00:00',
-scrollTime: '09:00'
-},
-timeGridDay: {
-type: 'timeGrid',
-duration: {
-days: 1
-},
-slotDuration: '00:30:00',
-slotLabelFormat: {
-hour: 'numeric',
-minute: '2-digit',
-omitZeroMinute: false,
-hour12: false
-},
-businessHours: [
-{
-daysOfWeek: [
-1,
-2,
-3,
-4,
-5
-],
-startTime: '09:00',
-endTime: '12:00'
-}, {
-daysOfWeek: [
-1,
-2,
-3,
-4,
-5
-],
-startTime: '13:00',
-endTime: '17:30'
-}
-],
-slotMinTime: '09:00:00',
-slotMaxTime: '19:00:00',
-scrollTime: '09:00'
-}
-},
-eventMouseEnter(info) {
-const {event, jsEvent} = info;
-const box = document.createElement('div');
-box.className = 'absolute z-50 inline-block w-64 text-sm text-gray-700 transition-opacity duration-300 bg-white border border-gray-200 rounded-lg shadow-lg opacity-0';
-box.innerHTML = `
-            <div class="p-3">
-              <p class="text-base font-semibold text-gray-900">${
-event.title
-}</p>
-              <p class="mb-2"><strong>Prestation :</strong> ${
-event.extendedProps.prestation
-}</p>
-              <p class="mb-2"><strong>Début :</strong> ${
-event.start.toLocaleString()
-}</p>
-              <p><strong>Fin :</strong> ${
-event.end.toLocaleString()
-}</p>
-            </div>`;
-box.style.left = jsEvent.pageX + 'px';
-box.style.top = jsEvent.pageY + 'px';
-document.body.appendChild(box);
-setTimeout(() => box.classList.add('opacity-100'), 50);
-event.setExtendedProp('detailBox', box);
-},
-eventMouseLeave(info) {
-const box = info.event.extendedProps.detailBox;
-if (box) {
-box.remove();
-info.event.setExtendedProp('detailBox', null);
-}
-},
-eventClick(info) {
-const imageUrl = `/assets/images/rendezvous/${
-info.event.extendedProps.image
-}`;
-window.location.href = imageUrl;
-}
+                <!-- Actions rapides -->
+                <div class="mb-6 bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h2 class="text-lg font-medium text-gray-900">Actions rapides</h2>
+                    </div>
+                    <div class="px-6 py-4">
+                        <div class="flex flex-wrap gap-3">
+                            <a href="{{ path('app_admin_rdv') }}" class="inline-flex items-center px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white font-medium rounded-lg text-sm transition-colors">
+                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
+                                </svg>
+                                Nouveau rendez-vous
+                            </a>
+                            <a href="{{ path('app_dashboard_rendezvous') }}" class="inline-flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg text-sm transition-colors">
+                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" clip-rule="evenodd"/>
+                                </svg>
+                                Liste des rendez-vous
+                            </a>
+                            <a href="{{ path('create_conge') }}" class="inline-flex items-center px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white font-medium rounded-lg text-sm transition-colors">
+                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                                </svg>
+                                Ajouter un congé
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Calendrier principal -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <h2 class="text-lg font-medium text-gray-900">Calendrier des rendez-vous</h2>
+                            <div class="flex items-center space-x-2">
+                                <div class="flex items-center">
+                                    <div class="w-3 h-3 bg-orange-500 rounded mr-2"></div>
+                                    <span class="text-sm text-gray-600">Rendez-vous pris</span>
+                                </div>
+                                <div class="flex items-center ml-4">
+                                    <div class="w-3 h-3 bg-red-500 rounded mr-2"></div>
+                                    <span class="text-sm text-gray-600">Congé</span>
+                                </div>
+                                <div class="flex items-center ml-4">
+                                    <div class="w-3 h-3 bg-green-500 rounded mr-2"></div>
+                                    <span class="text-sm text-gray-600">Autres statuts</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="px-6 py-4">
+                        <div id="calendar" class="w-full"></div>
+                    </div>
+                </div>
+
+                <!-- Informations supplémentaires -->
+                <div class="mt-6 bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h2 class="text-lg font-medium text-gray-900">Informations</h2>
+                    </div>
+                    <div class="px-6 py-4">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="text-center p-4 bg-blue-50 rounded-lg">
+                                <div class="text-2xl font-bold text-blue-600">📋</div>
+                                <p class="text-sm text-gray-600 mt-1">Cliquez sur un rendez-vous pour voir l'image associée</p>
+                            </div>
+                            <div class="text-center p-4 bg-purple-50 rounded-lg">
+                                <div class="text-2xl font-bold text-purple-600">⏰</div>
+                                <p class="text-sm text-gray-600 mt-1">Horaires : 9h-12h et 13h-17h30</p>
+                            </div>
+                            <div class="text-center p-4 bg-green-50 rounded-lg">
+                                <div class="text-2xl font-bold text-green-600">📅</div>
+                                <p class="text-sm text-gray-600 mt-1">Fermé les dimanche et lundi</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+<script src="fullcalendar/core/locales/fr.global.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const calendarEl = document.getElementById('calendar');
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+        events: {{ eventsJson | raw }},
+        initialView: 'dayGridMonth',
+        firstDay: 1,
+        hiddenDays: [0, 1], // Dimanche et lundi fermés
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+        buttonText: {
+            today: 'Aujourd\'hui',
+            month: 'Mois',
+            week: 'Semaine',
+            day: 'Jour'
+        },
+        locale: 'fr',
+        height: 'auto',
+        aspectRatio: 1.35,
+        views: {
+            timeGridWeek: {
+                type: 'timeGrid',
+                duration: { days: 7 },
+                slotDuration: '00:30:00',
+                slotLabelFormat: {
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    omitZeroMinute: false,
+                    hour12: false
+                },
+                slotMinTime: '09:00:00',
+                slotMaxTime: '19:00:00',
+                scrollTime: '09:00',
+                businessHours: [
+                    {
+                        daysOfWeek: [2, 3, 4, 5, 6], // Mardi à samedi
+                        startTime: '09:00',
+                        endTime: '12:00'
+                    },
+                    {
+                        daysOfWeek: [2, 3, 4, 5, 6],
+                        startTime: '13:00',
+                        endTime: '17:30'
+                    }
+                ]
+            },
+            timeGridDay: {
+                type: 'timeGrid',
+                duration: { days: 1 },
+                slotDuration: '00:30:00',
+                slotLabelFormat: {
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    omitZeroMinute: false,
+                    hour12: false
+                },
+                businessHours: [
+                    {
+                        daysOfWeek: [2, 3, 4, 5, 6],
+                        startTime: '09:00',
+                        endTime: '12:00'
+                    },
+                    {
+                        daysOfWeek: [2, 3, 4, 5, 6],
+                        startTime: '13:00',
+                        endTime: '17:30'
+                    }
+                ],
+                slotMinTime: '09:00:00',
+                slotMaxTime: '19:00:00',
+                scrollTime: '09:00'
+            }
+        },
+        eventMouseEnter(info) {
+            const {event, jsEvent} = info;
+            const box = document.createElement('div');
+            box.className = 'absolute z-50 inline-block w-64 text-sm text-gray-700 transition-opacity duration-300 bg-white border border-gray-200 rounded-lg shadow-lg opacity-0';
+            box.innerHTML = `
+                <div class="p-4">
+                    <p class="text-base font-semibold text-gray-900 mb-2">${event.title}</p>
+                    <p class="mb-2 flex items-center">
+                        <span class="w-2 h-2 rounded-full mr-2" style="background-color: ${event.backgroundColor || event.color}"></span>
+                        <strong>Prestation :</strong> <span class="ml-1">${event.extendedProps.prestation}</span>
+                    </p>
+                    <p class="mb-1 text-gray-600"><strong>Début :</strong> ${event.start.toLocaleString('fr-FR')}</p>
+                    <p class="text-gray-600"><strong>Fin :</strong> ${event.end.toLocaleString('fr-FR')}</p>
+                </div>`;
+            
+            // Position le tooltip près du curseur
+            box.style.position = 'absolute';
+            box.style.left = (jsEvent.pageX + 10) + 'px';
+            box.style.top = (jsEvent.pageY - 10) + 'px';
+            box.style.zIndex = '1000';
+            
+            document.body.appendChild(box);
+            setTimeout(() => box.classList.add('opacity-100'), 50);
+            event.setExtendedProp('detailBox', box);
+        },
+        eventMouseLeave(info) {
+            const box = info.event.extendedProps.detailBox;
+            if (box) {
+                box.remove();
+                info.event.setExtendedProp('detailBox', null);
+            }
+        },
+        eventClick(info) {
+            if (info.event.extendedProps.image) {
+                const imageUrl = `/assets/images/rendezvous/${info.event.extendedProps.image}`;
+                window.open(imageUrl, '_blank');
+            } else {
+                // Rediriger vers les détails du rendez-vous
+                window.location.href = `{{ path('app_dashboard_rendezvous') }}?search=${encodeURIComponent(info.event.title)}`;
+            }
+        }
+    });
+    calendar.render();
 });
-calendar.render();
-});
-			</script>
-		{% endblock %}
-	</head>
-	<body class="bg-gray-100">
-		{% block body %}
-			<div class="flex min-h-screen">
-				{% include '_sidebar.html.twig' %}
-				<!-- Main content -->
-				<main class="flex-1 p-6">
-					{% if app.request.query.has('message') %}
-						<div class="p-4 mb-4 text-sm text-red-800 bg-red-100 border border-red-300 rounded">
-							<strong>Attention :</strong>
-							{{ app.request.query.get('message') }}
-						</div>
-					{% endif %}
-
-					<h1 class="text-2xl font-semibold mb-2">Bonjour,
-						{{ app.user }}</h1>
-					<p class="mb-6">Voici votre agenda :</p>
-					<div id="calendar" class="rounded-lg border border-gray-200 bg-white p-4 shadow-md max-w-5xl mx-auto h-[600px] overflow-hidden"></div>
-				</main>
-			</div>
-		{% endblock %}
-	</body>
-</html>
+</script>
+{% endblock %}

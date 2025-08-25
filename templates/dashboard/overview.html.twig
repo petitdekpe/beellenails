@@ -76,11 +76,24 @@
                             {% if appointments_created|length > 0 %}
                                 <div class="space-y-3">
                                     {% for rdv in appointments_created %}
-                                        <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                                        {% set status_classes = {
+                                            'Rendez-vous pris': 'bg-blue-50 text-blue-700',
+                                            'Rendez-vous confirmé': 'bg-green-50 text-green-700',
+                                            'Annulé': 'bg-red-50 text-red-700',
+                                            'Reporté': 'bg-orange-50 text-orange-700',
+                                            'Tentative échoué': 'bg-red-100 text-red-800',
+                                            'Tentative échouée': 'bg-red-100 text-red-800',
+                                            'Échec du paiement': 'bg-red-200 text-red-900',
+                                            'Paiement en attente': 'bg-yellow-50 text-yellow-700',
+                                            'Congé': 'bg-purple-50 text-purple-700'
+                                        } %}
+                                        {% set bg_class = status_classes[rdv.status] ?: 'bg-gray-50' %}
+                                        <div class="flex items-center justify-between p-3 {{ bg_class|split(' ')[0] }} rounded-lg">
                                             <div>
                                                 <p class="font-medium text-gray-900">{{ rdv.user.fullName }}</p>
                                                 <p class="text-sm text-gray-600">{{ rdv.prestation.title }}</p>
-                                                <p class="text-xs text-green-600">Créé le {{ rdv.createdAt|date('d/m/Y H:i') }}</p>
+                                                <p class="text-xs {{ bg_class|split(' ')[1] ?: 'text-gray-600' }} font-medium">{{ rdv.status }}</p>
+                                                <p class="text-xs text-gray-500">Créé le {{ rdv.createdAt|date('d/m/Y H:i') }}</p>
                                             </div>
                                             <div class="text-right">
                                                 <p class="text-sm font-medium text-gray-900">{{ rdv.day|date('d/m') }}</p>
