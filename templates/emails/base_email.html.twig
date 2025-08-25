@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}BeElle Nails{% endblock %}</title>
+    <!--[if mso]>
+    <noscript>
+        <xml>
+            <o:OfficeDocumentSettings>
+                <o:PixelsPerInch>96</o:PixelsPerInch>
+            </o:OfficeDocumentSettings>
+        </xml>
+    </noscript>
+    <![endif]-->
+    <style>
+        /* Reset styles */
+        body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+        table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+        img { -ms-interpolation-mode: bicubic; border: 0; outline: none; text-decoration: none; }
+
+        /* Base styles */
+        body {
+            height: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100% !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8fafc;
+        }
+
+        /* Container */
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+        }
+
+        /* Header */
+        .email-header {
+            background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .logo {
+            max-width: 200px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+
+        .header-title {
+            color: #ffffff;
+            font-size: 28px;
+            font-weight: 700;
+            margin: 0;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header-subtitle {
+            color: #fce7f3;
+            font-size: 16px;
+            margin: 10px 0 0 0;
+            font-weight: 400;
+        }
+
+        /* Content */
+        .email-content {
+            padding: 40px 30px;
+            line-height: 1.6;
+        }
+
+        .greeting {
+            color: #1f2937;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .content-text {
+            color: #4b5563;
+            font-size: 16px;
+            margin-bottom: 20px;
+            line-height: 1.7;
+        }
+
+        /* Info box */
+        .info-box {
+            background: linear-gradient(135deg, #fef3f4 0%, #fce7f3 100%);
+            border-left: 4px solid #ec4899;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(236, 72, 153, 0.1);
+        }
+
+        .info-title {
+            color: #be185d;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .info-title::before {
+            content: "📅";
+            margin-right: 10px;
+            font-size: 20px;
+        }
+
+        .info-item {
+            display: flex;
+            margin-bottom: 12px;
+            align-items: center;
+        }
+
+        .info-label {
+            color: #6b7280;
+            font-weight: 600;
+            min-width: 120px;
+            font-size: 14px;
+        }
+
+        .info-value {
+            color: #1f2937;
+            font-weight: 500;
+            font-size: 16px;
+        }
+
+        /* Button */
+        .btn-container {
+            text-align: center;
+            margin: 40px 0;
+        }
+
+        .btn-primary {
+            display: inline-block;
+            background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
+            color: #ffffff;
+            text-decoration: none;
+            padding: 16px 32px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 16px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #be185d 0%, #9d174d 100%);
+            box-shadow: 0 6px 20px rgba(236, 72, 153, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* Footer */
+        .email-footer {
+            background-color: #f9fafb;
+            padding: 30px;
+            text-align: center;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .footer-logo {
+            max-width: 150px;
+            height: auto;
+            margin-bottom: 20px;
+            opacity: 0.8;
+        }
+
+        .footer-info {
+            color: #6b7280;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .footer-contact {
+            color: #ec4899;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .social-links {
+            margin: 20px 0;
+        }
+
+        .social-link {
+            display: inline-block;
+            margin: 0 10px;
+            color: #ec4899;
+            text-decoration: none;
+            font-size: 24px;
+        }
+
+        /* Responsive */
+        @media screen and (max-width: 600px) {
+            .email-container { width: 100% !important; }
+            .email-header, .email-content, .email-footer { padding: 20px !important; }
+            .header-title { font-size: 24px !important; }
+            .info-box { padding: 20px !important; margin: 20px 0 !important; }
+            .btn-primary { padding: 14px 28px !important; font-size: 14px !important; }
+        }
+
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            .email-container { background-color: #1f2937 !important; }
+            .content-text { color: #d1d5db !important; }
+            .greeting { color: #f9fafb !important; }
+            .email-footer { background-color: #111827 !important; }
+        }
+    </style>
+</head>
+<body>
+    <div style="display: none; font-size: 1px; color: #fefefe; line-height: 1px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden;">
+        {% block preheader %}{% endblock %}
+    </div>
+
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+        <tr>
+            <td align="center" style="padding: 20px 0;">
+                <div class="email-container">
+                    <!-- Header -->
+                    <div class="email-header">
+                        <img src="https://beellenails.com/assets/logooffwhite.png" alt="BeElle Nails" class="logo">
+                        <h1 class="header-title">{% block header_title %}BeElle Nails{% endblock %}</h1>
+                        <p class="header-subtitle">{% block header_subtitle %}Votre institut de beauté de référence{% endblock %}</p>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="email-content">
+                        {% block content %}{% endblock %}
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="email-footer">
+                        <img src="https://beellenails.com/assets/logooff.png" alt="BeElle Nails" class="footer-logo">
+                        <div class="footer-info">
+                            <strong>BeElle Nails Care</strong><br>
+                            Vodjè, 2ème rue après la clinique de l'union<br>
+                            En allant à Gbegamey, au fond de la rue à droite, portail rose<br>
+                            Cotonou, Bénin
+                        </div>
+                        <div class="footer-info">
+                            <a href="tel:+22997853512" class="footer-contact">📞 +229 97 85 35 12</a><br>
+                            <a href="https://beellenails.com" class="footer-contact">🌐 www.beellenails.com</a>
+                        </div>
+                        <div class="social-links">
+                            <a href="https://www.instagram.com/be.elle.beauty" class="social-link"><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="40" height="40" viewbox="0,0,256,256">
+							<g fill="#ffffff" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal">
+								<g transform="scale(8.53333,8.53333)">
+									<path d="M9.99805,3c-3.859,0 -6.99805,3.14195 -6.99805,7.00195v10c0,3.859 3.14195,6.99805 7.00195,6.99805h10c3.859,0 6.99805,-3.14195 6.99805,-7.00195v-10c0,-3.859 -3.14195,-6.99805 -7.00195,-6.99805zM22,7c0.552,0 1,0.448 1,1c0,0.552 -0.448,1 -1,1c-0.552,0 -1,-0.448 -1,-1c0,-0.552 0.448,-1 1,-1zM15,9c3.309,0 6,2.691 6,6c0,3.309 -2.691,6 -6,6c-3.309,0 -6,-2.691 -6,-6c0,-3.309 2.691,-6 6,-6zM15,11c-2.20914,0 -4,1.79086 -4,4c0,2.20914 1.79086,4 4,4c2.20914,0 4,-1.79086 4,-4c0,-2.20914 -1.79086,-4 -4,-4z"></path>
+								</g>
+							</g>
+						</svg></a>
+                            <a href="https://www.tiktok.com/@be_elle6" class="social-link"><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="40" height="40" viewbox="0,0,256,256">
+							<g fill="#ffffff" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal">
+								<g transform="scale(8.53333,8.53333)">
+									<path d="M24,4h-18c-1.105,0 -2,0.895 -2,2v18c0,1.105 0.895,2 2,2h18c1.105,0 2,-0.895 2,-2v-18c0,-1.105 -0.896,-2 -2,-2zM22.689,13.474c-0.13,0.012 -0.261,0.02 -0.393,0.02c-1.495,0 -2.809,-0.768 -3.574,-1.931c0,3.049 0,6.519 0,6.577c0,2.685 -2.177,4.861 -4.861,4.861c-2.684,-0.001 -4.861,-2.178 -4.861,-4.862c0,-2.685 2.177,-4.861 4.861,-4.861c0.102,0 0.201,0.009 0.3,0.015v2.396c-0.1,-0.012 -0.197,-0.03 -0.3,-0.03c-1.37,0 -2.481,1.111 -2.481,2.481c0,1.37 1.11,2.481 2.481,2.481c1.371,0 2.581,-1.08 2.581,-2.45c0,-0.055 0.024,-11.17 0.024,-11.17h2.289c0.215,2.047 1.868,3.663 3.934,3.811z"></path>
+								</g>
+							</g>
+						</svg></a>
+                            <a href="https://wa.me/22997853512" class="social-link"><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="40" height="40" viewbox="0,0,256,256">
+							<g fill="#ffffff" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal">
+								<g transform="scale(8.53333,8.53333)">
+									<path d="M15,3c-6.627,0 -12,5.373 -12,12c0,2.25121 0.63234,4.35007 1.71094,6.15039l-1.60352,5.84961l5.97461,-1.56836c1.74732,0.99342 3.76446,1.56836 5.91797,1.56836c6.627,0 12,-5.373 12,-12c0,-6.627 -5.373,-12 -12,-12zM10.89258,9.40234c0.195,0 0.39536,-0.00119 0.56836,0.00781c0.214,0.005 0.44692,0.02067 0.66992,0.51367c0.265,0.586 0.84202,2.05608 0.91602,2.20508c0.074,0.149 0.12644,0.32453 0.02344,0.51953c-0.098,0.2 -0.14897,0.32105 -0.29297,0.49805c-0.149,0.172 -0.31227,0.38563 -0.44727,0.51563c-0.149,0.149 -0.30286,0.31238 -0.13086,0.60938c0.172,0.297 0.76934,1.27064 1.65234,2.05664c1.135,1.014 2.09263,1.32561 2.39063,1.47461c0.298,0.149 0.47058,0.12578 0.64258,-0.07422c0.177,-0.195 0.74336,-0.86411 0.94336,-1.16211c0.195,-0.298 0.39406,-0.24644 0.66406,-0.14844c0.274,0.098 1.7352,0.8178 2.0332,0.9668c0.298,0.149 0.49336,0.22275 0.56836,0.34375c0.077,0.125 0.07708,0.72006 -0.16992,1.41406c-0.247,0.693 -1.45991,1.36316 -2.00391,1.41016c-0.549,0.051 -1.06136,0.24677 -3.56836,-0.74023c-3.024,-1.191 -4.93108,-4.28828 -5.08008,-4.48828c-0.149,-0.195 -1.21094,-1.61031 -1.21094,-3.07031c0,-1.465 0.76811,-2.18247 1.03711,-2.48047c0.274,-0.298 0.59492,-0.37109 0.79492,-0.37109z"></path>
+								</g>
+							</g>
+						</svg></a>
+                        </div>
+                        <div style="color: #9ca3af; font-size: 12px; margin-top: 20px;">
+                            © 2025 BeElle Nails. Tous droits réservés.
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

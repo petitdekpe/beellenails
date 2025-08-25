@@ -1,0 +1,253 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Paiement en cours - BeElleNails{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+	<div class="sm:mx-auto sm:w-full sm:max-w-md">
+		<div class="text-center">
+			<img src="{{ asset('assets/logooff.png') }}" alt="BeElleNails" class="mx-auto h-16 w-auto">
+			<h2 class="mt-6 text-3xl font-extrabold text-gray-900">Paiement en cours</h2>
+			<p class="mt-2 text-sm text-gray-600">Veuillez patienter pendant le traitement de votre paiement</p>
+		</div>
+	</div>
+
+	<div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+		<div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+			
+			<!-- Loader animé -->
+			<div class="text-center mb-6">
+				<div id="loader" class="inline-block">
+					<div class="animate-spin rounded-full h-16 w-16 border-b-2 border-pink-600 mx-auto"></div>
+					<p class="mt-4 text-sm text-gray-600">Vérification du statut...</p>
+				</div>
+			</div>
+
+			<!-- Instructions -->
+			<div class="bg-blue-50 border border-blue-200 rounded-md p-4 mb-6">
+				<div class="flex">
+					<div class="flex-shrink-0">
+						<svg class="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+							<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+						</svg>
+					</div>
+					<div class="ml-3">
+						<h3 class="text-sm font-medium text-blue-800">
+							Instructions de paiement
+						</h3>
+						<div class="mt-2 text-sm text-blue-700">
+							<ul class="list-disc pl-5 space-y-1">
+								<li>Vérifiez votre téléphone pour un message de confirmation</li>
+								<li>Entrez votre code PIN mobile money si demandé</li>
+								<li>Cette page se mettra à jour automatiquement</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Statut et timer -->
+			<div class="text-center mb-6">
+				<div class="bg-gray-100 rounded-lg p-4">
+					<p class="text-sm font-medium text-gray-900">Statut: <span id="payment-status" class="text-blue-600">En attente</span></p>
+					<p class="text-xs text-gray-500 mt-1">Temps restant: <span id="countdown" class="font-mono">2:30</span></p>
+					<p class="text-xs text-gray-400 mt-1" id="source-indicator">Source: database</p>
+					<p class="text-xs text-gray-400 mt-2">Référence: {{ reference }}</p>
+				</div>
+			</div>
+
+			<!-- Actions -->
+			<div class="space-y-3">
+				<button onclick="checkPaymentStatus()" class="w-full bg-pink-600 hover:bg-pink-700 text-white font-medium py-2 px-4 rounded-md transition duration-150">
+					Vérifier maintenant
+				</button>
+				<a href="https://wa.me/22997853512" target="_blank" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 px-4 rounded-md text-center block transition duration-150">
+					Besoin d'aide ? 💬
+				</a>
+			</div>
+
+		</div>
+	</div>
+</div>
+
+<script>
+const REFERENCE = '{{ reference }}';
+const TIMEOUT_DURATION = 150000; // 2 minutes 30 secondes
+const POLL_INTERVAL = 3000; // Vérifier toutes les 3 secondes
+const FALLBACK_THRESHOLD = 30000; // Basculer vers Feexpay direct après 30s
+
+let startTime = Date.now();
+let pollInterval;
+let countdownInterval;
+let isHybridMode = false;
+let lastStatusCheck = null;
+
+// Démarre le polling et le countdown au chargement de la page
+document.addEventListener('DOMContentLoaded', function() {
+	startPolling();
+	startCountdown();
+	updateStatusIndicator('Phase 1: Polling BDD (webhook attendu)');
+});
+
+function startPolling() {
+	pollInterval = setInterval(checkPaymentStatus, POLL_INTERVAL);
+	// Vérification immédiate
+	checkPaymentStatus();
+}
+
+function startCountdown() {
+	countdownInterval = setInterval(updateCountdown, 1000);
+}
+
+function updateCountdown() {
+	const elapsed = Date.now() - startTime;
+	const remaining = Math.max(0, TIMEOUT_DURATION - elapsed);
+	
+	// Vérifier si on doit basculer en mode hybride
+	if (!isHybridMode && elapsed > FALLBACK_THRESHOLD) {
+		switchToHybridMode();
+	}
+	
+	if (remaining === 0) {
+		clearIntervals();
+		redirectToFailure();
+		return;
+	}
+	
+	const minutes = Math.floor(remaining / 60000);
+	const seconds = Math.floor((remaining % 60000) / 1000);
+	document.getElementById('countdown').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+}
+
+function switchToHybridMode() {
+	if (isHybridMode) return; // Déjà en mode hybride
+	
+	isHybridMode = true;
+	updateStatusIndicator('Phase 2: Vérification directe Feexpay (fallback)');
+	
+	console.log('[Hybrid] Basculement vers le polling direct Feexpay après 30 secondes');
+	
+	// Changer la couleur du loader pour indiquer le changement
+	const loader = document.querySelector('.animate-spin');
+	if (loader) {
+		loader.classList.remove('border-pink-600');
+		loader.classList.add('border-orange-600');
+	}
+}
+
+async function checkPaymentStatus() {
+	try {
+		let endpoint, description;
+		
+		if (isHybridMode) {
+			// Mode hybride : vérification directe chez Feexpay
+			endpoint = `/api/payment/feexpay/verify/${REFERENCE}`;
+			description = 'Vérification directe Feexpay...';
+		} else {
+			// Mode normal : polling de notre BDD
+			endpoint = `/api/payment/feexpay/status/${REFERENCE}`;
+			description = 'Vérification base de données...';
+		}
+		
+		updateStatusIndicator(description);
+		
+		const response = await fetch(endpoint);
+		const data = await response.json();
+		
+		if (response.ok) {
+			lastStatusCheck = new Date().toLocaleTimeString();
+			updateStatusDisplay(data.status, data.source);
+			
+			// Log pour debug
+			console.log(`[${data.source}] Statut:`, data.status, data);
+			
+			// Redirection selon le statut
+			switch(data.status) {
+				case 'successful':
+					clearIntervals();
+					showSuccessMessage();
+					setTimeout(() => redirectToSuccess(), 1500);
+					break;
+				case 'failed':
+				case 'canceled':
+					clearIntervals();
+					showFailureMessage();
+					setTimeout(() => redirectToFailure(), 1500);
+					break;
+				// Pour 'pending' et autres, on continue à poller
+			}
+		} else {
+			console.error('Erreur lors de la vérification du statut:', data);
+			updateStatusIndicator('Erreur de connexion, nouvelle tentative...');
+		}
+	} catch (error) {
+		console.error('Erreur réseau lors de la vérification du statut:', error);
+		updateStatusIndicator('Erreur réseau, nouvelle tentative...');
+	}
+}
+
+function updateStatusDisplay(status, source = 'database') {
+	const statusElement = document.getElementById('payment-status');
+	const statusMap = {
+		'pending': { text: 'En attente', color: 'text-blue-600' },
+		'successful': { text: 'Réussi', color: 'text-green-600' },
+		'failed': { text: 'Échoué', color: 'text-red-600' },
+		'canceled': { text: 'Annulé', color: 'text-red-600' }
+	};
+	
+	const statusInfo = statusMap[status] || { text: status, color: 'text-gray-600' };
+	statusElement.textContent = statusInfo.text;
+	statusElement.className = statusInfo.color;
+	
+	// Afficher la source en debug
+	const sourceIndicator = document.getElementById('source-indicator');
+	if (sourceIndicator) {
+		sourceIndicator.textContent = `Source: ${source} (${lastStatusCheck})`;
+	}
+}
+
+function updateStatusIndicator(message) {
+	const loaderText = document.querySelector('#loader p');
+	if (loaderText) {
+		loaderText.textContent = message;
+	}
+}
+
+function showSuccessMessage() {
+	updateStatusIndicator('✅ Paiement confirmé ! Redirection...');
+	const loader = document.querySelector('.animate-spin');
+	if (loader) {
+		loader.classList.remove('animate-spin', 'border-pink-600', 'border-orange-600');
+		loader.classList.add('border-green-600');
+		loader.innerHTML = '<div class="text-green-600 text-2xl">✅</div>';
+	}
+}
+
+function showFailureMessage() {
+	updateStatusIndicator('❌ Paiement échoué. Redirection...');
+	const loader = document.querySelector('.animate-spin');
+	if (loader) {
+		loader.classList.remove('animate-spin', 'border-pink-600', 'border-orange-600');
+		loader.classList.add('border-red-600');
+		loader.innerHTML = '<div class="text-red-600 text-2xl">❌</div>';
+	}
+}
+
+function clearIntervals() {
+	clearInterval(pollInterval);
+	clearInterval(countdownInterval);
+}
+
+function redirectToSuccess() {
+	window.location.href = `/rendezvous/payment/done/${REFERENCE}`;
+}
+
+function redirectToFailure() {
+	window.location.href = `/rendezvous/payment/error/${REFERENCE}`;
+}
+
+// Nettoyage quand on quitte la page
+window.addEventListener('beforeunload', clearIntervals);
+</script>
+
+{% endblock %}

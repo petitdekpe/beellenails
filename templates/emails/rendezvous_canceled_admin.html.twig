@@ -1,204 +1,82 @@
-<!DOCTYPE html>
-<html lang="fr">
-	<head>
-		<meta charset="UTF-8"/>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-		<title>Rendez-vous annulé par le client</title>
-		<style>:root
-		{
-			--primary: #7a1ee9;
-			--text: #1a1a1a;
-			--text-muted: #666666;
-			--border: #eeeeee;
-			--bg: #ffffff;
-		}
+{% extends 'emails/base_email.html.twig' %}
 
-		* {
-			box-sizing: border-box;
-			margin: 0;
-			padding: 0;
-		}
+{% block title %}Rendez-vous annulé - BeElle Nails{% endblock %}
 
-		body {
-			font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-			background-color: var(--bg);
-			color: var(--text);
-			line-height: 1.6;
-		}
+{% block preheader %}Un rendez-vous a été annulé par un client.{% endblock %}
 
-		.container {
-			max-width: 600px;
-			margin: auto;
-			padding: 40px 24px;
-		}
+{% block header_title %}Rendez-vous Annulé ❌{% endblock %}
 
-		.logo {
-			text-align: center;
-			margin-bottom: 24px;
-		}
+{% block header_subtitle %}Notification administrateur{% endblock %}
 
-		.hero-image {
-			width: 100%;
-			border-radius: 12px;
-			overflow: hidden;
-			margin-bottom: 32px;
-		}
+{% block content %}
+    <div class="greeting">
+        Bonjour Administrateur ! 👋
+    </div>
 
-		.hero-image img {
-			width: 100%;
-			display: block;
-		}
+    <div class="content-text">
+        Nous vous informons qu'un rendez-vous a été <strong>annulé par le client</strong> sur votre plateforme BeElle Nails Care.
+    </div>
 
-		h1 {
-			font-size: 24px;
-			font-weight: 600;
-			margin-bottom: 16px;
-		}
+    <div class="info-box">
+        <div class="info-title">
+            Rendez-vous annulé
+        </div>
+        <div class="info-item">
+            <span class="info-label">Client :</span>
+            <span class="info-value">{{ rendezvous.user.prenom }} {{ rendezvous.user.nom }}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Email :</span>
+            <span class="info-value">{{ rendezvous.user.email }}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Téléphone :</span>
+            <span class="info-value">{{ rendezvous.user.telephone|default('Non renseigné') }}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Prestation :</span>
+            <span class="info-value">{{ rendezvous.prestation.title }}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Date prévue :</span>
+            <span class="info-value">{{ rendezvous.day|date('d/m/Y') }}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Heure prévue :</span>
+            <span class="info-value">{{ rendezvous.creneau.startTime|date('H:i') }}</span>
+        </div>
+        {% if rendezvous.totalCost %}
+        <div class="info-item">
+            <span class="info-label">Coût total :</span>
+            <span class="info-value">{{ rendezvous.totalCost }} FCFA</span>
+        </div>
+        {% endif %}
+        <div class="info-item">
+            <span class="info-label">Statut :</span>
+            <span class="info-value">{{ rendezvous.status }}</span>
+        </div>
+    </div>
 
-		p {
-			font-size: 16px;
-			margin-bottom: 16px;
-		}
+    <div class="content-text">
+        <strong>Actions à prévoir :</strong><br>
+        • Le créneau est maintenant disponible pour d'autres clients<br>
+        • Vérifier s'il y a une liste d'attente<br>
+        • Gérer le remboursement si un paiement a été effectué<br>
+        • Mettre à jour votre planning
+    </div>
 
-		.cta-button {
-			display: inline-block;
-			background-color: var(--primary);
-			color: white;
-			text-decoration: none;
-			padding: 14px 24px;
-			border-radius: 24px;
-			font-weight: 600;
-			margin: 32px 0;
-			text-align: center;
-		}
+    <div class="btn-container">
+        <a href="https://beellenails.com/dashboard" class="btn-primary">
+            Voir le dashboard
+        </a>
+    </div>
 
-		.footer {
-			text-align: center;
-			font-size: 14px;
-			color: var(--text-muted);
-			margin-top: 48px;
-			border-top: 1px solid var(--border);
-			padding-top: 32px;
-		}
+    <div class="content-text">
+        Annulation effectuée le : <strong>{{ rendezvous.updatedAt|date('d/m/Y à H:i') }}</strong>
+    </div>
 
-		.footer .social-icons {
-			margin: 16px 0;
-		}
-
-		.footer .social-icons a {
-			margin: 0 10px;
-			display: inline-block;
-		}
-
-		.footer .social-icons img {
-			width: 24px;
-			height: 24px;
-		}
-
-		.footer-links {
-			margin-top: 16px;
-			font-size: 13px;
-			color: var(--text-muted);
-		}
-
-		.footer-links a {
-			color: var(--primary);
-			text-decoration: none;
-			margin: 0 8px;
-		}
-
-		a {
-			color: var(--primary);
-			text-decoration: none;
-		}
-
-		/* ======= Responsive Design ======= */
-		@media(max-width: 480px) {
-			.container {
-				padding: 24px 16px;
-			}
-
-			h1 {
-				font-size: 20px;
-			}
-
-			p {
-				font-size: 15px;
-			}
-
-			.cta-button {
-				display: block;
-				width: 100%;
-				text-align: center;
-				padding: 14px 0;
-			}
-
-			.footer .social-icons img {
-				width: 20px;
-				height: 20px;
-			}
-
-			.footer-links {
-				display: flex;
-				flex-direction: column;
-				gap: 6px;
-			}
-		}
-	</style>
-</head>
-<body>
-	<div class="container">
-
-		<div class="logo">
-			<img src="https://your-image-source/logo.png" alt="Circo Logo" width="40"/>
-		</div>
-
-		<div class="hero-image">
-			<img src="https://your-image-source/hero.jpg" alt="Hero Banner"/>
-		</div>
-
-		<h1>Bonjour,</h1>
-
-		<p>Nous vous informons qu’un client a annulé un rendez-vous réservé via notre plateforme.</p>
-
-		<p>
-			<strong>Nom du client :</strong>
-			{{ rendezvous.user.fullName }}</p>
-		<p>
-			<strong>Email :</strong>
-			{{ rendezvous.user.email }}</p>
-		<p>
-			<strong>Prestation concernée :</strong>
-			{{ rendezvous.prestation }}</p>
-		<p>
-			<strong>Date prévue :</strong>
-			{{ rendezvous.day|date("d/m/Y") }}</p>
-		<p>
-			<strong>Créneau horaire :</strong>
-			{{ rendezvous.creneau }}</p>
-
-		<p>Le rendez-vous a été annulé par le client. Vous pouvez consulter l’ensemble de vos rendez-vous en cliquant ci-dessous.</p>
-
-		<a href="https://beellenails.com/admin/rendezvous" class="cta-button">Voir tous les rendez-vous</a>
-
-		<p>Merci de votre compréhension.</p>
-
-		<p>Bien cordialement,<br/>
-			<a href="#">L’équipe Be Elle Nails</a>
-		</p>
-
-		<div class="footer">
-			<div class="social-icons">
-				<a href="#"><img src="https://your-image-source/instagram-icon.png" alt="Instagram"/></a>
-				<a href="#"><img src="https://your-image-source/facebook-icon.png" alt="Facebook"/></a>
-			</div>
-			<p>© 2025 Be Elle Nails. Tous droits réservés.</p>
-			<div class="footer-links">
-				<a href="#">Politique de confidentialité</a>
-				<a href="#">Conditions d'utilisation</a>
-				<a href="#">Centre d’aide</a>
-				<a href="#">Se désabonner</a>
-			</div>
-		</div>
-	</div>
-</body></html>
+    <div class="content-text">
+        <em>Notification automatique du système BeElle Nails Care</em><br>
+        <strong>L'équipe BeElle</strong>
+    </div>
+{% endblock %}

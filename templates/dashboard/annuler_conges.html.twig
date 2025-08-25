@@ -1,0 +1,137 @@
+<html lang="fr">
+	<head>
+		<meta charset="UTF-8">
+		<title>
+			{% block title %}Annuler des congés
+			{% endblock %}
+		</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<!-- Favicon -->
+		<link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+		<link rel="manifest" href="/favicon/site.webmanifest">
+		<meta name="theme-color" content="#ffffff">
+
+		<!-- Tailwind & Flowbite -->
+		<script src="https://cdn.tailwindcss.com"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.js"></script>
+
+		<!-- Flatpickr -->
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+		<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+		<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
+
+		<!-- FullCalendar -->
+		<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+		<script src="/js/preline.js"></script>
+		<script src="https://cdn.fedapay.com/checkout.js?v=1.1.7"></script>
+
+		<style>
+			.fc-toolbar-title,
+			.fc-col-header-cell-cushion {
+				text-transform: capitalize;
+			}
+			.flatpickr-calendar {
+				width: 300px;
+				font-size: 14px;
+			}
+			@media(min-width: 640px) {
+				.flatpickr-calendar {
+					font-size: 16px;
+				}
+			}
+			.flatpickr-day.today {
+				border: none !important;
+			}
+		</style>
+	</head>
+
+	<body class="bg-gray-100">
+		<div class="flex min-h-screen w-full">
+			{% block body %}
+				<!-- Sidebar toggle -->
+				<button data-drawer-target="default-sidebar" data-drawer-toggle="default-sidebar" type="button" class="inline-flex items-center p-2 mt-2 ms-3 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200">
+					<span class="sr-only">Ouvrir le menu</span>
+					<svg class="w-6 h-6" fill="currentColor" viewbox="0 0 20 20">
+						<path fill-rule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"/>
+					</svg>
+				</button>
+
+				{% include '_sidebar.html.twig' %}
+
+				<div class="flex-1">
+					<div class="w-full h-[70px] bg-red-500"></div>
+
+					<div class="flex justify-between items-center px-4 py-4">
+						<h4 class="text-2xl font-bold text-gray-800">Annuler des congés</h4>
+						<a href="{{ path('app_dashboard') }}" class="text-sm text-red-700 hover:underline">← Retour au dashboard</a>
+					</div>
+
+					<div class="px-4 max-w-3xl ml-8">
+
+						{{ form_start(form) }}
+
+						<ol class="relative border-s border-gray-200 space-y-6">
+							<li class="ms-6 relative">
+								<span class="absolute flex items-center justify-center w-6 h-6 bg-red-100 rounded-full -start-3 ring-8 ring-white">
+									<svg class="w-2.5 h-2.5 text-red-800" fill="currentColor" viewbox="0 0 20 20">
+										<path d="m13.835 7.578-.005.007-.003.002.005-.002.003-.007zm.001.006a.247.247 0 01-.006-.006l.006.006zM20 9a2 2 0 00-2-2h-2V5a1 1 0 00-2 0v2h-3V5a1 1 0 00-2 0v2H6V5a1 1 0 00-2 0v2H2a2 2 0 00-2 2v2h20V9zM0 18a2 2 0 002 2h16a2 2 0 002-2V11H0v7zm5-4h10a1 1 0 010 2H5a1 1 0 010-2z"/>
+									</svg>
+								</span>
+								<h3 class="mb-1 text-lg font-semibold text-gray-900 ml-10">{{ form_label(form.start_date, 'Date de début des congés à annuler') }}</h3>
+								<input name="{{ field_name(form.start_date) }}" value="{{ field_value(form.start_date) }}" id="datepicker_start" placeholder="Cliquez pour choisir une date" class="bg-gray-50 border border-gray-300 text-sm text-gray-900 rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5 ps-10">
+							</li>
+
+							<li class="ms-6 relative">
+								<span class="absolute flex items-center justify-center w-6 h-6 bg-red-100 rounded-full -start-3 ring-8 ring-white">
+									<svg class="w-2.5 h-2.5 text-red-800" fill="currentColor" viewbox="0 0 20 20">
+										<path d="m13.835 7.578-.005.007-.003.002.005-.002.003-.007zm.001.006a.247.247 0 01-.006-.006l.006.006zM20 9a2 2 0 00-2-2h-2V5a1 1 0 00-2 0v2h-3V5a1 1 0 00-2 0v2H6V5a1 1 0 00-2 0v2H2a2 2 0 00-2 2v2h20V9zM0 18a2 2 0 002 2h16a2 2 0 002-2V11H0v7zm5-4h10a1 1 0 010 2H5a1 1 0 010-2z"/>
+									</svg>
+								</span>
+								<h3 class="mb-1 text-lg font-semibold text-gray-900 ml-10">{{ form_label(form.end_date, 'Date de fin des congés à annuler') }}</h3>
+								<input name="{{ field_name(form.end_date) }}" value="{{ field_value(form.end_date) }}" id="datepicker_end" placeholder="Cliquez pour choisir une date" class="bg-gray-50 border border-gray-300 text-sm text-gray-900 rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5 ps-10">
+							</li>
+						</ol>
+
+						<div class="mt-5 flex space-x-3">
+							<button type="submit" onclick="return validateDates() && confirm('Êtes-vous sûr de vouloir annuler tous les congés de cette période ?')" class="bg-red-700 hover:bg-red-500 text-white font-medium rounded-lg text-sm px-5 py-2.5">Annuler les congés</button>
+							<a href="{{ path('app_dashboard') }}" class="bg-gray-500 hover:bg-gray-400 text-white font-medium rounded-lg text-sm px-5 py-2.5">Annuler</a>
+						</div>
+
+						{{ form_widget(form._token) }}
+						{{ form_end(form, {'render_rest': false}) }}
+					</div>
+				</div>
+			{% endblock %}
+		</div>
+
+		{% block javascripts %}
+			<script>
+				function validateDates() {
+					const start = new Date(document.getElementById("datepicker_start").value);
+					const end = new Date(document.getElementById("datepicker_end").value);
+					if (start >= end) {
+						alert("La date de début doit être antérieure à la date de fin.");
+						return false;
+					}
+					return true;
+				}
+
+				const flatpickrOptions = {
+					dateFormat: "Y-m-d",
+					altInput: true,
+					altFormat: "j F Y",
+					locale: "fr",
+					maxDate: new Date().fp_incr(365), // Permet d'annuler des congés futurs
+					disable: [
+						date => date.getDay() === 0, // Dimanche
+						date => date.getDay() === 1 // Lundi
+					]
+				};
+				flatpickr("#datepicker_start", flatpickrOptions);
+				flatpickr("#datepicker_end", flatpickrOptions);
+			</script>
+		{% endblock %}
+	</body>
+</html>

@@ -61,9 +61,15 @@
 		{% block javascripts %}{% endblock %}
 
 	</head>
-	<body class="mt-8">
+	{% if app.request.attributes.get('_route') starts with 'app_dashboard' %}
+		<body>
+	{% else %}
+		<body class="mt-8">
+	{% endif %}
 		{% if app.request.attributes.get('_route') in ['app_new_rendezvous', 'app_recap', 'app_calendar'] %}
 			{{ include('navbis.html.twig') }}
+		{% elseif app.request.attributes.get('_route') starts with 'app_dashboard' %}
+			{# Pas de navbar pour les pages dashboard #}
 		{% else %}
 			{{ include('nav.html.twig') }}
 		{% endif %}
@@ -81,6 +87,7 @@
 
 	</body>
 
+	{% if not (app.request.attributes.get('_route') starts with 'app_dashboard') %}
 	<footer class="p-4 bg-pink-700 md:p-8 lg:p-10">
 		<div class="mx-auto max-w-screen-xl text-center">
 			<a href="#" class="flex justify-center items-center text-2xl font-semibold text-gray-900">
@@ -138,4 +145,5 @@
 				<a href="#" class="hover:underline">BeElle™</a>. Tous droits réservés.</span>
 		</div>
 	</footer>
+	{% endif %}
 </html>

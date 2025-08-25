@@ -9,7 +9,7 @@
 			<h1 class="text-xl font-bold text-gray-900 mb-4">Paiement avec FeexPay</h1>
 			{{ form_start(form, {
         'method': 'POST',
-        'action': path('feexpay_payment_init', {'rendezvou': rendezvous.id}),
+        'action': path('feexpay_payment_init', {'rendezvous': rendezvous.id}),
         
         }) }}
 			{{ form_row(form.phone) }}

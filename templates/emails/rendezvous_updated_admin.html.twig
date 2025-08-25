@@ -1,10 +1,10 @@
 {% extends 'emails/base_email.html.twig' %}
 
-{% block title %}Nouveau rendez-vous pris - BeElle Nails{% endblock %}
+{% block title %}Rendez-vous modifié - BeElle Nails{% endblock %}
 
-{% block preheader %}Un nouveau rendez-vous a été pris sur votre plateforme.{% endblock %}
+{% block preheader %}Un rendez-vous a été modifié par un client.{% endblock %}
 
-{% block header_title %}Nouveau Rendez-vous 📋{% endblock %}
+{% block header_title %}Rendez-vous Modifié 📝{% endblock %}
 
 {% block header_subtitle %}Notification administrateur{% endblock %}
 
@@ -14,13 +14,13 @@
     </div>
 
     <div class="content-text">
-        <strong>Bonne nouvelle !</strong> Un nouveau rendez-vous vient d'être pris sur votre plateforme BeElle Nails Care.
-        Voici les détails :
+        Nous vous informons qu'un rendez-vous a été <strong>modifié par le client</strong> sur votre plateforme BeElle Nails Care.
+        Voici les nouvelles informations :
     </div>
 
     <div class="info-box">
         <div class="info-title">
-            Détails du rendez-vous
+            Nouvelles informations du rendez-vous
         </div>
         <div class="info-item">
             <span class="info-label">Client :</span>
@@ -39,11 +39,11 @@
             <span class="info-value">{{ rendezvous.prestation.title }}</span>
         </div>
         <div class="info-item">
-            <span class="info-label">Date :</span>
+            <span class="info-label">Nouvelle date :</span>
             <span class="info-value">{{ rendezvous.day|date('d/m/Y') }}</span>
         </div>
         <div class="info-item">
-            <span class="info-label">Heure :</span>
+            <span class="info-label">Nouvel horaire :</span>
             <span class="info-value">{{ rendezvous.creneau.startTime|date('H:i') }}</span>
         </div>
         {% if rendezvous.totalCost %}
@@ -60,9 +60,11 @@
 
     <div class="content-text">
         <strong>Actions à prévoir :</strong><br>
-        • Vérifier la disponibilité du créneau<br>
+        • Vérifier la disponibilité du nouveau créneau<br>
+        • Mettre à jour votre planning personnel<br>
         • Préparer le matériel nécessaire<br>
-        • Contacter le client si nécessaire
+        • L'ancien créneau est maintenant libre pour d'autres clients<br>
+        • Vérifier s'il y a une liste d'attente pour l'ancien créneau
     </div>
 
     <div class="btn-container">
@@ -72,7 +74,7 @@
     </div>
 
     <div class="content-text">
-        Rendez-vous pris le : <strong>{{ rendezvous.createdAt|date('d/m/Y à H:i') }}</strong>
+        Modification effectuée le : <strong>{{ rendezvous.updatedAt|date('d/m/Y à H:i') }}</strong>
     </div>
 
     <div class="content-text">

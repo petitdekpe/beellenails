@@ -14,6 +14,12 @@
 			</li>
 
 			<li>
+				<a href="{{ path('app_dashboard_overview') }}" class="flex items-center p-2 rounded {{ route == 'app_dashboard_overview' ? 'bg-gray-100 font-semibold' : 'hover:bg-gray-100 text-gray-900' }}">
+					📊 Vue d'ensemble
+				</a>
+			</li>
+
+			<li>
 				<a href="{{ path('app_dashboard_rendezvous') }}" class="flex items-center p-2 rounded {{ route == 'app_dashboard_rendezvous' ? 'bg-gray-100 font-semibold' : 'hover:bg-gray-100 text-gray-900' }}">
 					📅 Rendez-vous
 				</a>
@@ -58,7 +64,7 @@
 				</details>
 			</li>
 
-			{% set conge_active = route starts with 'create_conge' %}
+			{% set conge_active = route starts with 'create_conge' or route starts with 'cancel_conge' %}
 			<li>
 				<details class="group" {% if conge_active %} open {% endif %}>
 					<summary class="flex items-center p-2 rounded cursor-pointer {{ conge_active ? 'bg-gray-100 font-semibold' : 'hover:bg-gray-100 text-gray-900' }}">
@@ -67,12 +73,22 @@
 					<ul class="ml-4 mt-2 space-y-1">
 						<li>
 							<a href="{{ path('create_conge') }}" class="block px-2 py-1 rounded {{ route == 'create_conge' ? 'bg-pink-100 font-medium' : 'hover:bg-gray-100' }}">
-								Journée
+								➕ Ajouter (Journée)
 							</a>
 						</li>
 						<li>
 							<a href="{{ path('create_conges') }}" class="block px-2 py-1 rounded {{ route == 'create_conges' ? 'bg-pink-100 font-medium' : 'hover:bg-gray-100' }}">
-								Période
+								➕ Ajouter (Période)
+							</a>
+						</li>
+						<li>
+							<a href="{{ path('cancel_conge') }}" class="block px-2 py-1 rounded {{ route == 'cancel_conge' ? 'bg-red-100 font-medium text-red-700' : 'hover:bg-gray-100 text-red-600' }}">
+								❌ Annuler (Journée)
+							</a>
+						</li>
+						<li>
+							<a href="{{ path('cancel_conges') }}" class="block px-2 py-1 rounded {{ route == 'cancel_conges' ? 'bg-red-100 font-medium text-red-700' : 'hover:bg-gray-100 text-red-600' }}">
+								❌ Annuler (Période)
 							</a>
 						</li>
 					</ul>

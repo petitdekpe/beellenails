@@ -1,0 +1,156 @@
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>
+			{% block title %}Annuler un congé
+			{% endblock %}
+		</title>
+
+		<link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+		<link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+		<link rel="manifest" href="/favicon/site.webmanifest">
+		<link rel="mask-icon" href="/favicon/safari-pinned-tab.svg" color="#5bbad5">
+		<meta name="msapplication-TileColor" content="#da532c">
+		<meta name="theme-color" content="#ffffff">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+
+		<script src="https://cdn.tailwindcss.com"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.js"></script>
+
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+		<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
+		<script src="https://npmcdn.com/flatpickr/dist/l10n/fr.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+
+		<style>
+			/* Pour les libellés des mois */
+			.fc-toolbar-title,
+			.fc-col-header-cell-cushion {
+				text-transform: capitalize;
+			}
+		</style>
+
+		<script src="https://cdn.fedapay.com/checkout.js?v=1.1.7"></script>
+		<script src="/js/preline.js"></script>
+
+		<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
+		<script src='fullcalendar/core/locales/fr.global.js'></script>
+
+
+	</head>
+
+
+	<body class="bg-gray-100">
+		<div class="flex min-h-screen w-full">
+			{% block body %}
+
+				<button data-drawer-target="default-sidebar" data-drawer-toggle="default-sidebar" aria-controls="default-sidebar" type="button" class="inline-flex items-center p-2 mt-2 ms-3 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
+					<span class="sr-only">Open sidebar</span>
+					<svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+						<path clip-rule="evenodd" fill-rule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"></path>
+					</svg>
+				</button>
+
+				{% include '_sidebar.html.twig' %}
+
+				<div class="flex-1">
+					<div class="relative overflow-hidden w-full min-h-[70px] bg-red-500"></div>
+					<div class="flex flex-row justify-between items-center">
+						<h4 class="text-2xl font-bold p-4">Annuler un congé</h4>
+						<a href="{{ path('app_dashboard') }}" class="text-sm p-4 text-red-600 hover:underline">← Retour au dashboard</a>
+					</div>
+					<div class="px-4">
+
+						<div class="max-w-xl mx-8">
+							{{ form_start(form) }}
+
+							<ol class="relative border-s border-gray-200">
+
+								<li class="ms-6">
+									<span class="absolute flex items-center justify-center w-6 h-6 bg-red-100 rounded-full -start-3 ring-8 ring-white">
+										<svg class="w-2.5 h-2.5 text-red-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewbox="0 0 20 20">
+											<path d="m13.835 7.578-.005.007-.003.002.005-.002.003-.007zm.001.006a.247.247 0 01-.006-.006l.006.006zM20 9a2 2 0 00-2-2h-2V5a1 1 0 00-2 0v2h-3V5a1 1 0 00-2 0v2H6V5a1 1 0 00-2 0v2H2a2 2 0 00-2 2v2h20V9zM0 18a2 2 0 002 2h16a2 2 0 002-2V11H0v7zm5-4h10a1 1 0 010 2H5a1 1 0 010-2z"/>
+										</svg>
+									</span>
+									<h3 class="mb-1 text-lg font-semibold text-gray-900">{{ form_label(form.date, 'Date du congé à annuler') }}</h3>
+									<time class="block mb-2 text-sm font-normal leading-none text-gray-400">Sélectionnez la date dont vous souhaitez annuler le congé</time>
+									<input name="{{ field_name(form.date) }}" value="{{ field_value(form.date) }}" placeholder="Cliquez pour choisir un jour de congé à annuler" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full ps-10 p-2.5" id="datepicker">
+
+								</li>
+							</ol>
+
+							<div class="mt-5 flex space-x-3">
+								<button type="submit" onclick="return confirm('Êtes-vous sûr de vouloir annuler ce congé ?')" class="btn btn-danger text-white bg-red-700 hover:bg-red-500 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center">Annuler le congé</button>
+								<a href="{{ path('app_dashboard') }}" class="btn btn-secondary bg-gray-500 hover:bg-gray-400 text-white font-medium rounded-lg text-sm px-5 py-2.5 text-center">Annuler</a>
+							</div>
+
+							{{ form_widget(form._token) }}
+							{{ form_end(form, {'render_rest': false}) }}
+
+						</div>
+					</div>
+
+				{% endblock %}
+
+				{% block javascripts %}
+
+					<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
+					<script>
+						flatpickr("#datepicker", {
+							defaultDate: null,
+							enableTime: false,
+							dateFormat: "Y-m-d",
+							altInput: true,
+							altFormat: "j F Y",
+							inline: true,
+							locale: "fr",
+							maxDate: new Date().fp_incr(365), // Permet d'annuler des congés futurs
+							disable: [
+								function (date) { // Retourne true pour désactiver les samedis
+									return(date.getDay() === 1);
+								},
+								function (date) { // Retourne true pour désactiver les dimanches
+									return(date.getDay() === 0);
+								}
+							]
+						});
+					</script>
+
+				{% endblock %}
+
+				{% block stylesheets %}
+					<style>
+						/* Media queries pour ajuster Flatpickr avec Tailwind CSS */
+						.flatpickr-calendar {
+							width: 300px; /* Ajustez la largeur selon vos besoins */
+							font-size: 14px; /* Ajustez la taille de la police selon vos besoins */
+						}
+						/* Pour les écrans moyens et plus grands */
+						@media(min-width: 640px) {
+							/* Ajustement de la taille de l'élément Flatpickr */
+							.flatpickr-calendar {
+								width: 300px; /* Ajustez la largeur selon vos besoins */
+								font-size: 16px; /* Ajustez la taille de la police selon vos besoins */
+							}
+						}
+						.flatpickr-calendar .flatpickr-day.today {
+
+							border: none !important; /* Pour supprimer la bordure */
+						}
+
+						/* Pour les écrans plus petits */
+						@media(max-width: 767px) {
+
+							;
+							/* Ajustement de la taille de l'élément Flatpickr pour les petits écrans */
+
+						}
+					</style>
+				{% endblock %}
+
+			</div>
+	</body>
+</html>

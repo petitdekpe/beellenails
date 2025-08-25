@@ -8,10 +8,11 @@ parameters:
     app.fedapay_public_key: '%env(FEDAPAY_PUBLIC_KEY)%'
     app.fedapay_env: '%env(FEDAPAY_ENV)%'
 
-    feexpay.shop_id: '%env(FEEXPAY_SHOPID)%'
-    feexpay.token: '%env(FEEXPAY_TOKEN)%'
-    feexpay.callback_url: '%env(FEEXPAY_CALLBACK)%'
-    feexpay.mode: '%env(FEEXPAY_ENV)%'
+    feexpay.shop_id: '%env(FEEXPAY_SHOP_ID)%'
+    feexpay.token: '%env(FEEXPAY_API_KEY)%'
+    feexpay.callback_url: '%env(FEEXPAY_CALLBACK_URL)%'
+    feexpay.error_callback_url: '%env(FEEXPAY_ERROR_CALLBACK_URL)%'
+    feexpay.mode: '%env(FEEXPAY_MODE)%'
 
 services:
     # Autoriser l'auto-câblage pour l'entité Rendezvous
@@ -46,8 +47,8 @@ services:
 
     App\Service\FeexpayService:
         arguments:
-            $token: '%env(FEEXPAY_API_KEY)%'
-            $shopId: '%env(FEEXPAY_SHOP_ID)%'
-            $callbackUrl: '%env(FEEXPAY_CALLBACK_URL)%'
-            $errorCallbackUrl: '%env(FEEXPAY_ERROR_CALLBACK_URL)%'
-            $mode: '%env(FEEXPAY_MODE)%'
+            $token: '%feexpay.token%'
+            $shopId: '%feexpay.shop_id%'
+            $callbackUrl: '%feexpay.callback_url%'
+            $errorCallbackUrl: '%feexpay.error_callback_url%'
+            $mode: '%feexpay.mode%'

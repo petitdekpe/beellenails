@@ -8,11 +8,17 @@
 	{% set day = app.session.get('day') %}
 	{% set creneau = app.session.get('creneau') %}
 	{% set prestation = app.session.get('prestation') %}
-	{% set total = prestation.price %}
-
-	{% for supplement in supplements %}
-		{% set total = total + supplement.price %}
-	{% endfor %}
+	
+	{# Utiliser le coût total calculé et stocké en base de données s'il est disponible #}
+	{% if rendezvou is defined and rendezvou.totalCost %}
+		{% set total = rendezvou.totalCost %}
+	{% else %}
+		{# Fallback vers le calcul manuel si pas encore enregistré #}
+		{% set total = prestation.price %}
+		{% for supplement in supplements %}
+			{% set total = total + supplement.price %}
+		{% endfor %}
+	{% endif %}
 
 
 	<div class="relative overflow-hidden w-full min-h-[90px] bg-white rounded-lg"></div>

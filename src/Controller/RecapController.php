@@ -26,6 +26,9 @@ class RecapController extends AbstractController
         $rendezvou->setUser($user);
         $rendezvou->setStatus("Tentative échoué");
 
+        // Calculer et enregistrer le coût total
+        $rendezvou->updateTotalCost();
+
         // Vérifier si un rendez-vous avec le même jour et créneau existe déjà
         $existingRendezvous = $rendezvousRepository->findOneBy([
             'day' => $rendezvou->getDay(),
@@ -54,6 +57,7 @@ class RecapController extends AbstractController
         return $this->render('recap/index.html.twig', [
             'form' => $form->createView(),
             'supplements' => $supplements, // Passer la liste des suppléments à la vue Twig
+            'rendezvou' => $rendezvou, // Passer l'objet rendezvous avec le coût total calculé
         ]);
     }
 }

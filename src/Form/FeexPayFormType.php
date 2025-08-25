@@ -29,7 +29,7 @@ class FeexPayFormType extends AbstractType
                 'choices' => [
                     'MTN' => 'MTN',
                     'MOOV' => 'MOOV',
-                    'CELTIIS' => 'CELTIIS',
+                    'CELTIIS' => 'CELTIIS BJ',
                 ],
                 'placeholder' => 'Sélectionnez un opérateur',
                 'required' => true,

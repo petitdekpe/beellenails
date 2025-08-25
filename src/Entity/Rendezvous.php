@@ -63,6 +63,9 @@ class Rendezvous
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private \DateTimeInterface $updated_at;
 
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
+    private ?string $totalCost = null;
+
     public function __construct()
     {
         $this->payments = new ArrayCollection();
@@ -240,5 +243,49 @@ class Rendezvous
     public function updateTimestamps(): void
     {
         $this->updated_at = new \DateTime();
+    }
+
+    public function getTotalCost(): ?string
+    {
+        return $this->totalCost;
+    }
+
+    public function setTotalCost(?string $totalCost): self
+    {
+        $this->totalCost = $totalCost;
+        $this->updateTimestamps();
+
+        return $this;
+    }
+
+    /**
+     * Calcule automatiquement le coût total basé sur la prestation et les suppléments
+     */
+    public function calculateTotalCost(): string
+    {
+        $total = 0;
+
+        // Ajouter le prix de la prestation principale
+        if ($this->prestation) {
+            $total += (float) $this->prestation->getPrice();
+        }
+
+        // Ajouter le prix de tous les suppléments
+        foreach ($this->supplement as $supplement) {
+            $total += (float) $supplement->getPrice();
+        }
+
+        return (string) $total;
+    }
+
+    /**
+     * Met à jour le coût total automatiquement
+     */
+    public function updateTotalCost(): self
+    {
+        $this->totalCost = $this->calculateTotalCost();
+        $this->updateTimestamps();
+
+        return $this;
     }
 }

@@ -453,6 +453,98 @@ class DashboardController extends AbstractController
         ]);
     }
 
+    //Annuler des congés (un jour)
+    #[Route('dashboard/annuler-conge', name: 'cancel_conge')]
+    public function cancelConge(Request $request, EntityManagerInterface $entityManager, RendezvousRepository $rendezvousRepository): Response
+    {
+        $form = $this->createForm(DateCongeType::class, null, [
+            'validation_groups' => ['Default', 'without_prestation']
+        ]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $date = $form->get('date')->getData();
+
+            // Récupérer tous les congés pour cette date
+            $congesExistants = $rendezvousRepository->findBy([
+                'day' => $date,
+                'status' => 'Congé'
+            ]);
+
+            if (empty($congesExistants)) {
+                $this->addFlash('warning', 'Aucun congé trouvé pour cette date.');
+                return $this->redirectToRoute('app_dashboard', ['message' => 'Aucun congé trouvé pour cette date.']);
+            }
+
+            // Supprimer tous les congés pour cette date
+            foreach ($congesExistants as $conge) {
+                $entityManager->remove($conge);
+            }
+
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Le congé du ' . $date->format('d/m/Y') . ' a été annulé avec succès.');
+
+            return $this->redirectToRoute('app_dashboard', ['message' => 'Le congé a été annulé avec succès.']);
+        }
+
+        return $this->render('dashboard/annuler_conge.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
+    //Annuler des congés (une période)
+    #[Route('dashboard/annuler-conges', name: 'cancel_conges')]
+    public function cancelConges(Request $request, EntityManagerInterface $entityManager, RendezvousRepository $rendezvousRepository): Response
+    {
+        $form = $this->createForm(PeriodCongeType::class, null, [
+            'validation_groups' => ['Default', 'without_prestation']
+        ]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $startDate = $form->get('start_date')->getData();
+            $endDate = $form->get('end_date')->getData();
+
+            $period = new \DatePeriod(
+                $startDate,
+                new \DateInterval('P1D'),
+                $endDate->modify('+1 day')
+            );
+
+            $totalCanceled = 0;
+
+            foreach ($period as $date) {
+                // Récupérer tous les congés pour cette date
+                $congesExistants = $rendezvousRepository->findBy([
+                    'day' => $date,
+                    'status' => 'Congé'
+                ]);
+
+                // Supprimer tous les congés pour cette date
+                foreach ($congesExistants as $conge) {
+                    $entityManager->remove($conge);
+                    $totalCanceled++;
+                }
+            }
+
+            if ($totalCanceled === 0) {
+                $this->addFlash('warning', 'Aucun congé trouvé pour cette période.');
+                return $this->redirectToRoute('app_dashboard', ['message' => 'Aucun congé trouvé pour cette période.']);
+            }
+
+            $entityManager->flush();
+
+            $this->addFlash('success', "Les congés de la période du {$startDate->format('d/m/Y')} au {$endDate->format('d/m/Y')} ont été annulés avec succès.");
+
+            return $this->redirectToRoute('app_dashboard', ['message' => 'Les congés ont été annulés avec succès.']);
+        }
+
+        return $this->render('dashboard/annuler_conges.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
     //Ajouter une prestation
 
     #[Route('dashboard/prestation/new', name: 'app_dashboard_prestation_new', methods: ['GET', 'POST'])]

@@ -1,0 +1,252 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard - Vue d'ensemble{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-gray-50">
+    <div class="flex">
+        <!-- Sidebar -->
+        {% include '_sidebar.html.twig' %}
+        
+        <!-- Main Content -->
+        <div class="flex-1 lg:ml-8">
+            <div class="px-4 py-6 sm:px-6 lg:px-8">
+                <!-- Header intégré -->
+                <div class="mb-6">
+                    <h1 class="text-2xl font-bold text-gray-900">Vue d'ensemble</h1>
+                    <p class="text-sm text-gray-600">{{ period_label }}</p>
+                </div>
+                <!-- Formulaire de sélection de période -->
+                <div class="bg-white rounded-lg shadow mb-6">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h2 class="text-lg font-medium text-gray-900">Sélectionner une période</h2>
+                    </div>
+                    <div class="px-6 py-4">
+                        {{ form_start(form, {'attr': {'class': 'space-y-4', 'id': 'period-form'}}) }}
+                        <div class="w-full md:w-1/3">
+                            {{ form_row(form.period_type) }}
+                        </div>
+                        <button type="submit" class="bg-pink-600 hover:bg-pink-700 text-white font-medium py-2 px-4 rounded-lg">
+                            Actualiser
+                        </button>
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    
+                    <!-- 1. Rendez-vous de la période -->
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-medium text-gray-900">
+                                📅 Rendez-vous de la période ({{ appointments|length }})
+                            </h3>
+                        </div>
+                        <div class="px-6 py-4 max-h-64 overflow-y-auto">
+                            {% if appointments|length > 0 %}
+                                <div class="space-y-3">
+                                    {% for rdv in appointments %}
+                                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                            <div>
+                                                <p class="font-medium text-gray-900">{{ rdv.user.fullName }}</p>
+                                                <p class="text-sm text-gray-600">{{ rdv.prestation.title }}</p>
+                                                <p class="text-xs text-gray-500">{{ rdv.status }}</p>
+                                            </div>
+                                            <div class="text-right">
+                                                <p class="text-sm font-medium text-gray-900">{{ rdv.day|date('d/m') }}</p>
+                                                <p class="text-xs text-gray-600">{{ rdv.creneau.startTime|date('H:i') }}</p>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <p class="text-gray-500 italic">Aucun rendez-vous pour cette période</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- 2. Rendez-vous créés cette période -->
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-medium text-gray-900">
+                                ➕ Rendez-vous créés cette période ({{ appointments_created|length }})
+                            </h3>
+                        </div>
+                        <div class="px-6 py-4 max-h-64 overflow-y-auto">
+                            {% if appointments_created|length > 0 %}
+                                <div class="space-y-3">
+                                    {% for rdv in appointments_created %}
+                                        <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                                            <div>
+                                                <p class="font-medium text-gray-900">{{ rdv.user.fullName }}</p>
+                                                <p class="text-sm text-gray-600">{{ rdv.prestation.title }}</p>
+                                                <p class="text-xs text-green-600">Créé le {{ rdv.createdAt|date('d/m/Y H:i') }}</p>
+                                            </div>
+                                            <div class="text-right">
+                                                <p class="text-sm font-medium text-gray-900">{{ rdv.day|date('d/m') }}</p>
+                                                <p class="text-xs text-gray-600">{{ rdv.creneau.startTime|date('H:i') }}</p>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <p class="text-gray-500 italic">Aucun rendez-vous créé cette période</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- 3. Rendez-vous annulés -->
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-medium text-gray-900">
+                                ❌ Rendez-vous annulés ({{ cancelled_appointments|length }})
+                            </h3>
+                        </div>
+                        <div class="px-6 py-4 max-h-64 overflow-y-auto">
+                            {% if cancelled_appointments|length > 0 %}
+                                <div class="space-y-3">
+                                    {% for rdv in cancelled_appointments %}
+                                        <div class="flex items-center justify-between p-3 bg-red-50 rounded-lg">
+                                            <div>
+                                                <p class="font-medium text-gray-900">{{ rdv.user.fullName }}</p>
+                                                <p class="text-sm text-gray-600">{{ rdv.prestation.title }}</p>
+                                            </div>
+                                            <div class="text-right">
+                                                <p class="text-sm font-medium text-red-600">{{ rdv.day|date('d/m') }}</p>
+                                                <p class="text-xs text-red-500">{{ rdv.creneau.startTime|date('H:i') }}</p>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <p class="text-gray-500 italic">Aucun rendez-vous annulé</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- 4. Rendez-vous reportés -->
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-medium text-gray-900">
+                                🔄 Rendez-vous reportés ({{ rescheduled_appointments|length }})
+                            </h3>
+                        </div>
+                        <div class="px-6 py-4 max-h-64 overflow-y-auto">
+                            {% if rescheduled_appointments|length > 0 %}
+                                <div class="space-y-3">
+                                    {% for rdv in rescheduled_appointments %}
+                                        <div class="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
+                                            <div>
+                                                <p class="font-medium text-gray-900">{{ rdv.user.fullName }}</p>
+                                                <p class="text-sm text-gray-600">{{ rdv.prestation.title }}</p>
+                                                <p class="text-xs text-orange-600">Modifié le {{ rdv.updatedAt|date('d/m/Y H:i') }}</p>
+                                            </div>
+                                            <div class="text-right">
+                                                <p class="text-sm font-medium text-orange-600">{{ rdv.day|date('d/m') }}</p>
+                                                <p class="text-xs text-orange-500">{{ rdv.creneau.startTime|date('H:i') }}</p>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <p class="text-gray-500 italic">Aucun rendez-vous reporté</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- 5. Nouveaux clients -->
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-medium text-gray-900">
+                                👥 Nouveaux clients ({{ new_clients|length }})
+                            </h3>
+                        </div>
+                        <div class="px-6 py-4 max-h-64 overflow-y-auto">
+                            {% if new_clients|length > 0 %}
+                                <div class="space-y-3">
+                                    {% for client in new_clients %}
+                                        <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                                            <div>
+                                                <p class="font-medium text-gray-900">{{ client.Nom }} {{ client.Prenom }}</p>
+                                                <p class="text-sm text-gray-600">{{ client.email }}</p>
+                                            </div>
+                                            <span class="text-xs text-blue-600 font-medium">
+                                                Nouveau client
+                                            </span>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <p class="text-gray-500 italic">Aucun nouveau client cette période</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- 6. Créneaux libres -->
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-medium text-gray-900">
+                                🕒 Créneaux libres ({{ available_slots|length }})
+                            </h3>
+                        </div>
+                        <div class="px-6 py-4 max-h-64 overflow-y-auto">
+                            {% if available_slots|length > 0 %}
+                                <div class="space-y-2">
+                                    {% for slot in available_slots %}
+                                        <div class="flex items-center justify-between p-2 bg-green-50 rounded">
+                                            <span class="text-sm font-medium text-gray-900">
+                                                {{ slot.date|date('D d/m') }}
+                                            </span>
+                                            <span class="text-sm text-green-700">
+                                                {{ slot.creneau.startTime|date('H:i') }} - {{ slot.creneau.endTime|date('H:i') }}
+                                            </span>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <p class="text-gray-500 italic">Aucun créneau libre pour cette période</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 7. Recette de la période -->
+                <div class="mt-6">
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-medium text-gray-900">💰 Recette de la période</h3>
+                        </div>
+                        <div class="px-6 py-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="text-center">
+                                    <div class="text-3xl font-bold text-green-600">{{ total_revenue|number_format(0, ',', ' ') }} FCFA</div>
+                                    <div class="text-sm text-gray-600">{{ payments|length }} paiement(s) confirmé(s)</div>
+                                </div>
+                                <div class="max-h-40 overflow-y-auto">
+                                    {% if payments|length > 0 %}
+                                        <div class="space-y-2">
+                                            {% for payment in payments %}
+                                                <div class="flex items-center justify-between p-2 bg-green-50 rounded text-sm">
+                                                    <span>{{ payment.customer.fullName }}</span>
+                                                    <span class="font-medium">{{ payment.rendezvous.totalCost|number_format(0, ',', ' ') }} FCFA</span>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Soumission automatique du formulaire lors du changement de période
+document.getElementById('period-form').addEventListener('change', function(e) {
+    this.submit();
+});
+</script>
+{% endblock %}

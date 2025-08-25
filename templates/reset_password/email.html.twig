@@ -1,9 +1,72 @@
-<h1>Hi!</h1>
+{% extends 'emails/base_email.html.twig' %}
 
-<p>To reset your password, please visit the following link</p>
+{% block title %}Réinitialisation de votre mot de passe - BeElle Nails{% endblock %}
 
-<a href="{{ url('app_reset_password', {token: resetToken.token}) }}">{{ url('app_reset_password', {token: resetToken.token}) }}</a>
+{% block preheader %}Vous avez demandé la réinitialisation de votre mot de passe{% endblock %}
 
-<p>This link will expire in {{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}.</p>
+{% block header_title %}Mot de Passe Oublié 🔐{% endblock %}
 
-<p>Cheers!</p>
+{% block header_subtitle %}Réinitialisez votre mot de passe en toute sécurité{% endblock %}
+
+{% block content %}
+    <div class="greeting">
+        Bonjour ! 👋
+    </div>
+
+    <div class="content-text">
+        Vous avez demandé la réinitialisation de votre mot de passe pour votre compte <strong>BeElle Nails</strong>.
+        Pas de panique, cela arrive à tout le monde ! 😊
+    </div>
+
+    <div class="info-box">
+        <div class="info-title">
+            🔐 Réinitialisation sécurisée
+        </div>
+        <div class="content-text" style="margin: 0; color: #374151;">
+            Pour des raisons de sécurité, ce lien est <strong>temporaire</strong> et ne peut être utilisé qu'<strong>une seule fois</strong>.
+        </div>
+        <div class="content-text" style="margin: 15px 0 0 0; color: #374151;">
+            <strong>⏰ Expiration :</strong> {{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}
+        </div>
+    </div>
+
+    <div class="content-text">
+        <strong>🚨 Important :</strong><br>
+        • Si vous n'avez pas demandé cette réinitialisation, ignorez cet email<br>
+        • Votre mot de passe actuel reste inchangé jusqu'à ce que vous en définissiez un nouveau<br>
+        • Ce lien ne fonctionne qu'une seule fois pour votre sécurité<br>
+        • Choisissez un mot de passe fort avec au moins 8 caractères
+    </div>
+
+    <div class="btn-container">
+        <a href="{{ url('app_reset_password', {token: resetToken.token}) }}" class="btn-primary">
+            Réinitialiser mon mot de passe
+        </a>
+    </div>
+
+    <div class="content-text">
+        <strong>🔗 Si le bouton ne fonctionne pas :</strong><br>
+        Copiez et collez ce lien dans votre navigateur :<br>
+        <a href="{{ url('app_reset_password', {token: resetToken.token}) }}" style="color: #ec4899; word-break: break-all; font-size: 14px;">
+            {{ url('app_reset_password', {token: resetToken.token}) }}
+        </a>
+    </div>
+
+    <div class="content-text">
+        <strong>🛡️ Conseils de sécurité :</strong><br>
+        • Utilisez un mot de passe unique pour BeElle Nails<br>
+        • Mélangez lettres majuscules, minuscules, chiffres et symboles<br>
+        • Ne partagez jamais vos identifiants<br>
+        • Déconnectez-vous toujours après utilisation sur un ordinateur partagé
+    </div>
+
+    <div class="content-text">
+        Des questions ? Contactez-nous :<br>
+        📞 <strong>+229 97 85 35 12</strong><br>
+        💬 <strong>WhatsApp disponible 7j/7</strong>
+    </div>
+
+    <div class="content-text">
+        <em>L'équipe technique BeElle Nails</em> 💻✨
+    </div>
+{% endblock %}

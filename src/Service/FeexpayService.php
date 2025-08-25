@@ -43,7 +43,7 @@ class FeexpayService
             'amount' => $amount,
             'shop' => $this->shopId,
             'firstName' => $fullname,
-            'lastName' => '',           // tu peux diviser fullname ou le laisser vide
+            'lastName' => '',
             'description' => '',
         ];
 
@@ -63,11 +63,26 @@ class FeexpayService
                 'json' => $data,
             ]);
 
-            return $response->toArray();
+            // ✅ IMPORTANT : Toujours retourner un array
+            $responseData = $response->toArray(false); // false = ne pas throw sur erreur HTTP
+
+            // Ajouter le status code pour debug
+            $responseData['http_status'] = $response->getStatusCode();
+
+            return $responseData;
         } catch (TransportExceptionInterface $e) {
+            // ✅ IMPORTANT : Retourner un array même en cas d'erreur
             return [
                 'success' => false,
                 'message' => 'Erreur réseau : ' . $e->getMessage(),
+                'error' => true,
+            ];
+        } catch (\Exception $e) {
+            // ✅ Gérer tous les autres types d'erreurs
+            return [
+                'success' => false,
+                'message' => 'Erreur : ' . $e->getMessage(),
+                'error' => true,
             ];
         }
     }
@@ -88,17 +103,29 @@ class FeexpayService
                 ],
             ]);
 
-            return $response->toArray();
+            // ✅ IMPORTANT : Toujours retourner un array
+            $responseData = $response->toArray(false);
+            $responseData['http_status'] = $response->getStatusCode();
+
+            return $responseData;
         } catch (TransportExceptionInterface $e) {
+            // ✅ IMPORTANT : Retourner un array même en cas d'erreur
             return [
                 'success' => false,
                 'message' => 'Erreur statut : ' . $e->getMessage(),
+                'error' => true,
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Erreur : ' . $e->getMessage(),
+                'error' => true,
             ];
         }
     }
-    public function getMode(): string
-{
-    return $this->mode;
-}
-}
 
+    public function getMode(): string
+    {
+        return $this->mode;
+    }
+}

@@ -1,0 +1,10 @@
+# config/packages/feexpay.yaml
+parameters:
+    feexpay:
+        shop_id: '%env(FEEXPAY_SHOP_ID)%'
+        token: '%env(FEEXPAY_API_KEY)%'
+        mode: '%env(FEEXPAY_MODE)%' # LIVE ou SANDBOX
+        callback_url: '%env(FEEXPAY_CALLBACK_URL)%'
+        error_callback_url: '%env(FEEXPAY_ERROR_CALLBACK_URL)%'
+
+        
