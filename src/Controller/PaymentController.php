@@ -30,11 +30,11 @@ class PaymentController extends AbstractController
     /**
      * @throws \Exception
      */
-    #[Route('/rendezvous/{rendezvou}/payment/init', name: 'payment_init')]
-    public function init(Rendezvous $rendezvou, UserRepository $userRepository): Response
+    #[Route('/rendezvous/{rendezvous}/payment/init', name: 'payment_init')]
+    public function init(Rendezvous $rendezvous, UserRepository $userRepository): Response
     {
 
-        $user = $rendezvou->getUser();
+        $user = $rendezvous->getUser();
 
         /** @var \FedaPay\Transaction $transaction */
         $transaction = $this->fedapayService->initTransaction(
@@ -50,7 +50,7 @@ class PaymentController extends AbstractController
 
         $payment = new Payment();
         $payment->parseTransaction($transaction)
-            ->setRendezvous($rendezvou)
+            ->setRendezvous($rendezvous)
             ->setCustomer($user)
             ->setPhoneNumber($user->getPhone())
             ->setToken($token->token)

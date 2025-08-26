@@ -95,7 +95,7 @@ class DashboardOverviewController extends AbstractController
 
         // 7. Recette de la période
         $payments = $paymentRepository->createQueryBuilder('p')
-            ->leftJoin('p.rendezvou', 'r')
+            ->leftJoin('p.rendezvous', 'r')
             ->where('p.createdAt BETWEEN :start AND :end')
             ->andWhere('p.status = :successful')
             ->setParameter('start', $startDate->format('Y-m-d 00:00:00'))

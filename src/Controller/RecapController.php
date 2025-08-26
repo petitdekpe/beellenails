@@ -18,25 +18,25 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class RecapController extends AbstractController
 {
-    #[Route('/recap/{rendezvou}', name: 'app_recap')]
+    #[Route('/recap/{rendezvous}', name: 'app_recap')]
     #[IsGranted("ROLE_USER")]
-    public function index(Rendezvous $rendezvou, Request $request, EntityManagerInterface $entityManager, RendezvousRepository $rendezvousRepository): Response
+    public function index(Rendezvous $rendezvous, Request $request, EntityManagerInterface $entityManager, RendezvousRepository $rendezvousRepository): Response
     {
         // Créer le formulaire TermsType 
         $form = $this->createForm(TermsType::class);
         $form->handleRequest($request);
 
         $user = $this->getUser();
-        $rendezvou->setUser($user);
-        $rendezvou->setStatus("Tentative échoué");
+        $rendezvous->setUser($user);
+        $rendezvous->setStatus("Tentative échoué");
 
         // Calculer et enregistrer le coût total
-        $rendezvou->updateTotalCost();
+        $rendezvous->updateTotalCost();
 
         // Vérifier si un rendez-vous avec le même jour et créneau existe déjà
         $existingRendezvous = $rendezvousRepository->findOneBy([
-            'day' => $rendezvou->getDay(),
-            'creneau' => $rendezvou->getCreneau(),
+            'day' => $rendezvous->getDay(),
+            'creneau' => $rendezvous->getCreneau(),
             'status' => 'Rendez-vous pris'
         ]);
 
@@ -45,23 +45,23 @@ class RecapController extends AbstractController
             return $this->redirectToRoute('app_calendar');
         }
 
-        $entityManager->persist($rendezvou);
+        $entityManager->persist($rendezvous);
         $entityManager->flush();
 
         // Ajouter l'utilisateur actuel au rendez-vous
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            return $this->redirectToRoute('payment_choice', ['rendezvou' => $rendezvou->getId()]);
+            return $this->redirectToRoute('payment_choice', ['rendezvous' => $rendezvous->getId()]);
         }
 
         // Récupérer les suppléments associés à ce rendez-vous
-        $supplements = $rendezvou->getSupplement();
+        $supplements = $rendezvous->getSupplement();
 
         return $this->render('recap/index.html.twig', [
             'form' => $form->createView(),
             'supplements' => $supplements, // Passer la liste des suppléments à la vue Twig
-            'rendezvou' => $rendezvou, // Passer l'objet rendezvous avec le coût total calculé
+            'rendezvous' => $rendezvous, // Passer l'objet rendezvous avec le coût total calculé
         ]);
     }
 }

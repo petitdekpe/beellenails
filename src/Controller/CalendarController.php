@@ -22,9 +22,9 @@ class CalendarController extends AbstractController
     #/[IsGranted("ROLE_USER")]
     public function index(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $rendezvou = new Rendezvous();
-        //$rendezvou->setStatus("Validé");
-        $form = $this->createForm(RendezvousType::class, $rendezvou);
+        $rendezvous = new Rendezvous();
+        //$rendezvous->setStatus("Validé");
+        $form = $this->createForm(RendezvousType::class, $rendezvous);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -34,18 +34,18 @@ class CalendarController extends AbstractController
             $request->getSession()->set('creneau',  $form->get('creneau')->getData());
             $request->getSession()->set('prestation',  $form->get('prestation')->getData());
             
-            $rendezvou->setStatus("Tentative");
+            $rendezvous->setStatus("Tentative");
             
-            $entityManager->persist($rendezvou);
+            $entityManager->persist($rendezvous);
             $entityManager->flush();
             
 
-            return $this->redirectToRoute('app_recap', ['rendezvou' => $rendezvou->getId()]);
+            return $this->redirectToRoute('app_recap', ['rendezvous' => $rendezvous->getId()]);
         }
         
         return $this->render('calendar/index.html.twig', [
             'controller_name' => 'CalendarController',
-            'rendezvou' => $rendezvou,
+            'rendezvous' => $rendezvous,
             'form' => $form,
         ]);
     }

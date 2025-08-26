@@ -73,7 +73,7 @@ class Payment
 	private ?User $customer = null;
 
 	#[ORM\ManyToOne(inversedBy: 'payments', cascade: ['persist', 'remove'])]
-	private ?Rendezvous $rendezvou = null;
+	private ?Rendezvous $rendezvous = null;
 
 	#[ORM\Column]
 	private ?\DateTimeImmutable $createdAt = null;
@@ -187,12 +187,12 @@ class Payment
 
 	public function getRendezvous(): ?Rendezvous
 	{
-		return $this->rendezvou;
+		return $this->rendezvous;
 	}
 
-	public function setRendezvous(?Rendezvous $rendezvou): self
+	public function setRendezvous(?Rendezvous $rendezvous): self
 	{
-		$this->rendezvou = $rendezvou;
+		$this->rendezvous = $rendezvous;
 
 		return $this;
 	}
@@ -304,7 +304,7 @@ class Payment
 		$this->reference = $reference;
 		$this->phoneNumber = $phoneNumber;
 		$this->customer = $customer;
-		$this->rendezvou = $rendezvous;
+		$this->rendezvous = $rendezvous;
 		$this->amount = 5000;
 		$this->currency = 'XOF';
 		$this->status = 'pending';

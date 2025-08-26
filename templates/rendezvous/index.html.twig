@@ -17,14 +17,14 @@
             </tr>
         </thead>
         <tbody>
-        {% for rendezvou in rendezvouses %}
+        {% for rendezvous in rendezvouses %}
             <tr>
-                <td>{{ rendezvou.id }}</td>
-                <td>{{ rendezvou.ImageName }}</td>
-                <td>{{ rendezvou.day ? rendezvou.day|date('Y-m-d') : '' }}</td>
+                <td>{{ rendezvous.id }}</td>
+                <td>{{ rendezvous.ImageName }}</td>
+                <td>{{ rendezvous.day ? rendezvous.day|date('Y-m-d') : '' }}</td>
                 <td>
-                    <a href="{{ path('app_rendezvous_show', {'id': rendezvou.id}) }}">show</a>
-                    <a href="{{ path('app_rendezvous_edit', {'id': rendezvou.id}) }}">edit</a>
+                    <a href="{{ path('app_rendezvous_show', {'id': rendezvous.id}) }}">show</a>
+                    <a href="{{ path('app_rendezvous_edit', {'id': rendezvous.id}) }}">edit</a>
                 </td>
             </tr>
         {% else %}

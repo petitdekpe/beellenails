@@ -10,8 +10,8 @@
 	{% set prestation = app.session.get('prestation') %}
 	
 	{# Utiliser le coût total calculé et stocké en base de données s'il est disponible #}
-	{% if rendezvou is defined and rendezvou.totalCost %}
-		{% set total = rendezvou.totalCost %}
+	{% if rendezvous is defined and rendezvous.totalCost %}
+		{% set total = rendezvous.totalCost %}
 	{% else %}
 		{# Fallback vers le calcul manuel si pas encore enregistré #}
 		{% set total = prestation.price %}

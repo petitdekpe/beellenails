@@ -11,15 +11,15 @@
         <tbody>
             <tr>
                 <th>Id</th>
-                <td>{{ rendezvou.id }}</td>
+                <td>{{ rendezvous.id }}</td>
             </tr>
             <tr>
                 <th>ImageName</th>
-                <td>{{ rendezvou.ImageName }}</td>
+                <td>{{ rendezvous.ImageName }}</td>
             </tr>
             <tr>
                 <th>Day</th>
-                <td>{{ rendezvou.day ? rendezvou.day|date('Y-m-d') : '' }}</td>
+                <td>{{ rendezvous.day ? rendezvous.day|date('Y-m-d') : '' }}</td>
             </tr>
         
         </tbody>
@@ -27,7 +27,7 @@
 
     <a href="{{ path('app_rendezvous_index') }}">back to list</a>
 
-    <a href="{{ path('app_rendezvous_edit', {'id': rendezvou.id}) }}">edit</a>
+    <a href="{{ path('app_rendezvous_edit', {'id': rendezvous.id}) }}">edit</a>
 
     {{ include('rendezvous/_delete_form.html.twig') }}
 {% endblock %}

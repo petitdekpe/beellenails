@@ -14,11 +14,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class PaymentChoiceController extends AbstractController
 {
-    #[Route('/payment-choice/{rendezvou}', name: 'payment_choice')]
-    public function choosePayment(Rendezvous $rendezvou): Response
+    #[Route('/payment-choice/{rendezvous}', name: 'payment_choice')]
+    public function choosePayment(Rendezvous $rendezvous): Response
         {
             return $this->render('payment_choice/index.html.twig', [
-                'rendezvous' => $rendezvou,
+                'rendezvous' => $rendezvous,
             ]);
         }
 }

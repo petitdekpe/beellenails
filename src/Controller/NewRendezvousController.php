@@ -23,11 +23,11 @@ class NewRendezvousController extends AbstractController
     {
    
         // Créer une nouvelle instance de Rendezvous
-        $rendezvou = new Rendezvous();
-        $rendezvou->setPrestation($prestation);
-        //$rendezvou->setStatus("Validé");
+        $rendezvous = new Rendezvous();
+        $rendezvous->setPrestation($prestation);
+        //$rendezvous->setStatus("Validé");
 
-        $form = $this->createForm(PreRendezvousType::class, $rendezvou, ['prestation' => $prestation]);
+        $form = $this->createForm(PreRendezvousType::class, $rendezvous, ['prestation' => $prestation]);
         $form->handleRequest($request);
         
         
@@ -40,16 +40,16 @@ class NewRendezvousController extends AbstractController
             $request->getSession()->set('prestation', $prestation);
             
 
-            $entityManager->persist($rendezvou);
+            $entityManager->persist($rendezvous);
             $entityManager->flush();
             
 
-            return $this->redirectToRoute('app_recap', ['rendezvou' => $rendezvou->getId()]);
+            return $this->redirectToRoute('app_recap', ['rendezvous' => $rendezvous->getId()]);
         }
         
         return $this->render('new_rendezvous/index.html.twig', [
             'controller_name' => 'NewRendezvousController',
-            'rendezvou' => $rendezvou,
+            'rendezvous' => $rendezvous,
             'form' => $form,
         ]);
     }

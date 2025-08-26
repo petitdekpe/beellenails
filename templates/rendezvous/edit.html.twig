@@ -67,7 +67,7 @@
                                         </div>
                                         <div>
                                             <p class="text-sm font-medium text-gray-900">Client</p>
-                                            <p class="text-sm text-gray-600">{{ rendezvou.user.fullName }}</p>
+                                            <p class="text-sm text-gray-600">{{ rendezvous.user.fullName }}</p>
                                         </div>
                                     </div>
                                     
@@ -79,7 +79,7 @@
                                         </div>
                                         <div>
                                             <p class="text-sm font-medium text-gray-900">Prestation</p>
-                                            <p class="text-sm text-gray-600">{{ rendezvou.prestation.title }}</p>
+                                            <p class="text-sm text-gray-600">{{ rendezvous.prestation.title }}</p>
                                         </div>
                                     </div>
 
@@ -91,7 +91,7 @@
                                         </div>
                                         <div>
                                             <p class="text-sm font-medium text-gray-900">Date actuelle</p>
-                                            <p class="text-sm text-gray-600">{{ rendezvou.day|date('l j F Y') }}</p>
+                                            <p class="text-sm text-gray-600">{{ rendezvous.day|date('l j F Y') }}</p>
                                         </div>
                                     </div>
 
@@ -103,7 +103,7 @@
                                         </div>
                                         <div>
                                             <p class="text-sm font-medium text-gray-900">Créneau actuel</p>
-                                            <p class="text-sm text-gray-600">{{ rendezvou.creneau.startTime|date('H:i') }} - {{ rendezvou.creneau.endTime|date('H:i') }}</p>
+                                            <p class="text-sm text-gray-600">{{ rendezvous.creneau.startTime|date('H:i') }} - {{ rendezvous.creneau.endTime|date('H:i') }}</p>
                                         </div>
                                     </div>
 
@@ -116,7 +116,7 @@
                                         <div>
                                             <p class="text-sm font-medium text-gray-900">Statut</p>
                                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                                {{ rendezvou.status }}
+                                                {{ rendezvous.status }}
                                             </span>
                                         </div>
                                     </div>

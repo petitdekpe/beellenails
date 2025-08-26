@@ -34,20 +34,20 @@ class RendezvousController extends AbstractController
     #[Route('/new', name: 'app_rendezvous_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager, MailerInterface $mailer, UserInterface $user): Response
     {
-        $rendezvou = new Rendezvous();
-        $rendezvou->setStatus("Validé");
+        $rendezvous = new Rendezvous();
+        $rendezvous->setStatus("Validé");
 
-        $form = $this->createForm(RendezvousType::class, $rendezvou);
+        $form = $this->createForm(RendezvousType::class, $rendezvous);
         $form->handleRequest($request);
 
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            $entityManager->persist($rendezvou);
+            $entityManager->persist($rendezvous);
             $entityManager->flush();
 
             // Récupérer l'adresse e-mail de l'utilisateur à partir du rendez-vous
-            $userEmail = $rendezvou->getUser()->getEmail();
+            $userEmail = $rendezvous->getUser()->getEmail();
 
             // Envoyer l'e-mail après la création du rendez-vous
             $email = (new Email())
@@ -56,7 +56,7 @@ class RendezvousController extends AbstractController
                 ->subject('Votre Rendez-vous !')
                 ->html($this->renderView(
                     'emails/rendezvous_created.html.twig',
-                    ['rendezvous' => $rendezvou]
+                    ['rendezvous' => $rendezvous]
                 ));
 
             $mailer->send($email);
@@ -65,44 +65,44 @@ class RendezvousController extends AbstractController
         }
 
         return $this->render('rendezvous/new.html.twig', [
-            'rendezvou' => $rendezvou,
+            'rendezvous' => $rendezvous,
             'form' => $form,
         ]);
     }
 
     #[Route('/{id}', name: 'app_rendezvous_show', methods: ['GET'])]
-    public function show(Rendezvous $rendezvou): Response
+    public function show(Rendezvous $rendezvous): Response
     {
         return $this->render('rendezvous/show.html.twig', [
-            'rendezvou' => $rendezvou,
+            'rendezvous' => $rendezvous,
         ]);
     }
 
     #[Route('/{id}/edit', name: 'app_rendezvous_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Rendezvous $rendezvou, EntityManagerInterface $entityManager, MailerInterface $mailer): Response
+    public function edit(Request $request, Rendezvous $rendezvous, EntityManagerInterface $entityManager, MailerInterface $mailer): Response
     {
         // Création d'un formulaire personnalisé avec seulement les champs 'day' et 'creneau'
-        $form = $this->createForm(RendezvousModifyType::class, $rendezvou);
+        $form = $this->createForm(RendezvousModifyType::class, $rendezvous);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             // Vérification que le créneau est bien sélectionné
-            if (!$rendezvou->getCreneau()) {
+            if (!$rendezvous->getCreneau()) {
                 $this->addFlash('error', 'Veuillez sélectionner un créneau horaire pour le rendez-vous.');
-                return $this->redirectToRoute('app_rendezvous_edit', ['id' => $rendezvou->getId()]);
+                return $this->redirectToRoute('app_rendezvous_edit', ['id' => $rendezvous->getId()]);
             }
 
             // Vérification de l'existence d'un rendez-vous pris ou confirmé
-            if ($this->isRendezvousExist($entityManager, $rendezvou)) {
+            if ($this->isRendezvousExist($entityManager, $rendezvous)) {
                 $this->addFlash('error', 'Un rendez-vous est déjà pris ou confirmé pour cette date et ce créneau.');
-                return $this->redirectToRoute('app_rendezvous_edit', ['id' => $rendezvou->getId()]);
+                return $this->redirectToRoute('app_rendezvous_edit', ['id' => $rendezvous->getId()]);
             }
 
             // Persistance des changements en base de données
             $entityManager->flush();
 
             // Récupérer l'adresse e-mail de l'utilisateur à partir du rendez-vous
-            $userEmail = $rendezvou->getUser()->getEmail();
+            $userEmail = $rendezvous->getUser()->getEmail();
 
             // Envoyer l'e-mail après la modification du rendez-vous
             $email = (new Email())
@@ -111,7 +111,7 @@ class RendezvousController extends AbstractController
                 ->subject('Votre Rendez-vous a été modifié')
                 ->html($this->renderView(
                     'emails/rendezvous_updated.html.twig',
-                    ['rendezvou' => $rendezvou]
+                    ['rendezvous' => $rendezvous]
                 ));
             $mailer->send($email);
 
@@ -119,16 +119,16 @@ class RendezvousController extends AbstractController
         }
 
         return $this->render('rendezvous/edit.html.twig', [
-            'rendezvou' => $rendezvou,
+            'rendezvous' => $rendezvous,
             'form' => $form->createView(),
         ]);
     }
 
-    private function isRendezvousExist(EntityManagerInterface $entityManager, Rendezvous $rendezvou): bool
+    private function isRendezvousExist(EntityManagerInterface $entityManager, Rendezvous $rendezvous): bool
     {
         $existingRendezvous = $entityManager->getRepository(Rendezvous::class)->findOneBy([
-            'day' => $rendezvou->getDay(),
-            'creneau' => $rendezvou->getCreneau(),
+            'day' => $rendezvous->getDay(),
+            'creneau' => $rendezvous->getCreneau(),
             'status' => ['Rendez-vous pris', 'Rendez-vous confirmé']
         ]);
 
@@ -136,15 +136,15 @@ class RendezvousController extends AbstractController
     }
 
     #[Route('/{id}/cancel', name: 'app_rendezvous_cancel', methods: ['GET', 'POST'])]
-    public function cancel(Request $request, Rendezvous $rendezvou, EntityManagerInterface $entityManager, MailerInterface $mailer): Response
+    public function cancel(Request $request, Rendezvous $rendezvous, EntityManagerInterface $entityManager, MailerInterface $mailer): Response
     {
-        $rendezvou->setStatus("Annulé");
+        $rendezvous->setStatus("Annulé");
 
-        $entityManager->persist($rendezvou);
+        $entityManager->persist($rendezvous);
         $entityManager->flush();
 
         // Récupérer l'adresse e-mail de l'utilisateur à partir du rendez-vous
-        $userEmail = $rendezvou->getUser()->getEmail();
+        $userEmail = $rendezvous->getUser()->getEmail();
 
         // Envoyer l'e-mail après la création du rendez-vous
         $email = (new Email())
@@ -153,7 +153,7 @@ class RendezvousController extends AbstractController
             ->subject('Rendez-vous Annulé !')
             ->html($this->renderView(
                 'emails/rendezvous_canceled.html.twig',
-                ['rendezvous' => $rendezvou]
+                ['rendezvous' => $rendezvous]
             ));
 
         $mailer->send($email);
@@ -165,17 +165,17 @@ class RendezvousController extends AbstractController
             ->subject('Un rendez-vous a été annulé')
             ->html($this->renderView(
                 'emails/rendezvous_canceled_admin.html.twig',
-                ['rendezvous' => $rendezvou]
+                ['rendezvous' => $rendezvous]
             ));
         $mailer->send($emailAdmin);
         return $this->redirectToRoute('app_users', [], Response::HTTP_SEE_OTHER);
     }
 
     #[Route('/{id}', name: 'app_rendezvous_delete', methods: ['POST'])]
-    public function delete(Request $request, Rendezvous $rendezvou, EntityManagerInterface $entityManager): Response
+    public function delete(Request $request, Rendezvous $rendezvous, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete' . $rendezvou->getId(), $request->request->get('_token'))) {
-            $entityManager->remove($rendezvou);
+        if ($this->isCsrfTokenValid('delete' . $rendezvous->getId(), $request->request->get('_token'))) {
+            $entityManager->remove($rendezvous);
             $entityManager->flush();
         }
 

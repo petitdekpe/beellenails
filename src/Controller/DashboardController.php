@@ -325,10 +325,10 @@ class DashboardController extends AbstractController
     }
     //Reporter un rendez-vous
     #[Route('/dashboard/rendezvous/{id}/edit', name: 'app_admin_rdv_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Rendezvous $rendezvou, EntityManagerInterface $entityManager, MailerInterface $mailer): Response
+    public function edit(Request $request, Rendezvous $rendezvous, EntityManagerInterface $entityManager, MailerInterface $mailer): Response
     {
         // Création d'un formulaire personnalisé avec seulement les champs 'day' et 'creneau'
-        $form = $this->createForm(RendezvousModifyType::class, $rendezvou);
+        $form = $this->createForm(RendezvousModifyType::class, $rendezvous);
         $form->handleRequest($request);
 
         if ($form->isSubmitted()) {
@@ -336,7 +336,7 @@ class DashboardController extends AbstractController
             $entityManager->flush();
 
             // Récupérer l'adresse e-mail de l'utilisateur à partir du rendez-vous
-            $userEmail = $rendezvou->getUser()->getEmail();
+            $userEmail = $rendezvous->getUser()->getEmail();
 
             // Envoyer l'e-mail au client
             $email = (new Email())
@@ -345,7 +345,7 @@ class DashboardController extends AbstractController
                 ->subject('Votre Rendez-vous !')
                 ->html($this->renderView(
                     'emails/rendezvous_updated.html.twig',
-                    ['rendezvous' => $rendezvou]
+                    ['rendezvous' => $rendezvous]
                 ));
             $mailer->send($email);
 
@@ -356,7 +356,7 @@ class DashboardController extends AbstractController
                 ->subject('Rendez-vous modifié')
                 ->html($this->renderView(
                     'emails/rendezvous_updated_admin.html.twig',
-                    ['rendezvous' => $rendezvou]
+                    ['rendezvous' => $rendezvous]
                 ));
             $mailer->send($adminEmail);
 
@@ -364,7 +364,7 @@ class DashboardController extends AbstractController
         }
 
         return $this->render('rendezvous/edit.html.twig', [
-            'rendezvou' => $rendezvou,
+            'rendezvous' => $rendezvous,
             'form' => $form->createView(),
         ]);
     }
@@ -373,24 +373,24 @@ class DashboardController extends AbstractController
     #[Route('/dashboard/rendezvous/{id}/cancel', name: 'app_admin_rdv_cancel', methods: ['GET', 'POST'])]
     public function cancel(
         Request $request,
-        Rendezvous $rendezvou,
+        Rendezvous $rendezvous,
         EntityManagerInterface $entityManager,
         MailerInterface $mailer
     ): Response {
         // Met à jour le statut
-        $rendezvou->setStatus("Annulé");
-        $entityManager->persist($rendezvou);
+        $rendezvous->setStatus("Annulé");
+        $entityManager->persist($rendezvous);
         $entityManager->flush();
 
         // Email utilisateur
-        $userEmail = $rendezvou->getUser()->getEmail();
+        $userEmail = $rendezvous->getUser()->getEmail();
         $emailClient = (new Email())
             ->from('beellenailscare@beellenails.com')
             ->to($userEmail)
             ->subject('Rendez-vous Annulé !')
             ->html($this->renderView(
                 'emails/rendezvous_canceled.html.twig',
-                ['rendezvous' => $rendezvou]
+                ['rendezvous' => $rendezvous]
             ));
         $mailer->send($emailClient);
 

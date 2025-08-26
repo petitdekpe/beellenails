@@ -49,7 +49,7 @@ class SendReminderEmailsCommand extends Command
                 ->subject('Rappel : Rendez-vous à venir')
                 ->html($this->twig->render(
                     'emails/rendezvous_reminder.html.twig',
-                    ['rendezvou' => $appointment]
+                    ['rendezvous' => $appointment]
                 ));
 
             $this->mailer->send($email);
