@@ -1,4 +1,8 @@
 <?php
+// SPDX-License-Identifier: Proprietary
+// Copyright (c) 2025 Jean-Yves A.
+// Auteur: Jean-Yves A. <jy.ahouanvoedo@gmail.com>
+
 
 namespace App\Controller;
 
@@ -121,7 +125,7 @@ class DashboardController extends AbstractController
     }
     //Liste des rendez-vous (order by updated_at)
     #[Route('/dashboard/rendezvous', name: 'app_dashboard_rendezvous', methods: ['GET'])]
-    public function rendezvous(Request $request, RendezvousRepository $rendezvousRepository, PaginatorInterface $paginator): Response
+    public function rendezvous(Request $request, RendezvousRepository $rendezvousRepository, PaginatorInterface $paginator, EntityManagerInterface $entityManager): Response
     {
         $search = $request->query->get('search');
         $status = $request->query->get('status');
@@ -135,10 +139,15 @@ class DashboardController extends AbstractController
             ->leftJoin('r.prestation', 'p')
             ->orderBy('r.updated_at', 'DESC');
             
-        // Recherche par nom du client
+        // Recherche par nom du client (supporte nom + prénom, insensible à la casse)
         if ($search) {
-            $queryBuilder->andWhere('u.Nom LIKE :search OR u.Prenom LIKE :search')
-                        ->setParameter('search', '%' . $search . '%');
+            $searchTerm = trim($search);
+            $queryBuilder->andWhere(
+                'LOWER(u.Nom) LIKE LOWER(:search) OR ' .
+                'LOWER(u.Prenom) LIKE LOWER(:search) OR ' .
+                'LOWER(CONCAT(u.Prenom, \' \', u.Nom)) LIKE LOWER(:search) OR ' .
+                'LOWER(CONCAT(u.Nom, \' \', u.Prenom)) LIKE LOWER(:search)'
+            )->setParameter('search', '%' . $searchTerm . '%');
         }
         
         // Filtre par statut
@@ -173,6 +182,24 @@ class DashboardController extends AbstractController
         if ($modifiedTo) {
             $queryBuilder->andWhere('r.updated_at <= :modifiedTo')
                         ->setParameter('modifiedTo', new \DateTime($modifiedTo . ' 23:59:59'));
+        }
+
+        // Debug temporaire - à supprimer après test
+        if ($search) {
+            $dql = $queryBuilder->getQuery()->getDQL();
+            $parameters = $queryBuilder->getQuery()->getParameters();
+            dump('DQL:', $dql);
+            dump('Paramètres:', $parameters);
+            
+            // Test direct de quelques utilisateurs
+            $testUsers = $entityManager->getRepository(\App\Entity\User::class)
+                ->createQueryBuilder('u')
+                ->select('u.id, u.Nom, u.Prenom')
+                ->where('u.Prenom LIKE :test OR u.Nom LIKE :test')
+                ->setParameter('test', '%Larissa%')
+                ->getQuery()
+                ->getArrayResult();
+            dump('Utilisateurs avec Larissa:', $testUsers);
         }
 
         $rendezvous = $paginator->paginate(

@@ -1,4 +1,8 @@
 <?php
+// SPDX-License-Identifier: Proprietary
+// Copyright (c) 2025 Jean-Yves A.
+// Auteur: Jean-Yves A. <jy.ahouanvoedo@gmail.com>
+
 
 return [
     Symfony\Bundle\FrameworkBundle\FrameworkBundle::class => ['all' => true],
