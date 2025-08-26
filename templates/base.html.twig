@@ -70,8 +70,8 @@
 			{{ include('navbis.html.twig') }}
 		{% elseif app.request.attributes.get('_route') starts with 'app_dashboard' or app.request.attributes.get('_route') == 'app_admin_rdv' %}
 			{# Pas de navbar pour les pages dashboard et admin rdv #}
-		{% elseif app.request.attributes.get('_route') in ['app_login', 'app_register', 'app_prestation_new', 'app_formation_new', 'app_rendezvous_edit', 'app_admin_rdv_edit', 'app_prestation_edit', 'app_prestation_show', 'app_user_show', 'app_user_edit', 'create_conges', 'cancel_conge', 'cancel_conges'] %}
-			{# Pas de navbar pour login/register/prestation_new/formation_new/rendezvous_edit/admin_rdv_edit/prestation_edit/prestation_show/user_show/user_edit/create_conges/cancel_conge/cancel_conges #}
+		{% elseif app.request.attributes.get('_route') in ['app_login', 'app_register', 'app_prestation_new', 'app_formation_new', 'app_rendezvous_edit', 'app_admin_rdv_edit', 'app_prestation_edit', 'app_prestation_show', 'app_user_show', 'app_user_edit', 'create_conges', 'cancel_conge', 'cancel_conges', 'app_formation_show', 'app_formation_edit'] %}
+			{# Pas de navbar pour login/register/prestation_new/formation_new/rendezvous_edit/admin_rdv_edit/prestation_edit/prestation_show/user_show/user_edit/create_conges/cancel_conge/cancel_conges/formation_show/formation_edit #}
 		{# Les pages reset password auront la navbar maintenant #}
 		{% else %}
 			{{ include('navbar.html.twig') }}

@@ -1,46 +1,164 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Formation{% endblock %}
+{% block title %}{{ formation.nom }} - Formation{% endblock %}
 
 {% block body %}
-    <h1>Formation</h1>
+<div class="min-h-screen bg-gray-50">
+    <div class="flex">
+        <!-- Sidebar -->
+        {% include '_sidebar.html.twig' %}
+        
+        <!-- Main Content -->
+        <div class="flex-1 lg:ml-2 xl:ml-8">
+            <div class="px-2 py-4 sm:px-4 lg:px-6">
+                <!-- Header intégré -->
+                <div class="mb-6">
+                    <h1 class="text-2xl font-bold text-gray-900">{{ formation.nom }}</h1>
+                    <p class="text-sm text-gray-600">Détails de la formation</p>
+                </div>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ formation.id }}</td>
-            </tr>
-            <tr>
-                <th>Nom</th>
-                <td>{{ formation.Nom }}</td>
-            </tr>
-            <tr>
-                <th>Prérequis</th>
-                <td>{{ formation.Prerequis }}</td>
-            </tr>
-            <tr>
-                <th>Objectif</th>
-                <td>{{ formation.Objectif }}</td>
-            </tr>
-            <tr>
-                <th>Suivi</th>
-                <td>{{ formation.Suivi }}</td>
-            </tr>
-            <tr>
-                <th>Programme</th>
-                <td>{{ formation.Programme }}</td>
-            </tr>
-            <tr>
-                <th>Cout</th>
-                <td>{{ formation.Cout }}</td>
-            </tr>
-        </tbody>
-    </table>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    
+                    <!-- Informations principales -->
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-medium text-gray-900">
+                                📋 Informations générales
+                            </h3>
+                        </div>
+                        <div class="px-6 py-4">
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-start">
+                                    <span class="text-sm font-medium text-gray-600">ID:</span>
+                                    <span class="text-sm text-gray-900 font-mono">#{{ formation.id }}</span>
+                                </div>
+                                
+                                <div class="flex justify-between items-start">
+                                    <span class="text-sm font-medium text-gray-600">Nom:</span>
+                                    <span class="text-sm text-gray-900 font-medium">{{ formation.nom }}</span>
+                                </div>
+                                
+                                <div class="flex justify-between items-start">
+                                    <span class="text-sm font-medium text-gray-600">Prix:</span>
+                                    <span class="text-lg font-bold text-green-600">{{ formation.cout|number_format(0, ',', ' ') }} FCFA</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-    <a href="{{ path('app_formation_index') }}">back to list</a>
+                    <!-- Image de la formation -->
+                    {% if formation.imageName %}
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-medium text-gray-900">
+                                📷 Image de la formation
+                            </h3>
+                        </div>
+                        <div class="px-6 py-4">
+                            <div class="aspect-video bg-gray-100 rounded-lg overflow-hidden">
+                                <img src="{{ vich_uploader_asset(formation, 'image') }}" 
+                                     alt="{{ formation.nom }}"
+                                     class="w-full h-full object-cover">
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
 
-    <a href="{{ path('app_formation_edit', {'id': formation.id}) }}">edit</a>
+                    <!-- Description -->
+                    {% if formation.description %}
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-medium text-gray-900">
+                                📝 Description
+                            </h3>
+                        </div>
+                        <div class="px-6 py-4">
+                            <p class="text-gray-700 leading-relaxed">{{ formation.description|nl2br }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
 
-    {{ include('formation/_delete_form.html.twig') }}
+                    <!-- Objectifs -->
+                    {% if formation.objectif %}
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-medium text-gray-900">
+                                🎯 Objectifs
+                            </h3>
+                        </div>
+                        <div class="px-6 py-4">
+                            <p class="text-gray-700 leading-relaxed">{{ formation.objectif|nl2br }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Prérequis -->
+                    {% if formation.prerequis %}
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-medium text-gray-900">
+                                📚 Prérequis
+                            </h3>
+                        </div>
+                        <div class="px-6 py-4">
+                            <p class="text-gray-700 leading-relaxed">{{ formation.prerequis|nl2br }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Programme -->
+                    <div class="bg-white rounded-lg shadow lg:col-span-2">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-medium text-gray-900">
+                                📋 Programme de formation
+                            </h3>
+                        </div>
+                        <div class="px-6 py-4">
+                            <div class="prose prose-sm max-w-none text-gray-700">
+                                {{ formation.programme|nl2br }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Suivi et évaluation -->
+                    <div class="bg-white rounded-lg shadow lg:col-span-2">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-medium text-gray-900">
+                                📊 Suivi et évaluation
+                            </h3>
+                        </div>
+                        <div class="px-6 py-4">
+                            <div class="prose prose-sm max-w-none text-gray-700">
+                                {{ formation.suivi|nl2br }}
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Actions -->
+                <div class="mt-6 flex justify-between items-center">
+                    <a href="{{ path('app_dashboard_formation') }}" 
+                       class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                        ← Retour à la liste
+                    </a>
+                    
+                    <div class="flex space-x-3">
+                        <a href="{{ path('app_formation_edit', {'id': formation.id}) }}" 
+                           class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-pink-600 border border-transparent rounded-lg hover:bg-pink-700">
+                            ✏️ Modifier
+                        </a>
+                        
+                        <div class="bg-white rounded-lg shadow p-4">
+                            <div class="flex items-center space-x-3">
+                                <span class="text-sm text-gray-600">Supprimer:</span>
+                                {{ include('formation/_delete_form.html.twig') }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

@@ -1,107 +1,137 @@
+<div class="max-w-4xl">
+    {{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
+    
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
+        <!-- Informations de base -->
+        <div class="bg-gray-50 rounded-lg p-6">
+            <div class="mb-4">
+                <h3 class="text-lg font-medium text-gray-900 flex items-center">
+                    📝 Informations de base
+                </h3>
+                <p class="text-sm text-gray-600 mt-1">Nom, description et prix</p>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    {{ form_label(form.Nom, 'Nom de la formation', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                    {{ form_widget(form.Nom, {'attr': {'class': 'bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-pink-500 focus:border-pink-500 block w-full p-3'}}) }}
+                    {% if form_errors(form.Nom) %}
+                        <div class="text-red-600 text-sm mt-1">{{ form_errors(form.Nom) }}</div>
+                    {% endif %}
+                </div>
+                
+                <div>
+                    {{ form_label(form.description, 'Description', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                    {{ form_widget(form.description, {'attr': {'class': 'bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-pink-500 focus:border-pink-500 block w-full p-3 min-h-[100px]', 'rows': '4'}}) }}
+                    {% if form_errors(form.description) %}
+                        <div class="text-red-600 text-sm mt-1">{{ form_errors(form.description) }}</div>
+                    {% endif %}
+                </div>
+                
+                <div>
+                    {{ form_label(form.Cout, 'Prix (FCFA)', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                    <div class="relative">
+                        {{ form_widget(form.Cout, {'attr': {'class': 'bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-pink-500 focus:border-pink-500 block w-full p-3 pr-12'}}) }}
+                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                            <span class="text-gray-500 text-sm">FCFA</span>
+                        </div>
+                    </div>
+                    {% if form_errors(form.Cout) %}
+                        <div class="text-red-600 text-sm mt-1">{{ form_errors(form.Cout) }}</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
 
+        <!-- Image de la formation -->
+        <div class="bg-gray-50 rounded-lg p-6">
+            <div class="mb-4">
+                <h3 class="text-lg font-medium text-gray-900 flex items-center">
+                    📷 Image de la formation
+                </h3>
+                <p class="text-sm text-gray-600 mt-1">Photo de présentation</p>
+            </div>
+            <div>
+                {{ form_widget(form.image, {'attr': {'class': 'block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-white focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-l-lg file:border-0 file:text-sm file:font-medium file:bg-pink-50 file:text-pink-700 hover:file:bg-pink-100'}}) }}
+                {% if form_errors(form.image) %}
+                    <div class="text-red-600 text-sm mt-1">{{ form_errors(form.image) }}</div>
+                {% endif %}
+            </div>
+        </div>
 
-<div class="max-w-xl mx-8">
-    {{ form_start(form, {'attr': {'id': 'myForm'}}) }}
-    <ol class="relative border-s border-gray-200">
-        <li class="ms-6">
-            <span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -start-3 ring-8 ring-white">
-                <svg class="w-2.5 h-2.5 text-blue-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
-                </svg>
-            </span>
-            <h3 class="mb-1 text-lg font-semibold text-gray-900">{{ form_label(form.Nom, 'Nom') }}</h3>
-            <time class="block mb-2 text-sm font-normal leading-none text-gray-400"></time>
-            <div id="creneaux-container">
-                <p class="text-base font-normal text-gray-500" id="test">{{ form_widget(form.Nom) }}</p>
+        <!-- Prérequis -->
+        <div class="bg-gray-50 rounded-lg p-6">
+            <div class="mb-4">
+                <h3 class="text-lg font-medium text-gray-900 flex items-center">
+                    📚 Prérequis
+                </h3>
+                <p class="text-sm text-gray-600 mt-1">Conditions requises pour suivre la formation</p>
             </div>
-        </li>
-        <li class="ms-6">
-            <span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -start-3 ring-8 ring-white">
-                <svg class="w-2.5 h-2.5 text-blue-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
-                </svg>
-            </span>
-            <h3 class="mb-1 text-lg font-semibold text-gray-900">{{ form_label(form.description, 'Description') }}</h3>
-            <time class="block mb-2 text-sm font-normal leading-none text-gray-400"></time>
-            <div id="creneaux-container">
-                <p class="text-base font-normal text-gray-500" id="test">{{ form_widget(form.description) }}</p>
+            <div>
+                {{ form_widget(form.Prerequis, {'attr': {'class': 'bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-pink-500 focus:border-pink-500 block w-full p-3 min-h-[120px]', 'rows': '5'}}) }}
+                {% if form_errors(form.Prerequis) %}
+                    <div class="text-red-600 text-sm mt-1">{{ form_errors(form.Prerequis) }}</div>
+                {% endif %}
             </div>
-        </li>
-        <li class="ms-6">
-            <span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -start-3 ring-8 ring-white">
-                <svg class="w-2.5 h-2.5 text-blue-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
-                </svg>
-            </span>
-            <h3 class="mb-1 text-lg font-semibold text-gray-900">{{ form_label(form.Prerequis, 'Prérequis') }}</h3>
-            <time class="block mb-2 text-sm font-normal leading-none text-gray-400"></time>
-            <div id="creneaux-container">
-                <p class="text-base font-normal text-gray-500" id="test">{{ form_widget(form.Prerequis) }}</p>
-            </div>
-        </li>
-        <li class="ms-6">
-            <span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -start-3 ring-8 ring-white">
-                <svg class="w-2.5 h-2.5 text-blue-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
-                </svg>
-            </span>
-            <h3 class="mb-1 text-lg font-semibold text-gray-900">{{ form_label(form.Objectif, 'Objectif') }}</h3>
-            <time class="block mb-2 text-sm font-normal leading-none text-gray-400"></time>
-            <div id="creneaux-container">
-                <p class="text-base font-normal text-gray-500" id="test">{{ form_widget(form.Objectif) }}</p>
-            </div>
-        </li>
-        <li class="ms-6">
-            <span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -start-3 ring-8 ring-white">
-                <svg class="w-2.5 h-2.5 text-blue-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
-                </svg>
-            </span>
-            <h3 class="mb-1 text-lg font-semibold text-gray-900">{{ form_label(form.Suivi, 'Suivi') }}</h3>
-            <time class="block mb-2 text-sm font-normal leading-none text-gray-400"></time>
-            <div id="creneaux-container">
-                <p class="text-base font-normal text-gray-500" id="test">{{ form_widget(form.Suivi) }}</p>
-            </div>
-        </li>
-        <li class="ms-6">
-            <span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -start-3 ring-8 ring-white">
-                <svg class="w-2.5 h-2.5 text-blue-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
-                </svg>
-            </span>
-            <h3 class="mb-1 text-lg font-semibold text-gray-900">{{ form_label(form.Programme, 'Programme') }}</h3>
-            <time class="block mb-2 text-sm font-normal leading-none text-gray-400"></time>
-            <div id="creneaux-container">
-                <p class="text-base font-normal text-gray-500" id="test">{{ form_widget(form.Programme) }}</p>
-            </div>
-        </li>
-        <li class="ms-6">
-            <span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -start-3 ring-8 ring-white">
-                <svg class="w-2.5 h-2.5 text-blue-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
-                </svg>
-            </span>
-            <h3 class="mb-1 text-lg font-semibold text-gray-900">{{ form_label(form.Cout, 'Coût') }}</h3>
-            <time class="block mb-2 text-sm font-normal leading-none text-gray-400"></time>
-            <div id="creneaux-container">
-                <p class="text-base font-normal text-gray-500" id="test">{{ form_widget(form.Cout) }}</p>
-            </div>
-        </li>
-        <li class="ms-6">
-            <span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -start-3 ring-8 ring-white">
-                <svg class="w-2.5 h-2.5 text-blue-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
-                </svg>
-            </span>
-            <h3 class="mb-1 text-lg font-semibold text-gray-900">{{ form_label(form.image, 'Image') }}</h3>
-            <time class="block mb-2 text-sm font-normal leading-none text-gray-400"></time>
-            <div id="creneaux-container">
-                <p class="text-base font-normal text-gray-500" id="test">{{ form_widget(form.image) }}</p>
-            </div>
-        </li>
-    </ol>
+        </div>
 
-    <button type="submit" class="btn btn-primary mt-5 text-white bg-pink-700 hover:bg-pink-500 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center">Enregistrer</button>
+        <!-- Objectifs -->
+        <div class="bg-gray-50 rounded-lg p-6">
+            <div class="mb-4">
+                <h3 class="text-lg font-medium text-gray-900 flex items-center">
+                    🎯 Objectifs pédagogiques
+                </h3>
+                <p class="text-sm text-gray-600 mt-1">Ce que les participants vont apprendre</p>
+            </div>
+            <div>
+                {{ form_widget(form.Objectif, {'attr': {'class': 'bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-pink-500 focus:border-pink-500 block w-full p-3 min-h-[120px]', 'rows': '5'}}) }}
+                {% if form_errors(form.Objectif) %}
+                    <div class="text-red-600 text-sm mt-1">{{ form_errors(form.Objectif) }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Programme de formation -->
+        <div class="bg-gray-50 rounded-lg p-6 lg:col-span-2">
+            <div class="mb-4">
+                <h3 class="text-lg font-medium text-gray-900 flex items-center">
+                    📋 Programme de formation
+                </h3>
+                <p class="text-sm text-gray-600 mt-1">Contenu détaillé et déroulement de la formation</p>
+            </div>
+            <div>
+                {{ form_widget(form.Programme, {'attr': {'class': 'bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-pink-500 focus:border-pink-500 block w-full p-3 min-h-[200px]', 'rows': '8'}}) }}
+                {% if form_errors(form.Programme) %}
+                    <div class="text-red-600 text-sm mt-1">{{ form_errors(form.Programme) }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Suivi et évaluation -->
+        <div class="bg-gray-50 rounded-lg p-6 lg:col-span-2">
+            <div class="mb-4">
+                <h3 class="text-lg font-medium text-gray-900 flex items-center">
+                    📊 Suivi et évaluation
+                </h3>
+                <p class="text-sm text-gray-600 mt-1">Modalités d'évaluation et de suivi des participants</p>
+            </div>
+            <div>
+                {{ form_widget(form.Suivi, {'attr': {'class': 'bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-pink-500 focus:border-pink-500 block w-full p-3 min-h-[150px]', 'rows': '6'}}) }}
+                {% if form_errors(form.Suivi) %}
+                    <div class="text-red-600 text-sm mt-1">{{ form_errors(form.Suivi) }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Submit Button -->
+    <div class="flex justify-center mt-8">
+        <button type="submit" class="bg-pink-600 hover:bg-pink-700 text-white font-medium py-3 px-8 rounded-lg text-lg transition-colors duration-200">
+            💾 {{ button_label|default('Enregistrer') }}
+        </button>
+    </div>
+
     {{ form_widget(form._token) }}
     {{ form_end(form, {'render_rest': false}) }}
 </div>

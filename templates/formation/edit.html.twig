@@ -1,67 +1,48 @@
-<html>
-	<head>
-		<meta charset="UTF-8">
-		<title>
-			{% block title %}Tableau de bord
-			{% endblock %}
-		</title>
+{% extends 'base.html.twig' %}
 
-		<link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
-		<link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
-		<link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
-		<link rel="manifest" href="/favicon/site.webmanifest">
-		<link rel="mask-icon" href="/favicon/safari-pinned-tab.svg" color="#5bbad5">
-		<meta name="msapplication-TileColor" content="#da532c">
-		<meta name="theme-color" content="#ffffff">
-		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+{% block title %}Modifier Formation{% endblock %}
 
+{% block body %}
+<div class="min-h-screen bg-gray-50">
+    <div class="flex">
+        <!-- Sidebar -->
+        {% include '_sidebar.html.twig' %}
+        
+        <!-- Main Content -->
+        <div class="flex-1 lg:ml-2 xl:ml-8">
+            <div class="px-2 py-4 sm:px-4 lg:px-6">
+                <!-- Header intégré -->
+                <div class="mb-6">
+                    <h1 class="text-2xl font-bold text-gray-900">Modifier Formation</h1>
+                    <p class="text-sm text-gray-600">{{ formation.nom }}</p>
+                </div>
 
-		<script src="https://cdn.tailwindcss.com"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.js"></script>
+                <!-- Formulaire de formation -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h2 class="text-lg font-medium text-gray-900">🎓 Informations de la formation</h2>
+                    </div>
+                    <div class="px-6 py-6">
+                        {{ include('formation/_form.html.twig', {'button_label': 'Mettre à jour'}) }}
+                    </div>
+                </div>
 
-
-		{% block stylesheets %}
-			<style>
-				/* Pour les libellés des mois */
-				.fc-toolbar-title,
-				.fc-col-header-cell-cushion {
-					text-transform: capitalize;
-				}
-			</style>
-		{% endblock %}
-		<script src="https://cdn.fedapay.com/checkout.js?v=1.1.7"></script>
-		<script src="/js/preline.js"></script>
-		{% block javascripts %}
-			<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
-			<script src='fullcalendar/core/locales/fr.global.js'></script>
-
-		{% endblock %}
-
-	</head>
-
-
-	<body class="bg-gray-100">
-		<div class="flex min-h-screen w-full">
-			{% block body %}
-
-				<button data-drawer-target="default-sidebar" data-drawer-toggle="default-sidebar" aria-controls="default-sidebar" type="button" class="inline-flex items-center p-2 mt-2 ms-3 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
-					<span class="sr-only">Open sidebar</span>
-					<svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-						<path clip-rule="evenodd" fill-rule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"></path>
-					</svg>
-				</button>
-
-				{% include '_sidebar.html.twig' %}
-
-				<div class="flex-1">
-					<div class="relative overflow-hidden w-full min-h-[70px] bg-pink-500"></div>
-					<h4 class="text-2xl font-bold p-4">Nouvelle Formation</h4>
-
-					<div class="px-4">{{ include('formation/_form.html.twig', {'button_label': 'Update'}) }}</div>
-
-					<a href="{{ path('app_formation_index') }}">back to list</a>
-
-					{{ include('formation/_delete_form.html.twig') }}
-				</div>
-
-			{% endblock %}
+                <!-- Actions -->
+                <div class="mt-6 flex justify-between items-center">
+                    <a href="{{ path('app_dashboard_formation') }}" 
+                       class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                        ← Retour à la liste
+                    </a>
+                    
+                    <div class="bg-white rounded-lg shadow p-4">
+                        <div class="flex items-center space-x-3">
+                            <span class="text-sm text-gray-600">Zone de suppression:</span>
+                            {{ include('formation/_delete_form.html.twig') }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
