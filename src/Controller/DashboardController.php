@@ -338,7 +338,7 @@ class DashboardController extends AbstractController
             // Récupérer l'adresse e-mail de l'utilisateur à partir du rendez-vous
             $userEmail = $rendezvou->getUser()->getEmail();
 
-            // Envoyer l'e-mail après la création du rendez-vous
+            // Envoyer l'e-mail au client
             $email = (new Email())
                 ->from('beellenailscare@beellenails.com')
                 ->to($userEmail)
@@ -348,6 +348,17 @@ class DashboardController extends AbstractController
                     ['rendezvous' => $rendezvou]
                 ));
             $mailer->send($email);
+
+            // Envoyer l'e-mail à l'admin
+            $adminEmail = (new Email())
+                ->from('beellenailscare@beellenails.com')
+                ->to('murielahodode@gmail.com')
+                ->subject('Rendez-vous modifié')
+                ->html($this->renderView(
+                    'emails/rendezvous_updated_admin.html.twig',
+                    ['rendezvous' => $rendezvou]
+                ));
+            $mailer->send($adminEmail);
 
             return $this->redirectToRoute('app_dashboard_rendezvous');
         }

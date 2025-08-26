@@ -161,7 +161,7 @@ class RendezvousController extends AbstractController
         // Email admin
         $emailAdmin = (new Email())
             ->from('beellenailscare@beellenails.com')
-            ->to('jy.ahouanvoedo@gmail.com')
+            ->to('murielahodode@gmail.com')
             ->subject('Un rendez-vous a été annulé')
             ->html($this->renderView(
                 'emails/rendezvous_canceled_admin.html.twig',
