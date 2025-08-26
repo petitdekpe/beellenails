@@ -1,23 +1,37 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Prendre RDV{% endblock %}
-{% block stylesheets %}
-
-{% endblock %}
-
 
 {% block body %}
-<div class="relative overflow-hidden w-full min-h-[90px] bg-white rounded-lg"></div>
-<div class="flex content-center">
-  <div class="mt-12 mb-12 flex flex-col justify-center content-center">
-  <h2 class="text-2xl font-bold mb-10 text-center">Prendre Rendez-vous</h2>
-    {{ include('new_rendezvous/_form.html.twig') }}
-  </div>
+<div class="min-h-screen bg-gray-50">
+    <div class="flex">
+        <!-- Sidebar -->
+        {% include '_sidebar.html.twig' %}
+        
+        <!-- Main Content -->
+        <div class="flex-1 lg:ml-8">
+            <div class="px-4 py-6 sm:px-6 lg:px-8">
+                <!-- Header intégré -->
+                <div class="mb-6">
+                    <h1 class="text-2xl font-bold text-gray-900">Nouveau Rendez-vous</h1>
+                    <p class="text-sm text-gray-600">Planifier un rendez-vous pour {{ rendezvou.prestation.title }}</p>
+                </div>
+
+                <!-- Formulaire de rendez-vous -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h2 class="text-lg font-medium text-gray-900">📅 Informations du rendez-vous</h2>
+                    </div>
+                    <div class="px-6 py-6">
+                        {{ include('new_rendezvous/_form.html.twig') }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
 
 {%  block javascripts %} 
-  
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/datepicker.min.js"></script> 
-
 {% endblock %}
