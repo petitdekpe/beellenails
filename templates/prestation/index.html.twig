@@ -16,8 +16,72 @@
             <div class="my-2 rounded shadow-lg shadow-gray-200 duration-300 hover:-translate-y-1">
                 <!-- Clickable Area -->
                     <figure>
-                        <!-- Image -->
-                        <img src="{{ asset( vich_uploader_asset(prestation, 'image')) }}" class="rounded-t h-40 w-full object-cover" />
+                        <!-- Image Carousel -->
+                        {% set allImages = [] %}
+                        {% if prestation.imageName %}
+                            {% set allImages = allImages|merge([{'field': 'image', 'name': prestation.imageName}]) %}
+                        {% endif %}
+                        {% if prestation.imageName2 %}
+                            {% set allImages = allImages|merge([{'field': 'image2', 'name': prestation.imageName2}]) %}
+                        {% endif %}
+                        {% if prestation.imageName3 %}
+                            {% set allImages = allImages|merge([{'field': 'image3', 'name': prestation.imageName3}]) %}
+                        {% endif %}
+                        
+                        {% if allImages|length > 1 %}
+                            <div id="carousel-{{ prestation.id }}" class="relative overflow-hidden rounded-t h-40 w-full">
+                                <!-- Carousel wrapper -->
+                                <div class="relative h-full">
+                                    {% for imageInfo in allImages %}
+                                        <div class="carousel-item-{{ prestation.id }} absolute inset-0 transition-opacity duration-700 ease-in-out{% if loop.first %} opacity-100{% else %} opacity-0{% endif %}">
+                                            {% if imageInfo.field == 'image' %}
+                                                <img src="{{ asset( vich_uploader_asset(prestation, 'image')) }}" class="block w-full h-full object-cover" alt="Image {{ loop.index }}">
+                                            {% elseif imageInfo.field == 'image2' %}
+                                                <img src="{{ asset( vich_uploader_asset(prestation, 'image2')) }}" class="block w-full h-full object-cover" alt="Image {{ loop.index }}">
+                                            {% elseif imageInfo.field == 'image3' %}
+                                                <img src="{{ asset( vich_uploader_asset(prestation, 'image3')) }}" class="block w-full h-full object-cover" alt="Image {{ loop.index }}">
+                                            {% endif %}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                
+                                <!-- Slider indicators -->
+                                {% if allImages|length > 1 %}
+                                    <div class="absolute z-30 flex space-x-3 -translate-x-1/2 bottom-2 left-1/2">
+                                        {% for imageInfo in allImages %}
+                                            <button type="button" class="carousel-indicator-{{ prestation.id }} w-2 h-2 rounded-full bg-white/50 hover:bg-white/75{% if loop.first %} !bg-white{% endif %}" 
+                                                    aria-current="{% if loop.first %}true{% else %}false{% endif %}" 
+                                                    aria-label="Slide {{ loop.index }}" 
+                                                    data-index="{{ loop.index0 }}">
+                                            </button>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                
+                                <!-- Slider controls -->
+                                {% if allImages|length > 1 %}
+                                    <button type="button" class="carousel-prev-{{ prestation.id }} absolute top-0 left-0 z-30 flex items-center justify-center h-full px-2 cursor-pointer group focus:outline-none" data-carousel-prev>
+                                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-white/30 group-hover:bg-white/50 group-focus:ring-2 group-focus:ring-white group-focus:outline-none">
+                                            <svg class="w-3 h-3 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 1 1 5l4 4"/>
+                                            </svg>
+                                            <span class="sr-only">Previous</span>
+                                        </span>
+                                    </button>
+                                    <button type="button" class="carousel-next-{{ prestation.id }} absolute top-0 right-0 z-30 flex items-center justify-center h-full px-2 cursor-pointer group focus:outline-none" data-carousel-next>
+                                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-white/30 group-hover:bg-white/50 group-focus:ring-2 group-focus:ring-white group-focus:outline-none">
+                                            <svg class="w-3 h-3 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
+                                            </svg>
+                                            <span class="sr-only">Next</span>
+                                        </span>
+                                    </button>
+                                {% endif %}
+                            </div>
+                        {% else %}
+                            <!-- Single image fallback -->
+                            <img src="{{ asset( vich_uploader_asset(prestation, 'image')) }}" class="rounded-t h-40 w-full object-cover" />
+                        {% endif %}
 
                         <figcaption class="px-4 pb-2">
                             <!-- Title -->
@@ -104,4 +168,93 @@
 
     <!--a href="{{ path('app_prestation_new') }}">Créer une nouvelle prestation</a-->
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize carousel for each prestation
+    {% for prestation in prestations %}
+        {% set allImages = [] %}
+        {% if prestation.imageName %}
+            {% set allImages = allImages|merge([{'field': 'image', 'name': prestation.imageName}]) %}
+        {% endif %}
+        {% if prestation.imageName2 %}
+            {% set allImages = allImages|merge([{'field': 'image2', 'name': prestation.imageName2}]) %}
+        {% endif %}
+        {% if prestation.imageName3 %}
+            {% set allImages = allImages|merge([{'field': 'image3', 'name': prestation.imageName3}]) %}
+        {% endif %}
+        
+        {% if allImages|length > 1 %}
+        (function() {
+            const prestationId = {{ prestation.id }};
+            const totalSlides = {{ allImages|length }};
+            let currentSlide = 0;
+            
+            const items = document.querySelectorAll('.carousel-item-' + prestationId);
+            const indicators = document.querySelectorAll('.carousel-indicator-' + prestationId);
+            const prevButton = document.querySelector('.carousel-prev-' + prestationId);
+            const nextButton = document.querySelector('.carousel-next-' + prestationId);
+            
+            function showSlide(index) {
+                // Hide all slides
+                items.forEach((item, i) => {
+                    item.classList.toggle('opacity-100', i === index);
+                    item.classList.toggle('opacity-0', i !== index);
+                });
+                
+                // Update indicators
+                indicators.forEach((indicator, i) => {
+                    indicator.classList.toggle('!bg-white', i === index);
+                    indicator.classList.toggle('bg-white/50', i !== index);
+                    indicator.setAttribute('aria-current', i === index ? 'true' : 'false');
+                });
+                
+                currentSlide = index;
+            }
+            
+            function nextSlide() {
+                const nextIndex = (currentSlide + 1) % totalSlides;
+                showSlide(nextIndex);
+            }
+            
+            function prevSlide() {
+                const prevIndex = (currentSlide - 1 + totalSlides) % totalSlides;
+                showSlide(prevIndex);
+            }
+            
+            // Event listeners
+            if (nextButton) {
+                nextButton.addEventListener('click', nextSlide);
+            }
+            
+            if (prevButton) {
+                prevButton.addEventListener('click', prevSlide);
+            }
+            
+            // Indicator clicks
+            indicators.forEach((indicator, index) => {
+                indicator.addEventListener('click', () => {
+                    showSlide(index);
+                });
+            });
+            
+            // Auto-slide (optional - every 4 seconds)
+            let autoSlideInterval = setInterval(nextSlide, 4000);
+            
+            // Pause auto-slide on hover
+            const carousel = document.getElementById('carousel-' + prestationId);
+            if (carousel) {
+                carousel.addEventListener('mouseenter', () => {
+                    clearInterval(autoSlideInterval);
+                });
+                
+                carousel.addEventListener('mouseleave', () => {
+                    autoSlideInterval = setInterval(nextSlide, 4000);
+                });
+            }
+        })();
+        {% endif %}
+    {% endfor %}
+});
+</script>
 {% endblock %}

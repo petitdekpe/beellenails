@@ -49,6 +49,9 @@ class Formation
     #[ORM\Column(type: Types::TEXT)]
     private ?string $Description = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $updatedAt = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -131,11 +134,12 @@ class Formation
         return $this->image;
     }
 
-    public function setImage(File $image): static
+    public function setImage(?File $image = null): void
     {
         $this->image = $image;
-
-        return $this;
+        if ($image) {
+            $this->updatedAt = new \DateTimeImmutable('now');
+        }
     }
 
     public function getImageName(): ?string
@@ -143,7 +147,7 @@ class Formation
         return $this->imageName;
     }
 
-    public function setImageName(string $imageName): static
+    public function setImageName(?string $imageName): static
     {
         $this->imageName = $imageName;
 
@@ -158,6 +162,18 @@ class Formation
     public function setDescription(string $Description): static
     {
         $this->Description = $Description;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }

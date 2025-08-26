@@ -37,12 +37,28 @@ class PaymentFeexController extends AbstractController
         Request $request,
         Rendezvous $rendezvous,
         FeexpayService $feexpayService,
-        EntityManagerInterface $em
+        EntityManagerInterface $em,
+        LoggerInterface $logger
     ): Response {
         $form = $this->createForm(FeexPayFormType::class);
         $form->handleRequest($request);
 
+        // Debug: Log form submission status
+        $logger->info('[FeexPay Init] Form submission status', [
+            'rendezvous_id' => $rendezvous->getId(),
+            'is_submitted' => $form->isSubmitted(),
+            'is_valid' => $form->isValid(),
+            'request_method' => $request->getMethod(),
+            'post_data' => $request->request->all(),
+            'form_errors' => $form->getErrors(true)
+        ]);
+
         if (!$form->isSubmitted() || !$form->isValid()) {
+            $logger->warning('[FeexPay Init] Form validation failed', [
+                'rendezvous_id' => $rendezvous->getId(),
+                'form_errors' => $form->getErrors(true, false)
+            ]);
+            
             return $this->render('feexpay/form.html.twig', [
                 'form' => $form->createView(),
                 'rendezvous' => $rendezvous,
@@ -53,8 +69,17 @@ class PaymentFeexController extends AbstractController
         $data = $form->getData();
         $user = $rendezvous->getUser();
 
+        $logger->info('[FeexPay Init] Initiating payment', [
+            'rendezvous_id' => $rendezvous->getId(),
+            'amount' => 100,
+            'phone' => $data['phone'],
+            'operator' => $data['operator'],
+            'user_email' => $user->getEmail(),
+            'reference_id' => 'rendezvous_' . $rendezvous->getId()
+        ]);
+
         $response = $feexpayService->paiementLocal(
-            5000,
+            100,
             $data['phone'],
             $data['operator'],
             $user->__toString(),
@@ -62,7 +87,19 @@ class PaymentFeexController extends AbstractController
             'rendezvous_' . $rendezvous->getId()
         );
 
+        $logger->info('[FeexPay Init] FeexPay API response', [
+            'rendezvous_id' => $rendezvous->getId(),
+            'response' => $response,
+            'has_reference' => isset($response['reference'])
+        ]);
+
         if (!isset($response['reference'])) {
+            $logger->error('[FeexPay Init] FeexPay API failed', [
+                'rendezvous_id' => $rendezvous->getId(),
+                'response' => $response,
+                'error_message' => $response['message'] ?? 'Erreur FeexPay'
+            ]);
+            
             return $this->render('feexpay/form.html.twig', [
                 'form' => $form->createView(),
                 'rendezvous' => $rendezvous,

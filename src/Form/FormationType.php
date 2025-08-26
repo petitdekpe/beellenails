@@ -42,6 +42,10 @@ class FormationType extends AbstractType
                 'attr' => ['class' => 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5'],
             ])
             ->add('image', VichImageType::class, [
+                'label' => 'Image de la formation',
+                'required' => false,
+                'allow_delete' => true,
+                'delete_label' => 'Supprimer l\'image actuelle',
                 'attr' => ['class' => 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5'],
             ]);
         ;

@@ -7,14 +7,29 @@
 	<section class="bg-gray-50 py-6">
 		<div class="max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
 			<h1 class="text-xl font-bold text-gray-900 mb-4">Paiement avec FeexPay</h1>
+			
+			{% if error is defined %}
+				<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" role="alert">
+					<strong class="font-bold">Erreur!</strong>
+					<span class="block sm:inline">{{ error }}</span>
+					{% if debug is defined %}
+						<details class="mt-2">
+							<summary class="cursor-pointer">Détails de l'erreur</summary>
+							<pre class="mt-2 text-xs overflow-auto">{{ debug|json_encode(constant('JSON_PRETTY_PRINT')) }}</pre>
+						</details>
+					{% endif %}
+				</div>
+			{% endif %}
+
 			{{ form_start(form, {
         'method': 'POST',
         'action': path('feexpay_payment_init', {'rendezvous': rendezvous.id}),
         
         }) }}
+			{{ form_errors(form) }}
 			{{ form_row(form.phone) }}
 			{{ form_row(form.operator) }}
-			<button class="btn btn-primary  cursor-pointer block mx-8 mt-5 text-white bg-pink-700 hover:bg-pink-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Valider et payer</button>
+			<button type="submit" class="btn btn-primary  cursor-pointer block mx-8 mt-5 text-white bg-pink-700 hover:bg-pink-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Valider et payer</button>
 			{{ form_end(form) }}
 		</div>
 	</section>

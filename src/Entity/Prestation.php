@@ -160,7 +160,7 @@ class Prestation
         return $this->imageName2;
     }
 
-    public function setImageName2(string $image2): static
+    public function setImageName2(?string $image2): static
     {
         $this->imageName2 = $image2;
 
@@ -185,7 +185,7 @@ class Prestation
         return $this->imageName3;
     }
 
-    public function setImageName3(string $image3): static
+    public function setImageName3(?string $image3): static
     {
         $this->imageName3 = $image3;
 

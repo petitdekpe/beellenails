@@ -115,6 +115,17 @@ class RendezvousController extends AbstractController
                 ));
             $mailer->send($email);
 
+            // Envoyer l'e-mail à l'admin
+            $adminEmail = (new Email())
+                ->from('beellenailscare@beellenails.com')
+                ->to('murielahodode@gmail.com')
+                ->subject('Rendez-vous modifié par le client')
+                ->html($this->renderView(
+                    'emails/rendezvous_updated_admin.html.twig',
+                    ['rendezvous' => $rendezvous]
+                ));
+            $mailer->send($adminEmail);
+
             return $this->redirectToRoute('app_users', [], Response::HTTP_SEE_OTHER);
         }
 

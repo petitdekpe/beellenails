@@ -106,7 +106,7 @@ class DashboardController extends AbstractController
     public function prestation(Request $request, PrestationRepository $prestationRepository): Response
     {
         $search = $request->query->get('search');
-        
+
         if ($search) {
             $prestations = $prestationRepository->createQueryBuilder('p')
                 ->where('p.Title LIKE :search')
@@ -133,54 +133,54 @@ class DashboardController extends AbstractController
         $rdvDateTo = $request->query->get('rdv_date_to');
         $modifiedFrom = $request->query->get('modified_from');
         $modifiedTo = $request->query->get('modified_to');
-        
+
         $queryBuilder = $rendezvousRepository->createQueryBuilder('r')
             ->leftJoin('r.user', 'u')
             ->leftJoin('r.prestation', 'p')
             ->orderBy('r.updated_at', 'DESC');
-            
+
         // Recherche par nom du client (supporte nom + prénom)
         if ($search) {
             $queryBuilder->andWhere(
                 'LOWER(u.Nom) LIKE LOWER(:search) OR ' .
-                'LOWER(u.Prenom) LIKE LOWER(:search) OR ' .
-                'LOWER(CONCAT(u.Prenom, \' \', u.Nom)) LIKE LOWER(:search) OR ' .
-                'LOWER(CONCAT(u.Nom, \' \', u.Prenom)) LIKE LOWER(:search)'
+                    'LOWER(u.Prenom) LIKE LOWER(:search) OR ' .
+                    'LOWER(CONCAT(u.Prenom, \' \', u.Nom)) LIKE LOWER(:search) OR ' .
+                    'LOWER(CONCAT(u.Nom, \' \', u.Prenom)) LIKE LOWER(:search)'
             )->setParameter('search', '%' . trim($search) . '%');
         }
-        
+
         // Filtre par statut
         if ($status && $status !== 'all') {
             $queryBuilder->andWhere('r.status = :status')
-                        ->setParameter('status', $status);
+                ->setParameter('status', $status);
         }
-        
+
         // Filtre par date de rendez-vous
         if ($rdvDateFrom && $rdvDateTo) {
             // Plage de dates
             $queryBuilder->andWhere('r.day >= :rdvDateFrom AND r.day <= :rdvDateTo')
-                        ->setParameter('rdvDateFrom', new \DateTime($rdvDateFrom . ' 00:00:00'))
-                        ->setParameter('rdvDateTo', new \DateTime($rdvDateTo . ' 23:59:59'));
+                ->setParameter('rdvDateFrom', new \DateTime($rdvDateFrom . ' 00:00:00'))
+                ->setParameter('rdvDateTo', new \DateTime($rdvDateTo . ' 23:59:59'));
         } elseif ($rdvDateFrom) {
             // Date précise uniquement
             $queryBuilder->andWhere('r.day >= :rdvDateFrom AND r.day <= :rdvDateFromEnd')
-                        ->setParameter('rdvDateFrom', new \DateTime($rdvDateFrom . ' 00:00:00'))
-                        ->setParameter('rdvDateFromEnd', new \DateTime($rdvDateFrom . ' 23:59:59'));
+                ->setParameter('rdvDateFrom', new \DateTime($rdvDateFrom . ' 00:00:00'))
+                ->setParameter('rdvDateFromEnd', new \DateTime($rdvDateFrom . ' 23:59:59'));
         } elseif ($rdvDateTo) {
             // Jusqu'à cette date
             $queryBuilder->andWhere('r.day <= :rdvDateTo')
-                        ->setParameter('rdvDateTo', new \DateTime($rdvDateTo . ' 23:59:59'));
+                ->setParameter('rdvDateTo', new \DateTime($rdvDateTo . ' 23:59:59'));
         }
-        
+
         // Filtre par date de dernière modification
         if ($modifiedFrom) {
             $queryBuilder->andWhere('r.updated_at >= :modifiedFrom')
-                        ->setParameter('modifiedFrom', new \DateTime($modifiedFrom . ' 00:00:00'));
+                ->setParameter('modifiedFrom', new \DateTime($modifiedFrom . ' 00:00:00'));
         }
-        
+
         if ($modifiedTo) {
             $queryBuilder->andWhere('r.updated_at <= :modifiedTo')
-                        ->setParameter('modifiedTo', new \DateTime($modifiedTo . ' 23:59:59'));
+                ->setParameter('modifiedTo', new \DateTime($modifiedTo . ' 23:59:59'));
         }
 
         $rendezvous = $paginator->paginate(
@@ -205,7 +205,7 @@ class DashboardController extends AbstractController
     public function user(Request $request, UserRepository $userRepository, PaginatorInterface $paginator): Response
     {
         $search = $request->query->get('search');
-        
+
         if ($search) {
             $queryBuilder = $userRepository->createQueryBuilder('u')
                 ->where('u.Nom LIKE :search OR u.Prenom LIKE :search OR u.email LIKE :search OR u.Phone LIKE :search')
@@ -237,25 +237,25 @@ class DashboardController extends AbstractController
         $provider = $request->query->get('provider');
         $dateFrom = $request->query->get('date_from');
         $dateTo = $request->query->get('date_to');
-        
+
         $queryBuilder = $paymentRepository->createQueryBuilder('p')
             ->orderBy('p.createdAt', 'DESC');
-            
+
         // Filtre par provider
         if ($provider && $provider !== 'all') {
             $queryBuilder->andWhere('p.provider = :provider')
-                        ->setParameter('provider', $provider);
+                ->setParameter('provider', $provider);
         }
-        
+
         // Filtre par date
         if ($dateFrom) {
             $queryBuilder->andWhere('p.createdAt >= :dateFrom')
-                        ->setParameter('dateFrom', new \DateTime($dateFrom . ' 00:00:00'));
+                ->setParameter('dateFrom', new \DateTime($dateFrom . ' 00:00:00'));
         }
-        
+
         if ($dateTo) {
             $queryBuilder->andWhere('p.createdAt <= :dateTo')
-                        ->setParameter('dateTo', new \DateTime($dateTo . ' 23:59:59'));
+                ->setParameter('dateTo', new \DateTime($dateTo . ' 23:59:59'));
         }
 
         $payments = $paginator->paginate(
@@ -463,36 +463,36 @@ class DashboardController extends AbstractController
             ->orderBy('r.day', 'ASC')
             ->addOrderBy('r.creneau', 'ASC')
             ->getQuery();
-            
+
         $conges = $congesQuery->getResult();
-        
+
         // Regrouper les congés par date
         $congesByDay = [];
         $creneauxByDay = [];
-        
+
         foreach ($conges as $conge) {
             $dayKey = $conge->getDay()->format('Y-m-d');
-            
+
             if (!isset($congesByDay[$dayKey])) {
                 $congesByDay[$dayKey] = [];
                 $creneauxByDay[$dayKey] = [];
             }
-            
+
             $congesByDay[$dayKey][] = $conge;
             $creneauxByDay[$dayKey][] = $conge->getCreneau();
         }
-        
+
         // Pour chaque jour, vérifier si tous les créneaux sont en congé
         $processedConges = [];
-        
+
         // Récupérer tous les créneaux disponibles pour comparaison
         $allCreneaux = $entityManager->getRepository(\App\Entity\Creneau::class)->findAll();
         $totalCreneaux = count($allCreneaux);
-        
+
         foreach ($congesByDay as $dayKey => $dayConges) {
             $day = new \DateTime($dayKey);
             $creneauxCount = count($dayConges);
-            
+
             $processedConges[] = [
                 'date' => $day,
                 'isFullDay' => $creneauxCount >= $totalCreneaux,

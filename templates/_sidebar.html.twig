@@ -45,6 +45,13 @@
 				</a>
 			</li>
 
+			{% set home_images_active = route starts with 'dashboard_home_images' %}
+			<li>
+				<a href="{{ path('dashboard_home_images_index') }}" class="flex items-center p-2 rounded {{ home_images_active ? 'bg-gray-100 font-semibold' : 'hover:bg-gray-100 text-gray-900' }}">
+					🖼️ Images accueil
+				</a>
+			</li>
+
 			{% set formation_active = route starts with 'app_dashboard_formation' or route starts with 'app_formation_' %}
 			<li>
 				<details class="group" {% if formation_active %} open {% endif %}>

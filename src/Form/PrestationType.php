@@ -32,15 +32,22 @@ class PrestationType extends AbstractType
                 'label' => 'Durée (minute)',
                 ])
             ->add('image', VichImageType::class, [
-                'label' => 'Image', 
+                'label' => 'Image principale', 
+                'required' => false,
+                'allow_delete' => true,
+                'delete_label' => 'Supprimer l\'image actuelle',
             ])
             ->add('image2', VichImageType::class, [
                 'label' => 'Image 2',
                 'required' => false,
+                'allow_delete' => true,
+                'delete_label' => 'Supprimer l\'image 2',
             ])
             ->add('image3', VichImageType::class, [
                 'label' => 'Image 3',
                 'required' => false,
+                'allow_delete' => true,
+                'delete_label' => 'Supprimer l\'image 3',
             ])
             ->add('CategoryPrestation', EntityType::class, [
                 'label' => 'Choisissez une Categorie',
