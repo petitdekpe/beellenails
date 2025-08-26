@@ -1,13 +1,48 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Prestation{% endblock %}
+{% block title %}Modifier Prestation{% endblock %}
 
 {% block body %}
-    <h1>Edit Prestation</h1>
+<div class="min-h-screen bg-gray-50">
+    <div class="flex">
+        <!-- Sidebar -->
+        {% include '_sidebar.html.twig' %}
+        
+        <!-- Main Content -->
+        <div class="flex-1 lg:ml-8">
+            <div class="px-4 py-6 sm:px-6 lg:px-8">
+                <!-- Header intégré -->
+                <div class="mb-6">
+                    <h1 class="text-2xl font-bold text-gray-900">Modifier Prestation</h1>
+                    <p class="text-sm text-gray-600">{{ prestation.title }}</p>
+                </div>
 
-    {{ include('prestation/_form.html.twig', {'button_label': 'Update'}) }}
+                <!-- Formulaire de prestation -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h2 class="text-lg font-medium text-gray-900">💅 Informations de la prestation</h2>
+                    </div>
+                    <div class="px-6 py-6">
+                        {{ include('prestation/_form.html.twig', {'button_label': 'Mettre à jour'}) }}
+                    </div>
+                </div>
 
-    <a href="{{ path('app_prestation_index') }}">back to list</a>
-
-    {{ include('prestation/_delete_form.html.twig') }}
+                <!-- Actions -->
+                <div class="mt-6 flex justify-between items-center">
+                    <a href="{{ path('app_dashboard_prestation') }}" 
+                       class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                        ← Retour à la liste
+                    </a>
+                    
+                    <div class="bg-white rounded-lg shadow p-4">
+                        <div class="flex items-center space-x-3">
+                            <span class="text-sm text-gray-600">Zone de suppression:</span>
+                            {{ include('prestation/_delete_form.html.twig') }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
