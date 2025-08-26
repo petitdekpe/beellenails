@@ -1,0 +1,176 @@
+{{ form_start(form, {'attr': {'class': 'space-y-6', 'enctype': 'multipart/form-data'}}) }}
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Informations générales -->
+    <div class="space-y-6">
+        <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
+            <div class="flex items-start">
+                <div class="flex-shrink-0">
+                    <svg class="w-5 h-5 text-blue-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-sm font-medium text-blue-900">Information</h3>
+                    <p class="text-sm text-blue-700 mt-1">
+                        Complétez tous les champs pour créer une prestation complète. Les images aideront vos clients à mieux comprendre votre service.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Titre -->
+        <div>
+            {{ form_label(form.Title, 'Nom de la prestation', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-2'}}) }}
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"/>
+                    </svg>
+                </div>
+                {{ form_widget(form.Title, {'attr': {'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-pink-500 focus:border-pink-500 block w-full pl-10 p-3', 'placeholder': 'Manucure française'}}) }}
+            </div>
+            <p class="text-xs text-gray-500 mt-1">Nom descriptif de votre prestation</p>
+        </div>
+
+        <!-- Catégorie -->
+        <div>
+            {{ form_label(form.CategoryPrestation, 'Catégorie', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-2'}}) }}
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
+                    </svg>
+                </div>
+                {{ form_widget(form.CategoryPrestation, {'attr': {'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-pink-500 focus:border-pink-500 block w-full pl-10 p-3'}}) }}
+            </div>
+            <p class="text-xs text-gray-500 mt-1">Choisissez la catégorie appropriée</p>
+        </div>
+
+        <!-- Prix -->
+        <div>
+            {{ form_label(form.price, 'Prix (en €)', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-2'}}) }}
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"/>
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd"/>
+                    </svg>
+                </div>
+                {{ form_widget(form.price, {'attr': {'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-pink-500 focus:border-pink-500 block w-full pl-10 p-3', 'placeholder': '25.00'}}) }}
+            </div>
+            <p class="text-xs text-gray-500 mt-1">Prix de la prestation en euros</p>
+        </div>
+
+        <!-- Durée -->
+        <div>
+            {{ form_label(form.duration, 'Durée (en minutes)', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-2'}}) }}
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                    </svg>
+                </div>
+                {{ form_widget(form.duration, {'attr': {'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-pink-500 focus:border-pink-500 block w-full pl-10 p-3', 'placeholder': '60'}}) }}
+            </div>
+            <p class="text-xs text-gray-500 mt-1">Durée approximative en minutes</p>
+        </div>
+    </div>
+
+    <!-- Description et images -->
+    <div class="space-y-6">
+        <!-- Description -->
+        <div>
+            {{ form_label(form.description, 'Description', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-2'}}) }}
+            <div class="relative">
+                <div class="absolute top-3 left-3 pointer-events-none">
+                    <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
+                    </svg>
+                </div>
+                {{ form_widget(form.description, {'attr': {'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-pink-500 focus:border-pink-500 block w-full pl-10 p-3', 'rows': '4', 'placeholder': 'Description détaillée de la prestation...'}}) }}
+            </div>
+            <p class="text-xs text-gray-500 mt-1">Description complète de la prestation</p>
+        </div>
+
+        <!-- Ce qui est inclus -->
+        <div>
+            {{ form_label(form.inclus, 'Ce qui est inclus', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-2'}}) }}
+            <div class="relative">
+                <div class="absolute top-3 left-3 pointer-events-none">
+                    <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                </div>
+                {{ form_widget(form.inclus, {'attr': {'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-pink-500 focus:border-pink-500 block w-full pl-10 p-3', 'rows': '3', 'placeholder': 'Liste des éléments inclus dans cette prestation...'}}) }}
+            </div>
+            <p class="text-xs text-gray-500 mt-1">Détaillez ce qui est inclus dans le prix</p>
+        </div>
+
+        <!-- Images -->
+        <div class="space-y-4">
+            <h3 class="text-lg font-medium text-gray-900">📸 Images de la prestation</h3>
+            
+            <!-- Image 1 -->
+            <div>
+                {{ form_label(form.image, 'Image principale', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-2'}}) }}
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    {{ form_widget(form.image, {'attr': {'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-pink-500 focus:border-pink-500 block w-full pl-10 p-3 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-pink-50 file:text-pink-700 hover:file:bg-pink-100'}}) }}
+                </div>
+                <p class="text-xs text-gray-500 mt-1">Image principale (recommandé)</p>
+            </div>
+
+            <!-- Image 2 -->
+            <div>
+                {{ form_label(form.image2, 'Image secondaire', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-2'}}) }}
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    {{ form_widget(form.image2, {'attr': {'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-pink-500 focus:border-pink-500 block w-full pl-10 p-3 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-pink-50 file:text-pink-700 hover:file:bg-pink-100'}}) }}
+                </div>
+                <p class="text-xs text-gray-500 mt-1">Image supplémentaire (optionnel)</p>
+            </div>
+
+            <!-- Image 3 -->
+            <div>
+                {{ form_label(form.image3, 'Troisième image', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-2'}}) }}
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    {{ form_widget(form.image3, {'attr': {'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-pink-500 focus:border-pink-500 block w-full pl-10 p-3 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-pink-50 file:text-pink-700 hover:file:bg-pink-100'}}) }}
+                </div>
+                <p class="text-xs text-gray-500 mt-1">Image supplémentaire (optionnel)</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Actions -->
+<div class="flex items-center justify-between pt-6 border-t border-gray-200">
+    <a href="{{ path('app_dashboard_prestation') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M7.707 14.707a1 1 0 01-1.414 0L2.586 11l3.707-3.707a1 1 0 011.414 1.414L5.414 11l2.293 2.293a1 1 0 010 1.414z" clip-rule="evenodd"/>
+        </svg>
+        Annuler
+    </a>
+    <button type="submit" class="inline-flex items-center px-6 py-2 bg-pink-600 hover:bg-pink-700 text-white font-medium rounded-lg text-sm transition-colors">
+        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+        </svg>
+        Créer la prestation
+    </button>
+</div>
+
+{{ form_widget(form._token) }}
+{{ form_end(form, {'render_rest': false}) }}

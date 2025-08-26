@@ -1,12 +1,82 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Reset your password{% endblock %}
+{% block title %}Réinitialiser votre mot de passe - BeElle Nails{% endblock %}
 
 {% block body %}
-    <h1>Reset your password</h1>
+<section class="bg-gray-50 h-full min-h-screen pt-20">
+    <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto lg:py-0">
+        <a href="#" class="flex items-center mb-6 text-2xl font-semibold text-gray-900">
+            <img class="w-40 h-40 sm: mr-2 md:max-w-md" src="/assets/logooff.png" alt="BeElle Nails">
+        </a>
+        
+        <div class="w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-lg xl:p-0 md:w-full">
+            <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
+                <div class="text-center mb-6">
+                    <div class="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m0 0v2m0-2h2m-2 0h-2m9-5a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    
+                    <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
+                        Réinitialiser votre mot de passe 🔑
+                    </h1>
+                    <p class="mt-2 text-sm text-gray-600">
+                        Choisissez un nouveau mot de passe sécurisé
+                    </p>
+                </div>
 
-    {{ form_start(resetForm) }}
-        {{ form_row(resetForm.plainPassword) }}
-        <button class="btn btn-primary">Reset password</button>
-    {{ form_end(resetForm) }}
+                {% for flash_error in app.flashes('reset_password_error') %}
+                    <div class="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg" role="alert">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <span class="text-red-500">⚠️</span>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm">{{ flash_error }}</p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+
+                {{ form_start(resetForm, {'attr': {'class': 'space-y-4 md:space-y-6'}}) }}
+                    <div>
+                        {{ form_label(resetForm.plainPassword.first, 'Nouveau mot de passe', {'label_attr': {'class': 'block mb-2 text-sm font-medium text-gray-900'}}) }}
+                        {{ form_widget(resetForm.plainPassword.first, {'attr': {'class': 'bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-pink-600 focus:border-pink-600 block w-full p-2.5', 'placeholder': '••••••••'}}) }}
+                        {{ form_errors(resetForm.plainPassword.first) }}
+                    </div>
+                    
+                    <div>
+                        {{ form_label(resetForm.plainPassword.second, 'Confirmer le nouveau mot de passe', {'label_attr': {'class': 'block mb-2 text-sm font-medium text-gray-900'}}) }}
+                        {{ form_widget(resetForm.plainPassword.second, {'attr': {'class': 'bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-pink-600 focus:border-pink-600 block w-full p-2.5', 'placeholder': '••••••••'}}) }}
+                        {{ form_errors(resetForm.plainPassword.second) }}
+                    </div>
+
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <span class="text-blue-500">💡</span>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm text-gray-700">
+                                    <strong>Conseil :</strong> Utilisez au moins 8 caractères avec des lettres, chiffres et symboles pour plus de sécurité.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full text-white bg-gray-900 hover:bg-pink-700 focus:ring-4 focus:outline-none focus:ring-pink-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
+                        🔐 Réinitialiser le mot de passe
+                    </button>
+                {{ form_end(resetForm) }}
+
+                <div class="text-center">
+                    <a href="{{ path('app_login') }}" class="text-sm font-medium text-pink-600 hover:text-pink-500 underline">
+                        ← Retour à la connexion
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock %}

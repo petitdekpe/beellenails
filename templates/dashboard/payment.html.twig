@@ -114,15 +114,29 @@
                                                         <div class="flex-shrink-0 h-8 w-8">
                                                             <div class="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center">
                                                                 <span class="text-xs font-medium text-gray-600">
-                                                                    {{ payment.customer.Prenom|slice(0, 1)|upper }}{{ payment.customer.Nom|slice(0, 1)|upper }}
+                                                                    {% if payment.customer %}
+                                                                        {{ payment.customer.Prenom|slice(0, 1)|upper }}{{ payment.customer.Nom|slice(0, 1)|upper }}
+                                                                    {% else %}
+                                                                        N/A
+                                                                    {% endif %}
                                                                 </span>
                                                             </div>
                                                         </div>
                                                         <div class="ml-3">
                                                             <div class="text-sm font-medium text-gray-900">
-                                                                {{ payment.customer.fullName }}
+                                                                {% if payment.customer %}
+                                                                    {{ payment.customer.fullName }}
+                                                                {% else %}
+                                                                    Client supprimé
+                                                                {% endif %}
                                                             </div>
-                                                            <div class="text-sm text-gray-500">{{ payment.customer.email }}</div>
+                                                            <div class="text-sm text-gray-500">
+                                                                {% if payment.customer %}
+                                                                    {{ payment.customer.email }}
+                                                                {% else %}
+                                                                    N/A
+                                                                {% endif %}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </td>

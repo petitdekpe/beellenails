@@ -82,6 +82,12 @@ class RendezvousController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Vérification que le créneau est bien sélectionné
+            if (!$rendezvou->getCreneau()) {
+                $this->addFlash('error', 'Veuillez sélectionner un créneau horaire pour le rendez-vous.');
+                return $this->redirectToRoute('app_rendezvous_edit', ['id' => $rendezvou->getId()]);
+            }
+
             // Vérification de l'existence d'un rendez-vous pris ou confirmé
             if ($this->isRendezvousExist($entityManager, $rendezvou)) {
                 $this->addFlash('error', 'Un rendez-vous est déjà pris ou confirmé pour cette date et ce créneau.');

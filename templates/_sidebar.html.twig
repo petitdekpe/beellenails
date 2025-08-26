@@ -64,13 +64,18 @@
 				</details>
 			</li>
 
-			{% set conge_active = route starts with 'create_conge' or route starts with 'cancel_conge' %}
+			{% set conge_active = route starts with 'create_conge' or route starts with 'cancel_conge' or route == 'app_dashboard_conges' %}
 			<li>
 				<details class="group" {% if conge_active %} open {% endif %}>
 					<summary class="flex items-center p-2 rounded cursor-pointer {{ conge_active ? 'bg-gray-100 font-semibold' : 'hover:bg-gray-100 text-gray-900' }}">
 						🌴 Congés
 					</summary>
 					<ul class="ml-4 mt-2 space-y-1">
+						<li>
+							<a href="{{ path('app_dashboard_conges') }}" class="block px-2 py-1 rounded {{ route == 'app_dashboard_conges' ? 'bg-pink-100 font-medium' : 'hover:bg-gray-100' }}">
+								📋 Liste des congés
+							</a>
+						</li>
 						<li>
 							<a href="{{ path('create_conge') }}" class="block px-2 py-1 rounded {{ route == 'create_conge' ? 'bg-pink-100 font-medium' : 'hover:bg-gray-100' }}">
 								➕ Ajouter (Journée)

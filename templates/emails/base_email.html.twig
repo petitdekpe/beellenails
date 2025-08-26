@@ -44,7 +44,7 @@
         }
 
         .logo {
-            max-width: 200px;
+            max-width: 100px;
             height: auto;
             margin-bottom: 20px;
         }
@@ -163,7 +163,7 @@
         }
 
         .footer-logo {
-            max-width: 150px;
+            max-width: 75px;
             height: auto;
             margin-bottom: 20px;
             opacity: 0.8;
@@ -205,10 +205,48 @@
 
         /* Dark mode support */
         @media (prefers-color-scheme: dark) {
+            /* Body and main container */
+            body { background-color: #111827 !important; }
             .email-container { background-color: #1f2937 !important; }
+            
+            /* Content area */
+            .email-content { background-color: #1f2937 !important; }
             .content-text { color: #d1d5db !important; }
             .greeting { color: #f9fafb !important; }
-            .email-footer { background-color: #111827 !important; }
+            
+            /* Footer */
+            .email-footer { 
+                background-color: #111827 !important; 
+                border-top: 1px solid #374151 !important;
+            }
+            .footer-info { color: #9ca3af !important; }
+            .footer-contact { color: #f472b6 !important; }
+            
+            /* Info box */
+            .info-box { 
+                background: linear-gradient(135deg, #1f2937 0%, #374151 100%) !important;
+                border-left: 4px solid #f472b6 !important;
+            }
+            .info-title { color: #f472b6 !important; }
+            .info-label { color: #9ca3af !important; }
+            .info-value { color: #f3f4f6 !important; }
+            
+            /* Social links */
+            .social-link { color: #f472b6 !important; }
+            
+            /* SVG icons in social links - make them visible in dark mode */
+            .social-link svg g { fill: #f472b6 !important; }
+            
+            /* Improve link visibility in dark mode */
+            a { color: #f472b6 !important; }
+            
+            /* Make sure buttons remain readable in dark mode */
+            .btn-primary { 
+                background: linear-gradient(135deg, #f472b6 0%, #ec4899 100%) !important;
+            }
+            
+            /* Copyright text */
+            div[style*="color: #9ca3af"] { color: #6b7280 !important; }
         }
     </style>
 </head>

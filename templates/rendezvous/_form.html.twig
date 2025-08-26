@@ -1,300 +1,294 @@
-{% block body %}
+<!-- Formulaire de réservation -->
+<div class="bg-white rounded-lg shadow">
+    <div class="px-6 py-4 border-b border-gray-200">
+        <h2 class="text-lg font-medium text-gray-900">Détails de votre réservation</h2>
+        <p class="text-sm text-gray-600">Remplissez les informations ci-dessous pour réserver votre créneau</p>
+    </div>
+    
+    <div class="px-6 py-6">
+        {{ form_start(form, {'attr': {'class': 'space-y-6', 'id': 'monformulaire'}}) }}
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Colonne gauche -->
+            <div class="space-y-6">
+                <!-- Catégorie -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <span class="flex items-center">
+                            <svg class="w-4 h-4 mr-2 text-pink-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
+                            </svg>
+                            Catégorie de prestation *
+                        </span>
+                    </label>
+                    {{ form_widget(form.categorie, {'attr': {'class': 'block w-full rounded-lg border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500 sm:text-sm py-3 px-4'}}) }}
+                    {{ form_errors(form.categorie) }}
+                </div>
 
-	<div class="max-w-xl mx-8">
-		<h5 class="text-xl text-center font-normal mb-5">
-			Prenez connaissance de la
-			<strong>DESCRIPTION</strong>, du
-			<strong>CONTENU</strong>
-			et des
-			<strong>TARIFS</strong>
-			des prestations en cliquant
-			<a class="text-pink-500 underline" href="{{ path('app_prestation_index') }}">
-				ici
-			</a>
-		</h5>
-		<h5 class="text-xl text-center font-normal mb-5">
-			En cas de
-			<strong class="text-pink-500">difficultés</strong>
-			à booker votre rendez-vous sur le site, consultez les disponibilités, choisissez le créneau voulu et contactez nous
-			<strong>
-				<a class="text-pink-500 underline" href="https://wa.me/22997853512">ICI</a>
-			</strong>
-			pour confirmer votre rendez-vous.
-		</h5>
+                <!-- Prestation -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <span class="flex items-center">
+                            <svg class="w-4 h-4 mr-2 text-pink-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5 3a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V5a2 2 0 00-2-2H5zm0 2h10v7h-2l-1-2H8l-1 2H5V5z" clip-rule="evenodd"/>
+                            </svg>
+                            Prestation *
+                        </span>
+                    </label>
+                    {{ form_widget(form.prestation, {'attr': {'class': 'block w-full rounded-lg border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500 sm:text-sm py-3 px-4'}}) }}
+                    {{ form_errors(form.prestation) }}
+                </div>
 
-		{{ form_start(form, {'attr': {'id': 'monformulaire'}}) }}
-		<ol class="relative border-s border-gray-200">
-			<li
-				class="ms-6">
-				{# Vérifie s'il y a des erreurs pour ce champ #}
-				{% set hasErrors = form_errors(form.categorie)|length > 0 %}
-				{# Ajoute une classe "text-red" si des erreurs sont présentes #}
-				{% set labelClass = hasErrors ? 'text-red-700 dark:text-red-500' : 'text-gray-900' %}
+                <!-- Date -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <span class="flex items-center">
+                            <svg class="w-4 h-4 mr-2 text-pink-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                            </svg>
+                            Date du rendez-vous *
+                        </span>
+                    </label>
+                    <input name="{{ field_name(form.day) }}" value="{{ field_value(form.day) }}" placeholder="Cliquez pour choisir une date" class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500 sm:text-sm py-3 px-4" id="datepicker">
+                    {{ form_errors(form.day) }}
+                </div>
+            </div>
 
-				<span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -start-3 ring-8 ring-white">
-					<svg class="w-2.5 h-2.5 text-blue-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewbox="0 0 20 20">
-						<path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
-					</svg>
-				</span>
-				<h3 class="mb-1 text-lg font-semibold">
-					{{ form_label(form.categorie, 'Choisissez une catégorie de prestation') }}
-					{# Affiche le message d'erreur à côté du label s'il y en a #}
-					{% if hasErrors %}
-						<span class="text-red-600 dark:text-red-500 ml-2 font-normal">
-							|
-							{{ form_errors(form.categorie) }}
-						</span>
-					{% endif %}
-				</h3>
-				<p class="text-base font-normal text-gray-500">
-					{{ form_widget(form.categorie) }}
-				</p>
-			</li>
-			<li
-				class="mb-10 ms-6">
-				{# Vérifie s'il y a des erreurs pour ce champ #}
-				{% set hasErrors = form_errors(form.prestation)|length > 0 %}
-				{# Ajoute une classe "text-red" si des erreurs sont présentes #}
-				{% set labelClass = hasErrors ? 'text-red-700 dark:text-red-500' : 'text-gray-900' %}
+            <!-- Colonne droite -->
+            <div class="space-y-6">
+                <!-- Créneau -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <span class="flex items-center">
+                            <svg class="w-4 h-4 mr-2 text-pink-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                            </svg>
+                            Créneau horaire *
+                        </span>
+                    </label>
+                    <div id="slots-container">
+                        {{ form_widget(form.creneau, {'attr': {'class': 'block w-full rounded-lg border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500 sm:text-sm py-3 px-4'}}) }}
+                    </div>
+                    {{ form_errors(form.creneau) }}
+                    <p class="text-xs text-gray-500 mt-1">Choisissez d'abord une date</p>
+                </div>
 
-				<span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -start-3 ring-8 ring-white">
-					<svg class="w-2.5 h-2.5 text-blue-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewbox="0 0 20 20">
-						<path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
-					</svg>
-				</span>
-				<h3 class="mb-1 text-lg font-semibold">
-					{{ form_label(form.prestation, 'Choisissez votre prestation') }}
-					{# Affiche le message d'erreur à côté du label s'il y en a #}
-					{% if hasErrors %}
-						<span class="text-red-600 dark:text-red-500 ml-2 font-normal">
-							|
-							{{ form_errors(form.prestation) }}
-						</span>
-					{% endif %}
-				</h3>
-				<p class="text-base font-normal text-gray-500" id="test">
-					{{ form_widget(form.prestation) }}
-				</p>
-			</li>
-			<li
-				class="ms-6">
-				{# Vérifie s'il y a des erreurs pour ce champ #}
-				{% set hasErrors = form_errors(form.day)|length > 0 %}
-				{# Ajoute une classe "text-red" si des erreurs sont présentes #}
-				{% set labelClass = hasErrors ? 'text-red-700 dark:text-red-500' : 'text-gray-900' %}
+                <!-- Supplément -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <span class="flex items-center">
+                            <svg class="w-4 h-4 mr-2 text-pink-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"/>
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd"/>
+                            </svg>
+                            Suppléments (optionnel)
+                        </span>
+                    </label>
+                    <div class="space-y-2">
+                        {{ form_widget(form.supplement) }}
+                    </div>
+                    {{ form_errors(form.supplement) }}
+                </div>
 
-				<span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -start-3 ring-8 ring-white">
-					<svg class="w-2.5 h-2.5 text-blue-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewbox="0 0 20 20">
-						<path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
-					</svg>
-				</span>
-				<h3 class="mb-1 text-lg font-semibold">
-					{{ form_label(form.day, 'Date du rendez-vous') }}
-					{# Affiche le message d'erreur à côté du label s'il y en a #}
-					{% if hasErrors %}
-						<span class="text-red-600 dark:text-red-500 ml-2 font-normal">
-							|
-							{{ form_errors(form.day) }}
-						</span>
-					{% endif %}
-				</h3>
+                <!-- Image -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <span class="flex items-center">
+                            <svg class="w-4 h-4 mr-2 text-pink-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
+                            </svg>
+                            Photo de vos ongles *
+                        </span>
+                    </label>
+                    {{ form_widget(form.image, {'attr': {'class': 'block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none focus:border-pink-500 py-3 px-4'}}) }}
+                    {{ form_errors(form.image) }}
+                    <p class="text-xs text-gray-500 mt-1">{{ form_help(form.image) }}</p>
+                </div>
+            </div>
+        </div>
 
-				{# Ajouter une classe "border-red" si des erreurs sont présentes #}
-				{% set inputClass = hasErrors ? 'border border-red-500' : 'border border-gray-300' %}
-				<input name="{{ field_name(form.day) }}" value="{{ field_value(form.day) }}" placeholder="Cliquez pour choisir une date de rendez-vous" class="bg-gray-50 {{ inputClass }} text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" id="datepicker">
-			</li>
+        <!-- Actions -->
+        <div class="pt-6 border-t border-gray-200">
+            <div class="flex items-center justify-end space-x-3">
+                <a href="{{ path('app_home') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                    Annuler
+                </a>
+                <button type="submit" class="inline-flex items-center px-6 py-2 bg-pink-600 hover:bg-pink-700 text-white font-medium rounded-lg text-sm transition-colors">
+                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                    Suivant
+                </button>
+            </div>
+        </div>
 
+        {{ form_widget(form._token) }}
+        {{ form_end(form, {'render_rest': false}) }}
+    </div>
+</div>
 
-			<li
-				class="ms-6">
-				{# Vérifier s'il y a des erreurs pour ce champ #}
-				{% set hasErrors = form_errors(form.creneau)|length > 0 %}
+<!-- Section d'aide -->
+<div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mt-6">
+    <div class="flex">
+        <div class="flex-shrink-0">
+            <svg class="w-5 h-5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+            </svg>
+        </div>
+        <div class="ml-3">
+            <h3 class="text-sm font-medium text-yellow-800">Besoin d'aide ?</h3>
+            <div class="mt-2 text-sm text-yellow-700">
+                <p>En cas de difficultés à réserver votre rendez-vous, contactez-nous directement sur <a href="https://wa.me/22997853512" class="underline font-medium">WhatsApp</a> pour confirmer votre créneau.</p>
+            </div>
+        </div>
+    </div>
+</div>
 
-				{# Ajouter une classe "text-red" si des erreurs sont présentes #}
-				{% set labelClass = hasErrors ? 'text-red-700 dark:text-red-500' : 'text-gray-900' %}
+{% block javascripts %}
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
+<script>
+    flatpickr("#datepicker", {
+        defaultDate: null,
+        enableTime: false,
+        dateFormat: "Y-m-d",
+        altInput: true,
+        altFormat: "j F Y",
+        inline: true,
+        locale: "fr",
+        minDate: "today",
+        disable: [
+            function(date) {
+                return (date.getDay() === 1); // Désactiver lundi
+            },
+            function(date) {
+                return (date.getDay() === 0); // Désactiver dimanche
+            }
+        ]
+    });
+</script>
 
-				<span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -start-3 ring-8 ring-white">
-					<svg class="w-2.5 h-2.5 text-blue-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewbox="0 0 20 20">
-						<path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
-					</svg>
-				</span>
-				<h3 class="my-2 text-lg font-semibold text-gray-900">
-					{{form_label(form.creneau, 'Choisissez votre créneau')}}
-					-
-					<span class="text-sm font-normal text-gray-900">
-						Choisir une date d'abord</span>
-					{% if hasErrors %}
-						<span class="text-red-600 dark:text-red-500 ml-2 font-normal">
-							|
-							{{ form_errors(form.creneau) }}
-						</span>
-					{% endif %}
-				</h3>
-				<time class="block mb-2 text-sm font-normal leading-none text-gray-400"></time>
-				<div id="slots-container">
-					<p class="text-base font-normal text-gray-500" id="test">
-						{{ form_widget(form.creneau) }}
-					</p>
-				</div>
-			</li>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var datePicker = document.getElementById('datepicker');
+        var slotsContainer = document.getElementById('slots-container');
 
-			<li class="mb-10 ms-6">
-				<span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -start-3 ring-8 ring-white">
-					<svg class="w-2.5 h-2.5 text-blue-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewbox="0 0 20 20">
-						<path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
-					</svg>
-				</span>
-				<h3 class="mb-1 text-lg font-semibold text-gray-900">{{form_label(form.supplement, 'Choisissez votre supplément')}}</h3>
-				<time class="block mb-2 text-sm font-normal leading-none text-gray-400"></time>
-				<p class="text-base font-normal text-gray-500" id="test">
-					{{ form_widget(form.supplement) }}
-				</p>
-			</li>
-			<li class="ms-6">
-				<span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -start-3 ring-8 ring-white">
-					<svg class="w-2.5 h-2.5 text-blue-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewbox="0 0 20 20">
-						<path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
-					</svg>
-				</span>
-				<h3 class="mb-1 text-lg font-semibold text-gray-900">{{form_label(form.image)}}</h3>
-				<time class="block mb-2 text-sm font-normal leading-none text-gray-400"></time>
-				<p class="text-base font-normal text-gray-500">
-					{{ form_widget(form.image) }}
-				</p>
-				<p>
-					{{ form_help(form.image) }}
-				</p>
-			</li>
-		</ol>
+        datePicker.addEventListener('change', function() {
+            var selectedDate = datePicker.value;
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/get-available-slots', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        var slots = JSON.parse(xhr.responseText);
+                        updateSlotsDropdown(slots);
+                    } else {
+                        console.error('Erreur lors de la récupération des créneaux disponibles');
+                    }
+                }
+            };
+            xhr.send('date=' + selectedDate);
+        });
 
-		<button type="submit" class="btn btn-primary mt-5 text-white bg-pink-700 hover:bg-pink-500 focus:ring-4 focus:outline-none  font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center">Suivant</button>
-		{{ form_widget(form._token) }}
-		{{ form_end(form, {'render_rest': false}) }}
+        function updateSlotsDropdown(slots) {
+            slotsContainer.innerHTML = '';
 
-		<h5 class="text-xl text-center font-normal mb-5">
-			En cas de
-			<strong class="text-pink-500">difficultés</strong>
-			à booker votre rendez-vous sur le site, consultez les disponibilités, choisissez le créneau voulu et contactez nous
-			<strong>
-				<a class="text-pink-500 underline" href="https://wa.me/22997853512">ICI</a>
-			</strong>
-			pour confirmer votre rendez-vous.
-		</h5>
-	</div>
+            if (slots.length === 0) {
+                var noSlotsParagraph = document.createElement('p');
+                noSlotsParagraph.textContent = 'Aucun créneau disponible pour cette date';
+                noSlotsParagraph.className = 'text-red-600 mt-2 text-sm';
+                slotsContainer.appendChild(noSlotsParagraph);
+            } else {
+                var selectElement = document.createElement('select');
+                selectElement.id = 'rendezvous_creneau';
+                selectElement.name = 'rendezvous[creneau]';
+                selectElement.className = 'block w-full rounded-lg border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500 sm:text-sm py-3 px-4';
 
+                var defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.text = 'Sélectionnez un créneau';
+                selectElement.appendChild(defaultOption);
 
-{% endblock %}
+                slots.forEach(function(slot) {
+                    var option = document.createElement('option');
+                    option.value = slot.id;
+                    option.text = slot.libelle;
+                    selectElement.appendChild(option);
+                });
 
-{%  block javascripts %}
+                slotsContainer.appendChild(selectElement);
+            }
+        }
 
-	<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
-	<script>
-		flatpickr("#datepicker", {
-defaultDate: null,
-enableTime: false,
-dateFormat: "Y-m-d",
-altInput: true,
-altFormat: "j F Y",
-inline: true,
-locale: "fr",
-minDate: "today",
-disable: [
-function (date) { // Retourne true pour désactiver les samedis
-return(date.getDay() === 1);
-},
-function (date) { // Retourne true pour désactiver les dimanches
-return(date.getDay() === 0);
-}
-]
-});
-	</script>
-
-	<script>
-		document.addEventListener('DOMContentLoaded', function () {
-var datePicker = document.getElementById('datepicker');
-var slotsContainer = document.getElementById('slots-container'); // Nouveau conteneur
-
-datePicker.addEventListener('change', function () {
-var selectedDate = datePicker.value;
-var xhr = new XMLHttpRequest();
-xhr.open('POST', '/get-available-slots', true);
-xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-xhr.onreadystatechange = function () {
-if (xhr.readyState === XMLHttpRequest.DONE) {
-if (xhr.status === 200) {
-var slots = JSON.parse(xhr.responseText);
-updateSlotsDropdown(slots);
-} else {
-console.error('Erreur lors de la récupération des créneaux disponibles');
-}
-}
-};
-xhr.send('date=' + selectedDate);
-});
-
-function updateSlotsDropdown(slots) {
-slotsContainer.innerHTML = '';
-// Efface le contenu du conteneur
-
-// Si la liste de créneaux est vide
-if (slots.length === 0) {
-var noSlotsParagraph = document.createElement('p');
-noSlotsParagraph.textContent = 'Aucun créneau disponible pour cette date';
-noSlotsParagraph.className = 'text-red-600 dark:text-red-500 mt-2';
-// Ajoutez des classes si nécessaire
-
-// Ajoute le paragraphe au conteneur
-slotsContainer.appendChild(noSlotsParagraph);
-} else {
-var selectElement = document.createElement('select'); // Crée un élément select
-selectElement.id = 'rendezvous_creneau';
-selectElement.name = 'rendezvous[creneau]'; // Ajoute le nom
-selectElement.className = 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5'; // Ajoute les classes
-
-slots.forEach(function (slot) {
-var option = document.createElement('option');
-option.value = slot.id;
-option.text = slot.libelle;
-selectElement.appendChild(option);
-});
-
-// Ajoute le nouvel élément select au conteneur
-slotsContainer.appendChild(selectElement);
-}
-}
-});
-	</script>
-
-
+        // Gestion de la dépendance catégorie -> prestation
+        let categorie = document.querySelector("#rendezvous_categorie");
+        if (categorie) {
+            categorie.addEventListener("change", function(){
+                let form = this.closest("form");
+                let data = this.name + "=" + this.value;
+                
+                fetch(form.action, {
+                    method: form.getAttribute("method"),
+                    body: data,
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded; charset:UTF-8"
+                    }
+                })
+                .then(response => response.text())
+                .then(html => {
+                    let content = document.createElement("html");
+                    content.innerHTML = html;
+                    let nouveauSelect = content.querySelector("#rendezvous_prestation");
+                    document.querySelector("#rendezvous_prestation").replaceWith(nouveauSelect);
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+            });
+        }
+    });
+</script>
 {% endblock %}
 
 {% block stylesheets %}
-	<style>
-		/* Media queries pour ajuster Flatpickr avec Tailwind CSS */
-		.flatpickr-calendar {
-			width: 300px; /* Ajustez la largeur selon vos besoins */
-			font-size: 14px; /* Ajustez la taille de la police selon vos besoins */
-		}
-		/* Pour les écrans moyens et plus grands */
-		@media(min-width: 640px) {
-			/* Ajustement de la taille de l'élément Flatpickr */
-			.flatpickr-calendar {
-				width: 300px; /* Ajustez la largeur selon vos besoins */
-				font-size: 16px; /* Ajustez la taille de la police selon vos besoins */
-			}
-		}
-
-		.flatpickr-calendar .flatpickr-day.today {
-			background-color: transparent !important; /* Pour rendre le fond transparent */
-			border: none !important; /* Pour supprimer la bordure */
-		}
-
-		/* Pour les écrans plus petits */
-		@media(max-width: 767px) {
-
-			;
-			/* Ajustement de la taille de l'élément Flatpickr pour les petits écrans */
-
-		}
-	</style>
+<style>
+    /* Styles pour Flatpickr */
+    .flatpickr-calendar {
+        width: 300px;
+        font-size: 14px;
+    }
+    
+    @media (min-width: 640px) {
+        .flatpickr-calendar {
+            width: 300px;
+            font-size: 16px;
+        }
+    }
+    
+    .flatpickr-calendar .flatpickr-day.today {
+        background-color: transparent !important;
+        border: none !important;
+    }
+    
+    /* Styles pour les checkboxes des suppléments */
+    .form-check {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-check input[type="checkbox"] {
+        width: 1rem;
+        height: 1rem;
+        margin-right: 0.5rem;
+        border-radius: 0.25rem;
+        border: 1px solid #d1d5db;
+        color: #ec4899;
+    }
+    
+    .form-check input[type="checkbox"]:focus {
+        ring-color: #ec4899;
+        border-color: #ec4899;
+    }
+</style>
 {% endblock %}

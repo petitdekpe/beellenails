@@ -66,6 +66,51 @@ class RendezvousRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * Trouve les rendez-vous réellement reportés dans une période donnée
+     * Un rendez-vous est considéré comme reporté s'il a été modifié avec un délai significatif
+     * après sa création, indiquant probablement un changement de date/créneau
+     *
+     * @param \DateTime $startDate
+     * @param \DateTime $endDate
+     * @return Rendezvous[]
+     */
+    public function findRescheduledAppointments(\DateTime $startDate, \DateTime $endDate): array
+    {
+        // Récupérer tous les rendez-vous modifiés dans la période
+        $results = $this->createQueryBuilder('r')
+            ->join('r.user', 'u')
+            ->join('r.prestation', 'p')
+            ->join('r.creneau', 'c')
+            ->where('r.updated_at BETWEEN :start AND :end')
+            ->andWhere('r.updated_at != r.created_at')
+            ->andWhere('r.status IN (:activeStatuses)')
+            ->setParameter('start', $startDate->format('Y-m-d 00:00:00'))
+            ->setParameter('end', $endDate->format('Y-m-d 23:59:59'))
+            ->setParameter('activeStatuses', ['Rendez-vous confirmé', 'Rendez-vous pris'])
+            ->orderBy('r.updated_at', 'DESC')
+            ->getQuery()
+            ->getResult();
+
+        // Filtrer en PHP les rendez-vous avec un délai significatif (> 10 minutes)
+        $rescheduledAppointments = [];
+        foreach ($results as $rendezvous) {
+            $createdAt = $rendezvous->getCreatedAt();
+            $updatedAt = $rendezvous->getUpdatedAt();
+            
+            // Calculer la différence en minutes
+            $diff = $updatedAt->getTimestamp() - $createdAt->getTimestamp();
+            $diffMinutes = $diff / 60;
+            
+            // Garder seulement ceux modifiés plus de 10 minutes après création
+            if ($diffMinutes > 10) {
+                $rescheduledAppointments[] = $rendezvous;
+            }
+        }
+        
+        return $rescheduledAppointments;
+    }
+
     
 
 

@@ -1,189 +1,173 @@
-<html>
-	<head>
-		<meta charset="UTF-8">
-		<title>
-			{% block title %}Tableau de bord
-			{% endblock %}
-		</title>
+{% extends 'base.html.twig' %}
 
-		<link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
-		<link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
-		<link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
-		<link rel="manifest" href="/favicon/site.webmanifest">
-		<link rel="mask-icon" href="/favicon/safari-pinned-tab.svg" color="#5bbad5">
-		<meta name="msapplication-TileColor" content="#da532c">
-		<meta name="theme-color" content="#ffffff">
-		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+{% block title %}Dashboard - Ajouter un congé (Journée){% endblock %}
 
+{% block body %}
+<div class="min-h-screen bg-gray-50">
+    <div class="flex">
+        <!-- Sidebar -->
+        {% include '_sidebar.html.twig' %}
+        
+        <!-- Main Content -->
+        <div class="flex-1 lg:ml-8">
+            <div class="px-4 py-6 sm:px-6 lg:px-8">
+                <!-- Header -->
+                <div class="mb-6">
+                    <h1 class="text-2xl font-bold text-gray-900">🌴 Ajouter un congé (Journée)</h1>
+                    <p class="text-sm text-gray-600">Bloquez tous les créneaux d'une journée complète</p>
+                </div>
 
-		<script src="https://cdn.tailwindcss.com"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.js"></script>
+                <!-- Navigation -->
+                <nav class="mb-6" aria-label="Breadcrumb">
+                    <ol class="flex items-center space-x-2 text-sm">
+                        <li><a href="{{ path('app_dashboard_conges') }}" class="text-gray-500 hover:text-gray-700">Congés</a></li>
+                        <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
+                        <li class="text-gray-900 font-medium">Ajouter (Journée)</li>
+                    </ol>
+                </nav>
 
-		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-		<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
-		<script src="https://npmcdn.com/flatpickr/dist/l10n/fr.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+                <!-- Flash Messages -->
+                {% for type, messages in app.flashes %}
+                    {% for message in messages %}
+                        <div class="mb-6 p-4 text-sm rounded-lg {% if type == 'success' %}text-green-800 bg-green-50 border border-green-200{% elseif type == 'warning' %}text-yellow-800 bg-yellow-50 border border-yellow-200{% else %}text-red-800 bg-red-50 border border-red-200{% endif %}">
+                            <div class="flex items-center">
+                                {% if type == 'success' %}
+                                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                    </svg>
+                                {% elseif type == 'warning' %}
+                                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                    </svg>
+                                {% else %}
+                                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                    </svg>
+                                {% endif %}
+                                {{ message }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endfor %}
 
+                <!-- Formulaire principal -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h2 class="text-lg font-medium text-gray-900">Sélectionner la date</h2>
+                        <p class="text-sm text-gray-500 mt-1">Choisissez la date pour laquelle vous souhaitez prendre congé</p>
+                    </div>
+                    <div class="px-6 py-6">
+                        {{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
+                        
+                        <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0">
+                                    <svg class="w-5 h-5 text-blue-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                    </svg>
+                                </div>
+                                <div class="ml-3">
+                                    <h3 class="text-sm font-medium text-blue-900">Information importante</h3>
+                                    <p class="text-sm text-blue-700 mt-1">
+                                        En sélectionnant une date, tous les créneaux de cette journée seront bloqués. 
+                                        Assurez-vous qu'il n'y a pas de rendez-vous confirmés pour cette date.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
 
-		<style>
-			/* Pour les libellés des mois */
-			.fc-toolbar-title,
-			.fc-col-header-cell-cushion {
-				text-transform: capitalize;
-			}
-		</style>
+                        <div class="space-y-4">
+                            <div>
+                                {{ form_label(form.date, 'Date du congé', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-2'}}) }}
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                                        </svg>
+                                    </div>
+                                    <input type="text" name="{{ field_name(form.date) }}" value="{{ field_value(form.date) }}" 
+                                           placeholder="Cliquez pour choisir un jour de congé" 
+                                           class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-pink-500 focus:border-pink-500 block w-full pl-10 p-3" 
+                                           id="datepicker" readonly>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-1">Seuls les jours ouvrables (mardi à samedi) sont sélectionnables</p>
+                            </div>
+                        </div>
 
-		<script src="https://cdn.fedapay.com/checkout.js?v=1.1.7"></script>
-		<script src="/js/preline.js"></script>
+                        <div class="flex items-center justify-between pt-6 border-t border-gray-200">
+                            <a href="{{ path('app_dashboard_conges') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M7.707 14.707a1 1 0 01-1.414 0L2.586 11l3.707-3.707a1 1 0 011.414 1.414L5.414 11l2.293 2.293a1 1 0 010 1.414z" clip-rule="evenodd"/>
+                                </svg>
+                                Retour
+                            </a>
+                            <button type="submit" class="inline-flex items-center px-6 py-2 bg-orange-600 hover:bg-orange-700 text-white font-medium rounded-lg text-sm transition-colors">
+                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                </svg>
+                                Planifier le congé
+                            </button>
+                        </div>
 
-		<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
-		<script src='fullcalendar/core/locales/fr.global.js'></script>
+                        {{ form_widget(form._token) }}
+                        {{ form_end(form, {'render_rest': false}) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
 
+{% block javascripts %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
 
-	</head>
-
-
-	<body class="bg-gray-100">
-		<div class="flex min-h-screen w-full">
-			{% block body %}
-
-				<button data-drawer-target="default-sidebar" data-drawer-toggle="default-sidebar" aria-controls="default-sidebar" type="button" class="inline-flex items-center p-2 mt-2 ms-3 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
-					<span class="sr-only">Open sidebar</span>
-					<svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-						<path clip-rule="evenodd" fill-rule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"></path>
-					</svg>
-				</button>
-
-				{% include '_sidebar.html.twig' %}
-
-				<div class="flex-1">
-					<div class="relative overflow-hidden w-full min-h-[70px] bg-pink-500"></div>
-					<div class="flex flex-row justify-between items-center">
-						<h4 class="text-2xl font-bold p-4">Congés</h4>
-						<a href="{{ path('app_dashboard_add_user') }}" class="text-sm p-4"></a>
-					</div>
-					<div class="px-4">
-
-						<div class="max-w-xl mx-8">
-							{{ form_start(form) }}
-
-							<ol class="relative border-s border-gray-200">
-
-								<li class="ms-6">
-									<span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -start-3 ring-8 ring-white">
-										<svg class="w-2.5 h-2.5 text-blue-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewbox="0 0 20 20">
-											<path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
-										</svg>
-									</span>
-									<h3 class="mb-1 text-lg font-semibold text-gray-900">{{ form_label(form.date, 'Date du congé') }}</h3>
-									<time class="block mb-2 text-sm font-normal leading-none text-gray-400"></time>
-									<input name="{{ field_name(form.date) }}" value="{{ field_value(form.date) }}" placeholder="Cliquez pour choisir un jour de congé" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5" id="datepicker">
-
-								</li>
-							</ol>
-
-							<button type="submit" class="btn btn-primary mt-5 text-white bg-pink-700 hover:bg-pink-500 focus:ring-4 focus:outline-none  font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center">Enregistrer</button>
-
-							{{ form_widget(form._token) }}
-							{{ form_end(form, {'render_rest': false}) }}
-
-						</div>
-					</div>
-
-				{% endblock %}
-
-				{%  block javascripts %}
-
-					<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
-					<script>
-						flatpickr("#datepicker", {
-defaultDate: null,
-enableTime: false,
-dateFormat: "Y-m-d",
-altInput: true,
-altFormat: "j F Y",
-inline: true,
-locale: "fr",
-minDate: "today",
-disable: [
-function (date) { // Retourne true pour désactiver les samedis
-return(date.getDay() === 1);
-},
-function (date) { // Retourne true pour désactiver les dimanches
-return(date.getDay() === 0);
-}
-]
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    flatpickr("#datepicker", {
+        defaultDate: null,
+        enableTime: false,
+        dateFormat: "Y-m-d",
+        altInput: true,
+        altFormat: "l j F Y",
+        inline: false,
+        locale: "fr",
+        minDate: "today",
+        disable: [
+            function(date) { 
+                return (date.getDay() === 1); // Lundi
+            },
+            function(date) { 
+                return (date.getDay() === 0); // Dimanche
+            }
+        ],
+        theme: "light"
+    });
 });
-					</script>
+</script>
 
-					<script>
-						document.addEventListener('DOMContentLoaded', function () {
-var datePicker = document.getElementById('datepicker');
-datePicker.addEventListener('change', function () {
-var selectedDate = datePicker.value;
-var xhr = new XMLHttpRequest();
-xhr.open('POST', '/get-available-slots', true);
-xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-xhr.onreadystatechange = function () {
-if (xhr.readyState === XMLHttpRequest.DONE) {
-if (xhr.status === 200) {
-var slots = JSON.parse(xhr.responseText);
-updateSlotsDropdown(slots);
-} else {
-console.error('Erreur lors de la récupération des créneaux disponibles');
+<style>
+.flatpickr-calendar {
+    font-family: inherit;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e5e7eb;
 }
+
+.flatpickr-day.today {
+    background: #fef3f2;
+    border-color: #ec4899;
+    color: #ec4899;
 }
-};
-xhr.send('date=' + selectedDate);
-});
 
-function updateSlotsDropdown(slots) {
-var slotsDropdown = document.getElementById('pre_rendezvous_creneau');
-slotsDropdown.innerHTML = ''; // Efface les options actuelles
-var selectElement = document.createElement('select'); // Crée un élément select
-selectElement.id = 'pre_rendezvous_creneau';
-selectElement.name = 'pre_rendezvous[creneau]'; // Ajoute le nom
-selectElement.className = 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5'; // Ajoute les classes
-slots.forEach(function (slot) {
-var option = document.createElement('option');
-option.value = slot.id;
-option.text = slot.libelle;
-selectElement.appendChild(option);
-});
-slotsDropdown.replaceWith(selectElement); // Remplace la liste existante par le nouveau select
+.flatpickr-day.selected {
+    background: #ec4899;
+    border-color: #ec4899;
 }
-});
-					</script>
 
-
-				{% endblock %}
-
-				{% block stylesheets %}
-					<style>
-						/* Media queries pour ajuster Flatpickr avec Tailwind CSS */
-						.flatpickr-calendar {
-							width: 300px; /* Ajustez la largeur selon vos besoins */
-							font-size: 14px; /* Ajustez la taille de la police selon vos besoins */
-						}
-						/* Pour les écrans moyens et plus grands */
-						@media(min-width: 640px) {
-							/* Ajustement de la taille de l'élément Flatpickr */
-							.flatpickr-calendar {
-								width: 300px; /* Ajustez la largeur selon vos besoins */
-								font-size: 16px; /* Ajustez la taille de la police selon vos besoins */
-							}
-						}
-						.flatpickr-calendar .flatpickr-day.today {
-
-							border: none !important; /* Pour supprimer la bordure */
-						}
-
-						/* Pour les écrans plus petits */
-						@media(max-width: 767px) {
-
-							;
-							/* Ajustement de la taille de l'élément Flatpickr pour les petits écrans */
-
-						}
-					</style>
-				{% endblock %}
+.flatpickr-day:hover {
+    background: #fdf2f8;
+}
+</style>
+{% endblock %}

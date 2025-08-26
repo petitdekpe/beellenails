@@ -180,8 +180,20 @@
                                     {% for client in new_clients %}
                                         <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
                                             <div>
-                                                <p class="font-medium text-gray-900">{{ client.Nom }} {{ client.Prenom }}</p>
-                                                <p class="text-sm text-gray-600">{{ client.email }}</p>
+                                                <p class="font-medium text-gray-900">
+                                                    {% if client %}
+                                                        {{ client.Nom }} {{ client.Prenom }}
+                                                    {% else %}
+                                                        Client supprimé
+                                                    {% endif %}
+                                                </p>
+                                                <p class="text-sm text-gray-600">
+                                                    {% if client %}
+                                                        {{ client.email }}
+                                                    {% else %}
+                                                        N/A
+                                                    {% endif %}
+                                                </p>
                                             </div>
                                             <span class="text-xs text-blue-600 font-medium">
                                                 Nouveau client
@@ -240,7 +252,13 @@
                                         <div class="space-y-2">
                                             {% for payment in payments %}
                                                 <div class="flex items-center justify-between p-2 bg-green-50 rounded text-sm">
-                                                    <span>{{ payment.customer.fullName }}</span>
+                                                    <span>
+                                                        {% if payment.customer %}
+                                                            {{ payment.customer.fullName }}
+                                                        {% else %}
+                                                            Client supprimé
+                                                        {% endif %}
+                                                    </span>
                                                     <span class="font-medium">{{ payment.rendezvous.totalCost|number_format(0, ',', ' ') }} FCFA</span>
                                                 </div>
                                             {% endfor %}

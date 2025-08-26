@@ -98,7 +98,11 @@
                                                         <div class="flex-shrink-0 h-10 w-10">
                                                             <div class="h-10 w-10 rounded-full bg-pink-100 flex items-center justify-center">
                                                                 <span class="text-sm font-medium text-pink-600">
-                                                                    {{ user.Prenom|slice(0, 1)|upper }}{{ user.Nom|slice(0, 1)|upper }}
+                                                                    {% if user.Prenom and user.Nom %}
+                                                                        {{ user.Prenom|slice(0, 1)|upper }}{{ user.Nom|slice(0, 1)|upper }}
+                                                                    {% else %}
+                                                                        N/A
+                                                                    {% endif %}
                                                                 </span>
                                                             </div>
                                                         </div>

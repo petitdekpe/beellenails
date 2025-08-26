@@ -64,14 +64,17 @@
 	{% if app.request.attributes.get('_route') starts with 'app_dashboard' %}
 		<body>
 	{% else %}
-		<body class="mt-8">
+		<body>
 	{% endif %}
 		{% if app.request.attributes.get('_route') in ['app_new_rendezvous', 'app_recap', 'app_calendar'] %}
 			{{ include('navbis.html.twig') }}
-		{% elseif app.request.attributes.get('_route') starts with 'app_dashboard' %}
-			{# Pas de navbar pour les pages dashboard #}
+		{% elseif app.request.attributes.get('_route') starts with 'app_dashboard' or app.request.attributes.get('_route') == 'app_admin_rdv' %}
+			{# Pas de navbar pour les pages dashboard et admin rdv #}
+		{% elseif app.request.attributes.get('_route') in ['app_login', 'app_register', 'app_prestation_new', 'app_formation_new', 'app_rendezvous_edit', 'app_admin_rdv_edit'] %}
+			{# Pas de navbar pour login/register/prestation_new/formation_new/rendezvous_edit/admin_rdv_edit #}
+		{# Les pages reset password auront la navbar maintenant #}
 		{% else %}
-			{{ include('nav.html.twig') }}
+			{{ include('navbar.html.twig') }}
 		{% endif %}
 		{% block body %}{% endblock %}
 
@@ -87,7 +90,9 @@
 
 	</body>
 
-	{% if not (app.request.attributes.get('_route') starts with 'app_dashboard') %}
+	{% if not (app.request.attributes.get('_route') starts with 'app_dashboard') 
+		and app.request.attributes.get('_route') not in ['app_login', 'app_register', 'app_prestation_new', 'app_formation_new']
+		and not (app.request.attributes.get('_route') starts with 'app_forgot_password' or app.request.attributes.get('_route') starts with 'app_reset_password') %}
 	<footer class="p-4 bg-pink-700 md:p-8 lg:p-10">
 		<div class="mx-auto max-w-screen-xl text-center">
 			<a href="#" class="flex justify-center items-center text-2xl font-semibold text-gray-900">

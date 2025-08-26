@@ -60,6 +60,7 @@
                                         <option value="Reporté" {% if status == 'Reporté' %}selected{% endif %}>Reporté</option>
                                         <option value="Paiement en attente" {% if status == 'Paiement en attente' %}selected{% endif %}>Paiement en attente</option>
                                         <option value="Échec du paiement" {% if status == 'Échec du paiement' %}selected{% endif %}>Échec du paiement</option>
+                                        <option value="Tentative" {% if status == 'Tentative' %}selected{% endif %}>Tentative</option>
                                     </select>
                                 </div>
                             </div>
@@ -159,15 +160,29 @@
                                                         <div class="flex-shrink-0 h-8 w-8">
                                                             <div class="h-8 w-8 rounded-full bg-pink-100 flex items-center justify-center">
                                                                 <span class="text-xs font-medium text-pink-600">
-                                                                    {{ rdv.user.Prenom|slice(0, 1)|upper }}{{ rdv.user.Nom|slice(0, 1)|upper }}
+                                                                    {% if rdv.user %}
+                                                                        {{ rdv.user.Prenom|slice(0, 1)|upper }}{{ rdv.user.Nom|slice(0, 1)|upper }}
+                                                                    {% else %}
+                                                                        N/A
+                                                                    {% endif %}
                                                                 </span>
                                                             </div>
                                                         </div>
                                                         <div class="ml-3">
                                                             <div class="text-sm font-medium text-gray-900">
-                                                                {{ rdv.user.fullName }}
+                                                                {% if rdv.user %}
+                                                                    {{ rdv.user.fullName }}
+                                                                {% else %}
+                                                                    Utilisateur supprimé
+                                                                {% endif %}
                                                             </div>
-                                                            <div class="text-sm text-gray-500">{{ rdv.user.email }}</div>
+                                                            <div class="text-sm text-gray-500">
+                                                                {% if rdv.user %}
+                                                                    {{ rdv.user.email }}
+                                                                {% else %}
+                                                                    N/A
+                                                                {% endif %}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </td>
@@ -188,6 +203,7 @@
                                                         'Échec du paiement': 'bg-red-200 text-red-900',
                                                         'Tentative échoué': 'bg-red-100 text-red-800',
                                                         'Tentative échouée': 'bg-red-100 text-red-800',
+                                                        'Tentative': 'bg-orange-100 text-orange-800',
                                                         'Congé': 'bg-purple-100 text-purple-800'
                                                     } %}
                                                     {% set status_class = status_colors[rdv.status] ?: 'bg-gray-100 text-gray-800' %}

@@ -74,19 +74,8 @@ class DashboardOverviewController extends AbstractController
             ->getResult();
 
         // 4. Liste des rendez-vous reportés dans la période
-        $rescheduledAppointments = $rendezvousRepository->createQueryBuilder('r')
-            ->join('r.user', 'u')
-            ->join('r.prestation', 'p')
-            ->join('r.creneau', 'c')
-            ->where('r.updated_at BETWEEN :start AND :end')
-            ->andWhere('r.updated_at != r.created_at')
-            ->andWhere('r.status IN (:activeStatuses)')
-            ->setParameter('start', $startDate->format('Y-m-d 00:00:00'))
-            ->setParameter('end', $endDate->format('Y-m-d 23:59:59'))
-            ->setParameter('activeStatuses', ['Rendez-vous confirmé', 'Rendez-vous pris'])
-            ->orderBy('r.updated_at', 'DESC')
-            ->getQuery()
-            ->getResult();
+        // Utilise une méthode dédiée du repository pour identifier les vrais reports
+        $rescheduledAppointments = $rendezvousRepository->findRescheduledAppointments($startDate, $endDate);
 
         // 5. Liste des clients créés dans la période (par date de création de compte)
         $newClients = $userRepository->createQueryBuilder('u')

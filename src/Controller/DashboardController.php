@@ -133,8 +133,7 @@ class DashboardController extends AbstractController
         $queryBuilder = $rendezvousRepository->createQueryBuilder('r')
             ->leftJoin('r.user', 'u')
             ->leftJoin('r.prestation', 'p')
-            ->orderBy('r.day', 'DESC')
-            ->addOrderBy('r.updated_at', 'DESC');
+            ->orderBy('r.updated_at', 'DESC');
             
         // Recherche par nom du client
         if ($search) {
@@ -338,7 +337,7 @@ class DashboardController extends AbstractController
                 ->subject('Votre Rendez-vous !')
                 ->html($this->renderView(
                     'emails/rendezvous_updated.html.twig',
-                    ['rendezvou' => $rendezvou]
+                    ['rendezvous' => $rendezvou]
                 ));
             $mailer->send($email);
 
@@ -432,6 +431,61 @@ class DashboardController extends AbstractController
         $entityManager->flush();
         // Redirection vers la liste des rendez-vous
         return $this->redirectToRoute('app_dashboard_rendezvous');
+    }
+
+    //Afficher la liste des congés dans le dashboard
+    #[Route('/dashboard/conges', name: 'app_dashboard_conges', methods: ['GET'])]
+    public function conges(RendezvousRepository $rendezvousRepository, EntityManagerInterface $entityManager): Response
+    {
+        // Récupérer tous les congés
+        $congesQuery = $rendezvousRepository->createQueryBuilder('r')
+            ->where('r.status = :status')
+            ->setParameter('status', 'Congé')
+            ->orderBy('r.day', 'ASC')
+            ->addOrderBy('r.creneau', 'ASC')
+            ->getQuery();
+            
+        $conges = $congesQuery->getResult();
+        
+        // Regrouper les congés par date
+        $congesByDay = [];
+        $creneauxByDay = [];
+        
+        foreach ($conges as $conge) {
+            $dayKey = $conge->getDay()->format('Y-m-d');
+            
+            if (!isset($congesByDay[$dayKey])) {
+                $congesByDay[$dayKey] = [];
+                $creneauxByDay[$dayKey] = [];
+            }
+            
+            $congesByDay[$dayKey][] = $conge;
+            $creneauxByDay[$dayKey][] = $conge->getCreneau();
+        }
+        
+        // Pour chaque jour, vérifier si tous les créneaux sont en congé
+        $processedConges = [];
+        
+        // Récupérer tous les créneaux disponibles pour comparaison
+        $allCreneaux = $entityManager->getRepository(\App\Entity\Creneau::class)->findAll();
+        $totalCreneaux = count($allCreneaux);
+        
+        foreach ($congesByDay as $dayKey => $dayConges) {
+            $day = new \DateTime($dayKey);
+            $creneauxCount = count($dayConges);
+            
+            $processedConges[] = [
+                'date' => $day,
+                'isFullDay' => $creneauxCount >= $totalCreneaux,
+                'conges' => $dayConges,
+                'creneauxCount' => $creneauxCount
+            ];
+        }
+
+        return $this->render('dashboard/conges_list.html.twig', [
+            'processedConges' => $processedConges,
+            'totalCreneaux' => $totalCreneaux
+        ]);
     }
 
     //Afficher la liste des formations dans le dashboard

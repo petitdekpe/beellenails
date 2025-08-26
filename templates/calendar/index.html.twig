@@ -1,18 +1,48 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Prendre RDV{% endblock %}
-{% block stylesheets %}
-
-{% endblock %}
-
+{% block title %}Prendre Rendez-vous{% endblock %}
 
 {% block body %}
-<div class="relative overflow-hidden w-full min-h-[90px] bg-white rounded-lg"></div>
-<div class="flex content-center">
-  <div class="mt-12 mb-12 flex flex-col justify-center content-center">
-  <h2 class="text-2xl font-bold mb-5 text-center">Prendre Rendez-vous</h2>
-    {{ include('rendezvous/_form.html.twig') }}
-  </div>
+<div class="min-h-screen bg-gray-50 pt-20">
+    <!-- Main Content -->
+    <div class="max-w-6xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+                <!-- Header -->
+                <div class="mb-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">📅 Prendre Rendez-vous</h1>
+                            <p class="text-sm text-gray-600">Réservez votre créneau pour vos soins d'ongles</p>
+                        </div>
+                        <a href="{{ path('app_home') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M9.707 14.707a1 1 0 01-1.414 0L2.586 9l5.707-5.707a1 1 0 011.414 1.414L5.414 9l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/>
+                            </svg>
+                            Retour à l'accueil
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Informations importantes -->
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="w-5 h-5 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-blue-800">Informations importantes</h3>
+                            <div class="mt-2 text-sm text-blue-700 space-y-1">
+                                <p>• Consultez la <strong>description</strong>, le <strong>contenu</strong> et les <strong>tarifs</strong> de nos prestations avant de réserver</p>
+                                <p>• En cas de difficultés, contactez-nous sur <a href="https://wa.me/22997853512" class="underline font-medium">WhatsApp</a> pour confirmer votre rendez-vous</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+        <!-- Formulaire de réservation -->
+        {{ include('rendezvous/_form.html.twig') }}
+    </div>
 </div>
 {% endblock %}
 

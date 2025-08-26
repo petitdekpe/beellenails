@@ -1,11 +1,155 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New User{% endblock %}
+{% block title %}Dashboard - Ajouter un client{% endblock %}
 
 {% block body %}
-    <h1>Create new User</h1>
+<div class="min-h-screen bg-gray-50">
+    <div class="flex">
+        <!-- Sidebar -->
+        {% include '_sidebar.html.twig' %}
+        
+        <!-- Main Content -->
+        <div class="flex-1 lg:ml-8">
+            <div class="px-4 py-6 sm:px-6 lg:px-8">
+                <!-- Header -->
+                <div class="mb-6">
+                    <h1 class="text-2xl font-bold text-gray-900">👤 Ajouter un client</h1>
+                    <p class="text-sm text-gray-600">Créez un nouveau profil client</p>
+                </div>
 
-    {{ include('user/_form.html.twig') }}
+                <!-- Navigation -->
+                <nav class="mb-6" aria-label="Breadcrumb">
+                    <ol class="flex items-center space-x-2 text-sm">
+                        <li><a href="{{ path('app_dashboard') }}" class="text-gray-500 hover:text-gray-700">Dashboard</a></li>
+                        <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
+                        <li><a href="{{ path('app_dashboard_user') }}" class="text-gray-500 hover:text-gray-700">Clients</a></li>
+                        <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
+                        <li class="text-gray-900 font-medium">Ajouter</li>
+                    </ol>
+                </nav>
 
-    <a href="{{ path('app_user_index') }}">back to list</a>
+                <!-- Flash Messages -->
+                {% for type, messages in app.flashes %}
+                    {% for message in messages %}
+                        <div class="mb-6 p-4 text-sm rounded-lg {% if type == 'success' %}text-green-800 bg-green-50 border border-green-200{% elseif type == 'warning' %}text-yellow-800 bg-yellow-50 border border-yellow-200{% else %}text-red-800 bg-red-50 border border-red-200{% endif %}">
+                            <div class="flex items-center">
+                                {% if type == 'success' %}
+                                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                    </svg>
+                                {% elseif type == 'warning' %}
+                                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                    </svg>
+                                {% else %}
+                                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                    </svg>
+                                {% endif %}
+                                {{ message }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+
+                <!-- Formulaire principal -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h2 class="text-lg font-medium text-gray-900">📋 Informations client</h2>
+                        <p class="text-sm text-gray-500 mt-1">Complétez les informations du nouveau client</p>
+                    </div>
+                    <div class="px-6 py-6">
+                        {{ include('user/_form_new.html.twig') }}
+                    </div>
+                </div>
+
+                <!-- Actions alternatives -->
+                <div class="mt-6 bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h2 class="text-lg font-medium text-gray-900">⚡ Actions rapides</h2>
+                    </div>
+                    <div class="px-6 py-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <a href="{{ path('app_dashboard_user') }}" class="block p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                                <div class="flex items-start">
+                                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                                        <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" clip-rule="evenodd"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-medium text-gray-900">Voir tous les clients</h3>
+                                        <p class="text-sm text-gray-500 mt-1">Consultez la liste complète</p>
+                                    </div>
+                                </div>
+                            </a>
+                            
+                            <a href="{{ path('app_rendezvous_new') }}" class="block p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                                <div class="flex items-start">
+                                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                                        <svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-medium text-gray-900">Créer un rendez-vous</h3>
+                                        <p class="text-sm text-gray-500 mt-1">Planifiez directement un rendez-vous</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Vérifier si l'élément birthdayPicker existe (champ texte)
+    const birthdayInput = document.getElementById('birthdayPicker');
+    if (birthdayInput && birthdayInput.tagName === 'INPUT') {
+        // Initialiser Flatpickr pour la date de naissance
+        const picker = flatpickr("#birthdayPicker", {
+            enableTime: false,
+            dateFormat: "Y-m-d",
+            altInput: true,
+            altFormat: "l j F Y",
+            locale: "fr",
+            maxDate: "today",
+            theme: "light"
+        });
+    }
+});
+</script>
+
+<style>
+.flatpickr-calendar {
+    font-family: inherit;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e5e7eb;
+}
+
+.flatpickr-day.today {
+    background: #fef3f2;
+    border-color: #ec4899;
+    color: #ec4899;
+}
+
+.flatpickr-day.selected {
+    background: #ec4899;
+    border-color: #ec4899;
+}
+
+.flatpickr-day:hover {
+    background: #fdf2f8;
+}
+</style>
 {% endblock %}
