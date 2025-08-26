@@ -1,54 +1,240 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}User{% endblock %}
+{% block title %}{{ user.fullName }} - Client{% endblock %}
 
 {% block body %}
-    <h1>User</h1>
+<div class="min-h-screen bg-gray-50">
+    <div class="flex">
+        <!-- Sidebar -->
+        {% include '_sidebar.html.twig' %}
+        
+        <!-- Main Content -->
+        <div class="flex-1 lg:ml-8">
+            <div class="px-4 py-6 sm:px-6 lg:px-8">
+                <!-- Header intégré -->
+                <div class="mb-6">
+                    <h1 class="text-2xl font-bold text-gray-900">{{ user.fullName }}</h1>
+                    <p class="text-sm text-gray-600">Profil client - Membre depuis {{ user.createdAt|date('F Y') }}</p>
+                </div>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ user.id }}</td>
-            </tr>
-            <tr>
-                <th>Email</th>
-                <td>{{ user.email }}</td>
-            </tr>
-            <tr>
-                <th>Roles</th>
-                <td>{{ user.roles ? user.roles|json_encode : '' }}</td>
-            </tr>
-            <tr>
-                <th>Password</th>
-                <td>{{ user.password }}</td>
-            </tr>
-            <tr>
-                <th>Nom</th>
-                <td>{{ user.Nom }}</td>
-            </tr>
-            <tr>
-                <th>Prenom</th>
-                <td>{{ user.Prenom }}</td>
-            </tr>
-            <tr>
-                <th>Phone</th>
-                <td>{{ user.Phone }}</td>
-            </tr>
-            <tr>
-                <th>Birthday</th>
-                <td>{{ user.birthday ? user.birthday|date('Y-m-d') : '' }}</td>
-            </tr>
-            <tr>
-                <th>Genre</th>
-                <td>{{ user.genre }}</td>
-            </tr>
-        </tbody>
-    </table>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    
+                    <!-- Informations personnelles -->
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-medium text-gray-900">
+                                👤 Informations personnelles
+                            </h3>
+                        </div>
+                        <div class="px-6 py-4">
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-start">
+                                    <span class="text-sm font-medium text-gray-600">ID:</span>
+                                    <span class="text-sm text-gray-900 font-mono">#{{ user.id }}</span>
+                                </div>
+                                
+                                <div class="flex justify-between items-start">
+                                    <span class="text-sm font-medium text-gray-600">Nom complet:</span>
+                                    <span class="text-sm text-gray-900 font-medium">{{ user.fullName }}</span>
+                                </div>
+                                
+                                <div class="flex justify-between items-start">
+                                    <span class="text-sm font-medium text-gray-600">Prénom:</span>
+                                    <span class="text-sm text-gray-900">{{ user.Prenom }}</span>
+                                </div>
+                                
+                                <div class="flex justify-between items-start">
+                                    <span class="text-sm font-medium text-gray-600">Nom:</span>
+                                    <span class="text-sm text-gray-900">{{ user.Nom }}</span>
+                                </div>
+                                
+                                {% if user.genre %}
+                                <div class="flex justify-between items-start">
+                                    <span class="text-sm font-medium text-gray-600">Genre:</span>
+                                    <span class="text-sm text-gray-900">{{ user.genre }}</span>
+                                </div>
+                                {% endif %}
+                                
+                                {% if user.birthday %}
+                                <div class="flex justify-between items-start">
+                                    <span class="text-sm font-medium text-gray-600">Date de naissance:</span>
+                                    <span class="text-sm text-gray-900">{{ user.birthday|date('d/m/Y') }}</span>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
 
-    <a href="{{ path('app_user_index') }}">back to list</a>
+                    <!-- Informations de contact -->
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-medium text-gray-900">
+                                📞 Contact
+                            </h3>
+                        </div>
+                        <div class="px-6 py-4">
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-start">
+                                    <span class="text-sm font-medium text-gray-600">Email:</span>
+                                    <a href="mailto:{{ user.email }}" class="text-sm text-pink-600 hover:text-pink-800">{{ user.email }}</a>
+                                </div>
+                                
+                                <div class="flex justify-between items-start">
+                                    <span class="text-sm font-medium text-gray-600">Téléphone:</span>
+                                    <a href="tel:{{ user.Phone }}" class="text-sm text-pink-600 hover:text-pink-800">{{ user.Phone }}</a>
+                                </div>
+                                
+                                <div class="flex justify-between items-start">
+                                    <span class="text-sm font-medium text-gray-600">Inscrit le:</span>
+                                    <span class="text-sm text-gray-900">{{ user.createdAt|date('d/m/Y à H:i') }}</span>
+                                </div>
+                                
+                                {% if 'ROLE_ADMIN' in user.roles %}
+                                <div class="flex justify-between items-start">
+                                    <span class="text-sm font-medium text-gray-600">Statut:</span>
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                        👑 Administrateur
+                                    </span>
+                                </div>
+                                {% else %}
+                                <div class="flex justify-between items-start">
+                                    <span class="text-sm font-medium text-gray-600">Statut:</span>
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                        👤 Client
+                                    </span>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
 
-    <a href="{{ path('app_user_edit', {'id': user.id}) }}">edit</a>
+                    <!-- Statistiques des rendez-vous -->
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-medium text-gray-900">
+                                📊 Rendez-vous
+                            </h3>
+                        </div>
+                        <div class="px-6 py-4">
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-gray-600">Total rendez-vous:</span>
+                                    <span class="text-lg font-bold text-blue-600">{{ user.rendezvouses|length }}</span>
+                                </div>
+                                
+                                {% set confirmedAppointments = user.rendezvouses|filter(rdv => rdv.status in ['Rendez-vous confirmé', 'Validé']) %}
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-gray-600">Confirmés:</span>
+                                    <span class="text-lg font-bold text-green-600">{{ confirmedAppointments|length }}</span>
+                                </div>
+                                
+                                {% set cancelledAppointments = user.rendezvouses|filter(rdv => rdv.status == 'Annulé') %}
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-gray-600">Annulés:</span>
+                                    <span class="text-lg font-bold text-red-600">{{ cancelledAppointments|length }}</span>
+                                </div>
+                                
+                                {% set pendingAppointments = user.rendezvouses|filter(rdv => rdv.status == 'Rendez-vous pris') %}
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-gray-600">En attente:</span>
+                                    <span class="text-lg font-bold text-orange-600">{{ pendingAppointments|length }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-    {{ include('user/_delete_form.html.twig') }}
+                    <!-- Derniers rendez-vous -->
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-medium text-gray-900">
+                                📅 Derniers rendez-vous
+                            </h3>
+                        </div>
+                        <div class="px-6 py-4 max-h-64 overflow-y-auto">
+                            {% if user.rendezvouses|length > 0 %}
+                                {% set recentAppointments = user.rendezvouses|slice(0, 5) %}
+                                <div class="space-y-3">
+                                    {% for rdv in recentAppointments %}
+                                        {% set status_classes = {
+                                            'Rendez-vous pris': 'bg-blue-50 text-blue-700',
+                                            'Rendez-vous confirmé': 'bg-green-50 text-green-700',
+                                            'Annulé': 'bg-red-50 text-red-700',
+                                            'Reporté': 'bg-orange-50 text-orange-700',
+                                            'Validé': 'bg-purple-50 text-purple-700'
+                                        } %}
+                                        {% set bg_class = status_classes[rdv.status] ?: 'bg-gray-50' %}
+                                        <div class="flex items-center justify-between p-3 {{ bg_class|split(' ')[0] }} rounded-lg">
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-900">{{ rdv.prestation.title }}</p>
+                                                <p class="text-xs {{ bg_class|split(' ')[1] ?: 'text-gray-600' }} font-medium">{{ rdv.status }}</p>
+                                            </div>
+                                            <div class="text-right">
+                                                <p class="text-sm font-medium text-gray-900">{{ rdv.day|date('d/m/Y') }}</p>
+                                                <p class="text-xs text-gray-600">{{ rdv.creneau.startTime|date('H:i') }}</p>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <p class="text-gray-500 italic text-center">Aucun rendez-vous</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Historique des paiements -->
+                    <div class="bg-white rounded-lg shadow lg:col-span-2">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-medium text-gray-900">
+                                💳 Historique des paiements
+                            </h3>
+                        </div>
+                        <div class="px-6 py-4 max-h-64 overflow-y-auto">
+                            {% if user.payments|length > 0 %}
+                                <div class="space-y-3">
+                                    {% for payment in user.payments %}
+                                        <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-900">{{ payment.rendezvous.prestation.title }}</p>
+                                                <p class="text-xs text-gray-600">{{ payment.createdAt|date('d/m/Y à H:i') }}</p>
+                                            </div>
+                                            <div class="text-right">
+                                                <p class="text-lg font-bold text-green-600">{{ payment.rendezvous.totalCost|number_format(0, ',', ' ') }} FCFA</p>
+                                                <p class="text-xs text-green-600">Payé</p>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <p class="text-gray-500 italic text-center">Aucun paiement enregistré</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Actions -->
+                <div class="mt-6 flex justify-between items-center">
+                    <a href="{{ path('app_dashboard_user') }}" 
+                       class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                        ← Retour à la liste
+                    </a>
+                    
+                    <div class="flex space-x-3">
+                        <a href="{{ path('app_user_edit', {'id': user.id}) }}" 
+                           class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-pink-600 border border-transparent rounded-lg hover:bg-pink-700">
+                            ✏️ Modifier
+                        </a>
+                        
+                        <div class="bg-white rounded-lg shadow p-4">
+                            <div class="flex items-center space-x-3">
+                                <span class="text-sm text-gray-600">Supprimer:</span>
+                                {{ include('user/_delete_form.html.twig') }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

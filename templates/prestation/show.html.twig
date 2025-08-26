@@ -1,34 +1,183 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Prestation{% endblock %}
+{% block title %}{{ prestation.title }} - Prestation{% endblock %}
 
 {% block body %}
-    <h1>Prestation</h1>
+<div class="min-h-screen bg-gray-50">
+    <div class="flex">
+        <!-- Sidebar -->
+        {% include '_sidebar.html.twig' %}
+        
+        <!-- Main Content -->
+        <div class="flex-1 lg:ml-8">
+            <div class="px-4 py-6 sm:px-6 lg:px-8">
+                <!-- Header intégré -->
+                <div class="mb-6">
+                    <h1 class="text-2xl font-bold text-gray-900">{{ prestation.title }}</h1>
+                    <p class="text-sm text-gray-600">Détails de la prestation</p>
+                </div>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ prestation.id }}</td>
-            </tr>
-            <tr>
-                <th>Title</th>
-                <td>{{ prestation.Title }}</td>
-            </tr>
-            <tr>
-                <th>Price</th>
-                <td>{{ prestation.price }}</td>
-            </tr>
-            <tr>
-                <th>Duration</th>
-                <td>{{ prestation.duration }}</td>
-            </tr>
-        </tbody>
-    </table>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    
+                    <!-- Informations principales -->
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-medium text-gray-900">
+                                📋 Informations principales
+                            </h3>
+                        </div>
+                        <div class="px-6 py-4">
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-start">
+                                    <span class="text-sm font-medium text-gray-600">ID:</span>
+                                    <span class="text-sm text-gray-900 font-mono">#{{ prestation.id }}</span>
+                                </div>
+                                
+                                <div class="flex justify-between items-start">
+                                    <span class="text-sm font-medium text-gray-600">Titre:</span>
+                                    <span class="text-sm text-gray-900 font-medium">{{ prestation.title }}</span>
+                                </div>
+                                
+                                {% if prestation.categoryPrestation %}
+                                <div class="flex justify-between items-start">
+                                    <span class="text-sm font-medium text-gray-600">Catégorie:</span>
+                                    <span class="text-sm text-gray-900">{{ prestation.categoryPrestation.nomCategory }}</span>
+                                </div>
+                                {% endif %}
+                                
+                                <div class="flex justify-between items-start">
+                                    <span class="text-sm font-medium text-gray-600">Prix:</span>
+                                    <span class="text-lg font-bold text-green-600">{{ prestation.price|number_format(0, ',', ' ') }} FCFA</span>
+                                </div>
+                                
+                                <div class="flex justify-between items-start">
+                                    <span class="text-sm font-medium text-gray-600">Durée:</span>
+                                    <span class="text-sm text-gray-900 font-medium">{{ prestation.duration }} minutes</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-    <a href="{{ path('app_prestation_index') }}">back to list</a>
+                    <!-- Description -->
+                    {% if prestation.description %}
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-medium text-gray-900">
+                                📝 Description
+                            </h3>
+                        </div>
+                        <div class="px-6 py-4">
+                            <p class="text-gray-700 leading-relaxed">{{ prestation.description|nl2br }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
 
-    <a href="{{ path('app_prestation_edit', {'id': prestation.id}) }}">edit</a>
+                    <!-- Inclus -->
+                    {% if prestation.inclus %}
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-medium text-gray-900">
+                                ✅ Inclus dans la prestation
+                            </h3>
+                        </div>
+                        <div class="px-6 py-4">
+                            <p class="text-gray-700 leading-relaxed">{{ prestation.inclus|nl2br }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
 
-    {{ include('prestation/_delete_form.html.twig') }}
+                    <!-- Images -->
+                    {% if prestation.imageName or prestation.imageName2 or prestation.imageName3 %}
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-medium text-gray-900">
+                                📷 Images
+                            </h3>
+                        </div>
+                        <div class="px-6 py-4">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                {% if prestation.imageName %}
+                                <div class="aspect-square bg-gray-100 rounded-lg overflow-hidden">
+                                    <img src="{{ asset('assets/images/prestations/' ~ prestation.imageName) }}" 
+                                         alt="Image 1 - {{ prestation.title }}"
+                                         class="w-full h-full object-cover">
+                                </div>
+                                {% endif %}
+                                
+                                {% if prestation.imageName2 %}
+                                <div class="aspect-square bg-gray-100 rounded-lg overflow-hidden">
+                                    <img src="{{ asset('assets/images/prestations/' ~ prestation.imageName2) }}" 
+                                         alt="Image 2 - {{ prestation.title }}"
+                                         class="w-full h-full object-cover">
+                                </div>
+                                {% endif %}
+                                
+                                {% if prestation.imageName3 %}
+                                <div class="aspect-square bg-gray-100 rounded-lg overflow-hidden">
+                                    <img src="{{ asset('assets/images/prestations/' ~ prestation.imageName3) }}" 
+                                         alt="Image 3 - {{ prestation.title }}"
+                                         class="w-full h-full object-cover">
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Statistiques des rendez-vous -->
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-medium text-gray-900">
+                                📊 Statistiques
+                            </h3>
+                        </div>
+                        <div class="px-6 py-4">
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-gray-600">Total rendez-vous:</span>
+                                    <span class="text-lg font-bold text-blue-600">{{ prestation.rendezvouses|length }}</span>
+                                </div>
+                                
+                                {% set confirmedAppointments = prestation.rendezvouses|filter(rdv => rdv.status in ['Rendez-vous confirmé', 'Validé']) %}
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-gray-600">Confirmés:</span>
+                                    <span class="text-lg font-bold text-green-600">{{ confirmedAppointments|length }}</span>
+                                </div>
+                                
+                                {% set cancelledAppointments = prestation.rendezvouses|filter(rdv => rdv.status == 'Annulé') %}
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-gray-600">Annulés:</span>
+                                    <span class="text-lg font-bold text-red-600">{{ cancelledAppointments|length }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Actions -->
+                <div class="mt-6 flex justify-between items-center">
+                    <a href="{{ path('app_dashboard_prestation') }}" 
+                       class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                        ← Retour à la liste
+                    </a>
+                    
+                    <div class="flex space-x-3">
+                        <a href="{{ path('app_prestation_edit', {'id': prestation.id}) }}" 
+                           class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-pink-600 border border-transparent rounded-lg hover:bg-pink-700">
+                            ✏️ Modifier
+                        </a>
+                        
+                        <div class="bg-white rounded-lg shadow p-4">
+                            <div class="flex items-center space-x-3">
+                                <span class="text-sm text-gray-600">Supprimer:</span>
+                                {{ include('prestation/_delete_form.html.twig') }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

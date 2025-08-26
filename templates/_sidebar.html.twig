@@ -1,7 +1,9 @@
 <aside class="w-64 bg-white shadow-md hidden sm:block">
 	<div class="h-full overflow-y-auto px-4 py-6">
 		<div class="flex justify-center mb-6">
-			<img src="{{ asset('assets/logooff.png') }}" class="h-20" alt="Logo">
+			<a href="{{ path('app_home') }}">
+				<img src="{{ asset('assets/logooff.png') }}" class="h-20" alt="Logo">
+			</a>
 		</div>
 
 		{% set route = app.request.attributes.get('_route') %}

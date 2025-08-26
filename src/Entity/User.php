@@ -41,7 +41,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255)]
     private ?string $Phone = null;
 
-    #[ORM\OneToMany(mappedBy: 'User', targetEntity: Rendezvous::class)]
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Rendezvous::class)]
     private Collection $rendezvouses;
 
     #[ORM\OneToMany(mappedBy: 'customer', targetEntity: Payment::class)]
