@@ -1,0 +1,83 @@
+{% extends 'emails/base_email.html.twig' %}
+
+{% block title %}Rappel : Rendez-vous demain - BeElle Nails{% endblock %}
+
+{% block preheader %}N'oubliez pas votre rendez-vous demain chez BeElle Nails !{% endblock %}
+
+{% block header_title %}Rappel de dernière minute ⏰{% endblock %}
+
+{% block header_subtitle %}À demain pour votre moment beauté{% endblock %}
+
+{% block content %}
+    <div class="greeting">
+        Bonjour {{ rendezvous.user.prenom }} {{ rendezvous.user.nom }} ! 👋
+    </div>
+
+    <div class="content-text">
+        Ce message pour vous rappeler que vous avez <strong>rendez-vous demain</strong> chez BeElle Nails Care.
+        Nous sommes impatients de vous accueillir pour ce moment privilégié !
+    </div>
+
+    <div class="info-box">
+        <div class="info-title">
+            🗓️ Votre rendez-vous de demain
+        </div>
+        <div class="info-item">
+            <span class="info-label">Prestation :</span>
+            <span class="info-value">{{ rendezvous.prestation.title }}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Date :</span>
+            <span class="info-value">{{ rendezvous.day|date('d/m/Y') }}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Heure :</span>
+            <span class="info-value">{{ rendezvous.creneau.startTime|date('H:i') }} - {{ rendezvous.creneau.endTime|date('H:i') }}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Durée estimée :</span>
+            <span class="info-value">{{ rendezvous.prestation.duration }} minutes</span>
+        </div>
+    </div>
+
+    <div class="content-text">
+        <strong>📍 Adresse :</strong><br>
+        Vodjè, 2ème rue après la clinique de l'union en allant à Gbegamey,<br>
+        au fond de la rue à droite, <strong>portail rose</strong><br>
+        Cotonou, Bénin
+    </div>
+
+    <div class="content-text">
+        <strong>💡 Conseils pour demain :</strong>
+    </div>
+    <div class="content-text">
+        • Prévoyez d'arriver <strong>5 minutes en avance</strong><br>
+        • Évitez de mettre du vernis la veille si vous venez pour une manucure<br>
+        • Pensez à retirer vos bijoux (bagues, bracelets) avant la prestation<br>
+        • Venez avec des ongles propres et sans résidus de colle<br>
+        • Portez des vêtements confortables
+    </div>
+
+    <div class="content-text">
+        <strong>⏰ Horaires d'ouverture :</strong><br>
+        Du lundi au samedi : 8h00 - 19h00<br>
+        Fermé le dimanche
+    </div>
+
+    <div class="content-text">
+        <strong>🚨 Besoin d'annuler ou reporter à la dernière minute ?</strong><br>
+        Merci de nous contacter <strong>au plus vite</strong> au <strong>+229 97 85 35 12</strong> ou via WhatsApp.<br>
+        <em>Toute annulation moins de 4h avant le rendez-vous sera facturée.</em>
+    </div>
+
+    <div class="btn-container">
+        <a href="https://beellenails.com/users" class="btn-primary">
+            Voir mes rendez-vous
+        </a>
+    </div>
+
+    <div class="content-text">
+        Nous nous réjouissons de vous accueillir demain pour ce moment de détente et de beauté ! 💅✨<br><br>
+        <strong>L'équipe BeElle Nails Care</strong>
+    </div>
+{% endblock %}

@@ -1,3 +1,4 @@
+{% if is_granted('ROLE_ADMIN') %}
 <aside class="w-64 bg-white shadow-md hidden sm:block">
 	<div class="h-full overflow-y-auto px-4 py-6">
 		<div class="flex justify-center mb-6">
@@ -112,3 +113,4 @@
 		</ul>
 	</div>
 </aside>
+{% endif %}

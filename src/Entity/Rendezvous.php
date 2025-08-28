@@ -70,6 +70,13 @@ class Rendezvous
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
     private ?string $totalCost = null;
 
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $previousDay = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Creneau $previousCreneau = null;
+
     public function __construct()
     {
         $this->payments = new ArrayCollection();
@@ -291,5 +298,49 @@ class Rendezvous
         $this->updateTimestamps();
 
         return $this;
+    }
+
+    public function getPreviousDay(): ?\DateTimeInterface
+    {
+        return $this->previousDay;
+    }
+
+    public function setPreviousDay(?\DateTimeInterface $previousDay): self
+    {
+        $this->previousDay = $previousDay;
+        $this->updateTimestamps();
+
+        return $this;
+    }
+
+    public function getPreviousCreneau(): ?Creneau
+    {
+        return $this->previousCreneau;
+    }
+
+    public function setPreviousCreneau(?Creneau $previousCreneau): self
+    {
+        $this->previousCreneau = $previousCreneau;
+        $this->updateTimestamps();
+
+        return $this;
+    }
+
+    /**
+     * Sauvegarde les anciennes informations avant modification
+     */
+    public function saveCurrentAsHistory(): self
+    {
+        $this->previousDay = $this->day;
+        $this->previousCreneau = $this->creneau;
+        return $this;
+    }
+
+    /**
+     * Vérifie si le rendez-vous a été reporté (a des informations historiques)
+     */
+    public function isRescheduled(): bool
+    {
+        return $this->previousDay !== null || $this->previousCreneau !== null;
     }
 }

@@ -81,6 +81,10 @@ class RendezvousController extends AbstractController
     #[Route('/{id}/edit', name: 'app_rendezvous_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Rendezvous $rendezvous, EntityManagerInterface $entityManager, MailerInterface $mailer): Response
     {
+        // Sauvegarder les anciennes informations avant la modification
+        $originalDay = $rendezvous->getDay();
+        $originalCreneau = $rendezvous->getCreneau();
+        
         // Création d'un formulaire personnalisé avec seulement les champs 'day' et 'creneau'
         $form = $this->createForm(RendezvousModifyType::class, $rendezvous);
         $form->handleRequest($request);
@@ -97,6 +101,10 @@ class RendezvousController extends AbstractController
                 $this->addFlash('error', 'Un rendez-vous est déjà pris ou confirmé pour cette date et ce créneau.');
                 return $this->redirectToRoute('app_rendezvous_edit', ['id' => $rendezvous->getId()]);
             }
+
+            // Sauvegarder l'historique des modifications
+            $rendezvous->setPreviousDay($originalDay);
+            $rendezvous->setPreviousCreneau($originalCreneau);
 
             // Persistance des changements en base de données
             $entityManager->flush();
@@ -118,7 +126,7 @@ class RendezvousController extends AbstractController
             // Envoyer l'e-mail à l'admin
             $adminEmail = (new Email())
                 ->from('beellenailscare@beellenails.com')
-                ->to('murielahodode@gmail.com')
+                ->to('jy.ahouanvoedo@gmail.com')
                 ->subject('Rendez-vous modifié par le client')
                 ->html($this->renderView(
                     'emails/rendezvous_updated_admin.html.twig',

@@ -311,7 +311,21 @@
               <tr>
                 <td class="wrapper">
                   <p>Cher(e) Administrateur,</p>
-                  <p>Je vous informe que votre client: {{ rendezvous.user.fullName }}, a modifié son rendez-vous pour {{ rendezvous.prestation.title }} le {{ rendezvous.day|date("d/m/Y") }} à {{ rendezvous.creneau.startTime|date("H:i") }} - {{ rendezvous.creneau.endTime|date("H:i") }}.</p>
+                  <p>Je vous informe que votre client: {{ rendezvous.user.fullName }}, a modifié son rendez-vous pour {{ rendezvous.prestation.title }}.</p>
+                  
+                  {% if rendezvous.previousDay or rendezvous.previousCreneau %}
+                  <p>
+                    {% if rendezvous.previousDay and rendezvous.previousCreneau %}
+                      Le rendez-vous était initialement prévu le {{ rendezvous.previousDay|date("d/m/Y") }} de {{ rendezvous.previousCreneau.startTime|date("H:i") }} à {{ rendezvous.previousCreneau.endTime|date("H:i") }}.
+                    {% elseif rendezvous.previousDay %}
+                      Le rendez-vous était initialement prévu le {{ rendezvous.previousDay|date("d/m/Y") }}.
+                    {% elseif rendezvous.previousCreneau %}
+                      Le rendez-vous était initialement prévu de {{ rendezvous.previousCreneau.startTime|date("H:i") }} à {{ rendezvous.previousCreneau.endTime|date("H:i") }}.
+                    {% endif %}
+                  </p>
+                  {% endif %}
+                  
+                  <p>Le nouveau rendez-vous est maintenant programmé le {{ rendezvous.day|date("d/m/Y") }} de {{ rendezvous.creneau.startTime|date("H:i") }} à {{ rendezvous.creneau.endTime|date("H:i") }}.</p>
                   <p>Cordialement,<br>L'équipe BeElle.</p>
                   <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn btn-primary">
                     <tbody>

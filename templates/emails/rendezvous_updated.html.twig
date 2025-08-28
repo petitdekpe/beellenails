@@ -14,41 +14,33 @@
     </div>
 
     <div class="content-text">
-        Nous vous informons que votre rendez-vous chez <strong>BeElle Nails Care</strong> a été modifié.
-        Voici les nouvelles informations :
+        Nous vous informons que votre rendez-vous chez <strong>BeElle Nails Care</strong> pour {{ rendezvous.prestation.title }} a été modifié.
     </div>
 
-    <div class="info-box">
-        <div class="info-title">
-            Nouvelles informations
-        </div>
-        <div class="info-item">
-            <span class="info-label">Prestation :</span>
-            <span class="info-value">{{ rendezvous.prestation.title }}</span>
-        </div>
-        <div class="info-item">
-            <span class="info-label">Nouvelle date :</span>
-            <span class="info-value">{{ rendezvous.day|date('d/m/Y') }}</span>
-        </div>
-        <div class="info-item">
-            <span class="info-label">Nouvel horaire :</span>
-            <span class="info-value">{{ rendezvous.creneau.startTime|date('H:i') }}</span>
-        </div>
+    {% if rendezvous.previousDay or rendezvous.previousCreneau %}
+    <div class="content-text">
+        <strong>📅 Informations précédentes :</strong>
+        {% if rendezvous.previousDay and rendezvous.previousCreneau %}
+            Votre rendez-vous était initialement prévu le {{ rendezvous.previousDay|date('d/m/Y') }} à {{ rendezvous.previousCreneau.startTime|date('H:i') }}.
+        {% elseif rendezvous.previousDay %}
+            Votre rendez-vous était initialement prévu le {{ rendezvous.previousDay|date('d/m/Y') }}.
+        {% elseif rendezvous.previousCreneau %}
+            Votre rendez-vous était initialement prévu à {{ rendezvous.previousCreneau.startTime|date('H:i') }}.
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <div class="content-text">
+        <strong>✅ Nouvelles informations :</strong><br>
+        Votre rendez-vous pour {{ rendezvous.prestation.title }} est maintenant programmé le <strong>{{ rendezvous.day|date('d/m/Y') }}</strong> à <strong>{{ rendezvous.creneau.startTime|date('H:i') }}</strong>.
     </div>
 
     <div class="content-text">
-        <strong>📍 Adresse (inchangée) :</strong><br>
-        Vodjè, 2ème rue après la clinique de l'union en allant à Gbegamey,<br>
-        au fond de la rue à droite, <strong>portail rose</strong><br>
-        Cotonou, Bénin
+        L'adresse reste inchangée : rendez-vous à Vodjè, 2ème rue après la clinique de l'union en allant à Gbegamey, au fond de la rue à droite, <strong>portail rose</strong>, Cotonou, Bénin. 📍
     </div>
 
     <div class="content-text">
-        <strong>💡 Important :</strong><br>
-        • Notez bien la nouvelle date et heure<br>
-        • Arrivez 5 minutes avant l'heure<br>
-        • En cas de question, contactez-nous immédiatement<br>
-        • Merci de votre flexibilité ! 🙏
+        Merci de noter bien votre nouvelle date et heure, d'arriver 5 minutes avant l'heure prévue et de nous contacter immédiatement en cas de question. Merci pour votre flexibilité ! 🙏💡
     </div>
 
     <div class="btn-container">
@@ -58,9 +50,7 @@
     </div>
 
     <div class="content-text">
-        Si vous avez des questions concernant cette modification :<br>
-        📞 <strong>+229 97 85 35 12</strong><br>
-        💬 <strong>WhatsApp disponible 7j/7</strong>
+        Pour toute question concernant cette modification, n'hésitez pas à nous contacter au <strong>+229 97 85 35 12</strong> ou via <strong>WhatsApp disponible 7j/7</strong>. 📞💬
     </div>
 
     <div class="content-text">

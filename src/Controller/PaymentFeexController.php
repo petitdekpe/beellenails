@@ -58,7 +58,7 @@ class PaymentFeexController extends AbstractController
                 'rendezvous_id' => $rendezvous->getId(),
                 'form_errors' => $form->getErrors(true, false)
             ]);
-            
+
             return $this->render('feexpay/form.html.twig', [
                 'form' => $form->createView(),
                 'rendezvous' => $rendezvous,
@@ -99,7 +99,7 @@ class PaymentFeexController extends AbstractController
                 'response' => $response,
                 'error_message' => $response['message'] ?? 'Erreur FeexPay'
             ]);
-            
+
             return $this->render('feexpay/form.html.twig', [
                 'form' => $form->createView(),
                 'rendezvous' => $rendezvous,
@@ -277,7 +277,7 @@ class PaymentFeexController extends AbstractController
             // Email admin
             $adminEmail = (new Email())
                 ->from('beellenailscare@beellenails.com')
-                ->to('murielahodode@gmail.com')
+                ->to('jy.ahouanvoedo@gmail.com')
                 ->subject('Nouveau Rendez-vous !')
                 ->html($this->renderView('emails/rendezvous_created_admin.html.twig', [
                     'rendezvous' => $rendezvous

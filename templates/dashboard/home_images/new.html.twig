@@ -9,7 +9,7 @@
         {% include '_sidebar.html.twig' %}
         
         <!-- Main Content -->
-        <div class="flex-1 lg:ml-8">
+        <div class="flex-1 {% if is_granted('ROLE_ADMIN') %}lg:ml-8{% endif %}">
             <div class="px-4 py-6 sm:px-6 lg:px-8">
         
                 <!-- Header intégré -->

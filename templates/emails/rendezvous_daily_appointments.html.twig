@@ -43,9 +43,9 @@
         <tbody>
             {% for appointment in appointments %}
                 <tr>
-                    <td>{{ appointment.User }}</td>
-                    <td>{{ appointment.Creneau }}</td>
-                    <td>{{ appointment.Prestation }}</td>
+                    <td>{{ appointment.user.prenom }} {{ appointment.user.nom }}</td>
+                    <td>{{ appointment.creneau.startTime|date('H:i') }} - {{ appointment.creneau.endTime|date('H:i') }}</td>
+                    <td>{{ appointment.prestation.title }}</td>
                 </tr>
             {% endfor %}
         </tbody>

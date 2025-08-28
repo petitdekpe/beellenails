@@ -37,20 +37,20 @@ class RendezvousRepository extends ServiceEntityRepository
 
     /**
      * Find upcoming appointments with status 'Rendez-vous pris' or 'Rendez-vous confirmé'
-     * and date in two days from now.
+     * scheduled in three days from now (for reminder emails).
      *
      * @return RendezVous[] Returns an array of RendezVous objects
      */
     public function findUpcomingAppointments()
     {
-        $twoDaysFromNow = new \DateTime('2 days');
+        $threeDaysFromNow = new \DateTime('3 days');
         $statusCriteria = ['Rendez-vous pris', 'Rendez-vous confirmé'];
 
         return $this->createQueryBuilder('r')
             ->andWhere('r.status IN (:statuses)')
             ->andWhere('r.day = :day')
             ->setParameter('statuses', $statusCriteria)
-            ->setParameter('day', $twoDaysFromNow->format('Y-m-d')) // Assuming 'day' field is stored as date without time
+            ->setParameter('day', $threeDaysFromNow->format('Y-m-d'))
             ->getQuery()
             ->getResult();
     }
@@ -71,9 +71,9 @@ class RendezvousRepository extends ServiceEntityRepository
     }
 
     /**
-     * Trouve les rendez-vous réellement reportés dans une période donnée
-     * Un rendez-vous est considéré comme reporté s'il a été modifié avec un délai significatif
-     * après sa création, indiquant probablement un changement de date/créneau
+     * Trouve les rendez-vous reportés dans une période donnée
+     * Un rendez-vous est considéré comme reporté s'il a des anciennes informations
+     * de date et/ou créneau sauvegardées
      *
      * @param \DateTime $startDate
      * @param \DateTime $endDate
@@ -81,13 +81,13 @@ class RendezvousRepository extends ServiceEntityRepository
      */
     public function findRescheduledAppointments(\DateTime $startDate, \DateTime $endDate): array
     {
-        // Récupérer tous les rendez-vous modifiés dans la période
-        $results = $this->createQueryBuilder('r')
+        return $this->createQueryBuilder('r')
             ->join('r.user', 'u')
             ->join('r.prestation', 'p')
             ->join('r.creneau', 'c')
+            ->leftJoin('r.previousCreneau', 'pc')
             ->where('r.updated_at BETWEEN :start AND :end')
-            ->andWhere('r.updated_at != r.created_at')
+            ->andWhere('(r.previousDay IS NOT NULL OR r.previousCreneau IS NOT NULL)')
             ->andWhere('r.status IN (:activeStatuses)')
             ->setParameter('start', $startDate->format('Y-m-d 00:00:00'))
             ->setParameter('end', $endDate->format('Y-m-d 23:59:59'))
@@ -95,24 +95,6 @@ class RendezvousRepository extends ServiceEntityRepository
             ->orderBy('r.updated_at', 'DESC')
             ->getQuery()
             ->getResult();
-
-        // Filtrer en PHP les rendez-vous avec un délai significatif (> 10 minutes)
-        $rescheduledAppointments = [];
-        foreach ($results as $rendezvous) {
-            $createdAt = $rendezvous->getCreatedAt();
-            $updatedAt = $rendezvous->getUpdatedAt();
-            
-            // Calculer la différence en minutes
-            $diff = $updatedAt->getTimestamp() - $createdAt->getTimestamp();
-            $diffMinutes = $diff / 60;
-            
-            // Garder seulement ceux modifiés plus de 10 minutes après création
-            if ($diffMinutes > 10) {
-                $rescheduledAppointments[] = $rendezvous;
-            }
-        }
-        
-        return $rescheduledAppointments;
     }
 
     

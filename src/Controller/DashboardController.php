@@ -36,11 +36,11 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
 use Knp\Component\Pager\PaginatorInterface;
 
+#[IsGranted("ROLE_ADMIN")]
 class DashboardController extends AbstractController
 {
     //Liste des rendez-vous dans le calendriers sous forme d'évènements
     #[Route('/dashboard', name: 'app_dashboard')]
-    #[IsGranted("ROLE_ADMIN")]
     public function index(RendezvousRepository $rendezvousRepository): Response
     {
 
@@ -327,11 +327,21 @@ class DashboardController extends AbstractController
     #[Route('/dashboard/rendezvous/{id}/edit', name: 'app_admin_rdv_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Rendezvous $rendezvous, EntityManagerInterface $entityManager, MailerInterface $mailer): Response
     {
+        // Sauvegarder les anciennes informations avant la modification
+        $originalDay = $rendezvous->getDay();
+        $originalCreneau = $rendezvous->getCreneau();
+        
         // Création d'un formulaire personnalisé avec seulement les champs 'day' et 'creneau'
         $form = $this->createForm(RendezvousModifyType::class, $rendezvous);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted()) {
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Toujours sauvegarder l'historique lors d'une modification manuelle
+            // Cela garantit que nous avons les anciennes informations même si
+            // il y a eu des modifications précédentes non enregistrées
+            $rendezvous->setPreviousDay($originalDay);
+            $rendezvous->setPreviousCreneau($originalCreneau);
+            
             // Persistance des changements en base de données
             $entityManager->flush();
 
