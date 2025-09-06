@@ -1,8 +1,14 @@
-{% extends 'base.html.twig' %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Dashboard - Ajouter un congé (Journée){% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
+</head>
+<body>
 
-{% block title %}Dashboard - Ajouter un congé (Journée){% endblock %}
-
-{% block body %}
 <div class="min-h-screen bg-gray-50">
     <div class="flex">
         <!-- Sidebar -->
@@ -117,9 +123,7 @@
         </div>
     </div>
 </div>
-{% endblock %}
 
-{% block javascripts %}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
@@ -170,4 +174,6 @@ document.addEventListener('DOMContentLoaded', function() {
     background: #fdf2f8;
 }
 </style>
-{% endblock %}
+
+</body>
+</html>

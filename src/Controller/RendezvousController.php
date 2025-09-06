@@ -42,6 +42,21 @@ class RendezvousController extends AbstractController
 
 
         if ($form->isSubmitted() && $form->isValid()) {
+            
+            // Vérifier si le créneau est déjà en congé
+            $existingConge = $entityManager->getRepository(Rendezvous::class)->findOneBy([
+                'day' => $rendezvous->getDay(),
+                'creneau' => $rendezvous->getCreneau(),
+                'status' => 'Congé'
+            ]);
+            
+            if ($existingConge) {
+                $this->addFlash('error', 'Ce créneau est indisponible (en congé).');
+                return $this->render('rendezvous/new.html.twig', [
+                    'rendezvous' => $rendezvous,
+                    'form' => $form,
+                ]);
+            }
 
             $entityManager->persist($rendezvous);
             $entityManager->flush();

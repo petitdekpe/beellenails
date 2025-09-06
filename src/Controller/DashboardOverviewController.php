@@ -137,12 +137,16 @@ class DashboardOverviewController extends AbstractController
 
         switch ($periodType) {
             case 'today':
-                // Même jour pour début et fin
+                // Même jour pour début et fin - reset time to start of day
+                $startDate->setTime(0, 0, 0);
+                $endDate->setTime(23, 59, 59);
                 break;
                 
             case 'tomorrow':
                 $startDate = new \DateTime('tomorrow');
                 $endDate = new \DateTime('tomorrow');
+                $startDate->setTime(0, 0, 0);
+                $endDate->setTime(23, 59, 59);
                 break;
                 
             case 'this_week':

@@ -294,6 +294,21 @@ class DashboardController extends AbstractController
                 $this->addFlash('warning', 'Un rendez-vous pour ce jour et créneau existe déjà.');
                 return $this->redirectToRoute('app_calendar');
             }
+            
+            // Vérifier si le créneau est déjà en congé
+            $existingConge = $rendezvousRepository->findOneBy([
+                'day' => $rendezvous->getDay(),
+                'creneau' => $rendezvous->getCreneau(),
+                'status' => 'Congé'
+            ]);
+            
+            if ($existingConge) {
+                $this->addFlash('error', 'Ce créneau est indisponible (en congé).');
+                return $this->render('dashboard/rendezvous/add.html.twig', [
+                    'rendezvous' => $rendezvous,
+                    'form' => $form,
+                ]);
+            }
 
             // Continuer si aucun rendez-vous en conflit n'est trouvé
             $rendezvous->setStatus("Rendez-vous confirmé");

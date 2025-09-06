@@ -30,6 +30,23 @@ class CalendarController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
 
             $formData = $form->getData();
+            
+            // Vérifier si le créneau est déjà en congé
+            $existingConge = $entityManager->getRepository(Rendezvous::class)->findOneBy([
+                'day' => $formData->getDay(),
+                'creneau' => $formData->getCreneau(),
+                'status' => 'Congé'
+            ]);
+            
+            if ($existingConge) {
+                $this->addFlash('error', 'Ce créneau est indisponible (en congé).');
+                return $this->render('calendar/index.html.twig', [
+                    'controller_name' => 'CalendarController',
+                    'rendezvous' => $rendezvous,
+                    'form' => $form,
+                ]);
+            }
+            
             $request->getSession()->set('day',  $form->get('day')->getData());
             $request->getSession()->set('creneau',  $form->get('creneau')->getData());
             $request->getSession()->set('prestation',  $form->get('prestation')->getData());

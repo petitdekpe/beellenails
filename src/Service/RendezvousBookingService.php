@@ -84,8 +84,15 @@ class RendezvousBookingService
             ->setParameter('excludedStatus', ['Annulé', 'Expiré'])
             ->getQuery()
             ->getOneOrNullResult();
+        
+        // Vérifier spécifiquement les congés
+        $existingConge = $this->rendezvousRepository->findOneBy([
+            'creneau' => $creneau,
+            'day' => $date,
+            'status' => 'Congé'
+        ]);
             
-        return $existingAppointment !== null;
+        return $existingAppointment !== null || $existingConge !== null;
     }
     
     /**

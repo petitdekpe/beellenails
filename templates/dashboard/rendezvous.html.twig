@@ -204,11 +204,13 @@
                                                         'Tentative échoué': 'bg-red-100 text-red-800',
                                                         'Tentative échouée': 'bg-red-100 text-red-800',
                                                         'Tentative': 'bg-orange-100 text-orange-800',
-                                                        'Congé': 'bg-purple-100 text-purple-800'
+                                                        'Congé': 'bg-purple-100 text-purple-800',
+                                                        '': 'bg-gray-100 text-gray-800'
                                                     } %}
-                                                    {% set status_class = status_colors[rdv.status] ?: 'bg-gray-100 text-gray-800' %}
+                                                    {% set rdv_status = rdv.status|default('') %}
+                                                    {% set status_class = status_colors[rdv_status] %}
                                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ status_class }}">
-                                                        {{ rdv.status }}
+                                                        {{ rdv.status|default('Non défini') }}
                                                     </span>
                                                     {% if rdv.paid %}
                                                         <div class="text-xs text-green-600 mt-1">✅ Payé</div>

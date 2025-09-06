@@ -104,7 +104,23 @@ class AppointmentController extends AbstractController
             $rendezvous->setDay($day);
             $rendezvous->setCreneau($creneau);
             $rendezvous->setPaid($paid);
-
+            
+            // Vérifier si le créneau est déjà en congé
+            $existingConge = $entityManager->getRepository(Rendezvous::class)->findOneBy([
+                'day' => $day,
+                'creneau' => $creneau,
+                'status' => 'Congé'
+            ]);
+            
+            if ($existingConge) {
+                $this->addFlash('error', 'Ce créneau est indisponible (en congé).');
+                return $this->render('appointment/paiement.html.twig', [
+                    'rendezvous' => $rendezvous,
+                    'form' => $form,
+                    'choixPrestation' => $choixPrestation,
+                    'choixDate' => $choixDate,
+                ]);
+            }
 
             // Enregistrer le rendez-vous
             $entityManager->persist($rendezvous);
