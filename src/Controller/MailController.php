@@ -1,7 +1,7 @@
 <?php
 // SPDX-License-Identifier: Proprietary
 // Copyright (c) 2025 Jean-Yves A.
-// Auteur: Jean-Yves A. <jy.ahouanvoedo@gmail.com>
+// Auteur: Jean-Yves A. <murielahodode@gmail.com>
 
 
 namespace App\Controller;
@@ -28,7 +28,7 @@ class MailController extends AbstractController
     {
             $mail = (new Email())
                 ->from('thebest@demo.test')
-                ->to('jy.ahouanvoedo@gmail.com')
+                ->to('murielahodode@gmail.com')
                 ->subject('Mon beau sujet')
                 ->html('<h1>Tu es bon</h1><br><p>Ceci est mon message pour toi</p>');
     

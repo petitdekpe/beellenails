@@ -1,7 +1,7 @@
 <?php
 // SPDX-License-Identifier: Proprietary
 // Copyright (c) 2025 Jean-Yves A.
-// Auteur: Jean-Yves A. <jy.ahouanvoedo@gmail.com>
+// Auteur: Jean-Yves A. <murielahodode@gmail.com>
 
 
 namespace App\Controller;
@@ -155,7 +155,7 @@ class PaymentController extends AbstractController
 
                 $adminEmail = (new Email())
                     ->from('beellenailscare@beellenails.com')
-                    ->to('jy.ahouanvoedo@gmail.com')
+                    ->to('murielahodode@gmail.com')
                     ->subject('Nouveau Rendez-vous !')
                     ->html($this->renderView('emails/rendezvous_created_admin.html.twig', [
                         'rendezvous' => $rendezvous

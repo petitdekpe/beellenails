@@ -17,7 +17,8 @@
       "Read(/C:\\Users\\flora\\beellenails\\src\\Service/**)",
       "Read(/C:\\Users\\flora\\beellenails\\src\\Service/**)",
       "Read(/C:\\Users\\flora\\beellenails\\src\\Service/**)",
-      "Read(/C:\\Users\\flora\\beellenails\\templates\\dashboard/**)"
+      "Read(/C:\\Users\\flora\\beellenails\\templates\\dashboard/**)",
+      "Read(/C:\\Users\\flora\\beellenails/**)"
     ],
     "defaultMode": "acceptEdits"
   }
