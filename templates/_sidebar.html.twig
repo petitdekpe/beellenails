@@ -110,6 +110,14 @@
 				</details>
 			</li>
 
+			<!-- Emails -->
+			{% set email_active = route == 'app_dashboard_emails' %}
+			<li>
+				<a href="{{ path('app_dashboard_emails') }}" class="flex items-center p-2 rounded {{ email_active ? 'bg-gray-100 font-semibold' : 'hover:bg-gray-100 text-gray-900' }}">
+					📧 Envoi d'emails
+				</a>
+			</li>
+
 		</ul>
 	</div>
 </aside>

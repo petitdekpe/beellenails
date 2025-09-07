@@ -18,7 +18,12 @@
       "Read(/C:\\Users\\flora\\beellenails\\src\\Service/**)",
       "Read(/C:\\Users\\flora\\beellenails\\src\\Service/**)",
       "Read(/C:\\Users\\flora\\beellenails\\templates\\dashboard/**)",
-      "Read(/C:\\Users\\flora\\beellenails/**)"
+      "Read(/C:\\Users\\flora\\beellenails/**)",
+      "Read(/C:\\Users\\flora\\beellenails\\src\\Controller/**)",
+      "Read(/C:\\Users\\flora\\beellenails\\templates/**)",
+      "Read(/C:\\Users\\flora\\beellenails\\templates/**)",
+      "Read(/C:\\Users\\flora\\beellenails\\src\\Entity/**)",
+      "Read(/C:\\Users\\flora\\beellenails\\src\\Entity/**)"
     ],
     "defaultMode": "acceptEdits"
   }
