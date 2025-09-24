@@ -105,13 +105,35 @@ class AppointmentController extends AbstractController
             $rendezvous->setCreneau($creneau);
             $rendezvous->setPaid($paid);
             
-            // Vérifier si le créneau est déjà en congé
+            // Vérifier que le créneau appartient bien à la date sélectionnée (validation croisée)
+            $creneauRepository = $entityManager->getRepository(\App\Entity\Creneau::class);
+            $availableSlots = $creneauRepository->findAvailableSlots($day);
+            $isSlotValid = false;
+
+            foreach ($availableSlots as $slot) {
+                if ($slot->getId() === $creneau->getId()) {
+                    $isSlotValid = true;
+                    break;
+                }
+            }
+
+            if (!$isSlotValid) {
+                $this->addFlash('error', 'Le créneau sélectionné n\'est pas disponible pour cette date.');
+                return $this->render('appointment/paiement.html.twig', [
+                    'rendezvous' => $rendezvous,
+                    'form' => $form,
+                    'choixPrestation' => $choixPrestation,
+                    'choixDate' => $choixDate,
+                ]);
+            }
+
+            // Vérifier si le créneau est déjà en congé (double vérification)
             $existingConge = $entityManager->getRepository(Rendezvous::class)->findOneBy([
                 'day' => $day,
                 'creneau' => $creneau,
                 'status' => 'Congé'
             ]);
-            
+
             if ($existingConge) {
                 $this->addFlash('error', 'Ce créneau est indisponible (en congé).');
                 return $this->render('appointment/paiement.html.twig', [

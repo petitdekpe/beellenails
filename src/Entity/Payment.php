@@ -41,7 +41,11 @@ class Payment
 	public const STATUS_FEEXPAY = [
 		'PENDING'     => 'pending',
 		'SUCCESSFUL'  => 'successful',
-		'FAILED'      => 'failed'
+		'FAILED'      => 'failed',
+		// Support des statuts en minuscules aussi
+		'pending'     => 'pending',
+		'successful'  => 'successful',
+		'failed'      => 'failed'
 	];
 
 
@@ -289,7 +293,14 @@ class Payment
 
 	public static function convertFeexStatus(string $status): string
 	{
-		return self::STATUS_FEEXPAY[$status] ?? 'invalid';
+		// Debug : log tous les statuts reçus
+		error_log("[FeexPay Debug] Statut reçu : '$status'");
+		error_log("[FeexPay Debug] Mapping disponible : " . json_encode(self::STATUS_FEEXPAY));
+		
+		$result = self::STATUS_FEEXPAY[$status] ?? 'invalid';
+		error_log("[FeexPay Debug] Statut converti : '$result'");
+		
+		return $result;
 	}
 	public function initializeForFeexPay(
 		string $transactionID,
@@ -298,14 +309,15 @@ class Payment
 		User $customer,
 		Rendezvous $rendezvous,
 		string $mode,
-		string $provider
+		string $provider,
+		int $amount
 	): self {
 		$this->transactionID = $transactionID;
 		$this->reference = $reference;
 		$this->phoneNumber = $phoneNumber;
 		$this->customer = $customer;
 		$this->rendezvous = $rendezvous;
-		$this->amount = 5000;
+		$this->amount = $amount;
 		$this->currency = 'XOF';
 		$this->status = 'pending';
 		$this->mode = $mode;
@@ -319,6 +331,15 @@ class Payment
 	#[ORM\Column(type: 'string', length: 20)]
 	private string $provider;
 
+	#[ORM\Column(type: 'string', length: 50, nullable: true)]
+	private ?string $paymentType = null;
+
+	#[ORM\Column(type: 'string', length: 50, nullable: true)]
+	private ?string $entityType = null;
+
+	#[ORM\Column(type: 'integer', nullable: true)]
+	private ?int $entityId = null;
+
 	public function getProvider(): string
 	{
 		return $this->provider;
@@ -327,6 +348,39 @@ class Payment
 	public function setProvider(string $provider): self
 	{
 		$this->provider = $provider;
+		return $this;
+	}
+
+	public function getPaymentType(): ?string
+	{
+		return $this->paymentType;
+	}
+
+	public function setPaymentType(?string $paymentType): self
+	{
+		$this->paymentType = $paymentType;
+		return $this;
+	}
+
+	public function getEntityType(): ?string
+	{
+		return $this->entityType;
+	}
+
+	public function setEntityType(?string $entityType): self
+	{
+		$this->entityType = $entityType;
+		return $this;
+	}
+
+	public function getEntityId(): ?int
+	{
+		return $this->entityId;
+	}
+
+	public function setEntityId(?int $entityId): self
+	{
+		$this->entityId = $entityId;
 		return $this;
 	}
 }

@@ -68,8 +68,8 @@
 	{% endif %}
 		{% if app.request.attributes.get('_route') in ['app_new_rendezvous', 'app_recap', 'app_calendar'] %}
 			{{ include('navbis.html.twig') }}
-		{% elseif app.request.attributes.get('_route') starts with 'app_dashboard' or app.request.attributes.get('_route') == 'app_admin_rdv' or app.request.attributes.get('_route') starts with 'dashboard_home_images' %}
-			{# Pas de navbar pour les pages dashboard, admin rdv et images accueil #}
+		{% elseif app.request.attributes.get('_route') starts with 'app_dashboard' or app.request.attributes.get('_route') == 'app_admin_rdv' or app.request.attributes.get('_route') starts with 'dashboard_home_images' or app.request.attributes.get('_route') starts with 'app_promo_code' %}
+			{# Pas de navbar pour les pages dashboard, admin rdv, images accueil et codes promo #}
 		{% elseif app.request.attributes.get('_route') in ['app_login', 'app_register', 'app_prestation_new', 'app_formation_new', 'app_rendezvous_edit', 'app_admin_rdv_edit', 'app_prestation_edit', 'app_prestation_show', 'app_user_show', 'app_user_edit', 'create_conges', 'cancel_conge', 'cancel_conges', 'app_formation_show', 'app_formation_edit'] %}
 			{# Pas de navbar pour login/register/prestation_new/formation_new/rendezvous_edit/admin_rdv_edit/prestation_edit/prestation_show/user_show/user_edit/create_conges/cancel_conge/cancel_conges/formation_show/formation_edit #}
 		{# Les pages reset password auront la navbar maintenant #}
@@ -92,6 +92,7 @@
 
 	{% if not (app.request.attributes.get('_route') starts with 'app_dashboard') 
 		and not (app.request.attributes.get('_route') starts with 'dashboard_home_images')
+		and not (app.request.attributes.get('_route') starts with 'app_promo_code')
 		and app.request.attributes.get('_route') not in ['app_login', 'app_register', 'app_prestation_new', 'app_formation_new', 'create_conges', 'cancel_conge', 'cancel_conges']
 		and not (app.request.attributes.get('_route') starts with 'app_forgot_password' or app.request.attributes.get('_route') starts with 'app_reset_password') %}
 	<footer class="p-4 bg-pink-700 md:p-8 lg:p-10">

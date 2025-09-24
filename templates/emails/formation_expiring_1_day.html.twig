@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URGENT : Votre formation expire demain !</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f8fafc;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 3px solid #dc2626;
+        }
+        .header {
+            background: linear-gradient(135deg, #dc2626, #991b1b);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #fbbf24, #f59e0b, #dc2626, #991b1b);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 26px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .header .emoji {
+            font-size: 56px;
+            margin-bottom: 10px;
+            display: block;
+            animation: shake 1s infinite;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        .content {
+            padding: 30px;
+        }
+        .critical-alert {
+            background: #fef2f2;
+            border: 3px solid #dc2626;
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 25px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .critical-alert::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(220, 38, 38, 0.1), transparent);
+            animation: sweep 3s infinite;
+        }
+        @keyframes sweep {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        .critical-alert .icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            display: block;
+        }
+        .critical-alert h2 {
+            color: #dc2626;
+            margin: 0 0 10px 0;
+            font-size: 24px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .critical-alert p {
+            color: #7f1d1d;
+            margin: 0;
+            font-weight: 700;
+            font-size: 18px;
+        }
+        .countdown-box {
+            background: linear-gradient(135deg, #dc2626, #7f1d1d);
+            color: white;
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 25px 0;
+            box-shadow: 0 8px 16px rgba(220, 38, 38, 0.4);
+        }
+        .countdown-box .number {
+            font-size: 72px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: block;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        .countdown-box .text {
+            font-size: 20px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .countdown-box .subtext {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+        .formation-info {
+            background: #fef2f2;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-left: 6px solid #dc2626;
+        }
+        .formation-info h3 {
+            margin: 0 0 15px 0;
+            color: #1f2937;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #fecaca;
+        }
+        .info-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        .info-label {
+            font-weight: 600;
+            color: #6b7280;
+        }
+        .info-value {
+            color: #1f2937;
+            font-weight: 700;
+        }
+        .progress-bar {
+            background: #e5e7eb;
+            border-radius: 12px;
+            height: 12px;
+            margin-top: 10px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .progress-fill {
+            background: linear-gradient(90deg, #dc2626, #991b1b);
+            height: 100%;
+            transition: width 0.3s ease;
+            box-shadow: 0 2px 4px rgba(220, 38, 38, 0.3);
+        }
+        .button {
+            display: inline-block;
+            background: linear-gradient(135deg, #dc2626, #7f1d1d);
+            color: white;
+            text-decoration: none;
+            padding: 20px 40px;
+            border-radius: 8px;
+            font-weight: 900;
+            text-align: center;
+            margin: 30px 0;
+            font-size: 18px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 12px rgba(220, 38, 38, 0.4);
+        }
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(220, 38, 38, 0.6);
+        }
+        .emergency-tips {
+            background: linear-gradient(135deg, #fee2e2, #fecaca);
+            border: 2px solid #fca5a5;
+            border-radius: 8px;
+            padding: 25px;
+            margin: 25px 0;
+        }
+        .emergency-tips h4 {
+            color: #7f1d1d;
+            margin: 0 0 15px 0;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .emergency-tips ul {
+            margin: 0;
+            padding-left: 20px;
+            color: #7f1d1d;
+            font-weight: 500;
+        }
+        .emergency-tips li {
+            margin-bottom: 10px;
+        }
+        .footer {
+            background: #f8fafc;
+            padding: 20px 30px;
+            text-align: center;
+            font-size: 14px;
+            color: #6b7280;
+            border-top: 1px solid #e5e7eb;
+        }
+        .footer a {
+            color: #dc2626;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .blinking {
+            animation: blink 2s infinite;
+        }
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.5; }
+        }
+        @media (max-width: 600px) {
+            .container {
+                margin: 10px;
+                border-radius: 8px;
+            }
+            .header, .content {
+                padding: 20px;
+            }
+            .info-row {
+                flex-direction: column;
+                gap: 5px;
+            }
+            .countdown-box .number {
+                font-size: 56px;
+            }
+            .button {
+                padding: 18px 30px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <span class="emoji">🚨</span>
+            <h1>DERNIER JOUR !</h1>
+            <p>Votre formation expire dans moins de 24h</p>
+        </div>
+        
+        <div class="content">
+            <div class="critical-alert">
+                <span class="icon blinking">⚠️</span>
+                <h2>ALERTE CRITIQUE</h2>
+                <p>Expiration dans moins de 24 heures !</p>
+            </div>
+            
+            <div class="countdown-box">
+                <span class="number blinking">1</span>
+                <span class="text">JOUR RESTANT</span>
+                <div class="subtext">Expire le {{ expiresAt|date('d/m/Y à H:i') }}</div>
+            </div>
+            
+            <p>Bonjour <strong>{{ user.prenom }}</strong>,</p>
+            
+            <p><span style="color: #dc2626; font-weight: bold; font-size: 18px;">⚠️ URGENT ⚠️</span></p>
+            
+            <p><strong>Votre accès à la formation expire demain !</strong> C'est votre dernière chance de terminer le contenu et d'obtenir votre certificat. Après l'expiration, vous perdrez l'accès à tous les modules.</p>
+            
+            <div class="formation-info">
+                <h3>📚 {{ formation.nom }}</h3>
+                
+                <div class="info-row">
+                    <span class="info-label">Progression actuelle :</span>
+                    <span class="info-value" style="color: {% if progressPercentage < 50 %}#dc2626{% elseif progressPercentage < 80 %}#f59e0b{% else %}#059669{% endif %}; font-size: 18px;">{{ progressPercentage }}%</span>
+                </div>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: {{ progressPercentage }}%"></div>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label">⏰ Expiration :</span>
+                    <span class="info-value" style="color: #dc2626; font-size: 16px; font-weight: bold;">{{ expiresAt|date('d/m/Y à H:i') }}</span>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label">🕒 Temps restant :</span>
+                    <span class="info-value" style="color: #dc2626; font-size: 16px; font-weight: bold;" class="blinking">{{ enrollment.timeUntilExpiration }}</span>
+                </div>
+            </div>
+            
+            <div style="text-align: center;">
+                <a href="{{ url('app_user_learning_formation_detail', {id: enrollment.id}) }}" class="button">
+                    🔥 ACCÉDER MAINTENANT
+                </a>
+            </div>
+            
+            <div class="emergency-tips">
+                <h4>🚨 Plan d'urgence - Dernières 24h :</h4>
+                <ul>
+                    <li><strong>Priorité absolue :</strong> Terminez les modules les plus importants</li>
+                    <li><strong>Organisez-vous :</strong> Bloquez du temps dédié aujourd'hui</li>
+                    <li><strong>Concentrez-vous :</strong> Évitez les distractions</li>
+                    <li><strong>Objectif :</strong> Atteignez 100% pour votre certificat</li>
+                    <li><strong>Contact :</strong> Appelez-nous si vous avez besoin d'aide</li>
+                </ul>
+            </div>
+            
+            {% if progressPercentage < 100 %}
+            <div style="background: #fef2f2; border: 2px solid #dc2626; padding: 20px; margin: 25px 0; border-radius: 8px; text-align: center;">
+                <p style="margin: 0; color: #7f1d1d; font-weight: 700; font-size: 16px;">
+                    🎯 <strong>OBJECTIF FINAL :</strong> Terminez avant {{ expiresAt|date('H:i') }} demain pour conserver votre certificat et vos acquis !
+                </p>
+            </div>
+            {% endif %}
+            
+            <div style="background: #dc2626; color: white; padding: 20px; border-radius: 8px; text-align: center; margin: 25px 0;">
+                <p style="margin: 0; font-weight: bold; font-size: 16px;">
+                    ⏰ APRÈS EXPIRATION : Perte d'accès définitive aux modules<br>
+                    💸 Aucun remboursement possible<br>
+                    📜 Certificat inaccessible
+                </p>
+            </div>
+            
+            <p style="text-align: center; font-weight: bold; color: #dc2626; font-size: 18px;">
+                🚨 AGISSEZ MAINTENANT - IL EST ENCORE TEMPS ! 🚨
+            </p>
+            
+            <p>L'équipe BelleNails vous souhaite bon courage pour ces dernières heures décisives !</p>
+        </div>
+        
+        <div class="footer">
+            <p>
+                <a href="{{ url('app_user_learning_dashboard') }}">Mon espace d'apprentissage</a> | 
+                <a href="{{ url('app_dashboard') }}">Mon compte</a> | 
+                <a href="tel:+33123456789">☎️ Urgence</a>
+            </p>
+            <p>BelleNails - Formation professionnelle en prothésie ongulaire</p>
+            <p style="font-size: 12px; color: #9ca3af; margin-top: 10px;">
+                Email automatique d'urgence - Dernière chance avant expiration
+            </p>
+        </div>
+    </div>
+</body>
+</html>

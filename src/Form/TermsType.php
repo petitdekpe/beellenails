@@ -12,12 +12,23 @@ use Vich\UploaderBundle\Form\Type\VichImageType;
 use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 class TermsType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+        ->add('promoCode', TextType::class, [
+            'mapped' => false,
+            'required' => false,
+            'attr' => [
+                'class' => 'w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-pink-500 focus:border-pink-500',
+                'placeholder' => 'Code promo (optionnel)'
+            ],
+            'label' => 'Code promo',
+            'help' => 'Entrez un code promo valide pour bénéficier d\'une réduction'
+        ])
         ->add('agreeTerms', CheckboxType::class, [
             'mapped' => false,
             'constraints' => [

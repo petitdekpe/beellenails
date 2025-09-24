@@ -1,0 +1,148 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Paiement Annulé - {{ formation.nom }}{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-gradient-to-br from-red-50 to-orange-50 py-12">
+    <div class="container mx-auto px-4 max-w-2xl">
+        <!-- Cancel Card -->
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+            <!-- Header Cancel -->
+            <div class="bg-gradient-to-r from-red-500 to-orange-500 text-white text-center py-8">
+                <div class="mb-4">
+                    <svg class="w-16 h-16 mx-auto" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                    </svg>
+                </div>
+                <h1 class="text-3xl font-bold mb-2">Paiement Annulé</h1>
+                <p class="text-red-100">La transaction a été interrompue</p>
+            </div>
+
+            <div class="p-8">
+                <!-- Formation Info -->
+                <div class="bg-gray-50 rounded-xl p-6 mb-6">
+                    <div class="flex items-start space-x-4">
+                        {% if formation.coverImageName %}
+                            <img src="{{ vich_uploader_asset(formation, 'coverImage') }}" 
+                                 alt="{{ formation.nom }}" 
+                                 class="w-20 h-20 rounded-lg object-cover">
+                        {% else %}
+                            <div class="w-20 h-20 bg-gradient-to-r from-pink-500 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold text-2xl">
+                                🎓
+                            </div>
+                        {% endif %}
+                        
+                        <div class="flex-1">
+                            <h2 class="text-xl font-bold text-gray-900 mb-2">{{ formation.nom }}</h2>
+                            <div class="flex flex-wrap gap-2 mb-3">
+                                {% if formation.level %}
+                                    <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">{{ formation.level|capitalize }}</span>
+                                {% endif %}
+                                <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">{{ formation.Cout }} F CFA</span>
+                                {% if formation.duration %}
+                                    <span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-medium">⏱️ {{ formation.duration }}</span>
+                                {% endif %}
+                            </div>
+                            {% if formation.description %}
+                            <p class="text-gray-600 text-sm">{{ formation.description|slice(0, 150) }}{% if formation.description|length > 150 %}...{% endif %}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- What Happened -->
+                <div class="bg-orange-50 border border-orange-200 rounded-xl p-6 mb-6">
+                    <h3 class="text-lg font-semibold text-orange-900 mb-3">🤔 Que s'est-il passé ?</h3>
+                    <p class="text-orange-800 mb-4">
+                        Votre paiement a été annulé ou interrompu. Cela peut arriver pour plusieurs raisons :
+                    </p>
+                    <ul class="space-y-2 text-orange-800 text-sm">
+                        <li class="flex items-start">
+                            <span class="text-orange-500 mr-2 mt-1">•</span>
+                            Vous avez fermé la fenêtre de paiement
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-orange-500 mr-2 mt-1">•</span>
+                            Problème de connexion internet
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-orange-500 mr-2 mt-1">•</span>
+                            Problème avec votre méthode de paiement
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-orange-500 mr-2 mt-1">•</span>
+                            Session expirée
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Next Steps -->
+                <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-6">
+                    <h3 class="text-lg font-semibold text-blue-900 mb-3">💡 Prochaines étapes</h3>
+                    <ul class="space-y-2 text-blue-800">
+                        <li class="flex items-start">
+                            <span class="inline-block w-6 h-6 bg-blue-500 text-white rounded-full text-xs flex items-center justify-center mr-3 mt-0.5 flex-shrink-0">1</span>
+                            Vérifiez votre connexion internet
+                        </li>
+                        <li class="flex items-start">
+                            <span class="inline-block w-6 h-6 bg-blue-500 text-white rounded-full text-xs flex items-center justify-center mr-3 mt-0.5 flex-shrink-0">2</span>
+                            Assurez-vous d'avoir les fonds suffisants
+                        </li>
+                        <li class="flex items-start">
+                            <span class="inline-block w-6 h-6 bg-blue-500 text-white rounded-full text-xs flex items-center justify-center mr-3 mt-0.5 flex-shrink-0">3</span>
+                            Réessayez le paiement ou utilisez une autre méthode
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="{{ url('app_formation_show', {id: formation.id}) }}" 
+                       class="flex-1 bg-gradient-to-r from-pink-500 to-purple-600 text-white text-center py-4 px-6 rounded-xl font-bold text-lg hover:opacity-90 transition-opacity">
+                        🔄 Réessayer le paiement
+                    </a>
+                    <a href="{{ url('app_formation_index') }}" 
+                       class="flex-1 bg-gray-100 text-gray-700 text-center py-4 px-6 rounded-xl font-semibold hover:bg-gray-200 transition-colors">
+                        📚 Retour aux formations
+                    </a>
+                </div>
+
+                <!-- Alternative Payment Methods -->
+                <div class="mt-8 p-6 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-3">💳 Méthodes de paiement disponibles</h3>
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="text-center">
+                            <div class="bg-white p-3 rounded-lg shadow-sm mb-2">
+                                <span class="text-2xl">🏦</span>
+                            </div>
+                            <span class="text-sm font-medium text-gray-700">FedaPay</span>
+                        </div>
+                        <div class="text-center">
+                            <div class="bg-white p-3 rounded-lg shadow-sm mb-2">
+                                <span class="text-2xl">💰</span>
+                            </div>
+                            <span class="text-sm font-medium text-gray-700">FeexPay</span>
+                        </div>
+                        <div class="text-center">
+                            <div class="bg-white p-3 rounded-lg shadow-sm mb-2">
+                                <span class="text-2xl">📱</span>
+                            </div>
+                            <span class="text-sm font-medium text-gray-700">Celtiis</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Support Info -->
+                <div class="mt-8 text-center text-sm text-gray-500">
+                    <p>Besoin d'aide avec votre paiement ? Contactez-nous via 
+                        <a href="https://wa.me/22997853512" class="text-pink-600 hover:text-pink-700 font-medium">WhatsApp</a> 
+                        ou par 
+                        <a href="mailto:contact@beellenails.com" class="text-pink-600 hover:text-pink-700 font-medium">email</a>
+                    </p>
+                    <p class="mt-1">Notre équipe est là pour vous aider 24h/7j</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

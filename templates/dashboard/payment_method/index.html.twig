@@ -1,0 +1,176 @@
+{% extends 'dashboard.html.twig' %}
+
+{% block title %}Méthodes de paiement{% endblock %}
+
+{% block content %}
+<div class="p-6 max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="mb-6">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">💳 Méthodes de paiement</h1>
+                <p class="text-gray-600 mt-1">Gérez les moyens de paiement disponibles pour vos clients</p>
+            </div>
+            <a href="{{ path('app_dashboard_payment_method_new') }}" 
+               class="inline-flex items-center px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white font-medium rounded-lg transition-colors duration-200">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                Nouvelle méthode
+            </a>
+        </div>
+    </div>
+
+    <!-- Payment Methods Table -->
+    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-50 border-b border-gray-200">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Logo</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Identifiant</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for payment_method in payment_methods %}
+                        <tr class="hover:bg-gray-50 transition-colors duration-200">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex justify-center">
+                                    {% if payment_method.logoPath %}
+                                        <img src="{{ payment_method.logoPath }}" alt="{{ payment_method.name }}" class="w-10 h-10 object-contain">
+                                    {% else %}
+                                        <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                                            <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4zM18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z"/>
+                                            </svg>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="font-medium text-gray-900">{{ payment_method.name }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 py-1 text-xs font-mono bg-gray-100 text-gray-800 rounded">{{ payment_method.identifier }}</span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="text-sm text-gray-600 max-w-xs truncate">
+                                    {{ payment_method.description|default('Aucune description') }}
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                {% if payment_method.isActive %}
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        <svg class="w-2 h-2 mr-1" fill="currentColor" viewBox="0 0 8 8">
+                                            <circle cx="4" cy="4" r="3"/>
+                                        </svg>
+                                        Actif
+                                    </span>
+                                {% else %}
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                        <svg class="w-2 h-2 mr-1" fill="currentColor" viewBox="0 0 8 8">
+                                            <circle cx="4" cy="4" r="3"/>
+                                        </svg>
+                                        Inactif
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <div class="flex items-center space-x-2">
+                                    <!-- Voir -->
+                                    <a href="{{ path('app_dashboard_payment_method_show', {'id': payment_method.id}) }}" 
+                                       class="text-indigo-600 hover:text-indigo-900 p-1 rounded hover:bg-indigo-50 transition-colors duration-200"
+                                       title="Voir">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                        </svg>
+                                    </a>
+                                    
+                                    <!-- Modifier -->
+                                    <a href="{{ path('app_dashboard_payment_method_edit', {'id': payment_method.id}) }}" 
+                                       class="text-amber-600 hover:text-amber-900 p-1 rounded hover:bg-amber-50 transition-colors duration-200"
+                                       title="Modifier">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                        </svg>
+                                    </a>
+                                    
+                                    <!-- Toggle Status -->
+                                    <form method="post" action="{{ path('app_dashboard_payment_method_toggle', {'id': payment_method.id}) }}" class="inline">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('toggle'~payment_method.id) }}">
+                                        <button type="submit" 
+                                                class="p-1 rounded transition-colors duration-200 {{ payment_method.isActive ? 'text-gray-600 hover:text-gray-900 hover:bg-gray-50' : 'text-green-600 hover:text-green-900 hover:bg-green-50' }}"
+                                                title="{{ payment_method.isActive ? 'Désactiver' : 'Activer' }}"
+                                                onclick="return confirm('Êtes-vous sûr de vouloir {{ payment_method.isActive ? 'désactiver' : 'activer' }} cette méthode de paiement ?')">
+                                            {% if payment_method.isActive %}
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728"/>
+                                                </svg>
+                                            {% else %}
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                </svg>
+                                            {% endif %}
+                                        </button>
+                                    </form>
+                                    
+                                    <!-- Supprimer -->
+                                    <form method="post" action="{{ path('app_dashboard_payment_method_delete', {'id': payment_method.id}) }}" class="inline"
+                                          onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette méthode de paiement ?')">
+                                        <input type="hidden" name="_method" value="DELETE">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete'~payment_method.id) }}">
+                                        <button type="submit" 
+                                                class="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50 transition-colors duration-200"
+                                                title="Supprimer">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                            </svg>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="6" class="px-6 py-12 text-center">
+                                <div class="flex flex-col items-center">
+                                    <svg class="w-12 h-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                                    </svg>
+                                    <h3 class="text-sm font-medium text-gray-900 mb-1">Aucune méthode de paiement</h3>
+                                    <p class="text-sm text-gray-500">Commencez par ajouter une première méthode de paiement.</p>
+                                    <a href="{{ path('app_dashboard_payment_method_new') }}" 
+                                       class="mt-4 inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-pink-700 bg-pink-100 hover:bg-pink-200 transition-colors duration-200">
+                                        Ajouter une méthode
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Info Box -->
+    <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                </svg>
+            </div>
+            <div class="ml-3">
+                <h3 class="text-sm font-medium text-blue-800">Information</h3>
+                <div class="mt-2 text-sm text-blue-700">
+                    <p>Seules les méthodes de paiement actives seront proposées aux clients lors du processus de réservation. Vous pouvez activer ou désactiver une méthode à tout moment.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

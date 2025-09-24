@@ -18,22 +18,10 @@
         Nous avons hâte de vous accueillir pour ce moment de détente et de beauté !
     </div>
 
-    <div class="info-box">
-        <div class="info-title">
-            Votre prochain rendez-vous
-        </div>
-        <div class="info-item">
-            <span class="info-label">Prestation :</span>
-            <span class="info-value">{{ rendezvous.prestation.title }}</span>
-        </div>
-        <div class="info-item">
-            <span class="info-label">Date :</span>
-            <span class="info-value">{{ rendezvous.day|date('d/m/Y') }}</span>
-        </div>
-        <div class="info-item">
-            <span class="info-label">Heure :</span>
-            <span class="info-value">{{ rendezvous.creneau.startTime|date('H:i') }}</span>
-        </div>
+    <div class="content-text">
+        <strong>Votre prochain rendez-vous :</strong> nous vous attendons pour votre prestation <strong>{{ rendezvous.prestation.title }}</strong> 
+        le <strong>{{ rendezvous.day|date('d/m/Y') }}</strong> à <strong>{{ rendezvous.creneau.startTime|date('H:i') }}</strong>. 
+        Préparez-vous à être sublimée !
     </div>
 
     <div class="content-text">

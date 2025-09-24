@@ -1,0 +1,118 @@
+{% extends 'dashboard.html.twig' %}
+
+{% block title %}Méthode de paiement: {{ payment_method.name }}{% endblock %}
+
+{% block content %}
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">👁️ {{ payment_method.name }}</h1>
+    <div>
+        <a href="{{ path('app_dashboard_payment_method_edit', {'id': payment_method.id}) }}" class="d-none d-sm-inline-block btn btn-sm btn-warning shadow-sm">
+            <i class="fas fa-edit fa-sm text-white-50"></i> Modifier
+        </a>
+        <a href="{{ path('app_dashboard_payment_method_index') }}" class="d-none d-sm-inline-block btn btn-sm btn-secondary shadow-sm">
+            <i class="fas fa-arrow-left fa-sm text-white-50"></i> Retour
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Détails de la méthode de paiement</h6>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-sm-3">
+                        <strong>Nom :</strong>
+                    </div>
+                    <div class="col-sm-9">
+                        {{ payment_method.name }}
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-sm-3">
+                        <strong>Identifiant :</strong>
+                    </div>
+                    <div class="col-sm-9">
+                        <code>{{ payment_method.identifier }}</code>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-sm-3">
+                        <strong>Statut :</strong>
+                    </div>
+                    <div class="col-sm-9">
+                        {% if payment_method.isActive %}
+                            <span class="badge badge-success">Actif</span>
+                        {% else %}
+                            <span class="badge badge-secondary">Inactif</span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-sm-3">
+                        <strong>Logo :</strong>
+                    </div>
+                    <div class="col-sm-9">
+                        {% if payment_method.logoPath %}
+                            <div class="mb-2">
+                                <img src="{{ payment_method.logoPath }}" alt="{{ payment_method.name }}" class="img-fluid" style="max-width: 100px;">
+                            </div>
+                            <small class="text-muted">{{ payment_method.logoPath }}</small>
+                        {% else %}
+                            <span class="text-muted">Aucun logo configuré</span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-sm-3">
+                        <strong>Description :</strong>
+                    </div>
+                    <div class="col-sm-9">
+                        {{ payment_method.description|default('<span class="text-muted">Aucune description</span>')|raw }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Actions</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ path('app_dashboard_payment_method_edit', {'id': payment_method.id}) }}" class="btn btn-warning">
+                        <i class="fas fa-edit"></i> Modifier
+                    </a>
+                    
+                    <form method="post" action="{{ path('app_dashboard_payment_method_toggle', {'id': payment_method.id}) }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token('toggle'~payment_method.id) }}">
+                        <button type="submit" class="btn btn-block {{ payment_method.isActive ? 'btn-secondary' : 'btn-success' }}"
+                                onclick="return confirm('Êtes-vous sûr de vouloir {{ payment_method.isActive ? 'désactiver' : 'activer' }} cette méthode de paiement ?')">
+                            <i class="fas fa-{{ payment_method.isActive ? 'toggle-off' : 'toggle-on' }}"></i>
+                            {{ payment_method.isActive ? 'Désactiver' : 'Activer' }}
+                        </button>
+                    </form>
+                    
+                    <hr>
+                    
+                    <form method="post" action="{{ path('app_dashboard_payment_method_delete', {'id': payment_method.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette méthode de paiement ?')">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete'~payment_method.id) }}">
+                        <button type="submit" class="btn btn-danger btn-block">
+                            <i class="fas fa-trash"></i> Supprimer
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

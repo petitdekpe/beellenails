@@ -1,15 +1,12 @@
-{% extends 'base.html.twig' %}
+{% extends 'dashboard.html.twig' %}
 
 {% block title %}Dashboard - Rendez-vous{% endblock %}
 
-{% block body %}
-<div class="min-h-screen bg-gray-50">
-    <div class="flex">
-        <!-- Sidebar -->
-        {% include '_sidebar.html.twig' %}
+{% block content %}
+<div class="max-w-7xl mx-auto">
         
         <!-- Main Content -->
-        <div class="flex-1 {% if is_granted('ROLE_ADMIN') %}lg:ml-8{% endif %}">
+        <div 
             <div class="px-4 py-6 sm:px-6 lg:px-8">
                 <!-- Header -->
                 <div class="mb-6">
@@ -131,6 +128,9 @@
                                                 Prestation
                                             </th>
                                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-pink-600 uppercase tracking-wider">
+                                                Prix / Promo
+                                            </th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-pink-600 uppercase tracking-wider">
                                                 Statut
                                             </th>
                                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-pink-600 uppercase tracking-wider">
@@ -191,6 +191,29 @@
                                                     <div class="text-sm text-gray-500">{{ rdv.prestation.duration }} min</div>
                                                     {% if rdv.imageName %}
                                                         <div class="text-xs text-green-600">📷 Image jointe</div>
+                                                    {% endif %}
+                                                </td>
+                                                <td class="px-6 py-4">
+                                                    <div class="text-sm font-medium text-gray-900">
+                                                        {% if rdv.totalCost %}
+                                                            {{ rdv.totalCost|number_format(0, ',', ' ') }} F CFA
+                                                        {% else %}
+                                                            {{ (rdv.prestation.price / 100)|number_format(0, ',', ' ') }} F CFA
+                                                        {% endif %}
+                                                    </div>
+                                                    {% if rdv.promoCode %}
+                                                        <div class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800 mt-1">
+                                                            🎟️ {{ rdv.promoCode.code }}
+                                                        </div>
+                                                        {% if rdv.discountAmount and rdv.discountAmount > 0 %}
+                                                            <div class="text-xs text-red-600 mt-1">
+                                                                -{{ rdv.discountAmount|number_format(0, ',', ' ') }} F CFA
+                                                            </div>
+                                                        {% endif %}
+                                                    {% elseif rdv.pendingPromoCode %}
+                                                        <div class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 mt-1">
+                                                            ⏳ {{ rdv.pendingPromoCode }}
+                                                        </div>
                                                     {% endif %}
                                                 </td>
                                                 <td class="px-6 py-4 whitespace-nowrap">

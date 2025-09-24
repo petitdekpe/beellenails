@@ -18,16 +18,10 @@
         Pas de panique, cela arrive à tout le monde ! 😊
     </div>
 
-    <div class="info-box">
-        <div class="info-title">
-            🔐 Réinitialisation sécurisée
-        </div>
-        <div class="content-text" style="margin: 0; color: #374151;">
-            Pour des raisons de sécurité, ce lien est <strong>temporaire</strong> et ne peut être utilisé qu'<strong>une seule fois</strong>.
-        </div>
-        <div class="content-text" style="margin: 15px 0 0 0; color: #374151;">
-            <strong>⏰ Expiration :</strong> {{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}
-        </div>
+    <div class="content-text">
+        🔐 <strong>Réinitialisation sécurisée :</strong> Pour des raisons de sécurité, ce lien est <strong>temporaire</strong> 
+        et ne peut être utilisé qu'<strong>une seule fois</strong>. <strong>⏰ Expiration :</strong> 
+        {{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}
     </div>
 
     <div class="content-text">

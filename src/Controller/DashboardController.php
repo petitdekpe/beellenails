@@ -25,7 +25,9 @@ use App\Repository\PaymentRepository;
 use App\Repository\FormationRepository;
 use App\Repository\PrestationRepository;
 use App\Repository\RendezvousRepository;
+use App\Service\PromoCodeService;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -202,31 +204,86 @@ class DashboardController extends AbstractController
 
     //Liste des clients
     #[Route('/dashboard/clients', name: 'app_dashboard_user', methods: ['GET'])]
-    public function user(Request $request, UserRepository $userRepository, PaginatorInterface $paginator): Response
+    public function user(Request $request, UserRepository $userRepository, PaginatorInterface $paginator, RendezvousRepository $rendezvousRepository): Response
     {
         $search = $request->query->get('search');
+        $sortBy = $request->query->get('sort', 'name'); // Par défaut tri par nom
 
+        // Récupérer tous les utilisateurs avec filtres
+        $queryBuilder = $userRepository->createQueryBuilder('u');
+        
+        // Recherche
         if ($search) {
-            $queryBuilder = $userRepository->createQueryBuilder('u')
-                ->where('u.Nom LIKE :search OR u.Prenom LIKE :search OR u.email LIKE :search OR u.Phone LIKE :search')
-                ->setParameter('search', '%' . $search . '%')
-                ->orderBy('u.Nom', 'ASC')
-                ->addOrderBy('u.Prenom', 'ASC');
-        } else {
-            $queryBuilder = $userRepository->createQueryBuilder('u')
-                ->orderBy('u.Nom', 'ASC')
-                ->addOrderBy('u.Prenom', 'ASC');
+            $queryBuilder->andWhere('u.Nom LIKE :search OR u.Prenom LIKE :search OR u.email LIKE :search OR u.Phone LIKE :search')
+                ->setParameter('search', '%' . $search . '%');
         }
-
+        
+        $allUsers = $queryBuilder->getQuery()->getResult();
+        
+        // Ajouter le comptage des RDV à chaque utilisateur pour tous les tris
+        foreach ($allUsers as $user) {
+            $rdvCount = $rendezvousRepository->createQueryBuilder('r')
+                ->select('COUNT(r.id)')
+                ->andWhere('r.user = :user')
+                ->andWhere('r.status IN (:validStatuses)')
+                ->setParameter('user', $user)
+                ->setParameter('validStatuses', ['Rendez-vous pris', 'Rendez-vous confirmé'])
+                ->getQuery()
+                ->getSingleScalarResult();
+                
+            $user->rdvCount = $rdvCount;
+        }
+        
+        // Trier en PHP selon le critère choisi
+        switch ($sortBy) {
+            case 'rdv_count_desc':
+                usort($allUsers, function($a, $b) {
+                    if ($a->rdvCount == $b->rdvCount) {
+                        return strcmp($a->getNom(), $b->getNom());
+                    }
+                    return $b->rdvCount - $a->rdvCount;
+                });
+                break;
+            case 'rdv_count_asc':
+                usort($allUsers, function($a, $b) {
+                    if ($a->rdvCount == $b->rdvCount) {
+                        return strcmp($a->getNom(), $b->getNom());
+                    }
+                    return $a->rdvCount - $b->rdvCount;
+                });
+                break;
+            case 'date_desc':
+                usort($allUsers, function($a, $b) {
+                    return $b->getCreatedAt() <=> $a->getCreatedAt();
+                });
+                break;
+            case 'date_asc':
+                usort($allUsers, function($a, $b) {
+                    return $a->getCreatedAt() <=> $b->getCreatedAt();
+                });
+                break;
+            default: // 'name'
+                usort($allUsers, function($a, $b) {
+                    $nameCompare = strcmp($a->getNom(), $b->getNom());
+                    if ($nameCompare === 0) {
+                        return strcmp($a->getPrenom(), $b->getPrenom());
+                    }
+                    return $nameCompare;
+                });
+                break;
+        }
+        
+        // Pagination sur le tableau trié
         $users = $paginator->paginate(
-            $queryBuilder,
+            $allUsers,
             $request->query->getInt('page', 1),
-            15 // Nombre d'éléments par page
+            15
         );
 
         return $this->render('dashboard/user.html.twig', [
             'users' => $users,
             'search' => $search,
+            'sort' => $sortBy,
         ]);
     }
 
@@ -274,7 +331,7 @@ class DashboardController extends AbstractController
 
     //Ajouter un rendez-vous
     #[Route('/dashboard/rendezvous/add', name: 'app_admin_rdv')]
-    public function new(Request $request, EntityManagerInterface $entityManager, MailerInterface $mailer, RendezvousRepository $rendezvousRepository): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, MailerInterface $mailer, RendezvousRepository $rendezvousRepository, PromoCodeService $promoCodeService, LoggerInterface $logger): Response
     {
         $rendezvous = new Rendezvous();
         $form = $this->createForm(AdminAddRdvType::class, $rendezvous);
@@ -282,6 +339,27 @@ class DashboardController extends AbstractController
 
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $formData = $rendezvous;
+
+            // Vérifier que le créneau appartient bien à la date sélectionnée (validation croisée)
+            $creneauRepository = $entityManager->getRepository(\App\Entity\Creneau::class);
+            $availableSlots = $creneauRepository->findAvailableSlots($formData->getDay());
+            $isSlotValid = false;
+
+            foreach ($availableSlots as $slot) {
+                if ($slot->getId() === $formData->getCreneau()->getId()) {
+                    $isSlotValid = true;
+                    break;
+                }
+            }
+
+            if (!$isSlotValid) {
+                $this->addFlash('error', 'Le créneau sélectionné n\'est pas disponible pour cette date.');
+                return $this->render('dashboard/rendezvous/add.html.twig', [
+                    'form' => $form->createView(),
+                ]);
+            }
+
             // Vérifier si un rendez-vous avec le même jour et créneau existe déjà
             $existingRendezvous = $rendezvousRepository->findOneBy([
                 'day' => $rendezvous->getDay(),
@@ -294,19 +372,18 @@ class DashboardController extends AbstractController
                 $this->addFlash('warning', 'Un rendez-vous pour ce jour et créneau existe déjà.');
                 return $this->redirectToRoute('app_calendar');
             }
-            
-            // Vérifier si le créneau est déjà en congé
+
+            // Vérifier si le créneau est déjà en congé (double vérification)
             $existingConge = $rendezvousRepository->findOneBy([
                 'day' => $rendezvous->getDay(),
                 'creneau' => $rendezvous->getCreneau(),
                 'status' => 'Congé'
             ]);
-            
+
             if ($existingConge) {
                 $this->addFlash('error', 'Ce créneau est indisponible (en congé).');
                 return $this->render('dashboard/rendezvous/add.html.twig', [
-                    'rendezvous' => $rendezvous,
-                    'form' => $form,
+                    'form' => $form->createView(),
                 ]);
             }
 
@@ -315,6 +392,18 @@ class DashboardController extends AbstractController
             $rendezvous->setImageName("default.png");
             $rendezvous->setPaid("1");
 
+            // Calculer et enregistrer le coût total
+            $rendezvous->updateTotalCost();
+
+            // Appliquer le code promo en attente s'il y en a un
+            if ($rendezvous->getPendingPromoCode()) {
+                $result = $promoCodeService->applyPendingPromoCode($rendezvous);
+                $logger->info("[Admin Creation] Code promo traité", [
+                    'rendezvous_id' => $rendezvous->getId(),
+                    'promo_result' => $result['isValid'] ? 'appliqué' : 'échoué',
+                    'message' => $result['message']
+                ]);
+            }
 
             $entityManager->persist($rendezvous);
             $entityManager->flush();
@@ -400,10 +489,22 @@ class DashboardController extends AbstractController
         Request $request,
         Rendezvous $rendezvous,
         EntityManagerInterface $entityManager,
-        MailerInterface $mailer
+        MailerInterface $mailer,
+        PromoCodeService $promoCodeService,
+        LoggerInterface $logger
     ): Response {
         // Met à jour le statut
         $rendezvous->setStatus("Annulé");
+        
+        // Révoquer le code promo si il y en a un
+        if ($rendezvous->getPromoCode()) {
+            $result = $promoCodeService->revokePromoCodeUsage($rendezvous, 'Rendez-vous annulé par l\'admin');
+            $logger->info("[Admin Cancellation] Code promo révoqué suite à l'annulation", [
+                'rendezvous_id' => $rendezvous->getId(),
+                'reason' => 'Rendez-vous annulé par l\'admin'
+            ]);
+        }
+        
         $entityManager->persist($rendezvous);
         $entityManager->flush();
 
@@ -468,10 +569,24 @@ class DashboardController extends AbstractController
 
     //Modifier le statut d'un rendez-vous
     #[Route('/dashboard/rendezvous/{id}/confirm', name: 'app_admin_rdv_confirm', methods: ['GET', 'POST'])]
-    public function confirm(Rendezvous $rendezvous, EntityManagerInterface $entityManager, MailerInterface $mailer): Response
+    public function confirm(Rendezvous $rendezvous, EntityManagerInterface $entityManager, MailerInterface $mailer, PromoCodeService $promoCodeService, LoggerInterface $logger): Response
     {
         // Modifier le statut du rendez-vous en "Rendez-vous confirmé"
         $rendezvous->setStatus('Rendez-vous confirmé');
+        
+        // Calculer et enregistrer le coût total avant application des codes promo
+        $rendezvous->updateTotalCost();
+        
+        // Appliquer le code promo en attente s'il y en a un
+        if ($rendezvous->getPendingPromoCode()) {
+            $result = $promoCodeService->applyPendingPromoCode($rendezvous);
+            $logger->info("[Admin Confirmation] Code promo traité", [
+                'rendezvous_id' => $rendezvous->getId(),
+                'promo_result' => $result['isValid'] ? 'appliqué' : 'échoué',
+                'message' => $result['message']
+            ]);
+        }
+        
         $entityManager->flush();
         // Redirection vers la liste des rendez-vous
         return $this->redirectToRoute('app_dashboard_rendezvous');

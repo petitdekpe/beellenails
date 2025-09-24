@@ -1,0 +1,213 @@
+{% extends 'dashboard.html.twig' %}
+
+{% block title %}Nouveau Module - {{ formation.Nom }}{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">Créer un nouveau module</h1>
+            <p class="text-gray-600">{{ formation.Nom }}</p>
+        </div>
+        <div class="flex space-x-3">
+            <a href="{{ path('app_dashboard_formation_modules', {id: formation.id}) }}" 
+               class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                ← Retour aux modules
+            </a>
+            <a href="{{ path('app_dashboard_formation_show', {id: formation.id}) }}" 
+               class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                👁️ Voir la formation
+            </a>
+        </div>
+    </div>
+
+    <!-- Formation Info -->
+    <div class="bg-white rounded-lg shadow-sm border">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-semibold text-gray-900">Formation : {{ formation.Nom }}</h2>
+        </div>
+        <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
+                <div>
+                    <span class="text-gray-500">Modules existants</span>
+                    <div class="font-semibold">{{ formation.modules|length }}</div>
+                </div>
+                <div>
+                    <span class="text-gray-500">Niveau</span>
+                    <div class="font-semibold">{{ formation.level|default('Non défini') }}</div>
+                </div>
+                <div>
+                    <span class="text-gray-500">Type</span>
+                    <div class="font-semibold">
+                        {% if formation.isFree %}
+                            Gratuite
+                        {% else %}
+                            Payante - {{ formation.Cout }} F CFA
+                        {% endif %}
+                    </div>
+                </div>
+                <div>
+                    <span class="text-gray-500">Statut</span>
+                    <div class="font-semibold">
+                        {% if formation.isActive %}
+                            <span class="text-green-600">Active</span>
+                        {% else %}
+                            <span class="text-gray-600">Inactive</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form Card -->
+    <div class="bg-white rounded-lg shadow-sm">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-semibold text-gray-900">Informations du module</h2>
+            <p class="text-sm text-gray-600">Remplissez les informations ci-dessous pour créer un nouveau module</p>
+        </div>
+
+        <div class="p-6">
+            {{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
+            
+            <!-- Basic Information -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">{{ form_label(form.title) }}</label>
+                    {{ form_widget(form.title, {'attr': {'class': 'block w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500', 'placeholder': 'Ex: Introduction aux techniques de base'}}) }}
+                    {{ form_errors(form.title) }}
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">{{ form_label(form.duration) }}</label>
+                    {{ form_widget(form.duration, {'attr': {'class': 'block w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500', 'placeholder': '30', 'min': '1'}}) }}
+                    {{ form_errors(form.duration) }}
+                    <p class="text-xs text-gray-500 mt-1">Durée estimée en minutes</p>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">{{ form_label(form.description) }}</label>
+                {{ form_widget(form.description, {'attr': {'class': 'block w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500', 'rows': 4, 'placeholder': 'Décrivez brièvement le contenu de ce module...'}}) }}
+                {{ form_errors(form.description) }}
+            </div>
+
+            <!-- Video URL -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">{{ form_label(form.youtubeUrl) }}</label>
+                {{ form_widget(form.youtubeUrl, {'attr': {'class': 'block w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500', 'placeholder': 'https://youtube.com/watch?v=...'}}) }}
+                {{ form_errors(form.youtubeUrl) }}
+                <p class="text-xs text-gray-500 mt-1">URL YouTube pour la vidéo du module</p>
+            </div>
+
+            <!-- Module Settings -->
+            <div class="border-t border-gray-200 pt-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Paramètres du module</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ form_label(form.position) }}</label>
+                        {{ form_widget(form.position, {'attr': {'class': 'block w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500', 'min': '1'}}) }}
+                        {{ form_errors(form.position) }}
+                        <p class="text-xs text-gray-500 mt-1">Position dans l'ordre des modules</p>
+                    </div>
+
+                    <div class="flex items-center">
+                        {{ form_widget(form.isActive, {'attr': {'class': 'rounded border-gray-300 text-pink-600 shadow-sm focus:border-pink-300 focus:ring focus:ring-pink-200 focus:ring-opacity-50'}}) }}
+                        <label class="ml-2 text-sm font-medium text-gray-700">{{ form_label(form.isActive) }}</label>
+                        {{ form_errors(form.isActive) }}
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Form Actions -->
+            <div class="border-t border-gray-200 pt-6 flex justify-between">
+                <div class="flex space-x-3">
+                    <a href="{{ path('app_dashboard_formation_modules', {id: formation.id}) }}" 
+                       class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                        Annuler
+                    </a>
+                </div>
+                <div class="flex space-x-3">
+                    <button type="submit" name="save_and_continue" 
+                            class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                        Sauvegarder et continuer
+                    </button>
+                    <button type="submit" 
+                            class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-pink-600 hover:bg-pink-700">
+                        Créer le module
+                    </button>
+                </div>
+            </div>
+
+            {{ form_end(form) }}
+        </div>
+    </div>
+
+    <!-- Preview Card -->
+    <div class="bg-white rounded-lg shadow-sm">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h3 class="text-lg font-semibold text-gray-900">Aperçu du module</h3>
+        </div>
+        <div class="p-6">
+            <div id="module-preview" class="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                <div class="text-center text-gray-500 py-8">
+                    <i class="fas fa-eye text-4xl mb-4"></i>
+                    <p>L'aperçu du module apparaîtra ici en temps réel</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // Aperçu en temps réel
+    const titleInput = document.querySelector('input[name*="title"]');
+    const descriptionInput = document.querySelector('textarea[name*="description"]');
+    const youtubeInput = document.querySelector('input[name*="youtubeUrl"]');
+    const durationInput = document.querySelector('input[name*="duration"]');
+    const previewDiv = document.getElementById('module-preview');
+    
+    function updatePreview() {
+        const title = titleInput?.value || 'Titre du module';
+        const description = descriptionInput?.value || 'Description du module';
+        const youtubeUrl = youtubeInput?.value || '';
+        const duration = durationInput?.value || '';
+        
+        let youtubePreview = '';
+        if (youtubeUrl) {
+            youtubePreview = `<div class="mt-3"><strong>Vidéo :</strong> <a href="${youtubeUrl}" target="_blank" class="text-blue-600">${youtubeUrl}</a></div>`;
+        }
+        
+        let durationPreview = '';
+        if (duration) {
+            durationPreview = `<div class="mt-2"><strong>Durée :</strong> ${duration} minutes</div>`;
+        }
+        
+        previewDiv.innerHTML = `
+            <div class="space-y-4">
+                <h3 class="text-xl font-bold text-gray-900">${title}</h3>
+                <p class="text-gray-600">${description}</p>
+                ${durationPreview}
+                ${youtubePreview}
+            </div>
+        `;
+    }
+    
+    // Écouter les changements pour l'aperçu
+    [titleInput, descriptionInput, youtubeInput, durationInput].forEach(input => {
+        if (input) {
+            input.addEventListener('input', updatePreview);
+        }
+    });
+    
+    // Aperçu initial
+    updatePreview();
+});
+</script>
+{% endblock %}

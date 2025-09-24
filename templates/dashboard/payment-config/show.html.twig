@@ -1,0 +1,176 @@
+{% extends 'dashboard.html.twig' %}
+
+{% block title %}Détail de la configuration - {{ payment_configuration.label }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">Détail de la configuration</h1>
+                <div>
+                    <a href="{{ path('app_dashboard_payment_config_edit', {'id': payment_configuration.id}) }}" class="btn btn-primary me-2">
+                        <i class="fas fa-edit"></i> Modifier
+                    </a>
+                    <a href="{{ path('app_dashboard_payment_config_index') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Retour à la liste
+                    </a>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-cog"></i> {{ payment_configuration.label }}
+                                {% if payment_configuration.isActive %}
+                                    <span class="badge bg-success ms-2">Actif</span>
+                                {% else %}
+                                    <span class="badge bg-danger ms-2">Inactif</span>
+                                {% endif %}
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6 class="text-muted">Type de configuration</h6>
+                                    {% set type_labels = {
+                                        'rendezvous_advance': 'Acompte rendez-vous',
+                                        'formation_base': 'Prix de base formation',
+                                        'other_payment': 'Autre paiement'
+                                    } %}
+                                    {% set type_badges = {
+                                        'rendezvous_advance': 'bg-primary',
+                                        'formation_base': 'bg-success',
+                                        'other_payment': 'bg-secondary'
+                                    } %}
+                                    <p>
+                                        <span class="badge {{ type_badges[payment_configuration.type] ?? 'bg-secondary' }}">
+                                            {{ type_labels[payment_configuration.type] ?? payment_configuration.type }}
+                                        </span>
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6 class="text-muted">Montant</h6>
+                                    <p class="fs-4 text-success mb-0">
+                                        <strong>{{ payment_configuration.formattedAmount }}</strong>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <hr>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6 class="text-muted">Devise</h6>
+                                    <p>{{ payment_configuration.currency }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6 class="text-muted">Statut</h6>
+                                    <p>
+                                        {% if payment_configuration.isActive %}
+                                            <span class="text-success"><i class="fas fa-check-circle"></i> Configuration active</span>
+                                        {% else %}
+                                            <span class="text-danger"><i class="fas fa-pause-circle"></i> Configuration inactive</span>
+                                        {% endif %}
+                                    </p>
+                                </div>
+                            </div>
+
+                            {% if payment_configuration.description %}
+                                <hr>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <h6 class="text-muted">Description</h6>
+                                        <p>{{ payment_configuration.description|nl2br }}</p>
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            <hr>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6 class="text-muted">Créé le</h6>
+                                    <p>
+                                        <i class="fas fa-calendar-plus text-muted"></i> 
+                                        {{ payment_configuration.createdAt|date('d/m/Y à H:i') }}
+                                    </p>
+                                </div>
+                                {% if payment_configuration.updatedAt %}
+                                    <div class="col-md-6">
+                                        <h6 class="text-muted">Dernière modification</h6>
+                                        <p>
+                                            <i class="fas fa-calendar-edit text-muted"></i> 
+                                            {{ payment_configuration.updatedAt|date('d/m/Y à H:i') }}
+                                        </p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="card-title mb-0"><i class="fas fa-tools"></i> Actions rapides</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                <a href="{{ path('app_dashboard_payment_config_edit', {'id': payment_configuration.id}) }}" 
+                                   class="btn btn-primary">
+                                    <i class="fas fa-edit"></i> Modifier cette configuration
+                                </a>
+                                
+                                <form method="post" action="{{ path('app_dashboard_payment_config_toggle', {'id': payment_configuration.id}) }}">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('toggle' ~ payment_configuration.id) }}">
+                                    <button type="submit" class="btn btn-outline-{{ payment_configuration.isActive ? 'warning' : 'success' }} w-100">
+                                        <i class="fas fa-{{ payment_configuration.isActive ? 'pause' : 'play' }}"></i> 
+                                        {{ payment_configuration.isActive ? 'Désactiver' : 'Activer' }}
+                                    </button>
+                                </form>
+
+                                <hr>
+
+                                <form method="post" action="{{ path('app_dashboard_payment_config_delete', {'id': payment_configuration.id}) }}" 
+                                      onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette configuration ?')">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ payment_configuration.id) }}">
+                                    <button type="submit" class="btn btn-outline-danger w-100">
+                                        <i class="fas fa-trash"></i> Supprimer
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if payment_configuration.type == 'rendezvous_advance' %}
+                        <div class="card mt-3">
+                            <div class="card-header">
+                                <h6 class="card-title mb-0"><i class="fas fa-info-circle"></i> Usage</h6>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted small">
+                                    Cette configuration définit le montant de l'acompte demandé lors de la réservation d'un rendez-vous avec FedaPay et Feexpay.
+                                </p>
+                            </div>
+                        </div>
+                    {% elseif payment_configuration.type == 'formation_base' %}
+                        <div class="card mt-3">
+                            <div class="card-header">
+                                <h6 class="card-title mb-0"><i class="fas fa-info-circle"></i> Usage</h6>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted small">
+                                    Cette configuration définit le prix de base pour l'accès aux formations. Peut être surchargé au niveau de chaque formation.
+                                </p>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

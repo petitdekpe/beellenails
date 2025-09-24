@@ -30,14 +30,35 @@ class CalendarController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
 
             $formData = $form->getData();
-            
-            // Vérifier si le créneau est déjà en congé
+
+            // Vérifier que le créneau appartient bien à la date sélectionnée
+            $creneauRepository = $entityManager->getRepository(\App\Entity\Creneau::class);
+            $availableSlots = $creneauRepository->findAvailableSlots($formData->getDay());
+            $isSlotValid = false;
+
+            foreach ($availableSlots as $slot) {
+                if ($slot->getId() === $formData->getCreneau()->getId()) {
+                    $isSlotValid = true;
+                    break;
+                }
+            }
+
+            if (!$isSlotValid) {
+                $this->addFlash('error', 'Le créneau sélectionné n\'est pas disponible pour cette date.');
+                return $this->render('calendar/index.html.twig', [
+                    'controller_name' => 'CalendarController',
+                    'rendezvous' => $rendezvous,
+                    'form' => $form,
+                ]);
+            }
+
+            // Vérifier si le créneau est déjà en congé (double vérification)
             $existingConge = $entityManager->getRepository(Rendezvous::class)->findOneBy([
                 'day' => $formData->getDay(),
                 'creneau' => $formData->getCreneau(),
                 'status' => 'Congé'
             ]);
-            
+
             if ($existingConge) {
                 $this->addFlash('error', 'Ce créneau est indisponible (en congé).');
                 return $this->render('calendar/index.html.twig', [

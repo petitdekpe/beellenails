@@ -1,0 +1,313 @@
+{% extends 'dashboard.html.twig' %}
+
+{% block title %}Modules - {{ formation.Nom }}{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">Gestion des modules</h1>
+            <p class="text-gray-600">{{ formation.Nom }}</p>
+        </div>
+        <div class="flex space-x-3">
+            <a href="{{ path('app_dashboard_formation_module_new', {id: formation.id}) }}" 
+               class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-pink-600 hover:bg-pink-700">
+                <i class="fas fa-plus mr-2"></i>Nouveau Module
+            </a>
+            <a href="{{ path('app_dashboard_formation_show', {id: formation.id}) }}" 
+               class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                👁️ Voir la formation
+            </a>
+            <a href="{{ path('app_dashboard_formations_index') }}" 
+               class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                ← Retour à la liste
+            </a>
+        </div>
+    </div>
+
+    <!-- Formation Info Card -->
+    <div class="bg-white rounded-lg shadow-sm border">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <div class="flex items-center justify-between">
+                <h2 class="text-lg font-semibold text-gray-900">Informations de la formation</h2>
+                <div class="flex items-center space-x-2">
+                    {% if formation.isActive %}
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            ✅ Active
+                        </span>
+                    {% else %}
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                            ⏸️ Inactive
+                        </span>
+                    {% endif %}
+                    
+                    {% if formation.isFree %}
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            🎁 Gratuite
+                        </span>
+                    {% else %}
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                            💰 {{ formation.Cout }} F CFA
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                    <h3 class="text-sm font-medium text-gray-500">Modules totaux</h3>
+                    <p class="mt-1 text-2xl font-semibold text-gray-900">{{ modules|length }}</p>
+                </div>
+                <div>
+                    <h3 class="text-sm font-medium text-gray-500">Durée estimée</h3>
+                    <p class="mt-1 text-2xl font-semibold text-gray-900">
+                        {% if formation.duration %}
+                            {{ formation.duration }} min
+                        {% else %}
+                            Non définie
+                        {% endif %}
+                    </p>
+                </div>
+                <div>
+                    <h3 class="text-sm font-medium text-gray-500">Niveau</h3>
+                    <p class="mt-1 text-2xl font-semibold text-gray-900">{{ formation.level|default('Non défini') }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modules List -->
+    <div class="bg-white rounded-lg shadow-sm">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-semibold text-gray-900">Modules de formation ({{ modules|length }})</h3>
+                <a href="{{ path('app_dashboard_formation_module_new', {id: formation.id}) }}" 
+                   class="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700">
+                    <i class="fas fa-plus mr-2"></i>Ajouter un module
+                </a>
+            </div>
+        </div>
+
+        {% if modules is not empty %}
+            <div class="divide-y divide-gray-200">
+                {% for module in modules %}
+                <div class="p-6 hover:bg-gray-50 transition-colors">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-3 mb-2">
+                                <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-pink-100 text-pink-800 text-sm font-medium">
+                                    {{ module.position }}
+                                </span>
+                                <h4 class="text-lg font-medium text-gray-900">{{ module.title }}</h4>
+                                {% if module.isActive %}
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        Actif
+                                    </span>
+                                {% else %}
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                        Inactif
+                                    </span>
+                                {% endif %}
+                            </div>
+                            
+                            {% if module.description %}
+                                <p class="text-gray-600 mb-3">{{ module.description }}</p>
+                            {% endif %}
+
+                            <div class="flex items-center space-x-4 text-sm text-gray-500">
+                                {% if module.duration %}
+                                    <span class="flex items-center">
+                                        <i class="fas fa-clock mr-1"></i>
+                                        {{ module.duration }} min
+                                    </span>
+                                {% endif %}
+                                {% if module.youtubeUrl %}
+                                    <span class="flex items-center">
+                                        <i class="fas fa-video mr-1"></i>
+                                        Vidéo
+                                    </span>
+                                {% endif %}
+                                <span class="flex items-center">
+                                    <i class="fas fa-calendar mr-1"></i>
+                                    Créé le {{ module.createdAt|date('d/m/Y') }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center space-x-2 ml-4">
+                            <button type="button" class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                                <i class="fas fa-eye mr-1"></i>
+                                Aperçu
+                            </button>
+                            <button type="button" class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                                <i class="fas fa-edit mr-1"></i>
+                                Modifier
+                            </button>
+                            <button type="button" class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-red-600 bg-white hover:bg-red-50 delete-module"
+                                    data-module-id="{{ module.id }}" 
+                                    data-module-title="{{ module.title }}">
+                                <i class="fas fa-trash mr-1"></i>
+                                Supprimer
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Module Preview -->
+                    {% if module.youtubeUrl %}
+                        <div class="mt-4 p-4 bg-gray-50 rounded-lg">
+                            <h5 class="text-sm font-medium text-gray-900 mb-2">Vidéo YouTube :</h5>
+                            <div class="text-sm text-blue-600">
+                                <a href="{{ module.youtubeUrl }}" target="_blank" class="hover:underline">
+                                    <i class="fas fa-external-link-alt mr-1"></i>
+                                    {{ module.youtubeUrl }}
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="p-12 text-center">
+                <div class="mx-auto h-24 w-24 text-gray-300 mb-4">
+                    <i class="fas fa-list-ul text-6xl"></i>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">Aucun module</h3>
+                <p class="text-gray-500 mb-6">Cette formation n'a pas encore de modules. Commencez par créer votre premier module.</p>
+                <a href="{{ path('app_dashboard_formation_module_new', {id: formation.id}) }}" 
+                   class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700">
+                    <i class="fas fa-plus mr-2"></i>Créer le premier module
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white p-6 rounded-lg shadow-sm text-center">
+            <i class="fas fa-sort text-4xl text-blue-600 mb-4"></i>
+            <h5 class="text-lg font-semibold text-gray-900 mb-2">Réorganiser</h5>
+            <p class="text-gray-600 mb-4">Changez l'ordre des modules par glisser-déposer</p>
+            <button class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200">
+                Réorganiser les modules
+            </button>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow-sm text-center">
+            <i class="fas fa-copy text-4xl text-green-600 mb-4"></i>
+            <h5 class="text-lg font-semibold text-gray-900 mb-2">Dupliquer</h5>
+            <p class="text-gray-600 mb-4">Copiez tous les modules vers une autre formation</p>
+            <button class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200">
+                Dupliquer les modules
+            </button>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow-sm text-center">
+            <i class="fas fa-download text-4xl text-purple-600 mb-4"></i>
+            <h5 class="text-lg font-semibold text-gray-900 mb-2">Exporter</h5>
+            <p class="text-gray-600 mb-4">Téléchargez la structure des modules</p>
+            <button class="bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200">
+                Exporter la structure
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmation de suppression -->
+<div id="deleteModuleModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3 text-center">
+            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                <i class="fas fa-exclamation-triangle text-red-600"></i>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900 mt-5">Confirmer la suppression</h3>
+            <div class="mt-2 px-7 py-3">
+                <p class="text-sm text-gray-500">
+                    Êtes-vous sûr de vouloir supprimer le module <strong id="module-title"></strong> ?
+                </p>
+                <div class="mt-4 p-3 bg-yellow-50 rounded-md">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-exclamation-triangle text-yellow-400"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-yellow-700">
+                                Cette action est irréversible et supprimera définitivement le contenu du module.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="items-center px-4 py-3">
+                <button id="cancel-delete-module" class="px-4 py-2 bg-gray-500 text-white text-base font-medium rounded-md w-24 mr-2 hover:bg-gray-400">
+                    Annuler
+                </button>
+                <button id="confirm-delete-module" class="px-4 py-2 bg-red-500 text-white text-base font-medium rounded-md w-24 hover:bg-red-400">
+                    Supprimer
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Gestion de la suppression des modules
+    document.querySelectorAll('.delete-module').forEach(function(button) {
+        button.addEventListener('click', function() {
+            const moduleId = this.dataset.moduleId;
+            const moduleTitle = this.dataset.moduleTitle;
+            
+            document.getElementById('module-title').textContent = moduleTitle;
+            document.getElementById('deleteModuleModal').classList.remove('hidden');
+            
+            // Stocker l'ID du module à supprimer
+            document.getElementById('confirm-delete-module').dataset.moduleId = moduleId;
+        });
+    });
+    
+    // Fermer la modal
+    document.getElementById('cancel-delete-module').addEventListener('click', function() {
+        document.getElementById('deleteModuleModal').classList.add('hidden');
+    });
+    
+    // Confirmer la suppression
+    document.getElementById('confirm-delete-module').addEventListener('click', function() {
+        const moduleId = this.dataset.moduleId;
+        
+        // Ici vous pouvez ajouter la logique de suppression AJAX
+        fetch(`/dashboard/formations/module/${moduleId}/delete`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Recharger la page pour refléter les changements
+                window.location.reload();
+            } else {
+                alert('Erreur lors de la suppression du module');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Erreur lors de la suppression du module');
+        });
+        
+        document.getElementById('deleteModuleModal').classList.add('hidden');
+    });
+    
+    // Fermer la modal en cliquant à l'extérieur
+    document.getElementById('deleteModuleModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            this.classList.add('hidden');
+        }
+    });
+});
+</script>
+{% endblock %}

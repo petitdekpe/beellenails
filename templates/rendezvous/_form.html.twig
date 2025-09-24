@@ -172,23 +172,108 @@
         var datePicker = document.getElementById('datepicker');
         var slotsContainer = document.getElementById('slots-container');
 
+        // Cache pour stocker les créneaux déjà récupérés
+        var slotsCache = new Map();
+        var debounceTimer = null;
+        var isLoading = false;
+
+        // Pre-charger les créneaux des 7 prochains jours
+        preloadSlots();
+
         datePicker.addEventListener('change', function() {
             var selectedDate = datePicker.value;
+
+            // Debouncing pour éviter trop de requêtes
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(function() {
+                loadSlotsForDate(selectedDate);
+            }, 300);
+        });
+
+        function preloadSlots() {
+            var today = new Date();
+            for (var i = 0; i < 7; i++) {
+                var date = new Date(today);
+                date.setDate(today.getDate() + i);
+                var dateStr = date.toISOString().split('T')[0];
+
+                // Ne pas précharger si déjà en cache
+                if (!slotsCache.has(dateStr)) {
+                    setTimeout(function(d) {
+                        loadSlotsForDate(d, true);
+                    }, i * 100, dateStr);
+                }
+            }
+        }
+
+        function loadSlotsForDate(selectedDate, isPreload = false) {
+            // Vérifier le cache d'abord
+            if (slotsCache.has(selectedDate)) {
+                if (!isPreload) {
+                    updateSlotsDropdown(slotsCache.get(selectedDate));
+                }
+                return;
+            }
+
+            // Éviter les requêtes multiples simultanées
+            if (isLoading && !isPreload) return;
+            if (!isPreload) isLoading = true;
+
+            // Afficher un indicateur de chargement
+            if (!isPreload) {
+                showLoadingIndicator();
+            }
+
             var xhr = new XMLHttpRequest();
             xhr.open('POST', '/get-available-slots', true);
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.timeout = 5000; // Timeout de 5 secondes
+
             xhr.onreadystatechange = function() {
                 if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (!isPreload) isLoading = false;
+
                     if (xhr.status === 200) {
-                        var slots = JSON.parse(xhr.responseText);
-                        updateSlotsDropdown(slots);
+                        try {
+                            var slots = JSON.parse(xhr.responseText);
+                            // Mettre en cache
+                            slotsCache.set(selectedDate, slots);
+
+                            if (!isPreload) {
+                                updateSlotsDropdown(slots);
+                            }
+                        } catch (e) {
+                            console.error('Erreur de parsing JSON:', e);
+                            if (!isPreload) {
+                                showErrorMessage();
+                            }
+                        }
                     } else {
-                        console.error('Erreur lors de la récupération des créneaux disponibles');
+                        console.error('Erreur lors de la récupération des créneaux:', xhr.status);
+                        if (!isPreload) {
+                            showErrorMessage();
+                        }
                     }
                 }
             };
+
+            xhr.ontimeout = function() {
+                if (!isPreload) {
+                    isLoading = false;
+                    showErrorMessage('Délai d\'attente dépassé');
+                }
+            };
+
             xhr.send('date=' + selectedDate);
-        });
+        }
+
+        function showLoadingIndicator() {
+            slotsContainer.innerHTML = '<div class="flex items-center justify-center py-4"><svg class="animate-spin h-5 w-5 text-pink-600" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span class="ml-2 text-sm text-gray-600">Chargement...</span></div>';
+        }
+
+        function showErrorMessage(message = 'Erreur lors du chargement des créneaux') {
+            slotsContainer.innerHTML = '<p class="text-red-600 mt-2 text-sm">' + message + '</p>';
+        }
 
         function updateSlotsDropdown(slots) {
             slotsContainer.innerHTML = '';
@@ -220,31 +305,145 @@
             }
         }
 
-        // Gestion de la dépendance catégorie -> prestation
+        // Optimisation du chargement catégorie -> prestation
         let categorie = document.querySelector("#rendezvous_categorie");
-        if (categorie) {
+        let prestationSelect = document.querySelector("#rendezvous_prestation");
+
+        // Cache pour stocker les prestations par catégorie
+        let prestationsCache = new Map();
+        let allPrestationsLoaded = false;
+        let loadingPrestations = false;
+
+        // Pre-charger toutes les prestations au chargement de la page
+        preloadAllPrestations();
+
+        if (categorie && prestationSelect) {
             categorie.addEventListener("change", function(){
-                let form = this.closest("form");
-                let data = this.name + "=" + this.value;
-                
-                fetch(form.action, {
-                    method: form.getAttribute("method"),
-                    body: data,
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded; charset:UTF-8"
-                    }
-                })
-                .then(response => response.text())
-                .then(html => {
-                    let content = document.createElement("html");
-                    content.innerHTML = html;
-                    let nouveauSelect = content.querySelector("#rendezvous_prestation");
-                    document.querySelector("#rendezvous_prestation").replaceWith(nouveauSelect);
-                })
-                .catch(error => {
-                    console.log(error);
-                });
+                let selectedCategoryId = this.value;
+
+                if (!selectedCategoryId) {
+                    resetPrestationSelect();
+                    return;
+                }
+
+                loadPrestationsForCategory(selectedCategoryId);
             });
+        }
+
+        function preloadAllPrestations() {
+            if (allPrestationsLoaded || loadingPrestations) return;
+
+            loadingPrestations = true;
+
+            fetch('/api/prestations/all-by-categories', {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Erreur réseau');
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    // Stocker toutes les prestations dans le cache
+                    for (let categoryId in data.prestationsByCategory) {
+                        prestationsCache.set(categoryId, data.prestationsByCategory[categoryId]);
+                    }
+                    allPrestationsLoaded = true;
+                } else {
+                    console.error('Erreur serveur:', data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Erreur lors du pre-chargement des prestations:', error);
+            })
+            .finally(() => {
+                loadingPrestations = false;
+            });
+        }
+
+        function loadPrestationsForCategory(categoryId) {
+            // Vérifier le cache d'abord
+            if (prestationsCache.has(categoryId)) {
+                updatePrestationSelect(prestationsCache.get(categoryId));
+                return;
+            }
+
+            // Si pas en cache, charger via API
+            showPrestationLoading();
+
+            fetch(`/api/prestations/by-category/${categoryId}`, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Erreur réseau');
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    // Mettre en cache
+                    prestationsCache.set(categoryId, data.prestations);
+                    updatePrestationSelect(data.prestations);
+                } else {
+                    showPrestationError(data.error || 'Erreur lors du chargement');
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                showPrestationError('Erreur de connexion');
+            });
+        }
+
+        function updatePrestationSelect(prestations) {
+            prestationSelect.innerHTML = '';
+
+            // Option par défaut
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.textContent = 'Choisir une prestation';
+            prestationSelect.appendChild(defaultOption);
+
+            // Ajouter les prestations
+            prestations.forEach(prestation => {
+                const option = document.createElement('option');
+                option.value = prestation.id;
+                option.textContent = `${prestation.title} (${prestation.price}F CFA)`;
+                prestationSelect.appendChild(option);
+            });
+
+            // Réactiver le select
+            prestationSelect.disabled = false;
+            prestationSelect.classList.remove('opacity-50');
+        }
+
+        function resetPrestationSelect() {
+            prestationSelect.innerHTML = '<option value="">Prestation (Choisir une catégorie)</option>';
+            prestationSelect.disabled = true;
+            prestationSelect.classList.add('opacity-50');
+        }
+
+        function showPrestationLoading() {
+            prestationSelect.innerHTML = '<option value="">Chargement...</option>';
+            prestationSelect.disabled = true;
+            prestationSelect.classList.add('opacity-50');
+        }
+
+        function showPrestationError(message) {
+            prestationSelect.innerHTML = `<option value="">Erreur: ${message}</option>`;
+            prestationSelect.disabled = true;
+            prestationSelect.classList.add('opacity-50');
+        }
+
+        // Initialiser l'état du select prestation
+        if (!categorie.value) {
+            resetPrestationSelect();
         }
     });
 </script>

@@ -6,6 +6,8 @@
 
 namespace App\Entity;
 
+use App\Interface\PayableEntityInterface;
+use App\Repository\PaymentConfigurationRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -17,7 +19,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: RendezvousRepository::class)]
 #[Vich\Uploadable]
-class Rendezvous
+class Rendezvous implements PayableEntityInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -69,6 +71,18 @@ class Rendezvous
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
     private ?string $totalCost = null;
+
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
+    private ?string $originalAmount = null;
+
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
+    private ?string $discountAmount = null;
+
+    #[ORM\ManyToOne(inversedBy: 'rendezvous')]
+    private ?PromoCode $promoCode = null;
+
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $pendingPromoCode = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $previousDay = null;
@@ -269,6 +283,50 @@ class Rendezvous
         return $this;
     }
 
+    public function getOriginalAmount(): ?string
+    {
+        return $this->originalAmount;
+    }
+
+    public function setOriginalAmount(?string $originalAmount): static
+    {
+        $this->originalAmount = $originalAmount;
+        return $this;
+    }
+
+    public function getDiscountAmount(): ?string
+    {
+        return $this->discountAmount;
+    }
+
+    public function setDiscountAmount(?string $discountAmount): static
+    {
+        $this->discountAmount = $discountAmount;
+        return $this;
+    }
+
+    public function getPromoCode(): ?PromoCode
+    {
+        return $this->promoCode;
+    }
+
+    public function setPromoCode(?PromoCode $promoCode): static
+    {
+        $this->promoCode = $promoCode;
+        return $this;
+    }
+
+    public function getPendingPromoCode(): ?string
+    {
+        return $this->pendingPromoCode;
+    }
+
+    public function setPendingPromoCode(?string $pendingPromoCode): static
+    {
+        $this->pendingPromoCode = $pendingPromoCode;
+        return $this;
+    }
+
     /**
      * Calcule automatiquement le coût total basé sur la prestation et les suppléments
      */
@@ -342,5 +400,65 @@ class Rendezvous
     public function isRescheduled(): bool
     {
         return $this->previousDay !== null || $this->previousCreneau !== null;
+    }
+
+    // Implementation of PayableEntityInterface
+
+    public function getPaymentDescription(): string
+    {
+        $prestationName = $this->prestation?->getTitle() ?? 'Prestation';
+        return "Acompte pour {$prestationName} - " . $this->user?->getFullName();
+    }
+
+    public function getPaymentAmount(string $paymentType): int
+    {
+        // Cette méthode sera utilisée par le service PaymentTypeResolver
+        // Pour l'instant, retourner une valeur par défaut
+        return match($paymentType) {
+            'rendezvous_advance' => 5000, // Sera remplacé par la configuration
+            default => 0
+        };
+    }
+
+    public function onPaymentSuccess(): void
+    {
+        $this->setPaid(true);
+        $this->setStatus('Rendez-vous pris');
+    }
+
+    public function onPaymentFailure(): void
+    {
+        $this->setStatus('Échec du paiement');
+    }
+
+    public function onPaymentCancellation(): void
+    {
+        $this->setStatus('Paiement annulé');
+    }
+
+    public function getSuccessRedirectRoute(): string
+    {
+        return 'rendezvous_payment_done';
+    }
+
+    public function getFailureRedirectRoute(): string
+    {
+        return 'rendezvous_payment_error';
+    }
+
+    public function getEntityType(): string
+    {
+        return 'rendezvous';
+    }
+
+    public function getPaymentContext(): array
+    {
+        return [
+            'rendezvous_id' => $this->id,
+            'user_name' => $this->user?->getFullName(),
+            'prestation' => $this->prestation?->getTitle(),
+            'day' => $this->day?->format('Y-m-d'),
+            'creneau' => $this->creneau?->getDebut()
+        ];
     }
 }

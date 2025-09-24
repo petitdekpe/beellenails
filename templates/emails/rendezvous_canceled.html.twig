@@ -17,22 +17,10 @@
         Nous vous informons que votre rendez-vous chez <strong>BeElle Nails Care</strong> a été annulé.
     </div>
 
-    <div class="info-box">
-        <div class="info-title">
-            Rendez-vous annulé
-        </div>
-        <div class="info-item">
-            <span class="info-label">Prestation :</span>
-            <span class="info-value">{{ rendezvous.prestation.title }}</span>
-        </div>
-        <div class="info-item">
-            <span class="info-label">Date :</span>
-            <span class="info-value">{{ rendezvous.day|date('d/m/Y') }}</span>
-        </div>
-        <div class="info-item">
-            <span class="info-label">Heure :</span>
-            <span class="info-value">{{ rendezvous.creneau.startTime|date('H:i') }}</span>
-        </div>
+    <div class="content-text">
+        <strong>Rendez-vous annulé :</strong> votre prestation <strong>{{ rendezvous.prestation.title }}</strong> prévue le 
+        <strong>{{ rendezvous.day|date('d/m/Y') }}</strong> à <strong>{{ rendezvous.creneau.startTime|date('H:i') }}</strong> 
+        n'aura pas lieu comme prévu.
     </div>
 
     <!--div class="content-text">

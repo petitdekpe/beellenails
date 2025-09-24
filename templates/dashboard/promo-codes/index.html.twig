@@ -1,0 +1,328 @@
+{% extends 'dashboard.html.twig' %}
+
+{% block title %}Dashboard - Codes Promo{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+        
+        <!-- Main Content -->
+        <div 
+            <div class="px-4 py-6 sm:px-6 lg:px-8">
+                <!-- Header -->
+                <div class="mb-6">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">🎟️ Gestion des codes promo</h1>
+                            <p class="text-sm text-gray-600">{{ promoCodes.getTotalItemCount }} codes promo au total</p>
+                        </div>
+                        <a href="{{ path('app_promo_code_new') }}" class="inline-flex items-center px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white font-medium rounded-lg transition-colors">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                            </svg>
+                            Nouveau code promo
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Messages flash -->
+                {% for message in app.flashes('success') %}
+                    <div class="mb-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded relative">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+
+                {% for message in app.flashes('error') %}
+                    <div class="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+
+                {% for message in app.flashes('warning') %}
+                    <div class="mb-4 bg-yellow-50 border border-yellow-200 text-yellow-700 px-4 py-3 rounded relative">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+
+                <!-- Statistiques rapides -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                    <span class="text-blue-600 text-sm font-bold">📊</span>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-500">Total tentatives</p>
+                                <p class="text-2xl font-bold text-gray-900">{{ stats.totalAttempts }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                                    <span class="text-green-600 text-sm font-bold">✅</span>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-500">Utilisations validées</p>
+                                <p class="text-2xl font-bold text-gray-900">{{ stats.validatedUsages }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                                    <span class="text-purple-600 text-sm font-bold">💰</span>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-500">Réduction totale</p>
+                                <p class="text-2xl font-bold text-gray-900">{{ stats.totalDiscount|number_format(2) }} F CFA</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
+                                    <span class="text-yellow-600 text-sm font-bold">📈</span>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-500">Taux de succès</p>
+                                <p class="text-2xl font-bold text-gray-900">{{ stats.successRate|number_format(1) }}%</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alerte codes expirant -->
+                {% if expiringSoon|length > 0 %}
+                    <div class="mb-6 bg-orange-50 border border-orange-200 rounded-lg p-4">
+                            <div class="flex-shrink-0">
+                                <svg class="h-5 w-5 text-orange-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <div class="ml-3">
+                                <h3 class="text-sm font-medium text-orange-800">⚠️ {{ expiringSoon|length }} code(s) expire(nt) bientôt !</h3>
+                                <div class="mt-2 text-sm text-orange-700">
+                                    {% for code in expiringSoon %}
+                                        <span class="inline-block bg-orange-100 px-2 py-1 rounded mr-2 mb-1">
+                                            {{ code.code }} ({{ code.validUntil|date('d/m/Y') }})
+                                        </span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <!-- Filtres -->
+                <div class="bg-white rounded-lg shadow mb-6">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                            <h2 class="text-lg font-medium text-gray-900">Filtrer et rechercher</h2>
+                            <a href="{{ path('app_promo_codes_stats') }}" class="inline-flex items-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm rounded-lg transition-colors">
+                                📊 Statistiques avancées
+                            </a>
+                        </div>
+                    </div>
+                    <div class="px-6 py-4">
+                        <form method="GET" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label for="search" class="block text-sm font-medium text-gray-700 mb-1">Rechercher</label>
+                                <input type="text" name="search" value="{{ search }}" id="search"
+                                       class="block w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
+                                       placeholder="Code ou nom de campagne...">
+                            </div>
+                            <div>
+                                <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Statut</label>
+                                <select name="status" id="status" class="block w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500">
+                                    <option value="all" {% if status == 'all' %}selected{% endif %}>Tous les codes</option>
+                                    <option value="active" {% if status == 'active' %}selected{% endif %}>Actifs</option>
+                                    <option value="expired" {% if status == 'expired' %}selected{% endif %}>Expirés</option>
+                                    <option value="inactive" {% if status == 'inactive' %}selected{% endif %}>Inactifs</option>
+                                </select>
+                            </div>
+                            <div class="flex items-end">
+                                <button type="submit" class="w-full bg-pink-600 hover:bg-pink-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                                    Filtrer
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Liste des codes promo -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900">
+                            📋 Liste des codes promo
+                        </h3>
+                    </div>
+                    <div class="overflow-hidden">
+                        {% if promoCodes|length > 0 %}
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead class="bg-pink-50">
+                                        <tr>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-pink-600 uppercase tracking-wider">Code</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-pink-600 uppercase tracking-wider">Campagne</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-pink-600 uppercase tracking-wider">Réduction</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-pink-600 uppercase tracking-wider">Validité</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-pink-600 uppercase tracking-wider">Usage</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-pink-600 uppercase tracking-wider">Statut</th>
+                                            <th class="px-6 py-3 text-right text-xs font-medium text-pink-600 uppercase tracking-wider">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200">
+                                        {% for promoCode in promoCodes %}
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4">
+                                                    <div class="font-mono text-sm font-bold text-gray-900 bg-gray-100 px-2 py-1 rounded inline-block">
+                                                        {{ promoCode.code }}
+                                                    </div>
+                                                </td>
+                                                <td class="px-6 py-4">
+                                                    <div class="text-sm font-medium text-gray-900">{{ promoCode.name }}</div>
+                                                    {% if promoCode.description %}
+                                                        <div class="text-xs text-gray-500">{{ promoCode.description|slice(0, 50) }}...</div>
+                                                    {% endif %}
+                                                </td>
+                                                <td class="px-6 py-4">
+                                                    <span class="text-sm font-medium text-green-600">
+                                                        {{ promoCode.discountDisplayValue }}
+                                                    </span>
+                                                    {% if promoCode.minimumAmount %}
+                                                        <div class="text-xs text-gray-500">Min: {{ promoCode.minimumAmount }} F CFA</div>
+                                                    {% endif %}
+                                                </td>
+                                                <td class="px-6 py-4">
+                                                    <div class="text-sm text-gray-900">{{ promoCode.validFrom|date('d/m/Y') }}</div>
+                                                    <div class="text-xs text-gray-500">au {{ promoCode.validUntil|date('d/m/Y') }}</div>
+                                                    {% if promoCode.validUntil < date() %}
+                                                        <span class="text-xs text-red-600 font-medium">⚠️ Expiré</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td class="px-6 py-4">
+                                                    <div class="text-sm text-gray-900">{{ promoCode.currentUsage }}</div>
+                                                    {% if promoCode.maxUsageGlobal %}
+                                                        <div class="text-xs text-gray-500">/ {{ promoCode.maxUsageGlobal }}</div>
+                                                        <div class="w-full bg-gray-200 rounded-full h-1 mt-1">
+                                                            {% set percentage = (promoCode.currentUsage / promoCode.maxUsageGlobal * 100)|round %}
+                                                            <div class="bg-pink-600 h-1 rounded-full" style="width: {{ percentage }}%"></div>
+                                                        </div>
+                                                    {% else %}
+                                                        <div class="text-xs text-gray-500">Illimité</div>
+                                                    {% endif %}
+                                                </td>
+                                                <td class="px-6 py-4">
+                                                    {% if promoCode.isActive %}
+                                                        {% if promoCode.isValid %}
+                                                            <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">✅ Actif</span>
+                                                        {% else %}
+                                                            <span class="px-2 py-1 text-xs font-medium bg-orange-100 text-orange-800 rounded-full">⏰ Inactif</span>
+                                                        {% endif %}
+                                                    {% else %}
+                                                        <span class="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">❌ Désactivé</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                    <div class="flex items-center justify-end space-x-2">
+                                                        <a href="{{ path('app_promo_code_show', {'id': promoCode.id}) }}" 
+                                                           class="text-blue-600 hover:text-blue-900 transition-colors" title="Voir détails">
+                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                                            </svg>
+                                                        </a>
+                                                        <a href="{{ path('app_promo_code_edit', {'id': promoCode.id}) }}" 
+                                                           class="text-orange-600 hover:text-orange-900 transition-colors" title="Modifier">
+                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                                            </svg>
+                                                        </a>
+                                                        <button onclick="toggleStatus({{ promoCode.id }}, {{ promoCode.isActive ? 'false' : 'true' }})" 
+                                                                class="text-{{ promoCode.isActive ? 'red' : 'green' }}-600 hover:text-{{ promoCode.isActive ? 'red' : 'green' }}-900 transition-colors" 
+                                                                title="{{ promoCode.isActive ? 'Désactiver' : 'Activer' }}">
+                                                            {% if promoCode.isActive %}
+                                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636"/>
+                                                                </svg>
+                                                            {% else %}
+                                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                                </svg>
+                                                            {% endif %}
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <!-- Pagination -->
+                            {{ knp_pagination_render(promoCodes) }}
+                        {% else %}
+                            <div class="px-6 py-12 text-center">
+                                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+                                </svg>
+                                <h3 class="mt-2 text-sm font-medium text-gray-900">Aucun code promo trouvé</h3>
+                                <p class="mt-1 text-sm text-gray-500">
+                                    {% if search or status != 'all' %}
+                                        Essayez de modifier vos filtres.
+                                    {% else %}
+                                        Créez votre premier code promo pour commencer.
+                                    {% endif %}
+                                </p>
+                                <div class="mt-6">
+                                    <a href="{{ path('app_promo_code_new') }}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700">
+                                        <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                                        </svg>
+                                        Créer un code promo
+                                    </a>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleStatus(promoCodeId, newStatus) {
+    fetch(`/dashboard/promo-codes/${promoCodeId}/toggle-status`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Erreur: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Erreur technique');
+    });
+}
+</script>
+{% endblock %}

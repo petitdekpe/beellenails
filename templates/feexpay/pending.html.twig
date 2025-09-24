@@ -3,7 +3,7 @@
 {% block title %}Paiement en cours - BeElleNails{% endblock %}
 
 {% block body %}
-<div class="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+<div class="min-h-screen bg-gray-50 flex flex-col justify-center py-12 pt-32 sm:px-6 lg:px-8">
 	<div class="sm:mx-auto sm:w-full sm:max-w-md">
 		<div class="text-center">
 			<img src="{{ asset('assets/logooff.png') }}" alt="BeElleNails" class="mx-auto h-16 w-auto">
@@ -37,12 +37,50 @@
 						</h3>
 						<div class="mt-2 text-sm text-blue-700">
 							<ul class="list-disc pl-5 space-y-1">
-								<li>Vérifiez votre téléphone pour un message de confirmation</li>
-								<li>Entrez votre code PIN mobile money si demandé</li>
-								<li>Cette page se mettra à jour automatiquement</li>
+								<li>Vérifiez votre téléphone pour la demande de paiement</li>
+								<li>Entrez votre code PIN Mobile Money</li>
+								<li>Confirmez le paiement sur votre téléphone</li>
+								<li>Cette page se met à jour automatiquement</li>
+								<li>Le paiement sera annulé après 10 minutes</li>
 							</ul>
 						</div>
 					</div>
+				</div>
+			</div>
+
+			<!-- Étapes de progression -->
+			<div class="mb-6">
+				<div class="flex items-center justify-between mb-4">
+					<div class="flex items-center">
+						<div id="step-1-indicator" class="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center text-white text-sm font-medium">✓</div>
+						<div class="ml-3">
+							<p class="text-sm font-medium text-gray-900">Initialisation</p>
+							<p class="text-xs text-gray-500">Demande de paiement envoyée</p>
+						</div>
+					</div>
+					<div class="text-xs text-green-600 font-medium" id="step-1-time">Terminé</div>
+				</div>
+
+				<div class="flex items-center justify-between mb-4">
+					<div class="flex items-center">
+						<div id="step-2-indicator" class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-medium animate-pulse">2</div>
+						<div class="ml-3">
+							<p class="text-sm font-medium text-gray-900">Attente webhook</p>
+							<p class="text-xs text-gray-500">Vérification base de données</p>
+						</div>
+					</div>
+					<div class="text-xs text-blue-600 font-medium" id="step-2-time">En cours...</div>
+				</div>
+
+				<div class="flex items-center justify-between mb-4">
+					<div class="flex items-center">
+						<div id="step-3-indicator" class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-gray-500 text-sm font-medium">3</div>
+						<div class="ml-3">
+							<p class="text-sm font-medium text-gray-500">Vérification directe</p>
+							<p class="text-xs text-gray-400">API Feexpay (après 30s)</p>
+						</div>
+					</div>
+					<div class="text-xs text-gray-400" id="step-3-time">En attente</div>
 				</div>
 			</div>
 
@@ -50,9 +88,20 @@
 			<div class="text-center mb-6">
 				<div class="bg-gray-100 rounded-lg p-4">
 					<p class="text-sm font-medium text-gray-900">Statut: <span id="payment-status" class="text-blue-600">En attente</span></p>
-					<p class="text-xs text-gray-500 mt-1">Temps restant: <span id="countdown" class="font-mono">2:30</span></p>
+					<p class="text-xs text-gray-500 mt-1">Temps restant: <span id="countdown" class="font-mono">10:00</span></p>
+					<p class="text-xs text-gray-400 mt-1">Phase: <span id="current-phase" class="font-medium">Attente webhook</span></p>
 					<p class="text-xs text-gray-400 mt-1" id="source-indicator">Source: database</p>
 					<p class="text-xs text-gray-400 mt-2">Référence: {{ reference }}</p>
+				</div>
+			</div>
+
+			<!-- Historique des vérifications -->
+			<div class="mb-6">
+				<div class="bg-gray-50 rounded-lg p-3">
+					<h4 class="text-sm font-medium text-gray-900 mb-2">Historique des vérifications</h4>
+					<div id="verification-history" class="space-y-1 max-h-32 overflow-y-auto">
+						<div class="text-xs text-gray-600">🔍 Démarrage de la surveillance...</div>
+					</div>
 				</div>
 			</div>
 
@@ -72,21 +121,32 @@
 
 <script>
 const REFERENCE = '{{ reference }}';
-const TIMEOUT_DURATION = 150000; // 2 minutes 30 secondes
-const POLL_INTERVAL = 3000; // Vérifier toutes les 3 secondes
-const FALLBACK_THRESHOLD = 30000; // Basculer vers Feexpay direct après 30s
 
+// Configuration des timeouts optimisés pour Mobile Money
+const TIMEOUT_DURATION = 600000;  // 10 minutes - temps réaliste pour Mobile Money
+const POLL_INTERVAL = 2000;       // Vérifier toutes les 2 secondes en mode DB
+const HYBRID_POLL_INTERVAL = 5000; // Vérifier toutes les 5 secondes en mode hybride
+const FALLBACK_THRESHOLD = 30000;  // Basculer vers Feexpay direct après 30s
+const AUTO_CANCEL_TIMEOUT = 600000; // Annuler automatiquement après 10 minutes
+
+// Variables d'état
 let startTime = Date.now();
 let pollInterval;
 let countdownInterval;
 let isHybridMode = false;
 let lastStatusCheck = null;
+let consecutiveErrors = 0;
+const MAX_ERRORS = 5;
+let checkCount = 0;
+let verificationHistory = [];
 
 // Démarre le polling et le countdown au chargement de la page
 document.addEventListener('DOMContentLoaded', function() {
 	startPolling();
 	startCountdown();
-	updateStatusIndicator('Phase 1: Polling BDD (webhook attendu)');
+	updateStatusIndicator('🔍 Vérification en base de données...');
+	addToHistory('🚀 Surveillance démarrée');
+	updatePhase('Attente webhook');
 });
 
 function startPolling() {
@@ -108,101 +168,134 @@ function updateCountdown() {
 		switchToHybridMode();
 	}
 	
+	// Annulation automatique après timeout
 	if (remaining === 0) {
 		clearIntervals();
-		redirectToFailure();
+		cancelPayment();
 		return;
 	}
 	
+	// Mise à jour du compteur visuel
 	const minutes = Math.floor(remaining / 60000);
 	const seconds = Math.floor((remaining % 60000) / 1000);
 	document.getElementById('countdown').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
 }
 
 function switchToHybridMode() {
-	if (isHybridMode) return; // Déjà en mode hybride
-	
+	if (isHybridMode) return;
+
 	isHybridMode = true;
-	updateStatusIndicator('Phase 2: Vérification directe Feexpay (fallback)');
-	
-	console.log('[Hybrid] Basculement vers le polling direct Feexpay après 30 secondes');
-	
+	updateStatusIndicator('🔄 Vérification directe chez Feexpay...');
+
+	// Mettre à jour les étapes visuelles
+	updateStepStatus(2, 'completed', '✓ Terminé');
+	updateStepStatus(3, 'active', 'En cours...');
+	updatePhase('Vérification directe');
+	addToHistory('🔄 Basculement vers vérification directe Feexpay');
+
+	// Changer l'intervalle de polling
+	clearInterval(pollInterval);
+	pollInterval = setInterval(checkPaymentStatus, HYBRID_POLL_INTERVAL);
+
 	// Changer la couleur du loader pour indiquer le changement
 	const loader = document.querySelector('.animate-spin');
 	if (loader) {
 		loader.classList.remove('border-pink-600');
-		loader.classList.add('border-orange-600');
+		loader.classList.add('border-orange-500');
 	}
 }
 
 async function checkPaymentStatus() {
 	try {
+		checkCount++;
 		let endpoint, description;
-		
+
 		if (isHybridMode) {
-			// Mode hybride : vérification directe chez Feexpay
 			endpoint = `/api/payment/feexpay/verify/${REFERENCE}`;
-			description = 'Vérification directe Feexpay...';
+			description = '🔄 Vérification directe Feexpay...';
 		} else {
-			// Mode normal : polling de notre BDD
 			endpoint = `/api/payment/feexpay/status/${REFERENCE}`;
-			description = 'Vérification base de données...';
+			description = '🔍 Vérification en base de données...';
 		}
-		
+
 		updateStatusIndicator(description);
-		
-		const response = await fetch(endpoint);
-		const data = await response.json();
-		
-		if (response.ok) {
-			lastStatusCheck = new Date().toLocaleTimeString();
-			updateStatusDisplay(data.status, data.source);
-			
-			// Log pour debug
-			console.log(`[${data.source}] Statut:`, data.status, data);
-			
-			// Redirection selon le statut
-			switch(data.status) {
-				case 'successful':
-					clearIntervals();
-					showSuccessMessage();
-					setTimeout(() => redirectToSuccess(), 1500);
-					break;
-				case 'failed':
-				case 'canceled':
-					clearIntervals();
-					showFailureMessage();
-					setTimeout(() => redirectToFailure(), 1500);
-					break;
-				// Pour 'pending' et autres, on continue à poller
-			}
-		} else {
-			console.error('Erreur lors de la vérification du statut:', data);
-			updateStatusIndicator('Erreur de connexion, nouvelle tentative...');
+		addToHistory(`${isHybridMode ? '🔄' : '🔍'} Vérification #${checkCount} (${isHybridMode ? 'API' : 'BDD'})`);
+
+		const response = await fetch(endpoint, {
+			timeout: 10000
+		});
+
+		if (!response.ok) {
+			throw new Error(`HTTP ${response.status}: ${response.statusText}`);
 		}
+
+		const data = await response.json();
+
+		// Réinitialiser le compteur d'erreurs en cas de succès
+		consecutiveErrors = 0;
+
+		lastStatusCheck = new Date().toLocaleTimeString();
+		updateStatusDisplay(data.status, data.source);
+
+		// Ajouter à l'historique avec plus de détails
+		const elapsed = Math.floor((Date.now() - startTime) / 1000);
+		addToHistory(`📊 ${lastStatusCheck} - Statut: ${data.status} (${elapsed}s)`);
+
+		// Traitement selon le statut
+		switch(data.status) {
+			case 'successful':
+				updateStepStatus(isHybridMode ? 3 : 2, 'completed', '✓ Paiement confirmé!');
+				addToHistory('✅ Paiement réussi - Redirection...');
+				clearIntervals();
+				showSuccessMessage();
+				setTimeout(() => redirectToSuccess(), 2000);
+				break;
+			case 'failed':
+			case 'canceled':
+				updateStepStatus(isHybridMode ? 3 : 2, 'failed', '❌ Échec');
+				addToHistory(`❌ Paiement ${data.status} - Redirection...`);
+				clearIntervals();
+				showFailureMessage();
+				setTimeout(() => redirectToFailure(), 2000);
+				break;
+		}
+
 	} catch (error) {
-		console.error('Erreur réseau lors de la vérification du statut:', error);
-		updateStatusIndicator('Erreur réseau, nouvelle tentative...');
+		consecutiveErrors++;
+		addToHistory(`⚠️ Erreur #${consecutiveErrors}: ${error.message}`);
+
+		if (consecutiveErrors >= MAX_ERRORS) {
+			updateStatusIndicator('❌ Trop d\'erreurs de connexion. Annulation...');
+			addToHistory('❌ Trop d\'erreurs - Abandon du paiement');
+			clearIntervals();
+			setTimeout(() => redirectToFailure(), 3000);
+			return;
+		}
+
+		updateStatusIndicator(`⚠️ Erreur connexion (${consecutiveErrors}/${MAX_ERRORS}). Nouvelle tentative...`);
 	}
 }
 
 function updateStatusDisplay(status, source = 'database') {
 	const statusElement = document.getElementById('payment-status');
 	const statusMap = {
-		'pending': { text: 'En attente', color: 'text-blue-600' },
-		'successful': { text: 'Réussi', color: 'text-green-600' },
-		'failed': { text: 'Échoué', color: 'text-red-600' },
-		'canceled': { text: 'Annulé', color: 'text-red-600' }
+		'pending': { text: 'En attente de confirmation', color: 'text-blue-600' },
+		'successful': { text: 'Paiement réussi', color: 'text-green-600' },
+		'failed': { text: 'Paiement échoué', color: 'text-red-600' },
+		'canceled': { text: 'Paiement annulé', color: 'text-red-600' }
 	};
 	
 	const statusInfo = statusMap[status] || { text: status, color: 'text-gray-600' };
 	statusElement.textContent = statusInfo.text;
 	statusElement.className = statusInfo.color;
 	
-	// Afficher la source en debug
+	// Afficher la source et dernière vérification
 	const sourceIndicator = document.getElementById('source-indicator');
 	if (sourceIndicator) {
-		sourceIndicator.textContent = `Source: ${source} (${lastStatusCheck})`;
+		const sourceText = source === 'database' ? 'Base de données' : 
+					     source === 'feexpay_direct' ? 'Feexpay (direct)' : 
+					     'Fallback BDD';
+		sourceIndicator.textContent = `Source: ${sourceText} (${lastStatusCheck})`;
 	}
 }
 
@@ -214,28 +307,65 @@ function updateStatusIndicator(message) {
 }
 
 function showSuccessMessage() {
-	updateStatusIndicator('✅ Paiement confirmé ! Redirection...');
+	updateStatusIndicator('✅ Paiement confirmé ! Redirection vers la confirmation...');
 	const loader = document.querySelector('.animate-spin');
 	if (loader) {
-		loader.classList.remove('animate-spin', 'border-pink-600', 'border-orange-600');
-		loader.classList.add('border-green-600');
-		loader.innerHTML = '<div class="text-green-600 text-2xl">✅</div>';
+		loader.classList.remove('animate-spin', 'border-pink-600', 'border-orange-500');
+		loader.classList.add('border-green-500');
+		loader.innerHTML = '<div class="text-green-500 text-3xl">✅</div>';
 	}
 }
 
 function showFailureMessage() {
-	updateStatusIndicator('❌ Paiement échoué. Redirection...');
+	updateStatusIndicator('❌ Paiement non confirmé. Redirection...');
 	const loader = document.querySelector('.animate-spin');
 	if (loader) {
-		loader.classList.remove('animate-spin', 'border-pink-600', 'border-orange-600');
-		loader.classList.add('border-red-600');
-		loader.innerHTML = '<div class="text-red-600 text-2xl">❌</div>';
+		loader.classList.remove('animate-spin', 'border-pink-600', 'border-orange-500');
+		loader.classList.add('border-red-500');
+		loader.innerHTML = '<div class="text-red-500 text-3xl">❌</div>';
 	}
 }
 
+function showCancelMessage() {
+	updateStatusIndicator('⏰ Temps d\'attente dépassé. Annulation du paiement...');
+	const loader = document.querySelector('.animate-spin');
+	if (loader) {
+		loader.classList.remove('animate-spin', 'border-pink-600', 'border-orange-500');
+		loader.classList.add('border-gray-500');
+		loader.innerHTML = '<div class="text-gray-500 text-3xl">⏰</div>';
+	}
+}
+
+async function cancelPayment() {
+	showCancelMessage();
+	addToHistory('⏰ Timeout atteint - Annulation automatique...');
+	updateStepStatus(isHybridMode ? 3 : 2, 'failed', '⏰ Timeout');
+
+	try {
+		// Appeler l'API pour marquer le paiement comme annulé
+		const response = await fetch(`/api/payment/feexpay/cancel/${REFERENCE}`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			}
+		});
+
+		if (response.ok) {
+			addToHistory('✅ Paiement marqué comme annulé en base');
+		} else {
+			addToHistory('⚠️ Impossible de marquer le paiement comme annulé');
+		}
+	} catch (error) {
+		addToHistory(`❌ Erreur lors de l'annulation: ${error.message}`);
+	}
+
+	// Redirection vers la page d'erreur après 3 secondes
+	setTimeout(() => redirectToFailure(), 3000);
+}
+
 function clearIntervals() {
-	clearInterval(pollInterval);
-	clearInterval(countdownInterval);
+	if (pollInterval) clearInterval(pollInterval);
+	if (countdownInterval) clearInterval(countdownInterval);
 }
 
 function redirectToSuccess() {
@@ -248,6 +378,81 @@ function redirectToFailure() {
 
 // Nettoyage quand on quitte la page
 window.addEventListener('beforeunload', clearIntervals);
+
+// Nouvelles fonctions utilitaires pour le suivi visuel
+function updatePhase(phaseName) {
+	const element = document.getElementById('current-phase');
+	if (element) {
+		element.textContent = phaseName;
+	}
+}
+
+function updateStepStatus(stepNumber, status, timeText) {
+	const indicator = document.getElementById(`step-${stepNumber}-indicator`);
+	const time = document.getElementById(`step-${stepNumber}-time`);
+
+	if (!indicator || !time) return;
+
+	// Réinitialiser les classes
+	indicator.className = 'w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium';
+
+	switch(status) {
+		case 'active':
+			indicator.classList.add('bg-blue-600', 'text-white', 'animate-pulse');
+			indicator.textContent = stepNumber;
+			time.className = 'text-xs text-blue-600 font-medium';
+			break;
+		case 'completed':
+			indicator.classList.add('bg-green-600', 'text-white');
+			indicator.textContent = '✓';
+			time.className = 'text-xs text-green-600 font-medium';
+			break;
+		case 'failed':
+			indicator.classList.add('bg-red-600', 'text-white');
+			indicator.textContent = '❌';
+			time.className = 'text-xs text-red-600 font-medium';
+			break;
+		default:
+			indicator.classList.add('bg-gray-300', 'text-gray-500');
+			indicator.textContent = stepNumber;
+			time.className = 'text-xs text-gray-400';
+	}
+
+	time.textContent = timeText;
+}
+
+function addToHistory(message) {
+	const now = new Date().toLocaleTimeString();
+	const historyElement = document.getElementById('verification-history');
+
+	if (historyElement) {
+		const entry = document.createElement('div');
+		entry.className = 'text-xs text-gray-600';
+		entry.textContent = `${now} - ${message}`;
+
+		historyElement.appendChild(entry);
+
+		// Garder seulement les 10 dernières entrées
+		while (historyElement.children.length > 10) {
+			historyElement.removeChild(historyElement.firstChild);
+		}
+
+		// Auto-scroll vers le bas
+		historyElement.scrollTop = historyElement.scrollHeight;
+	}
+}
+
+// Gestion de la perte de connexion réseau
+window.addEventListener('online', function() {
+	consecutiveErrors = 0;
+	updateStatusIndicator('🔍 Connexion rétablie. Vérification...');
+	addToHistory('📡 Connexion Internet rétablie');
+});
+
+window.addEventListener('offline', function() {
+	updateStatusIndicator('📡 Connexion perdue. Attente de reconnexion...');
+	addToHistory('📡 Connexion Internet perdue');
+});
 </script>
 
 {% endblock %}

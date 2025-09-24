@@ -1,0 +1,235 @@
+<!-- Sidebar -->
+<aside id="logo-sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0">
+    <div class="h-full px-3 pb-4 overflow-y-auto bg-white">
+        <div class="flex justify-center mb-6 pt-6">
+            <a href="{{ path('app_home') }}">
+                <img src="{{ asset('assets/logooff.png') }}" class="h-20" alt="Logo">
+            </a>
+        </div>
+
+        {% set route = app.request.attributes.get('_route') %}
+        <ul class="space-y-2 font-medium">
+            
+            <li>
+                <a href="{{ path('app_dashboard') }}" 
+                   class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 {{ route == 'app_dashboard' ? 'bg-pink-100 font-semibold text-pink-700' : '' }}">
+                    <svg class="w-5 h-5 text-gray-500 transition duration-75 group-hover:text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 21">
+                        <path d="M16.975 11H10V4.025a1 1 0 0 0-1.066-.998 8.5 8.5 0 1 0 9.039 9.039.999.999 0 0 0-1-1.066h.002Z"/>
+                        <path d="M12.5 0c-.157 0-.311.01-.565.027A1 1 0 0 0 11 1.02V10h8.975a1 1 0 0 0 1-.935c.013-.188.028-.374.028-.565A8.51 8.51 0 0 0 12.5 0Z"/>
+                    </svg>
+                    <span class="ml-3">Agenda</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ path('app_dashboard_overview') }}" 
+                   class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 {{ route == 'app_dashboard_overview' ? 'bg-pink-100 font-semibold text-pink-700' : '' }}">
+                    <svg class="w-5 h-5 text-gray-500 transition duration-75 group-hover:text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 18">
+                        <path d="M6.143 0H1.857A1.857 1.857 0 0 0 0 1.857v4.286C0 7.169.831 8 1.857 8h4.286A1.857 1.857 0 0 0 8 6.143V1.857A1.857 1.857 0 0 0 6.143 0Zm10 0h-4.286A1.857 1.857 0 0 0 10 1.857v4.286C10 7.169 10.831 8 11.857 8h4.286A1.857 1.857 0 0 0 18 6.143V1.857A1.857 1.857 0 0 0 16.143 0Zm-10 10H1.857A1.857 1.857 0 0 0 0 11.857v4.286C0 17.169.831 18 1.857 18h4.286A1.857 1.857 0 0 0 8 16.143v-4.286A1.857 1.857 0 0 0 6.143 10Zm10 0h-4.286A1.857 1.857 0 0 0 10 11.857v4.286c0 1.026.831 1.857 1.857 1.857h4.286A1.857 1.857 0 0 0 18 16.143v-4.286A1.857 1.857 0 0 0 16.143 10Z"/>
+                    </svg>
+                    <span class="ml-3">Vue d'ensemble</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ path('app_dashboard_rendezvous') }}" 
+                   class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 {{ route == 'app_dashboard_rendezvous' ? 'bg-pink-100 font-semibold text-pink-700' : '' }}">
+                    <svg class="w-5 h-5 text-gray-500 transition duration-75 group-hover:text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M5 5V.13a2.96 2.96 0 0 0-1.293.749L.879 3.707A2.96 2.96 0 0 0 .13 5H5Z"/>
+                        <path d="M6.737 11.061a2.961 2.961 0 0 1 .81-1.515l6.117-6.116A4.839 4.839 0 0 1 16 2.141V2a1.97 1.97 0 0 0-1.933-2H7v5a2 2 0 0 1-2 2H0v11a1.969 1.969 0 0 0 1.933 2h12.134A1.97 1.97 0 0 0 16 18v-3.093l-1.546 1.546c-.413.413-.94.695-1.513.81l-3.4.679a2.947 2.947 0 0 1-1.85-.227 2.96 2.96 0 0 1-1.635-3.257l.681-3.397Z"/>
+                        <path d="M8.961 16a.93.93 0 0 0 .189-.019l3.4-.679a.961.961 0 0 0 .49-.263l6.118-6.117a2.884 2.884 0 0 0-4.079-4.078l-6.117 6.117a.96.96 0 0 0-.263.491l-.679 3.4A.961.961 0 0 0 8.961 16Zm7.477-9.8a.958.958 0 0 1 .68-.281.961.961 0 0 1 .682 1.644l-.315.315-1.36-1.36.313-.318Zm-5.911 5.911 4.236-4.236 1.359 1.359-4.236 4.237-1.7.339.341-1.699Z"/>
+                    </svg>
+                    <span class="ml-3">Rendez-vous</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ path('app_dashboard_prestation') }}" 
+                   class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 {{ route == 'app_dashboard_prestation' ? 'bg-pink-100 font-semibold text-pink-700' : '' }}">
+                    <svg class="w-5 h-5 text-gray-500 transition duration-75 group-hover:text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 20">
+                        <path d="M17 5.923A1 1 0 0 0 16 5h-3V4a4 4 0 1 0-8 0v1H2a1 1 0 0 0-1 .923L.086 17.846A2 2 0 0 0 2.08 20h13.84a2 2 0 0 0 1.994-2.153L17 5.923ZM7 9a1 1 0 0 1-2 0V7h2v2Zm0-5a2 2 0 1 1 4 0v1H7V4Zm6 5a1 1 0 1 1-2 0V7h2v2Z"/>
+                    </svg>
+                    <span class="ml-3">Prestations</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ path('app_dashboard_user') }}" 
+                   class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 {{ route == 'app_dashboard_user' ? 'bg-pink-100 font-semibold text-pink-700' : '' }}">
+                    <svg class="w-5 h-5 text-gray-500 transition duration-75 group-hover:text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
+                        <path d="M14 2a3.963 3.963 0 0 0-1.4.267 6.439 6.439 0 0 1-1.331 6.638A4 4 0 1 0 14 2Zm1 9h-1.264A6.957 6.957 0 0 1 15 15v2a2.97 2.97 0 0 1-.184 1H19a1 1 0 0 0 1-1v-1a5.006 5.006 0 0 0-5-5ZM6.5 9a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9ZM8 10H5a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-2a5.006 5.006 0 0 0-5-5Z"/>
+                    </svg>
+                    <span class="ml-3">Clients</span>
+                </a>
+            </li>
+
+            <!-- Paiements -->
+            {% set payment_active = route starts with 'app_dashboard_transactions' or route starts with 'app_dashboard_payment_method' or route starts with 'app_dashboard_payment_config' %}
+            <li>
+                <button type="button" 
+                        class="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 {{ payment_active ? 'bg-pink-100 font-semibold text-pink-700' : '' }}"
+                        aria-controls="dropdown-payments" 
+                        data-collapse-toggle="dropdown-payments">
+                    <svg class="w-5 h-5 text-gray-500 transition duration-75 group-hover:text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M11.074 4 8.442.408A.95.95 0 0 0 7.014.254L2.926 4h8.148ZM9 13v-1a4 4 0 0 1 4-4h6V6a1 1 0 0 0-1-1H1a1 1 0 0 0-1 1v13a1 1 0 0 0 1 1h17a1 1 0 0 0 1-1v-2H9Z"/>
+                        <path d="M19 10h-6a2 2 0 0 0-2 2v1a2 2 0 0 0 2 2h6a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1Zm-4.5 3.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2ZM12.62 4h2.78L12.539.41a1.086 1.086 0 1 0-1.7 1.352L12.62 4Z"/>
+                    </svg>
+                    <span class="flex-1 ml-3 text-left whitespace-nowrap">Paiements</span>
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+                    </svg>
+                </button>
+                <ul id="dropdown-payments" class="{{ payment_active ? '' : 'hidden' }} py-2 space-y-2">
+                    <li>
+                        <a href="{{ path('app_dashboard_transactions') }}" 
+                           class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 {{ route == 'app_dashboard_transactions' ? 'bg-pink-100 font-medium' : '' }}">Transactions</a>
+                    </li>
+                    <li>
+                        <a href="{{ path('app_dashboard_payment_method_index') }}" 
+                           class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 {{ route starts with 'app_dashboard_payment_method' ? 'bg-pink-100 font-medium' : '' }}">Moyens de paiement</a>
+                    </li>
+                    <li>
+                        <a href="{{ path('app_dashboard_payment_config_index') }}" 
+                           class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 {{ route starts with 'app_dashboard_payment_config' ? 'bg-pink-100 font-medium' : '' }}">Configuration montants</a>
+                    </li>
+                </ul>
+            </li>
+
+            <!-- Images de l'accueil -->
+            {% set home_images_active = route starts with 'dashboard_home_images' %}
+            <li>
+                <a href="{{ path('dashboard_home_images_index') }}" 
+                   class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 {{ home_images_active ? 'bg-pink-100 font-semibold text-pink-700' : '' }}">
+                    <svg class="w-5 h-5 text-gray-500 transition duration-75 group-hover:text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
+                        <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
+                    </svg>
+                    <span class="ml-3">Images accueil</span>
+                </a>
+            </li>
+
+            <!-- Formations -->
+            {% set formation_active = route starts with 'app_dashboard_formation' or route starts with 'app_formation_' or route starts with 'app_dashboard_analytics' or route starts with 'app_dashboard_reviews' %}
+            <li>
+                <button type="button" 
+                        class="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 {{ formation_active ? 'bg-pink-100 font-semibold text-pink-700' : '' }}"
+                        aria-controls="dropdown-formations" 
+                        data-collapse-toggle="dropdown-formations">
+                    <svg class="w-5 h-5 text-gray-500 transition duration-75 group-hover:text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+                    </svg>
+                    <span class="flex-1 ml-3 text-left whitespace-nowrap">Formations</span>
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+                    </svg>
+                </button>
+                <ul id="dropdown-formations" class="{{ formation_active ? '' : 'hidden' }} py-2 space-y-2">
+                    <li>
+                        <a href="{{ path('app_dashboard_formations_index') }}" 
+                           class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 {{ route == 'app_dashboard_formations_index' ? 'bg-pink-100 font-medium' : '' }}">📚 Gestion des formations</a>
+                    </li>
+                    <li>
+                        <a href="{{ path('app_dashboard_formation_new') }}" 
+                           class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 {{ route == 'app_dashboard_formation_new' ? 'bg-pink-100 font-medium' : '' }}">➕ Nouvelle formation</a>
+                    </li>
+                    <li>
+                        <a href="{{ path('app_dashboard_analytics') }}" 
+                           class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 {{ route == 'app_dashboard_analytics' ? 'bg-pink-100 font-medium' : '' }}">📊 Analyses & Statistiques</a>
+                    </li>
+                    <li>
+                        <a href="{{ path('app_dashboard_reviews_index') }}" 
+                           class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 {{ route == 'app_dashboard_reviews_index' ? 'bg-pink-100 font-medium' : '' }}">📝 Modération des avis</a>
+                    </li>
+                    <li>
+                        <a href="{{ path('app_formation_index') }}" target="_blank"
+                           class="flex items-center w-full p-2 text-gray-500 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100">🔍 Voir côté public</a>
+                    </li>
+                </ul>
+            </li>
+
+            <!-- Congés -->
+            {% set conge_active = route starts with 'create_conge' or route starts with 'cancel_conge' or route == 'app_dashboard_conges' %}
+            <li>
+                <button type="button" 
+                        class="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 {{ conge_active ? 'bg-pink-100 font-semibold text-pink-700' : '' }}"
+                        aria-controls="dropdown-conges" 
+                        data-collapse-toggle="dropdown-conges">
+                    <svg class="w-5 h-5 text-gray-500 transition duration-75 group-hover:text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 20">
+                        <path d="M16 1h-3.278A1.992 1.992 0 0 0 11 0H7a1.993 1.993 0 0 0-1.722 1H2a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2ZM7 2h4v2H7V2ZM5.5 6.5A1.5 1.5 0 0 1 7 5h4a1.5 1.5 0 0 1 1.5 1.5v0A1.5 1.5 0 0 1 11 8H7a1.5 1.5 0 0 1-1.5-1.5v0Z"/>
+                    </svg>
+                    <span class="flex-1 ml-3 text-left whitespace-nowrap">Congés</span>
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+                    </svg>
+                </button>
+                <ul id="dropdown-conges" class="{{ conge_active ? '' : 'hidden' }} py-2 space-y-2">
+                    <li>
+                        <a href="{{ path('app_dashboard_conges') }}" 
+                           class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 {{ route == 'app_dashboard_conges' ? 'bg-pink-100 font-medium' : '' }}">Liste des congés</a>
+                    </li>
+                    <li>
+                        <a href="{{ path('create_conge') }}" 
+                           class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 {{ route == 'create_conge' ? 'bg-pink-100 font-medium' : '' }}">Ajouter (Journée)</a>
+                    </li>
+                    <li>
+                        <a href="{{ path('create_conges') }}" 
+                           class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 {{ route == 'create_conges' ? 'bg-pink-100 font-medium' : '' }}">Ajouter (Période)</a>
+                    </li>
+                    <li>
+                        <a href="{{ path('cancel_conge') }}" 
+                           class="flex items-center w-full p-2 text-red-600 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 {{ route == 'cancel_conge' ? 'bg-red-100 font-medium' : '' }}">Annuler (Journée)</a>
+                    </li>
+                    <li>
+                        <a href="{{ path('cancel_conges') }}" 
+                           class="flex items-center w-full p-2 text-red-600 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 {{ route == 'cancel_conges' ? 'bg-red-100 font-medium' : '' }}">Annuler (Période)</a>
+                    </li>
+                </ul>
+            </li>
+
+            <!-- Emails -->
+            {% set email_active = route == 'app_dashboard_emails' %}
+            <li>
+                <a href="{{ path('app_dashboard_emails') }}" 
+                   class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 {{ email_active ? 'bg-pink-100 font-semibold text-pink-700' : '' }}">
+                    <svg class="w-5 h-5 text-gray-500 transition duration-75 group-hover:text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 16">
+                        <path d="m10.036 8.278 9.258-7.79A1.979 1.979 0 0 0 18 0H2A1.987 1.987 0 0 0 .641.541l9.395 7.737Z"/>
+                        <path d="M11.241 9.817c-.36.275-.801.425-1.255.427-.428 0-.845-.138-1.187-.395L0 2.6V14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2.5l-8.759 7.317Z"/>
+                    </svg>
+                    <span class="ml-3">Envoi d'emails</span>
+                </a>
+            </li>
+
+            <!-- Codes Promo -->
+            {% set promo_codes_active = route starts with 'app_promo_code' %}
+            <li>
+                <button type="button" 
+                        class="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 {{ promo_codes_active ? 'bg-pink-100 font-semibold text-pink-700' : '' }}"
+                        aria-controls="dropdown-promo-codes" 
+                        data-collapse-toggle="dropdown-promo-codes">
+                    <svg class="w-5 h-5 text-gray-500 transition duration-75 group-hover:text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M5 11.424V1a1 1 0 1 0-2 0v10.424a3.228 3.228 0 0 0 0 6.152V19a1 1 0 1 0 2 0v-1.424a3.228 3.228 0 0 0 0-6.152ZM19.25 14.5a.75.75 0 0 0-.75.75v.944a2.25 2.25 0 0 1-4.5 0V15.25a.75.75 0 0 0-1.5 0v.944a3.75 3.75 0 0 0 7.5 0V15.25a.75.75 0 0 0-.75-.75Z"/>
+                        <path d="M9 7.5a.75.75 0 0 0 .75.75h3a.75.75 0 0 0 0-1.5h-3A.75.75 0 0 0 9 7.5ZM9.75 10.25a.75.75 0 0 0 0 1.5h3a.75.75 0 0 0 0-1.5h-3Z"/>
+                    </svg>
+                    <span class="flex-1 ml-3 text-left whitespace-nowrap">Codes Promo</span>
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+                    </svg>
+                </button>
+                <ul id="dropdown-promo-codes" class="{{ promo_codes_active ? '' : 'hidden' }} py-2 space-y-2">
+                    <li>
+                        <a href="{{ path('app_promo_codes') }}" 
+                           class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 {{ route == 'app_promo_codes' ? 'bg-pink-100 font-medium' : '' }}">Liste des codes</a>
+                    </li>
+                    <li>
+                        <a href="{{ path('app_promo_code_new') }}" 
+                           class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 {{ route == 'app_promo_code_new' ? 'bg-pink-100 font-medium' : '' }}">Créer un code</a>
+                    </li>
+                    <li>
+                        <a href="{{ path('app_promo_codes_stats') }}" 
+                           class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 {{ route == 'app_promo_codes_stats' ? 'bg-pink-100 font-medium' : '' }}">Statistiques</a>
+                    </li>
+                </ul>
+            </li>
+
+        </ul>
+    </div>
+</aside>

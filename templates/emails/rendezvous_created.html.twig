@@ -18,22 +18,9 @@
         Notre équipe est impatiente de vous offrir un moment de détente et de beauté inoubliable.
     </div>
 
-    <div class="info-box">
-        <div class="info-title">
-            Détails de votre rendez-vous
-        </div>
-        <div class="info-item">
-            <span class="info-label">Prestation :</span>
-            <span class="info-value">{{ rendezvous.prestation.title }}</span>
-        </div>
-        <div class="info-item">
-            <span class="info-label">Date :</span>
-            <span class="info-value">{{ rendezvous.day|date('d/m/Y') }}</span>
-        </div>
-        <div class="info-item">
-            <span class="info-label">Heure :</span>
-            <span class="info-value">{{ rendezvous.creneau.startTime|date('H:i') }}</span>
-        </div>
+    <div class="content-text">
+        Votre prestation <strong>{{ rendezvous.prestation.title }}</strong> est prévue le <strong>{{ rendezvous.day|date('d/m/Y') }}</strong> à <strong>{{ rendezvous.creneau.startTime|date('H:i') }}</strong>. 
+        Nous avons hâte de vous accueillir dans notre salon pour ce moment privilégié.
     </div>
 
     <div class="content-text">

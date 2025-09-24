@@ -1,0 +1,126 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Paiement Confirmé - {{ formation.nom }}{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 py-12">
+    <div class="container mx-auto px-4 max-w-2xl">
+        <!-- Success Card -->
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+            <!-- Header Success -->
+            <div class="bg-gradient-to-r from-green-500 to-emerald-600 text-white text-center py-8">
+                <div class="mb-4">
+                    <svg class="w-16 h-16 mx-auto" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                </div>
+                <h1 class="text-3xl font-bold mb-2">Paiement Confirmé !</h1>
+                <p class="text-green-100">Votre inscription à la formation a été validée</p>
+            </div>
+
+            <div class="p-8">
+                <!-- Formation Info -->
+                <div class="bg-gray-50 rounded-xl p-6 mb-6">
+                    <div class="flex items-start space-x-4">
+                        {% if formation.coverImageName %}
+                            <img src="{{ vich_uploader_asset(formation, 'coverImage') }}" 
+                                 alt="{{ formation.nom }}" 
+                                 class="w-20 h-20 rounded-lg object-cover">
+                        {% else %}
+                            <div class="w-20 h-20 bg-gradient-to-r from-pink-500 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold text-2xl">
+                                🎓
+                            </div>
+                        {% endif %}
+                        
+                        <div class="flex-1">
+                            <h2 class="text-xl font-bold text-gray-900 mb-2">{{ formation.nom }}</h2>
+                            <div class="flex flex-wrap gap-2 mb-3">
+                                {% if formation.level %}
+                                    <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">{{ formation.level|capitalize }}</span>
+                                {% endif %}
+                                <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">{{ formation.Cout }} F CFA</span>
+                                {% if formation.duration %}
+                                    <span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-medium">⏱️ {{ formation.duration }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transaction Details -->
+                <div class="border-t border-gray-200 pt-6 mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Détails de la transaction</h3>
+                    <div class="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <span class="text-gray-500">Montant payé</span>
+                            <div class="font-semibold text-lg text-green-600">{{ formation.Cout }} F CFA</div>
+                        </div>
+                        <div>
+                            <span class="text-gray-500">Type d'accès</span>
+                            <div class="font-semibold">
+                                {% set accessTypes = {
+                                    '7_days': '7 jours',
+                                    '14_days': '14 jours', 
+                                    '30_days': '30 jours',
+                                    '60_days': '60 jours',
+                                    '90_days': '90 jours',
+                                    '6_months': '6 mois',
+                                    '1_year': '1 an',
+                                    'lifetime': 'Illimité'
+                                } %}
+                                {{ accessTypes[access_type] ?? '30 jours' }}
+                            </div>
+                        </div>
+                        {% if transaction_id %}
+                        <div class="col-span-2">
+                            <span class="text-gray-500">ID Transaction</span>
+                            <div class="font-mono text-sm bg-gray-100 p-2 rounded">{{ transaction_id }}</div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Next Steps -->
+                <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-6">
+                    <h3 class="text-lg font-semibold text-blue-900 mb-3">📚 Prochaines étapes</h3>
+                    <ul class="space-y-2 text-blue-800">
+                        <li class="flex items-start">
+                            <span class="inline-block w-6 h-6 bg-blue-500 text-white rounded-full text-xs flex items-center justify-center mr-3 mt-0.5 flex-shrink-0">1</span>
+                            Vous recevrez un email de confirmation avec tous les détails
+                        </li>
+                        <li class="flex items-start">
+                            <span class="inline-block w-6 h-6 bg-blue-500 text-white rounded-full text-xs flex items-center justify-center mr-3 mt-0.5 flex-shrink-0">2</span>
+                            Connectez-vous à votre espace personnel pour accéder à la formation
+                        </li>
+                        <li class="flex items-start">
+                            <span class="inline-block w-6 h-6 bg-blue-500 text-white rounded-full text-xs flex items-center justify-center mr-3 mt-0.5 flex-shrink-0">3</span>
+                            Commencez votre apprentissage immédiatement
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="{{ url('app_user_learning_dashboard') }}" 
+                       class="flex-1 bg-gradient-to-r from-pink-500 to-purple-600 text-white text-center py-4 px-6 rounded-xl font-bold text-lg hover:opacity-90 transition-opacity">
+                        🚀 Accéder à ma formation
+                    </a>
+                    <a href="{{ url('app_formation_index') }}" 
+                       class="flex-1 bg-gray-100 text-gray-700 text-center py-4 px-6 rounded-xl font-semibold hover:bg-gray-200 transition-colors">
+                        📚 Voir toutes les formations
+                    </a>
+                </div>
+
+                <!-- Support Info -->
+                <div class="mt-8 text-center text-sm text-gray-500">
+                    <p>Besoin d'aide ? Contactez-nous via 
+                        <a href="https://wa.me/22997853512" class="text-pink-600 hover:text-pink-700 font-medium">WhatsApp</a> 
+                        ou par 
+                        <a href="mailto:contact@beellenails.com" class="text-pink-600 hover:text-pink-700 font-medium">email</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

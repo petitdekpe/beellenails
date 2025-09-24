@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Votre formation expire dans 7 jours</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f8fafc;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #ec4899, #8b5cf6);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .header .emoji {
+            font-size: 48px;
+            margin-bottom: 10px;
+            display: block;
+        }
+        .content {
+            padding: 30px;
+        }
+        .alert-box {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        .alert-box .icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+            display: block;
+        }
+        .alert-box h2 {
+            color: #92400e;
+            margin: 0 0 10px 0;
+            font-size: 20px;
+        }
+        .alert-box p {
+            color: #92400e;
+            margin: 0;
+            font-weight: 500;
+        }
+        .formation-info {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        .formation-info h3 {
+            margin: 0 0 15px 0;
+            color: #1f2937;
+            font-size: 18px;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .info-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        .info-label {
+            font-weight: 600;
+            color: #6b7280;
+        }
+        .info-value {
+            color: #1f2937;
+            font-weight: 500;
+        }
+        .progress-bar {
+            background: #e5e7eb;
+            border-radius: 10px;
+            height: 8px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background: linear-gradient(90deg, #ec4899, #8b5cf6);
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+        .button {
+            display: inline-block;
+            background: linear-gradient(135deg, #ec4899, #8b5cf6);
+            color: white;
+            text-decoration: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-align: center;
+            margin: 20px 0;
+            transition: opacity 0.3s ease;
+        }
+        .button:hover {
+            opacity: 0.9;
+        }
+        .footer {
+            background: #f8fafc;
+            padding: 20px 30px;
+            text-align: center;
+            font-size: 14px;
+            color: #6b7280;
+            border-top: 1px solid #e5e7eb;
+        }
+        .footer a {
+            color: #ec4899;
+            text-decoration: none;
+        }
+        @media (max-width: 600px) {
+            .container {
+                margin: 10px;
+                border-radius: 8px;
+            }
+            .header, .content {
+                padding: 20px;
+            }
+            .info-row {
+                flex-direction: column;
+                gap: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <span class="emoji">⏰</span>
+            <h1>Rappel d'expiration</h1>
+            <p>Votre accès à la formation expire bientôt</p>
+        </div>
+        
+        <div class="content">
+            <div class="alert-box">
+                <span class="icon">⚠️</span>
+                <h2>Plus que 7 jours !</h2>
+                <p>Votre accès à cette formation expire le <strong>{{ expiresAt|date('d/m/Y à H:i') }}</strong></p>
+            </div>
+            
+            <p>Bonjour <strong>{{ user.prenom }}</strong>,</p>
+            
+            <p>Nous vous rappelons que votre accès à la formation ci-dessous expire dans <strong>7 jours</strong>. N'hésitez pas à continuer votre apprentissage pour profiter pleinement de ce contenu avant l'expiration.</p>
+            
+            <div class="formation-info">
+                <h3>📚 {{ formation.nom }}</h3>
+                
+                <div class="info-row">
+                    <span class="info-label">Progression actuelle :</span>
+                    <span class="info-value">{{ progressPercentage }}%</span>
+                </div>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: {{ progressPercentage }}%"></div>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label">Date d'expiration :</span>
+                    <span class="info-value">{{ expiresAt|date('d/m/Y à H:i') }}</span>
+                </div>
+                
+                {% if enrollment.daysUntilExpiration %}
+                <div class="info-row">
+                    <span class="info-label">Temps restant :</span>
+                    <span class="info-value">{{ enrollment.timeUntilExpiration }}</span>
+                </div>
+                {% endif %}
+            </div>
+            
+            <div style="text-align: center;">
+                <a href="{{ url('app_user_learning_formation_detail', {id: enrollment.id}) }}" class="button">
+                    🚀 Continuer ma formation
+                </a>
+            </div>
+            
+            <div style="background: #f0f9ff; border-left: 4px solid #0ea5e9; padding: 15px; margin: 20px 0; border-radius: 0 8px 8px 0;">
+                <p style="margin: 0; color: #0c4a6e; font-weight: 500;">
+                    💡 <strong>Conseil :</strong> Organisez votre temps pour terminer la formation avant l'expiration. Une fois terminée, vous aurez accès à votre certificat de réussite !
+                </p>
+            </div>
+            
+            <p>Si vous avez des questions ou besoin d'aide, n'hésitez pas à nous contacter.</p>
+            
+            <p>Bonne formation !<br>
+            L'équipe BelleNails</p>
+        </div>
+        
+        <div class="footer">
+            <p>
+                <a href="{{ url('app_user_learning_dashboard') }}">Mon espace d'apprentissage</a> | 
+                <a href="{{ url('app_dashboard') }}">Mon compte</a>
+            </p>
+            <p>BelleNails - Formation professionnelle en prothésie ongulaire</p>
+            <p style="font-size: 12px; color: #9ca3af; margin-top: 10px;">
+                Cet email a été envoyé automatiquement. Merci de ne pas y répondre.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

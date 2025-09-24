@@ -1,0 +1,77 @@
+{% extends 'dashboard.html.twig' %}
+
+{% block title %}Modifier la méthode de paiement{% endblock %}
+
+{% block content %}
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">✏️ Modifier "{{ payment_method.name }}"</h1>
+    <div>
+        <a href="{{ path('app_dashboard_payment_method_show', {'id': payment_method.id}) }}" class="d-none d-sm-inline-block btn btn-sm btn-info shadow-sm">
+            <i class="fas fa-eye fa-sm text-white-50"></i> Voir
+        </a>
+        <a href="{{ path('app_dashboard_payment_method_index') }}" class="d-none d-sm-inline-block btn btn-sm btn-secondary shadow-sm">
+            <i class="fas fa-arrow-left fa-sm text-white-50"></i> Retour
+        </a>
+    </div>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Informations de la méthode de paiement</h6>
+    </div>
+    <div class="card-body">
+        {{ form_start(form) }}
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        {{ form_label(form.name) }}
+                        {{ form_widget(form.name) }}
+                        {{ form_errors(form.name) }}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        {{ form_label(form.identifier) }}
+                        {{ form_widget(form.identifier) }}
+                        <small class="form-text text-muted">{{ form.identifier.vars.help }}</small>
+                        {{ form_errors(form.identifier) }}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        {{ form_label(form.logoPath) }}
+                        {{ form_widget(form.logoPath) }}
+                        <small class="form-text text-muted">{{ form.logoPath.vars.help }}</small>
+                        {{ form_errors(form.logoPath) }}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group form-check">
+                        {{ form_widget(form.isActive) }}
+                        {{ form_label(form.isActive) }}
+                        {{ form_errors(form.isActive) }}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                {{ form_label(form.description) }}
+                {{ form_widget(form.description) }}
+                {{ form_errors(form.description) }}
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Sauvegarder
+                </button>
+                <a href="{{ path('app_dashboard_payment_method_index') }}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Annuler
+                </a>
+            </div>
+        {{ form_end(form) }}
+    </div>
+</div>
+{% endblock %}

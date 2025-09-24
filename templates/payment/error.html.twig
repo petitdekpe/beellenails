@@ -1,0 +1,201 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Erreur de paiement{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-gray-50 py-8 pt-32">
+    <div class="max-w-2xl mx-auto px-4">
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+            <!-- Error Header -->
+            <div class="bg-gradient-to-r from-red-500 to-red-600 px-6 py-8 text-white">
+                <div class="text-center">
+                    <div class="inline-flex items-center justify-center w-16 h-16 bg-white bg-opacity-20 rounded-full mb-4">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </div>
+                    <h1 class="text-3xl font-bold mb-2">Paiement échoué</h1>
+                    <p class="text-red-100">Votre transaction n'a pas pu être traitée</p>
+                </div>
+            </div>
+
+            <div class="p-6">
+                <!-- Error Details -->
+                {% if payment %}
+                    <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+                        <h3 class="font-semibold text-red-900 mb-3 flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            Détails de la transaction
+                        </h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                            <div>
+                                <span class="text-red-700">Référence:</span>
+                                <span class="font-mono font-medium block text-red-900">{{ payment.reference }}</span>
+                            </div>
+                            <div>
+                                <span class="text-red-700">Montant:</span>
+                                <span class="font-bold block text-red-900">{{ payment.amount|number_format(0, ',', ' ') }} {{ payment.currency }}</span>
+                            </div>
+                            <div>
+                                <span class="text-red-700">Provider:</span>
+                                <span class="font-medium block text-red-900">
+                                    {% if payment.provider == 'feexpay' %}
+                                        💸 FeexPay
+                                    {% elseif payment.provider == 'fedapay' %}
+                                        🏦 FedaPay
+                                    {% else %}
+                                        {{ payment.provider|title }}
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <div>
+                                <span class="text-red-700">Statut:</span>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                    {{ payment.status|title }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                {% elseif error %}
+                    <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 text-red-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span class="text-red-800 font-medium">{{ error }}</span>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <!-- Common Reasons -->
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+                    <h4 class="font-semibold text-yellow-900 mb-3">Causes possibles de l'échec :</h4>
+                    <ul class="text-sm text-yellow-800 space-y-1">
+                        <li class="flex items-start">
+                            <span class="font-medium mr-2">•</span>
+                            <span>Solde insuffisant sur votre compte Mobile Money</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="font-medium mr-2">•</span>
+                            <span>Numéro de téléphone incorrect ou inactif</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="font-medium mr-2">•</span>
+                            <span>Transaction annulée par l'utilisateur</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="font-medium mr-2">•</span>
+                            <span>Problème temporaire avec le service de paiement</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="font-medium mr-2">•</span>
+                            <span>Limite de transaction dépassée</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Solutions -->
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                    <h4 class="font-semibold text-blue-900 mb-3">Que faire maintenant ?</h4>
+                    <div class="text-sm text-blue-800 space-y-2">
+                        <div class="flex items-start">
+                            <svg class="w-4 h-4 mt-0.5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span>Vérifiez votre solde Mobile Money</span>
+                        </div>
+                        <div class="flex items-start">
+                            <svg class="w-4 h-4 mt-0.5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span>Vérifiez que votre numéro de téléphone est correct</span>
+                        </div>
+                        <div class="flex items-start">
+                            <svg class="w-4 h-4 mt-0.5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span>Réessayez le paiement dans quelques minutes</span>
+                        </div>
+                        <div class="flex items-start">
+                            <svg class="w-4 h-4 mt-0.5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span>Essayez un autre moyen de paiement si disponible</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="space-y-3">
+                    {% if entity and payment %}
+                        {% if payment.provider == 'feexpay' %}
+                            <a href="{{ path('generic_payment_init', {
+                                'provider': 'feexpay',
+                                'paymentType': payment.paymentType,
+                                'entityType': payment.entityType,
+                                'entityId': payment.entityId
+                            }) }}" 
+                               class="block w-full bg-purple-600 hover:bg-purple-700 text-white text-center font-semibold py-3 px-6 rounded-lg transition-colors">
+                                <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                </svg>
+                                Réessayer avec FeexPay
+                            </a>
+                        {% endif %}
+                        
+                        <a href="{{ path('generic_payment_init', {
+                            'provider': 'fedapay',
+                            'paymentType': payment.paymentType,
+                            'entityType': payment.entityType,
+                            'entityId': payment.entityId
+                        }) }}" 
+                           class="block w-full bg-blue-600 hover:bg-blue-700 text-white text-center font-semibold py-3 px-6 rounded-lg transition-colors">
+                            <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                            </svg>
+                            Essayer avec FedaPay
+                        </a>
+                    {% else %}
+                        <button onclick="history.back()" 
+                                class="block w-full bg-pink-600 hover:bg-pink-700 text-white text-center font-semibold py-3 px-6 rounded-lg transition-colors">
+                            <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                            </svg>
+                            Réessayer le paiement
+                        </button>
+                    {% endif %}
+                    
+                    <a href="{{ path('app_home') }}" 
+                       class="block w-full bg-gray-100 hover:bg-gray-200 text-gray-700 text-center font-semibold py-3 px-6 rounded-lg transition-colors">
+                        Retour à l'accueil
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Customer Support -->
+        <div class="mt-6 bg-white rounded-lg p-4 border border-gray-200">
+            <div class="text-center">
+                <h4 class="font-medium text-gray-900 mb-2">Besoin d'aide ?</h4>
+                <p class="text-sm text-gray-600 mb-3">
+                    Notre équipe support est disponible pour vous aider
+                </p>
+                <div class="flex justify-center space-x-4 text-sm">
+                    <a href="mailto:beellenailscare@beellenails.com?subject=Problème de paiement - {{ payment.reference ?? 'N/A' }}" 
+                       class="text-pink-600 hover:text-pink-700 font-medium">
+                        📧 Contacter le support
+                    </a>
+                    <span class="text-gray-300">|</span>
+                    <a href="tel:+22997123456" 
+                       class="text-pink-600 hover:text-pink-700 font-medium">
+                        📞 Appeler
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,218 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes Rendez-vous{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-gray-50">
+    <div class="pt-16 md:pt-20"></div>
+
+    <div class="px-4 py-6 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">📅 Mes Rendez-vous</h1>
+                <p class="text-gray-600 mt-1">Gérez tous vos rendez-vous</p>
+            </div>
+            <div class="flex space-x-3">
+                <a href="{{ path('app_profile') }}"
+                   class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                    ← Retour au profil
+                </a>
+                <a href="{{ path('app_new_rendezvous') }}"
+                   class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700">
+                    ➕ Nouveau rendez-vous
+                </a>
+            </div>
+        </div>
+
+        <!-- Appointments Table -->
+        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div class="overflow-x-auto">
+                <table id="appointments-table" class="w-full text-sm text-left text-gray-500">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-4">Date</th>
+                            <th class="px-6 py-4">Créneau</th>
+                            <th class="px-6 py-4">Prestation</th>
+                            <th class="px-6 py-4">Statut</th>
+                            <th class="px-6 py-4">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="appointments-body">
+                        {% if appointments is empty %}
+                            <tr class="bg-white border-b">
+                                <td colspan="5" class="px-6 py-12 text-center">
+                                    <div class="flex flex-col items-center">
+                                        <span class="text-6xl mb-4">📅</span>
+                                        <h3 class="text-lg font-medium text-gray-900 mb-2">Aucun rendez-vous</h3>
+                                        <p class="text-gray-500 mb-4">Vous n'avez pas encore de rendez-vous</p>
+                                        <a href="{{ path('app_new_rendezvous') }}"
+                                           class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700">
+                                            Prendre un premier rendez-vous
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% else %}
+                            {% for appointment in appointments %}
+                                {% set current_time = "now"|date_modify("+1 hour")|date("U") %}
+                                {% set start_time = appointment.creneau.startTime is defined ? appointment.creneau.startTime|date("H:i:s") : null %}
+                                {% if start_time is not null %}
+                                    {% set appointment_time = appointment.day|date("Y-m-d") ~ ' ' ~ start_time %}
+                                    {% set appointment_time_unix = appointment_time|date("U") %}
+                                    {% set time_difference = appointment_time_unix - current_time %}
+                                    {% set within_48_hours = time_difference < (48 * 3600) %}
+                                    {% set appointment_passed = current_time > appointment_time_unix %}
+                                {% endif %}
+
+                                <tr class="appointment-row bg-white border-b hover:bg-gray-50">
+                                    <td class="px-6 py-4">
+                                        <div>
+                                            <p class="font-medium text-gray-900">{{ appointment.day|date('d/m/Y') }}</p>
+                                            {% if start_time is not null and not appointment.status in ["Annulé", "Paiement en attente", "Échec du paiement"] and not appointment_passed %}
+                                                <p class="text-xs text-gray-400">
+                                                    {% set hours_left = (time_difference / 3600)|round %}
+                                                    {% if hours_left > 48 %}
+                                                        {{ (hours_left / 24)|round }} jours restants
+                                                    {% else %}
+                                                        {{ hours_left }}h restantes
+                                                    {% endif %}
+                                                </p>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <p class="font-medium text-gray-900">{{ appointment.creneau.libelle }}</p>
+                                        {% if start_time is not null %}
+                                            <p class="text-xs text-gray-500">{{ appointment.creneau.startTime|date('H:i') }}</p>
+                                        {% endif %}
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <p class="font-medium text-gray-900">{{ appointment.prestation.title }}</p>
+                                        {% if appointment.prestation.price %}
+                                            <p class="text-xs text-gray-500">{{ appointment.prestation.price }}F CFA</p>
+                                        {% endif %}
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                            {% if appointment.status == 'Rendez-vous confirmé' %}bg-green-100 text-green-800
+                                            {% elseif appointment.status == 'Rendez-vous pris' %}bg-blue-100 text-blue-800
+                                            {% elseif appointment.status == 'Annulé' %}bg-red-100 text-red-800
+                                            {% elseif appointment.status in ['Paiement en attente', 'Échec du paiement'] %}bg-yellow-100 text-yellow-800
+                                            {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                            {{ appointment.status }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex space-x-2">
+                                            {% if appointment.status == "Annulé" %}
+                                                <span class="text-xs text-gray-400">Aucune action</span>
+                                            {% elseif appointment.status in ["Paiement en attente", "Échec du paiement"] %}
+                                                <span class="text-xs text-gray-400">En attente</span>
+                                            {% elseif start_time is not null and appointment_passed %}
+                                                <span class="text-xs text-gray-400">Terminé</span>
+                                            {% elseif start_time is not null and within_48_hours %}
+                                                <a href="{{ path('app_rendezvous_cancel', {'id': appointment.id}) }}"
+                                                   class="inline-flex items-center px-3 py-1 text-xs font-medium text-red-700 bg-red-100 rounded-lg hover:bg-red-200"
+                                                   onclick="return confirm('Êtes-vous sûr de vouloir annuler ce rendez-vous ?')">
+                                                    Annuler
+                                                </a>
+                                            {% else %}
+                                                <a href="{{ path('app_rendezvous_edit', {'id': appointment.id}) }}"
+                                                   class="inline-flex items-center px-3 py-1 text-xs font-medium text-blue-700 bg-blue-100 rounded-lg hover:bg-blue-200">
+                                                    Reporter
+                                                </a>
+                                                <a href="{{ path('app_rendezvous_cancel', {'id': appointment.id}) }}"
+                                                   class="inline-flex items-center px-3 py-1 text-xs font-medium text-red-700 bg-red-100 rounded-lg hover:bg-red-200"
+                                                   onclick="return confirm('Êtes-vous sûr de vouloir annuler ce rendez-vous ?')">
+                                                    Annuler
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if appointments|length > 10 %}
+            <div class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6" id="pagination-controls">
+                <button onclick="previousPage()" id="prev-btn"
+                        class="relative inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                    Précédent
+                </button>
+                <div class="flex space-x-1" id="pagination-numbers"></div>
+                <button onclick="nextPage()" id="next-btn"
+                        class="relative inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                    Suivant
+                </button>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for pagination -->
+<script>
+const rows = document.querySelectorAll(".appointment-row");
+const rowsPerPage = 10;
+let currentPage = 1;
+const totalPages = Math.ceil(rows.length / rowsPerPage);
+
+function showPage(page) {
+    currentPage = page;
+    const start = (page - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+
+    rows.forEach((row, index) => {
+        row.style.display = (index >= start && index < end) ? '' : 'none';
+    });
+
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+
+    if (prevBtn) prevBtn.disabled = page === 1;
+    if (nextBtn) nextBtn.disabled = page === totalPages;
+
+    updatePaginationButtons();
+}
+
+function previousPage() {
+    if (currentPage > 1) {
+        showPage(currentPage - 1);
+    }
+}
+
+function nextPage() {
+    if (currentPage < totalPages) {
+        showPage(currentPage + 1);
+    }
+}
+
+function updatePaginationButtons() {
+    const container = document.getElementById("pagination-numbers");
+    if (!container) return;
+
+    container.innerHTML = "";
+
+    for (let i = 1; i <= totalPages; i++) {
+        const btn = document.createElement("button");
+        btn.textContent = i;
+        btn.className = `relative inline-flex items-center px-3 py-2 text-sm font-semibold ring-1 ring-inset ring-gray-300 hover:bg-gray-50 ${
+            i === currentPage ? "bg-pink-600 text-white" : "bg-white text-gray-900"
+        }`;
+        btn.addEventListener("click", () => showPage(i));
+        container.appendChild(btn);
+    }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    if (rows.length > 0) {
+        showPage(currentPage);
+    }
+});
+</script>
+{% endblock %}

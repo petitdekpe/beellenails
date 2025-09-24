@@ -1,0 +1,513 @@
+{% extends 'dashboard.html.twig' %}
+
+{% block title %}Modifier Formation - {{ formation.nom }}{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">Modifier la formation</h1>
+            <p class="text-gray-600">{{ formation.nom }}</p>
+        </div>
+        <div class="flex space-x-3">
+            <a href="{{ path('app_dashboard_formation_show', {id: formation.id}) }}" 
+               class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                👁️ Voir la formation
+            </a>
+            <a href="{{ path('app_dashboard_formations_index') }}" 
+               class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                ← Retour à la liste
+            </a>
+        </div>
+    </div>
+
+    <!-- Form Card -->
+    <div class="bg-white rounded-lg shadow-sm">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <div class="flex items-center justify-between">
+                <h2 class="text-lg font-semibold text-gray-900">Informations de la formation</h2>
+                <div class="flex items-center space-x-2">
+                    {% if formation.isActive %}
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            ✅ Active
+                        </span>
+                    {% else %}
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                            ⏸️ Inactive
+                        </span>
+                    {% endif %}
+                    
+                    {% if formation.isFree %}
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            🎁 Gratuite
+                        </span>
+                    {% else %}
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                            💰 {{ formation.cout }} F CFA
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="p-6">
+            {{ form_start(form, {'attr': {'class': 'space-y-6', 'enctype': 'multipart/form-data'}}) }}
+            
+            <!-- Current Images Preview -->
+            {% if formation.imageName or formation.instructorImageName %}
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <h3 class="text-sm font-medium text-gray-900 mb-3">Images actuelles</h3>
+                    <div class="flex space-x-4">
+                        {% if formation.imageName %}
+                            <div class="text-center">
+                                <img src="{{ vich_uploader_asset(formation, 'image') }}" 
+                                     alt="Image de couverture" 
+                                     class="w-20 h-20 object-cover rounded-lg">
+                                <p class="text-xs text-gray-500 mt-1">Couverture</p>
+                            </div>
+                        {% endif %}
+                        {% if formation.instructorImageName %}
+                            <div class="text-center">
+                                <img src="{{ vich_uploader_asset(formation, 'instructorImage') }}" 
+                                     alt="Photo formateur" 
+                                     class="w-20 h-20 object-cover rounded-lg">
+                                <p class="text-xs text-gray-500 mt-1">Formateur</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+            
+            <!-- Basic Information -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">{{ form_label(form.Nom) }}</label>
+                    {{ form_widget(form.Nom, {'attr': {'placeholder': 'Ex: Formation complète en prothésie ongulaire'}}) }}
+                    {{ form_errors(form.Nom) }}
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Prix (F CFA)</label>
+                    {{ form_widget(form.Cout, {'attr': {'placeholder': 'Ex: 150'}}) }}
+                    {{ form_errors(form.Cout) }}
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">{{ form_label(form.Description) }}</label>
+                {{ form_widget(form.Description, {'attr': {'rows': 4, 'placeholder': 'Décrivez votre formation en détail...'}}) }}
+                {{ form_errors(form.Description) }}
+            </div>
+
+            <!-- Category & Level -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Thématique</label>
+                    {{ form_widget(form.theme) }}
+                    {{ form_errors(form.theme) }}
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Niveau</label>
+                    {{ form_widget(form.level) }}
+                    {{ form_errors(form.level) }}
+                </div>
+            </div>
+
+            <!-- Duration & Free Option -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">{{ form_label(form.duration) }}</label>
+                    {{ form_widget(form.duration) }}
+                    {{ form_errors(form.duration) }}
+                </div>
+
+                <div class="flex items-center">
+                    {{ form_widget(form.isFree) }}
+                    <label class="ml-2 text-sm font-medium text-gray-700">{{ form_label(form.isFree) }}</label>
+                    {{ form_errors(form.isFree) }}
+                </div>
+            </div>
+
+            <!-- Pedagogical Content -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Objectifs pédagogiques</label>
+                    {{ form_widget(form.Objectif, {'attr': {'rows': 4, 'placeholder': 'Quels sont les objectifs de cette formation ?'}}) }}
+                    {{ form_errors(form.Objectif) }}
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Prérequis</label>
+                    {{ form_widget(form.Prerequis, {'attr': {'rows': 4, 'placeholder': 'Quels sont les prérequis nécessaires ?'}}) }}
+                    {{ form_errors(form.Prerequis) }}
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Programme</label>
+                    {{ form_widget(form.Programme, {'attr': {'rows': 4, 'placeholder': 'Décrivez le programme de la formation...'}}) }}
+                    {{ form_errors(form.Programme) }}
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Modalités de suivi</label>
+                    {{ form_widget(form.Suivi, {'attr': {'rows': 4, 'placeholder': 'Comment le suivi sera-t-il effectué ?'}}) }}
+                    {{ form_errors(form.Suivi) }}
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">{{ form_label(form.targetAudience) }}</label>
+                {{ form_widget(form.targetAudience) }}
+                {{ form_errors(form.targetAudience) }}
+            </div>
+
+            <!-- Images -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">{{ form_label(form.image) }}</label>
+                    {{ form_widget(form.image) }}
+                    {{ form_errors(form.image) }}
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">{{ form_label(form.youtubeUrl) }}</label>
+                    {{ form_widget(form.youtubeUrl) }}
+                    {{ form_errors(form.youtubeUrl) }}
+                </div>
+            </div>
+
+            <!-- Instructor Info -->
+            <div class="border-t border-gray-200 pt-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Informations du formateur</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ form_label(form.instructorName) }}</label>
+                        {{ form_widget(form.instructorName, {'attr': {'placeholder': 'Ex: Marie Dubois'}}) }}
+                        {{ form_errors(form.instructorName) }}
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ form_label(form.instructorImage) }}</label>
+                        {{ form_widget(form.instructorImage) }}
+                        {{ form_errors(form.instructorImage) }}
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">{{ form_label(form.instructorBio) }}</label>
+                    {{ form_widget(form.instructorBio, {'attr': {'placeholder': 'Présentez l\'expérience et les qualifications du formateur...'}}) }}
+                    {{ form_errors(form.instructorBio) }}
+                </div>
+            </div>
+
+            <!-- Access Management -->
+            <div class="border-t border-gray-200 pt-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Gestion des accès</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ form_label(form.accessType) }}</label>
+                        {{ form_widget(form.accessType) }}
+                        {{ form_errors(form.accessType) }}
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ form_label(form.accessDuration) }}</label>
+                        {{ form_widget(form.accessDuration) }}
+                        {{ form_errors(form.accessDuration) }}
+                    </div>
+
+                    <div class="flex items-center">
+                        {{ form_widget(form.isActive) }}
+                        <label class="ml-2 text-sm font-medium text-gray-700">{{ form_label(form.isActive) }}</label>
+                        {{ form_errors(form.isActive) }}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4" id="fixed-dates" style="display: none;">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ form_label(form.startDate) }}</label>
+                        {{ form_widget(form.startDate) }}
+                        {{ form_errors(form.startDate) }}
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ form_label(form.endDate) }}</label>
+                        {{ form_widget(form.endDate) }}
+                        {{ form_errors(form.endDate) }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics Summary -->
+            <div class="border-t border-gray-200 pt-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Statistiques actuelles</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="bg-blue-50 rounded-lg p-4 text-center">
+                        <div class="text-2xl font-bold text-blue-600">-</div>
+                        <div class="text-sm text-blue-600">Inscriptions</div>
+                    </div>
+                    <div class="bg-green-50 rounded-lg p-4 text-center">
+                        <div class="text-2xl font-bold text-green-600">{{ formation.modules|length }}</div>
+                        <div class="text-sm text-green-600">Modules</div>
+                    </div>
+                    <div class="bg-purple-50 rounded-lg p-4 text-center">
+                        <div class="text-2xl font-bold text-purple-600">{{ formation.resources|length }}</div>
+                        <div class="text-sm text-purple-600">Ressources</div>
+                    </div>
+                    <div class="bg-yellow-50 rounded-lg p-4 text-center">
+                        <div class="text-2xl font-bold text-yellow-600">
+                            {% if formation.averageRating %}
+                                {{ formation.averageRating|number_format(1) }}⭐
+                            {% else %}
+                                -
+                            {% endif %}
+                        </div>
+                        <div class="text-sm text-yellow-600">Note moyenne</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modules Section -->
+            <div class="border-t border-gray-200 pt-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Modules de formation</h3>
+                <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                    <p class="text-sm text-gray-600 mb-2">Les modules permettent de structurer votre formation en chapitres.</p>
+                    <button type="button" id="add-module" class="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700">
+                        + Ajouter un module
+                    </button>
+                </div>
+                
+                <div id="modules-collection" data-index="{{ form.modules|length }}" data-prototype="{{ form_widget(form.modules.vars.prototype)|e('html_attr') }}">
+                    {% for moduleForm in form.modules %}
+                        <div class="module-item bg-white border border-gray-200 rounded-lg p-4 mb-4">
+                            <div class="flex justify-between items-center mb-3">
+                                <h4 class="font-medium text-gray-900">Module #<span class="module-number">{{ loop.index }}</span></h4>
+                                <button type="button" class="remove-module text-red-600 hover:text-red-800 text-sm">
+                                    Supprimer
+                                </button>
+                            </div>
+                            {{ form_widget(moduleForm) }}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Resources Section -->
+            <div class="border-t border-gray-200 pt-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Ressources téléchargeables</h3>
+                <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                    <p class="text-sm text-gray-600 mb-2">Ajoutez des fichiers que les participants pourront télécharger.</p>
+                    <button type="button" id="add-resource" class="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                        + Ajouter une ressource
+                    </button>
+                </div>
+                
+                <div id="resources-collection" data-index="{{ form.resources|length }}" data-prototype="{{ form_widget(form.resources.vars.prototype)|e('html_attr') }}">
+                    {% for resourceForm in form.resources %}
+                        <div class="resource-item bg-white border border-gray-200 rounded-lg p-4 mb-4">
+                            <div class="flex justify-between items-center mb-3">
+                                <h4 class="font-medium text-gray-900">Ressource #<span class="resource-number">{{ loop.index }}</span></h4>
+                                <button type="button" class="remove-resource text-red-600 hover:text-red-800 text-sm">
+                                    Supprimer
+                                </button>
+                            </div>
+                            {{ form_widget(resourceForm) }}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="border-t border-gray-200 pt-6 flex justify-between">
+                <div class="flex space-x-3">
+                    <a href="{{ path('app_dashboard_formations_index') }}" 
+                       class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                        Annuler
+                    </a>
+                </div>
+                <div class="flex space-x-3">
+                    <button type="submit" name="save_and_continue" 
+                            class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                        Sauvegarder et continuer
+                    </button>
+                    <button type="submit" 
+                            class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-pink-600 hover:bg-pink-700">
+                        Sauvegarder les modifications
+                    </button>
+                </div>
+            </div>
+
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Same JavaScript as in new.html.twig
+    // Handle access type change
+    const accessTypeSelect = document.querySelector('#formation_accessType');
+    const fixedDatesDiv = document.getElementById('fixed-dates');
+    
+    function toggleFixedDates() {
+        if (accessTypeSelect && accessTypeSelect.value === 'fixed') {
+            fixedDatesDiv.style.display = 'grid';
+        } else {
+            fixedDatesDiv.style.display = 'none';
+        }
+    }
+    
+    if (accessTypeSelect) {
+        accessTypeSelect.addEventListener('change', toggleFixedDates);
+        toggleFixedDates(); // Initial call
+    }
+
+    // Collection handling for modules and resources
+    const modulesCollection = document.getElementById('modules-collection');
+    const addModuleBtn = document.getElementById('add-module');
+    const resourcesCollection = document.getElementById('resources-collection');
+    const addResourceBtn = document.getElementById('add-resource');
+    
+    // Module collection management
+    if (addModuleBtn && modulesCollection) {
+        console.log('Module button found, setting up event listener...');
+        addModuleBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Add module button clicked!');
+            
+            const index = modulesCollection.dataset.index;
+            const prototype = modulesCollection.dataset.prototype;
+            
+            console.log('Index:', index, 'Prototype exists:', !!prototype);
+            
+            if (!prototype) {
+                alert('Erreur: prototype manquant');
+                return;
+            }
+            
+            // Replace __name__ placeholder with the index
+            const newForm = prototype.replace(/__name__/g, index);
+            
+            // Create wrapper div with proper styling
+            const wrapper = document.createElement('div');
+            wrapper.className = 'module-item bg-white border border-gray-200 rounded-lg p-4 mb-4';
+            wrapper.innerHTML = `
+                <div class="flex justify-between items-center mb-3">
+                    <h4 class="font-medium text-gray-900">Module #<span class="module-number">${parseInt(index) + 1}</span></h4>
+                    <button type="button" class="remove-module text-red-600 hover:text-red-800 text-sm">
+                        Supprimer
+                    </button>
+                </div>
+                ${newForm}
+            `;
+            
+            modulesCollection.appendChild(wrapper);
+            modulesCollection.dataset.index = parseInt(index) + 1;
+            updateModuleNumbers();
+            
+            console.log('Module added successfully');
+        });
+    } else {
+        console.log('Module button or collection not found:', {
+            addModuleBtn: !!addModuleBtn,
+            modulesCollection: !!modulesCollection
+        });
+    }
+    
+    if (modulesCollection) {
+        modulesCollection.addEventListener('click', function(e) {
+            if (e.target.classList.contains('remove-module')) {
+                e.target.closest('.module-item').remove();
+                updateModuleNumbers();
+            }
+        });
+    }
+    
+    function updateModuleNumbers() {
+        const moduleItems = modulesCollection?.querySelectorAll('.module-item') || [];
+        moduleItems.forEach((item, index) => {
+            const numberSpan = item.querySelector('.module-number');
+            if (numberSpan) {
+                numberSpan.textContent = index + 1;
+            }
+        });
+    }
+
+    // Resource collection management
+    if (addResourceBtn && resourcesCollection) {
+        console.log('Resource button found, setting up event listener...');
+        addResourceBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Add resource button clicked!');
+            
+            const index = resourcesCollection.dataset.index;
+            const prototype = resourcesCollection.dataset.prototype;
+            
+            console.log('Index:', index, 'Prototype exists:', !!prototype);
+            
+            if (!prototype) {
+                alert('Erreur: prototype manquant pour les ressources');
+                return;
+            }
+            
+            // Replace __name__ placeholder with the index
+            const newForm = prototype.replace(/__name__/g, index);
+            
+            // Create wrapper div with proper styling
+            const wrapper = document.createElement('div');
+            wrapper.className = 'resource-item bg-white border border-gray-200 rounded-lg p-4 mb-4';
+            wrapper.innerHTML = `
+                <div class="flex justify-between items-center mb-3">
+                    <h4 class="font-medium text-gray-900">Ressource #<span class="resource-number">${parseInt(index) + 1}</span></h4>
+                    <button type="button" class="remove-resource text-red-600 hover:text-red-800 text-sm">
+                        Supprimer
+                    </button>
+                </div>
+                ${newForm}
+            `;
+            
+            resourcesCollection.appendChild(wrapper);
+            resourcesCollection.dataset.index = parseInt(index) + 1;
+            updateResourceNumbers();
+            
+            console.log('Resource added successfully');
+        });
+    } else {
+        console.log('Resource button or collection not found:', {
+            addResourceBtn: !!addResourceBtn,
+            resourcesCollection: !!resourcesCollection
+        });
+    }
+    
+    if (resourcesCollection) {
+        resourcesCollection.addEventListener('click', function(e) {
+            if (e.target.classList.contains('remove-resource')) {
+                e.target.closest('.resource-item').remove();
+                updateResourceNumbers();
+            }
+        });
+    }
+    
+    function updateResourceNumbers() {
+        const resourceItems = resourcesCollection?.querySelectorAll('.resource-item') || [];
+        resourceItems.forEach((item, index) => {
+            const numberSpan = item.querySelector('.resource-number');
+            if (numberSpan) {
+                numberSpan.textContent = index + 1;
+            }
+        });
+    }
+
+    // Initialize numbers
+    updateModuleNumbers();
+    updateResourceNumbers();
+});
+</script>
+{% endblock %}

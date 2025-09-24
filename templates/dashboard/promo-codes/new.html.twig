@@ -1,0 +1,227 @@
+{% extends 'dashboard.html.twig' %}
+
+{% block title %}Dashboard - Nouveau Code Promo{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+        
+        <!-- Main Content -->
+        <div 
+            <div class="px-4 py-6 sm:px-6 lg:px-8">
+                <!-- Header avec breadcrumb -->
+                <div class="mb-6">
+                    <nav class="mb-4" aria-label="Breadcrumb">
+                        <ol class="flex items-center space-x-2 text-sm">
+                            <li><a href="{{ path('app_promo_codes') }}" class="text-gray-500 hover:text-gray-700">Codes Promo</a></li>
+                            <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
+                            <li class="text-gray-900 font-medium">Nouveau code promo</li>
+                        </ol>
+                    </nav>
+                    <h1 class="text-2xl font-bold text-gray-900">🎟️ Créer un nouveau code promo</h1>
+                </div>
+
+                <!-- Messages flash -->
+                {% for message in app.flashes('success') %}
+                    <div class="mb-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded relative">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+
+                {% for message in app.flashes('error') %}
+                    <div class="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+
+                <!-- Formulaire -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h2 class="text-lg font-medium text-gray-900">Informations du code promo</h2>
+                    </div>
+                    <div class="px-6 py-6">
+                        {{ form_start(form, {'attr': {'class': 'space-y-6', 'novalidate': true}}) }}
+                        
+                        <!-- Code et génération -->
+                        <div>
+                            <div class="flex items-end space-x-2">
+                                <div class="flex-1">
+                                    {{ form_label(form.code, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                                    {{ form_widget(form.code) }}
+                                </div>
+                                {{ form_widget(form.generateCode) }}
+                            </div>
+                            {{ form_errors(form.code) }}
+                            <p class="mt-1 text-xs text-gray-500">{{ form_help(form.code) }}</p>
+                        </div>
+
+                        <!-- Nom de la campagne -->
+                        <div>
+                            {{ form_label(form.name, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                            {{ form_widget(form.name) }}
+                            {{ form_errors(form.name) }}
+                        </div>
+
+                        <!-- Description -->
+                        <div>
+                            {{ form_label(form.description, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                            {{ form_widget(form.description) }}
+                            {{ form_errors(form.description) }}
+                        </div>
+
+                        <!-- Configuration de la réduction -->
+                        <div class="border-t border-gray-200 pt-6">
+                            <h3 class="text-md font-medium text-gray-900 mb-4">💰 Configuration de la réduction</h3>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <!-- Type de réduction -->
+                                <div>
+                                    {{ form_label(form.discountType, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                                    {{ form_widget(form.discountType) }}
+                                    {{ form_errors(form.discountType) }}
+                                </div>
+
+                                <!-- Valeur de la réduction -->
+                                <div>
+                                    {{ form_label(form.discountValue, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                                    <div class="relative">
+                                        {{ form_widget(form.discountValue) }}
+                                        <span id="discount-unit" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 text-sm">%</span>
+                                    </div>
+                                    {{ form_errors(form.discountValue) }}
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                                <!-- Montant minimum -->
+                                <div>
+                                    {{ form_label(form.minimumAmount, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                                    {{ form_widget(form.minimumAmount) }}
+                                    {{ form_errors(form.minimumAmount) }}
+                                    <p class="mt-1 text-xs text-gray-500">{{ form_help(form.minimumAmount) }}</p>
+                                </div>
+
+                                <!-- Réduction maximale -->
+                                <div>
+                                    {{ form_label(form.maximumDiscount, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                                    {{ form_widget(form.maximumDiscount) }}
+                                    {{ form_errors(form.maximumDiscount) }}
+                                    <p class="mt-1 text-xs text-gray-500">{{ form_help(form.maximumDiscount) }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Période de validité -->
+                        <div class="border-t border-gray-200 pt-6">
+                            <h3 class="text-md font-medium text-gray-900 mb-4">📅 Période de validité</h3>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    {{ form_label(form.validFrom, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                                    {{ form_widget(form.validFrom) }}
+                                    {{ form_errors(form.validFrom) }}
+                                </div>
+
+                                <div>
+                                    {{ form_label(form.validUntil, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                                    {{ form_widget(form.validUntil) }}
+                                    {{ form_errors(form.validUntil) }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Limites d'utilisation -->
+                        <div class="border-t border-gray-200 pt-6">
+                            <h3 class="text-md font-medium text-gray-900 mb-4">🔢 Limites d'utilisation</h3>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    {{ form_label(form.maxUsageGlobal, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                                    {{ form_widget(form.maxUsageGlobal) }}
+                                    {{ form_errors(form.maxUsageGlobal) }}
+                                    <p class="mt-1 text-xs text-gray-500">{{ form_help(form.maxUsageGlobal) }}</p>
+                                </div>
+
+                                <div>
+                                    {{ form_label(form.maxUsagePerUser, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                                    {{ form_widget(form.maxUsagePerUser) }}
+                                    {{ form_errors(form.maxUsagePerUser) }}
+                                    <p class="mt-1 text-xs text-gray-500">{{ form_help(form.maxUsagePerUser) }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Prestations éligibles -->
+                        <div class="border-t border-gray-200 pt-6">
+                            <h3 class="text-md font-medium text-gray-900 mb-4">🎯 Prestations éligibles</h3>
+                            
+                            <div>
+                                {{ form_label(form.eligiblePrestations, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                                {{ form_widget(form.eligiblePrestations) }}
+                                {{ form_errors(form.eligiblePrestations) }}
+                                <p class="mt-1 text-xs text-gray-500">{{ form_help(form.eligiblePrestations) }}</p>
+                            </div>
+                        </div>
+
+                        <!-- Activation -->
+                        <div class="border-t border-gray-200 pt-6">
+                            <h3 class="text-md font-medium text-gray-900 mb-4">⚙️ Activation</h3>
+                            
+                            <div class="flex items-center">
+                                {{ form_widget(form.isActive) }}
+                                {{ form_label(form.isActive, null, {'label_attr': {'class': 'ml-2 text-sm text-gray-700'}}) }}
+                            </div>
+                            {{ form_errors(form.isActive) }}
+                        </div>
+
+                        <!-- Boutons -->
+                        <div class="border-t border-gray-200 pt-6 flex space-x-3">
+                            {{ form_widget(form.submit) }}
+                            <a href="{{ path('app_promo_codes') }}" class="flex-1 flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500">
+                                Annuler
+                            </a>
+                        </div>
+
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function generateRandomCode() {
+    fetch('/dashboard/promo-codes/generate-code', {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.code) {
+            document.getElementById('promo_code_code').value = data.code;
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+function updateDiscountUnit() {
+    const discountType = document.getElementById('promo_code_discountType').value;
+    const unit = document.getElementById('discount-unit');
+    
+    if (discountType === 'percentage') {
+        unit.textContent = '%';
+    } else if (discountType === 'fixed_amount') {
+        unit.textContent = 'F CFA';
+    } else {
+        unit.textContent = '';
+    }
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    updateDiscountUnit();
+});
+</script>
+{% endblock %}

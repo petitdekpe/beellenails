@@ -132,4 +132,67 @@ class FeexpayService
     {
         return $this->mode;
     }
+
+    public function createPayment(
+        int $amount,
+        string $phone,
+        string $operator,
+        string $customerName,
+        string $customerEmail,
+        string $customReference,
+        string $description = ''
+    ): array {
+        $data = [
+            'phoneNumber' => $phone,
+            'amount' => $amount,
+            'shop' => $this->shopId,
+            'firstName' => $customerName,
+            'lastName' => '',
+            'description' => $description,
+            'customReference' => $customReference
+        ];
+
+        $url = sprintf(
+            'https://%s/api/transactions/public/requesttopay/%s',
+            $this->mode === 'sandbox' ? 'sandbox.feexpay.me' : 'api.feexpay.me',
+            strtolower($operator)
+        );
+
+        try {
+            $response = $this->client->request('POST', $url, [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $this->apiKey,
+                    'Accept'        => 'application/json',
+                    'Content-Type'  => 'application/json',
+                ],
+                'json' => $data,
+            ]);
+
+            $responseData = $response->toArray(false);
+            $responseData['http_status'] = $response->getStatusCode();
+
+            return $responseData;
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Erreur : ' . $e->getMessage(),
+                'error' => true,
+            ];
+        }
+    }
+
+    public function isSuccessful(array $response): bool
+    {
+        return isset($response['reference']) && !isset($response['error']);
+    }
+
+    public function getReference(array $response): ?string
+    {
+        return $response['reference'] ?? null;
+    }
+
+    public function getErrorMessage(array $response): string
+    {
+        return $response['message'] ?? 'Erreur inconnue';
+    }
 }

@@ -7,6 +7,7 @@
 namespace App\Controller;
 
 use App\Entity\Payment;
+use App\Service\PromoCodeService;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -62,6 +63,15 @@ class FeexpayWebhookController extends AbstractController
 
             // Mettre à jour le paiement
             $payment->setStatus($internalStatus)->setUpdatedAt(new \DateTime());
+            
+            // Mettre à jour le montant si fourni dans la réponse de l'API
+            if ($amount !== null && is_numeric($amount)) {
+                $payment->setAmount((int)$amount);
+                $logger->info("[FeexPay Webhook] Montant mis à jour", [
+                    'reference' => $reference,
+                    'amount' => $amount
+                ]);
+            }
 
             $rendezvous = $payment->getRendezvous();
 
@@ -70,6 +80,17 @@ class FeexpayWebhookController extends AbstractController
                 case 'successful':
                     if ($oldStatus !== 'successful') { // Éviter les doublons
                         $rendezvous->setPaid(true)->setStatus('Rendez-vous pris');
+
+                        // Appliquer le code promo en attente s'il y en a un
+                        if ($rendezvous->getPendingPromoCode()) {
+                            $promoCodeService = $this->container->get(PromoCodeService::class);
+                            $result = $promoCodeService->applyPendingPromoCode($rendezvous);
+                            $logger->info("[FeexPay Webhook] Code promo traité", [
+                                'rendezvous_id' => $rendezvous->getId(),
+                                'promo_result' => $result['isValid'] ? 'appliqué' : 'échoué',
+                                'message' => $result['message']
+                            ]);
+                        }
 
                         // Envoi d'email au client
                         $this->sendClientSuccessEmail($rendezvous, $mailer, $logger);
@@ -83,11 +104,29 @@ class FeexpayWebhookController extends AbstractController
 
                 case 'failed':
                     $rendezvous->setStatus('Échec du paiement');
+                    // Révoquer le code promo si il y en a un
+                    if ($rendezvous->getPromoCode()) {
+                        $promoCodeService = $this->container->get(PromoCodeService::class);
+                        $result = $promoCodeService->revokePromoCodeUsage($rendezvous, 'Paiement échoué');
+                        $logger->info("[FeexPay Webhook] Code promo révoqué suite à l'échec", [
+                            'rendezvous_id' => $rendezvous->getId(),
+                            'reason' => 'Paiement échoué'
+                        ]);
+                    }
                     $logger->info("[FeexPay Webhook] Paiement échoué pour RDV #{$rendezvous->getId()}");
                     break;
 
                 case 'canceled':
                     $rendezvous->setStatus('Paiement annulé');
+                    // Révoquer le code promo si il y en a un
+                    if ($rendezvous->getPromoCode()) {
+                        $promoCodeService = $this->container->get(PromoCodeService::class);
+                        $result = $promoCodeService->revokePromoCodeUsage($rendezvous, 'Paiement annulé');
+                        $logger->info("[FeexPay Webhook] Code promo révoqué suite à l'annulation", [
+                            'rendezvous_id' => $rendezvous->getId(),
+                            'reason' => 'Paiement annulé'
+                        ]);
+                    }
                     $logger->info("[FeexPay Webhook] Paiement annulé pour RDV #{$rendezvous->getId()}");
                     break;
 

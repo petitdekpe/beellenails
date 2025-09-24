@@ -1,0 +1,175 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes Formations{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-gray-50">
+    <div class="pt-16 md:pt-20"></div>
+
+    <div class="px-4 py-6 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div class="flex flex-col lg:flex-row gap-8">
+
+            <!-- Sidebar -->
+            <div class="lg:w-64 flex-shrink-0">
+                {% include 'user_learning/_sidebar.html.twig' %}
+            </div>
+
+            <!-- Main Content -->
+            <div class="flex-1">
+                <!-- Header -->
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-3xl font-bold text-gray-900">📚 Mes Formations</h1>
+                            <p class="text-gray-600 mt-1">Gérez toutes vos formations en cours et terminées</p>
+                        </div>
+                        <a href="{{ path('app_formation_index') }}"
+                           class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700">
+                            ➕ Découvrir des formations
+                        </a>
+                    </div>
+                </div>
+
+                {% if enrollments is empty %}
+                    <!-- Empty State -->
+                    <div class="bg-white rounded-lg shadow-sm p-12 text-center">
+                        <span class="text-6xl mb-4 block">🎓</span>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Aucune formation inscrite</h3>
+                        <p class="text-gray-600 mb-6">Vous n'êtes inscrit à aucune formation pour le moment</p>
+                        <a href="{{ path('app_formation_index') }}"
+                           class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700">
+                            Découvrir nos formations
+                        </a>
+                    </div>
+                {% else %}
+                    <!-- Formations Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {% for enrollment in enrollments %}
+                            {% set formation = enrollment.formation %}
+                            {% set progressPercentage = enrollment.progressPercentage %}
+
+                            <div class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                                <!-- Formation Image -->
+                                {% if formation.imageName %}
+                                    <div class="h-48 bg-cover bg-center" style="background-image: url('{{ vich_uploader_asset(formation, 'imageFile') }}');">
+                                        <div class="h-full bg-black bg-opacity-20 flex items-end p-4">
+                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                                                {% if enrollment.status == 'active' %}bg-blue-100 text-blue-800
+                                                {% elseif enrollment.status == 'completed' %}bg-green-100 text-green-800
+                                                {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                                {% if enrollment.status == 'active' %}En cours
+                                                {% elseif enrollment.status == 'completed' %}Terminée
+                                                {% else %}{{ enrollment.status }}{% endif %}
+                                            </span>
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <div class="h-48 bg-gradient-to-r from-pink-500 to-purple-600 flex items-center justify-center">
+                                        <span class="text-white text-4xl">🎓</span>
+                                    </div>
+                                {% endif %}
+
+                                <!-- Formation Content -->
+                                <div class="p-6">
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ formation.title }}</h3>
+                                    <p class="text-gray-600 text-sm mb-4">{{ formation.description|length > 100 ? formation.description|slice(0, 100) ~ '...' : formation.description }}</p>
+
+                                    <!-- Progress Bar -->
+                                    <div class="mb-4">
+                                        <div class="flex items-center justify-between text-sm text-gray-600 mb-1">
+                                            <span>Progression</span>
+                                            <span>{{ progressPercentage }}%</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-2">
+                                            <div class="bg-pink-600 h-2 rounded-full transition-all duration-300" style="width: {{ progressPercentage }}%"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Stats -->
+                                    <div class="grid grid-cols-2 gap-4 mb-4 text-center">
+                                        <div class="bg-gray-50 rounded-lg p-3">
+                                            <p class="text-xs text-gray-600">Temps passé</p>
+                                            <p class="font-semibold text-gray-900">
+                                                {% if enrollment.totalTimeSpent > 3600 %}
+                                                    {{ (enrollment.totalTimeSpent / 3600)|round }}h
+                                                {% else %}
+                                                    {{ (enrollment.totalTimeSpent / 60)|round }}min
+                                                {% endif %}
+                                            </p>
+                                        </div>
+                                        <div class="bg-gray-50 rounded-lg p-3">
+                                            <p class="text-xs text-gray-600">Modules</p>
+                                            <p class="font-semibold text-gray-900">
+                                                {{ enrollment.completedModulesCount }}/{{ formation.modules|length }}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Action Buttons -->
+                                    <div class="flex space-x-2">
+                                        {% if enrollment.status == 'completed' %}
+                                            <a href="{{ path('app_user_learning_certificate', {enrollmentId: enrollment.id}) }}"
+                                               class="flex-1 inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700">
+                                                🏆 Certificat
+                                            </a>
+                                        {% endif %}
+
+                                        <a href="{{ path('app_user_learning_formation_detail', {id: enrollment.id}) }}"
+                                           class="flex-1 inline-flex items-center justify-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                                            {% if enrollment.status == 'completed' %}
+                                                📖 Revoir
+                                            {% else %}
+                                                ▶️ Continuer
+                                            {% endif %}
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Summary Stats -->
+                    <div class="mt-12 bg-white rounded-lg shadow-sm p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">📊 Mes Statistiques</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                            <div class="text-center">
+                                <p class="text-3xl font-bold text-blue-600">{{ enrollments|filter(e => e.status == 'active')|length }}</p>
+                                <p class="text-sm text-gray-600">Formations en cours</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-3xl font-bold text-green-600">{{ enrollments|filter(e => e.status == 'completed')|length }}</p>
+                                <p class="text-sm text-gray-600">Formations terminées</p>
+                            </div>
+                            <div class="text-center">
+                                {% set totalTime = 0 %}
+                                {% for enrollment in enrollments %}
+                                    {% set totalTime = totalTime + enrollment.totalTimeSpent %}
+                                {% endfor %}
+                                <p class="text-3xl font-bold text-purple-600">
+                                    {% if totalTime > 3600 %}
+                                        {{ (totalTime / 3600)|round }}h
+                                    {% else %}
+                                        {{ (totalTime / 60)|round }}min
+                                    {% endif %}
+                                </p>
+                                <p class="text-sm text-gray-600">Temps d'étude total</p>
+                            </div>
+                            <div class="text-center">
+                                {% set avgProgress = 0 %}
+                                {% if enrollments|length > 0 %}
+                                    {% for enrollment in enrollments %}
+                                        {% set avgProgress = avgProgress + enrollment.progressPercentage %}
+                                    {% endfor %}
+                                    {% set avgProgress = (avgProgress / enrollments|length)|round %}
+                                {% endif %}
+                                <p class="text-3xl font-bold text-orange-600">{{ avgProgress }}%</p>
+                                <p class="text-sm text-gray-600">Progression moyenne</p>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

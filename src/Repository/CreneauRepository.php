@@ -49,8 +49,9 @@ class CreneauRepository extends ServiceEntityRepository
             WHERE re.day = :selectedDate
             AND re.status IN (:statuses)
         )')
-            ->andWhere('( :selectedDate != CURRENT_DATE() OR c.startTime > :twoHoursLater )')
+            ->andWhere('( :selectedDate != :currentDate OR c.startTime > :twoHoursLater )')
             ->setParameter('selectedDate', $selectedDate->format('Y-m-d'))
+            ->setParameter('currentDate', $currentTime->format('Y-m-d'))
             ->setParameter('statuses', ['Rendez-vous pris', 'Rendez-vous confirmé', 'Congé'])
             ->setParameter('twoHoursLater', $twoHoursLater->format('H:i:s'))
             ->getQuery()

@@ -1,0 +1,375 @@
+{% extends 'dashboard.html.twig' %}
+
+{% block title %}Nouvelle Formation - Dashboard{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">Créer une nouvelle formation</h1>
+            <p class="text-gray-600">Ajoutez une nouvelle formation à votre catalogue</p>
+        </div>
+        <a href="{{ path('app_dashboard_formations_index') }}" 
+           class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+            ← Retour à la liste
+        </a>
+    </div>
+
+    <!-- Form Card -->
+    <div class="bg-white rounded-lg shadow-sm">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-semibold text-gray-900">Informations de la formation</h2>
+        </div>
+
+        <div class="p-6">
+            {{ form_start(form, {'attr': {'class': 'space-y-6', 'enctype': 'multipart/form-data'}}) }}
+            
+            <!-- Basic Information -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">{{ form_label(form.Nom) }}</label>
+                    {{ form_widget(form.Nom, {'attr': {'placeholder': 'Ex: Formation complète en prothésie ongulaire'}}) }}
+                    {{ form_errors(form.Nom) }}
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Prix (F CFA)</label>
+                    {{ form_widget(form.Cout, {'attr': {'placeholder': 'Ex: 150'}}) }}
+                    {{ form_errors(form.Cout) }}
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">{{ form_label(form.Description) }}</label>
+                {{ form_widget(form.Description, {'attr': {'rows': 4, 'placeholder': 'Décrivez votre formation en détail...'}}) }}
+                {{ form_errors(form.Description) }}
+            </div>
+
+            <!-- Category & Level -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Thématique</label>
+                    {{ form_widget(form.theme) }}
+                    {{ form_errors(form.theme) }}
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Niveau</label>
+                    {{ form_widget(form.level) }}
+                    {{ form_errors(form.level) }}
+                </div>
+            </div>
+
+            <!-- Duration & Free Option -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">{{ form_label(form.duration) }}</label>
+                    {{ form_widget(form.duration) }}
+                    {{ form_errors(form.duration) }}
+                </div>
+
+                <div class="flex items-center">
+                    {{ form_widget(form.isFree) }}
+                    <label class="ml-2 text-sm font-medium text-gray-700">{{ form_label(form.isFree) }}</label>
+                    {{ form_errors(form.isFree) }}
+                </div>
+            </div>
+
+            <!-- Pedagogical Content -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Objectifs pédagogiques</label>
+                    {{ form_widget(form.Objectif, {'attr': {'rows': 4, 'placeholder': 'Quels sont les objectifs de cette formation ?'}}) }}
+                    {{ form_errors(form.Objectif) }}
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Prérequis</label>
+                    {{ form_widget(form.Prerequis, {'attr': {'rows': 4, 'placeholder': 'Quels sont les prérequis nécessaires ?'}}) }}
+                    {{ form_errors(form.Prerequis) }}
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Programme</label>
+                    {{ form_widget(form.Programme, {'attr': {'rows': 4, 'placeholder': 'Décrivez le programme de la formation...'}}) }}
+                    {{ form_errors(form.Programme) }}
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Modalités de suivi</label>
+                    {{ form_widget(form.Suivi, {'attr': {'rows': 4, 'placeholder': 'Comment le suivi sera-t-il effectué ?'}}) }}
+                    {{ form_errors(form.Suivi) }}
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">{{ form_label(form.targetAudience) }}</label>
+                {{ form_widget(form.targetAudience) }}
+                {{ form_errors(form.targetAudience) }}
+            </div>
+
+            <!-- Images -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">{{ form_label(form.image) }}</label>
+                    {{ form_widget(form.image) }}
+                    {{ form_errors(form.image) }}
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">{{ form_label(form.youtubeUrl) }}</label>
+                    {{ form_widget(form.youtubeUrl) }}
+                    {{ form_errors(form.youtubeUrl) }}
+                </div>
+            </div>
+
+            <!-- Instructor Info -->
+            <div class="border-t border-gray-200 pt-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Informations du formateur</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ form_label(form.instructorName) }}</label>
+                        {{ form_widget(form.instructorName, {'attr': {'placeholder': 'Ex: Marie Dubois'}}) }}
+                        {{ form_errors(form.instructorName) }}
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ form_label(form.instructorImage) }}</label>
+                        {{ form_widget(form.instructorImage) }}
+                        {{ form_errors(form.instructorImage) }}
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">{{ form_label(form.instructorBio) }}</label>
+                    {{ form_widget(form.instructorBio, {'attr': {'placeholder': 'Présentez l\'expérience et les qualifications du formateur...'}}) }}
+                    {{ form_errors(form.instructorBio) }}
+                </div>
+            </div>
+
+            <!-- Access Management -->
+            <div class="border-t border-gray-200 pt-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Gestion des accès</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ form_label(form.accessType) }}</label>
+                        {{ form_widget(form.accessType) }}
+                        {{ form_errors(form.accessType) }}
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ form_label(form.accessDuration) }}</label>
+                        {{ form_widget(form.accessDuration) }}
+                        {{ form_errors(form.accessDuration) }}
+                    </div>
+
+                    <div class="flex items-center">
+                        {{ form_widget(form.isActive) }}
+                        <label class="ml-2 text-sm font-medium text-gray-700">{{ form_label(form.isActive) }}</label>
+                        {{ form_errors(form.isActive) }}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="fixed-dates" style="display: none;">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ form_label(form.startDate) }}</label>
+                        {{ form_widget(form.startDate) }}
+                        {{ form_errors(form.startDate) }}
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ form_label(form.endDate) }}</label>
+                        {{ form_widget(form.endDate) }}
+                        {{ form_errors(form.endDate) }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modules Section -->
+            <div class="border-t border-gray-200 pt-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Modules de formation</h3>
+                <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                    <p class="text-sm text-gray-600 mb-2">Les modules permettent de structurer votre formation en chapitres.</p>
+                    <button type="button" id="add-module" class="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700">
+                        + Ajouter un module
+                    </button>
+                </div>
+                
+                <div id="modules-collection" data-index="{{ form.modules|length }}" data-prototype="{{ form_widget(form.modules.vars.prototype)|e('html_attr') }}">
+                    {% for moduleForm in form.modules %}
+                        <div class="module-item bg-white border border-gray-200 rounded-lg p-4 mb-4">
+                            <div class="flex justify-between items-center mb-3">
+                                <h4 class="font-medium text-gray-900">Module #<span class="module-number">{{ loop.index }}</span></h4>
+                                <button type="button" class="remove-module text-red-600 hover:text-red-800 text-sm">
+                                    Supprimer
+                                </button>
+                            </div>
+                            {{ form_widget(moduleForm) }}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Resources Section -->
+            <div class="border-t border-gray-200 pt-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Ressources téléchargeables</h3>
+                <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                    <p class="text-sm text-gray-600 mb-2">Ajoutez des fichiers que les participants pourront télécharger.</p>
+                    <button type="button" id="add-resource" class="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                        + Ajouter une ressource
+                    </button>
+                </div>
+                
+                <div id="resources-collection" data-index="{{ form.resources|length }}" data-prototype="{{ form_widget(form.resources.vars.prototype)|e('html_attr') }}">
+                    {% for resourceForm in form.resources %}
+                        <div class="resource-item bg-white border border-gray-200 rounded-lg p-4 mb-4">
+                            <div class="flex justify-between items-center mb-3">
+                                <h4 class="font-medium text-gray-900">Ressource #<span class="resource-number">{{ loop.index }}</span></h4>
+                                <button type="button" class="remove-resource text-red-600 hover:text-red-800 text-sm">
+                                    Supprimer
+                                </button>
+                            </div>
+                            {{ form_widget(resourceForm) }}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="border-t border-gray-200 pt-6 flex justify-end space-x-3">
+                <a href="{{ path('app_dashboard_formations_index') }}" 
+                   class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                    Annuler
+                </a>
+                <button type="submit" 
+                        class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-pink-600 hover:bg-pink-700">
+                    Créer la formation
+                </button>
+            </div>
+
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle access type change
+    const accessTypeSelect = document.querySelector('#formation_accessType');
+    const fixedDatesDiv = document.getElementById('fixed-dates');
+    
+    function toggleFixedDates() {
+        if (accessTypeSelect.value === 'fixed') {
+            fixedDatesDiv.style.display = 'grid';
+        } else {
+            fixedDatesDiv.style.display = 'none';
+        }
+    }
+    
+    accessTypeSelect.addEventListener('change', toggleFixedDates);
+    toggleFixedDates(); // Initial call
+
+    // Collection handling for modules
+    const modulesCollection = document.getElementById('modules-collection');
+    const addModuleBtn = document.getElementById('add-module');
+    
+    addModuleBtn.addEventListener('click', function() {
+        const index = modulesCollection.dataset.index;
+        const prototype = modulesCollection.dataset.prototype;
+        
+        if (prototype) {
+            const newForm = prototype.replace(/__name__/g, index);
+            const wrapper = document.createElement('div');
+            wrapper.className = 'module-item bg-white border border-gray-200 rounded-lg p-4 mb-4';
+            wrapper.innerHTML = `
+                <div class="flex justify-between items-center mb-3">
+                    <h4 class="font-medium text-gray-900">Module #<span class="module-number">${parseInt(index) + 1}</span></h4>
+                    <button type="button" class="remove-module text-red-600 hover:text-red-800 text-sm">
+                        Supprimer
+                    </button>
+                </div>
+                ${newForm}
+            `;
+            
+            modulesCollection.appendChild(wrapper);
+            modulesCollection.dataset.index = parseInt(index) + 1;
+            updateModuleNumbers();
+        }
+    });
+    
+    // Handle module removal
+    modulesCollection.addEventListener('click', function(e) {
+        if (e.target.classList.contains('remove-module')) {
+            e.target.closest('.module-item').remove();
+            updateModuleNumbers();
+        }
+    });
+    
+    function updateModuleNumbers() {
+        const moduleItems = modulesCollection.querySelectorAll('.module-item');
+        moduleItems.forEach((item, index) => {
+            const numberSpan = item.querySelector('.module-number');
+            if (numberSpan) {
+                numberSpan.textContent = index + 1;
+            }
+        });
+    }
+
+    // Collection handling for resources
+    const resourcesCollection = document.getElementById('resources-collection');
+    const addResourceBtn = document.getElementById('add-resource');
+    
+    addResourceBtn.addEventListener('click', function() {
+        const index = resourcesCollection.dataset.index;
+        const prototype = resourcesCollection.dataset.prototype;
+        
+        if (prototype) {
+            const newForm = prototype.replace(/__name__/g, index);
+            const wrapper = document.createElement('div');
+            wrapper.className = 'resource-item bg-white border border-gray-200 rounded-lg p-4 mb-4';
+            wrapper.innerHTML = `
+                <div class="flex justify-between items-center mb-3">
+                    <h4 class="font-medium text-gray-900">Ressource #<span class="resource-number">${parseInt(index) + 1}</span></h4>
+                    <button type="button" class="remove-resource text-red-600 hover:text-red-800 text-sm">
+                        Supprimer
+                    </button>
+                </div>
+                ${newForm}
+            `;
+            
+            resourcesCollection.appendChild(wrapper);
+            resourcesCollection.dataset.index = parseInt(index) + 1;
+            updateResourceNumbers();
+        }
+    });
+    
+    // Handle resource removal
+    resourcesCollection.addEventListener('click', function(e) {
+        if (e.target.classList.contains('remove-resource')) {
+            e.target.closest('.resource-item').remove();
+            updateResourceNumbers();
+        }
+    });
+    
+    function updateResourceNumbers() {
+        const resourceItems = resourcesCollection.querySelectorAll('.resource-item');
+        resourceItems.forEach((item, index) => {
+            const numberSpan = item.querySelector('.resource-number');
+            if (numberSpan) {
+                numberSpan.textContent = index + 1;
+            }
+        });
+    }
+
+    // Initialize numbers
+    updateModuleNumbers();
+    updateResourceNumbers();
+});
+</script>
+{% endblock %}

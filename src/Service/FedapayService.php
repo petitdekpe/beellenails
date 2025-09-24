@@ -64,4 +64,48 @@ class FedapayService
 		return $this->fedaTransaction->retrieve($transactionID);
 	}
 
+	public function createGenericTransaction(
+		int $amount,
+		string $description,
+		User $user,
+		string $customReference = null
+	) {
+		$returnUrl = $this->urlGenerator->generate('generic_payment_callback', [], UrlGeneratorInterface::ABSOLUTE_URL);
+		
+		$transactionData = [
+			'description' => $description,
+			'amount' => $amount,
+			'currency' => ['iso' => 'XOF'],
+			'callback_url' => $returnUrl,
+			'customer' => $user->toArrayForPayment(),
+		];
+
+		if ($customReference) {
+			$transactionData['reference'] = $customReference;
+		}
+
+		$this->transaction = $this->fedaTransaction->create($transactionData);
+		return $this->transaction;
+	}
+
+	public function getTransactionAmount($transaction): int
+	{
+		return $transaction->amount ?? 0;
+	}
+
+	public function getTransactionStatus($transaction): string
+	{
+		return $transaction->status ?? 'unknown';
+	}
+
+	public function getTransactionReference($transaction): ?string
+	{
+		return $transaction->reference ?? null;
+	}
+
+	public function isTransactionSuccessful($transaction): bool
+	{
+		return in_array($transaction->status ?? '', ['approved', 'successful']);
+	}
+
 }

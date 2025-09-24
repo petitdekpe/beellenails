@@ -8,10 +8,12 @@ namespace App\Controller;
 
 use App\Entity\Rendezvous;
 use App\Form\RendezvousType;
+use App\Service\PromoCodeService;
 use Symfony\Component\Mime\Email;
 use App\Form\RendezvousModifyType;
 use App\Repository\RendezvousRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -42,14 +44,36 @@ class RendezvousController extends AbstractController
 
 
         if ($form->isSubmitted() && $form->isValid()) {
-            
-            // Vérifier si le créneau est déjà en congé
+
+            $formData = $rendezvous;
+
+            // Vérifier que le créneau appartient bien à la date sélectionnée (validation croisée)
+            $creneauRepository = $entityManager->getRepository(\App\Entity\Creneau::class);
+            $availableSlots = $creneauRepository->findAvailableSlots($formData->getDay());
+            $isSlotValid = false;
+
+            foreach ($availableSlots as $slot) {
+                if ($slot->getId() === $formData->getCreneau()->getId()) {
+                    $isSlotValid = true;
+                    break;
+                }
+            }
+
+            if (!$isSlotValid) {
+                $this->addFlash('error', 'Le créneau sélectionné n\'est pas disponible pour cette date.');
+                return $this->render('rendezvous/new.html.twig', [
+                    'rendezvous' => $rendezvous,
+                    'form' => $form,
+                ]);
+            }
+
+            // Vérifier si le créneau est déjà en congé (double vérification)
             $existingConge = $entityManager->getRepository(Rendezvous::class)->findOneBy([
                 'day' => $rendezvous->getDay(),
                 'creneau' => $rendezvous->getCreneau(),
                 'status' => 'Congé'
             ]);
-            
+
             if ($existingConge) {
                 $this->addFlash('error', 'Ce créneau est indisponible (en congé).');
                 return $this->render('rendezvous/new.html.twig', [
@@ -170,9 +194,18 @@ class RendezvousController extends AbstractController
     }
 
     #[Route('/{id}/cancel', name: 'app_rendezvous_cancel', methods: ['GET', 'POST'])]
-    public function cancel(Request $request, Rendezvous $rendezvous, EntityManagerInterface $entityManager, MailerInterface $mailer): Response
+    public function cancel(Request $request, Rendezvous $rendezvous, EntityManagerInterface $entityManager, MailerInterface $mailer, PromoCodeService $promoCodeService, LoggerInterface $logger): Response
     {
         $rendezvous->setStatus("Annulé");
+        
+        // Révoquer le code promo si il y en a un
+        if ($rendezvous->getPromoCode()) {
+            $result = $promoCodeService->revokePromoCodeUsage($rendezvous, 'Rendez-vous annulé par le client');
+            $logger->info("[Client Cancellation] Code promo révoqué suite à l'annulation", [
+                'rendezvous_id' => $rendezvous->getId(),
+                'reason' => 'Rendez-vous annulé par le client'
+            ]);
+        }
 
         $entityManager->persist($rendezvous);
         $entityManager->flush();

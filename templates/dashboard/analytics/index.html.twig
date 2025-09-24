@@ -1,0 +1,386 @@
+{% extends 'dashboard.html.twig' %}
+
+{% block title %}Analyses & Statistiques{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0 text-gray-800">📊 Analyses & Statistiques</h1>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                        Période : {{ period == '7days' ? '7 jours' : (period == '30days' ? '30 jours' : (period == '3months' ? '3 mois' : (period == '6months' ? '6 mois' : '1 an'))) }}
+                    </button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="{{ path('app_dashboard_analytics', {period: '7days'}) }}">7 derniers jours</a>
+                        <a class="dropdown-item" href="{{ path('app_dashboard_analytics', {period: '30days'}) }}">30 derniers jours</a>
+                        <a class="dropdown-item" href="{{ path('app_dashboard_analytics', {period: '3months'}) }}">3 derniers mois</a>
+                        <a class="dropdown-item" href="{{ path('app_dashboard_analytics', {period: '6months'}) }}">6 derniers mois</a>
+                        <a class="dropdown-item" href="{{ path('app_dashboard_analytics', {period: '1year'}) }}">1 an</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vue d'ensemble -->
+            <div class="row mb-4">
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Formations Totales</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ stats.totalFormations }}</div>
+                                    <div class="text-xs text-success">{{ stats.activeFormations }} actives</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-graduation-cap fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-success shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Inscriptions Totales</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ stats.totalEnrollments }}</div>
+                                    <div class="text-xs text-success">{{ stats.activeEnrollments }} actives</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-users fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-info shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Revenus Totaux</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ stats.totalRevenue|number_format(0, ',', ' ') }} F CFA</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-euro-sign fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-warning shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Revenus Période</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ stats.periodRevenue|number_format(0, ',', ' ') }} F CFA</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-chart-line fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Graphiques -->
+                <div class="col-xl-8 col-lg-7">
+                    <!-- Revenus -->
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                            <h6 class="m-0 font-weight-bold text-primary">📈 Évolution des Revenus</h6>
+                            <button class="btn btn-sm btn-outline-primary" onclick="refreshRevenueChart()">
+                                <i class="fas fa-sync"></i>
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-area">
+                                <canvas id="revenueChart" width="100%" height="40"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Inscriptions -->
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">👥 Nouvelles Inscriptions</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-area">
+                                <canvas id="enrollmentsChart" width="100%" height="40"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar statistiques -->
+                <div class="col-xl-4 col-lg-5">
+                    <!-- Formations populaires -->
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">🔥 Formations Populaires</h6>
+                        </div>
+                        <div class="card-body">
+                            {% if popularFormations is not empty %}
+                                {% for formation in popularFormations %}
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-0">{{ formation.name }}</h6>
+                                        <small class="text-muted">{{ formation.enrollments }} inscriptions</small>
+                                    </div>
+                                    <span class="badge badge-primary">{{ formation.enrollments }}</span>
+                                </div>
+                                {% if not loop.last %}<hr class="my-2">{% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <div class="text-center text-muted py-3">
+                                    <i class="fas fa-chart-bar fa-2x mb-2 d-block"></i>
+                                    <small>Aucune donnée pour cette période</small>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Taux de complétion -->
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">✅ Taux de Complétion</h6>
+                        </div>
+                        <div class="card-body">
+                            {% if completionRates is not empty %}
+                                {% for formation in completionRates|slice(0, 5) %}
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <h6 class="mb-0 small">{{ formation.name }}</h6>
+                                        <span class="small text-muted">{{ formation.avgProgress|round }}%</span>
+                                    </div>
+                                    <div class="progress" style="height: 6px;">
+                                        <div class="progress-bar bg-success" style="width: {{ formation.avgProgress }}%"></div>
+                                    </div>
+                                    <small class="text-muted">
+                                        {{ formation.completedEnrollments }}/{{ formation.totalEnrollments }} terminées
+                                    </small>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="text-center text-muted py-3">
+                                    <i class="fas fa-percentage fa-2x mb-2 d-block"></i>
+                                    <small>Aucune donnée disponible</small>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Utilisateurs actifs -->
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">⭐ Utilisateurs Actifs</h6>
+                        </div>
+                        <div class="card-body">
+                            {% if activeUsers is not empty %}
+                                {% for user in activeUsers|slice(0, 5) %}
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-0 small">{{ user.prenom }} {{ user.nom }}</h6>
+                                        <small class="text-muted">
+                                            {{ user.enrollments }} formations • 
+                                            {% if user.totalTimeSpent > 3600 %}
+                                                {{ (user.totalTimeSpent / 3600)|round }}h
+                                            {% else %}
+                                                {{ (user.totalTimeSpent / 60)|round }}min
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                    <div class="text-center">
+                                        <small class="text-success font-weight-bold">{{ user.avgProgress|round }}%</small>
+                                    </div>
+                                </div>
+                                {% if not loop.last %}<hr class="my-2">{% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <div class="text-center text-muted py-3">
+                                    <i class="fas fa-user-friends fa-2x mb-2 d-block"></i>
+                                    <small>Aucun utilisateur actif</small>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tableau détaillé -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">📋 Rapport Détaillé</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>Formation</th>
+                                            <th>Inscriptions</th>
+                                            <th>Taux Complétion</th>
+                                            <th>Temps Moyen</th>
+                                            <th>Revenus</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for formation in completionRates %}
+                                        <tr>
+                                            <td>{{ formation.name }}</td>
+                                            <td>
+                                                <span class="badge badge-primary">{{ formation.totalEnrollments }}</span>
+                                                <small class="text-muted">({{ formation.completedEnrollments }} terminées)</small>
+                                            </td>
+                                            <td>
+                                                <div class="progress" style="height: 20px;">
+                                                    <div class="progress-bar bg-success" style="width: {{ formation.avgProgress }}%">
+                                                        {{ formation.avgProgress|round }}%
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="text-muted">À calculer</span>
+                                            </td>
+                                            <td>
+                                                <span class="font-weight-bold">À calculer</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-success">Active</span>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let revenueChart;
+let enrollmentsChart;
+
+document.addEventListener('DOMContentLoaded', function() {
+    initializeCharts();
+});
+
+function initializeCharts() {
+    // Graphique des revenus
+    const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+    
+    fetch(`{{ path('app_dashboard_analytics_revenue_chart') }}?period={{ period }}`)
+        .then(response => response.json())
+        .then(data => {
+            revenueChart = new Chart(revenueCtx, {
+                type: 'line',
+                data: data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + ' F CFA';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        });
+
+    // Graphique des inscriptions
+    const enrollmentsCtx = document.getElementById('enrollmentsChart').getContext('2d');
+    
+    fetch(`{{ path('app_dashboard_analytics_enrollments_chart') }}?period={{ period }}`)
+        .then(response => response.json())
+        .then(data => {
+            enrollmentsChart = new Chart(enrollmentsCtx, {
+                type: 'bar',
+                data: data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        });
+}
+
+function refreshRevenueChart() {
+    if (revenueChart) {
+        revenueChart.destroy();
+    }
+    
+    const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+    
+    fetch(`{{ path('app_dashboard_analytics_revenue_chart') }}?period={{ period }}&t=${Date.now()}`)
+        .then(response => response.json())
+        .then(data => {
+            revenueChart = new Chart(revenueCtx, {
+                type: 'line',
+                data: data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + ' F CFA';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        });
+}
+</script>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}

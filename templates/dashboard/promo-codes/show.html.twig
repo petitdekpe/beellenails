@@ -1,0 +1,347 @@
+{% extends 'dashboard.html.twig' %}
+
+{% block title %}Dashboard - Code Promo {{ promoCode.code }}{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+        
+        <!-- Main Content -->
+        <div 
+            <div class="px-4 py-6 sm:px-6 lg:px-8">
+                <!-- Header avec breadcrumb -->
+                <div class="mb-6">
+                    <nav class="mb-4" aria-label="Breadcrumb">
+                        <ol class="flex items-center space-x-2 text-sm">
+                            <li><a href="{{ path('app_promo_codes') }}" class="text-gray-500 hover:text-gray-700">Codes Promo</a></li>
+                            <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
+                            <li class="text-gray-900 font-medium">{{ promoCode.code }}</li>
+                        </ol>
+                    </nav>
+                    
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">
+                                <span class="font-mono bg-gray-100 px-3 py-1 rounded">{{ promoCode.code }}</span>
+                            </h1>
+                            <p class="text-sm text-gray-600 mt-1">{{ promoCode.name }}</p>
+                        </div>
+                        <div class="flex space-x-2">
+                            <a href="{{ path('app_promo_code_edit', {'id': promoCode.id}) }}" class="inline-flex items-center px-3 py-2 bg-orange-600 hover:bg-orange-700 text-white text-sm rounded-lg transition-colors">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                </svg>
+                                Modifier
+                            </a>
+                            <form action="{{ path('app_promo_code_duplicate', {'id': promoCode.id}) }}" method="POST" style="display: inline;">
+                                <button type="submit" class="inline-flex items-center px-3 py-2 bg-gray-600 hover:bg-gray-700 text-white text-sm rounded-lg transition-colors">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                    </svg>
+                                    Dupliquer
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Messages flash -->
+                {% for message in app.flashes('success') %}
+                    <div class="mb-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded relative">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+
+                <!-- Statistiques du code -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                    <span class="text-blue-600 text-sm font-bold">👥</span>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-500">Tentatives</p>
+                                <p class="text-2xl font-bold text-gray-900">{{ stats.totalAttempts }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                                    <span class="text-green-600 text-sm font-bold">✅</span>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-500">Validés</p>
+                                <p class="text-2xl font-bold text-gray-900">{{ stats.validatedUsages }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                                    <span class="text-purple-600 text-sm font-bold">💰</span>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-500">Économies</p>
+                                <p class="text-2xl font-bold text-gray-900">{{ stats.totalDiscount|number_format(2) }} F CFA</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
+                                    <span class="text-yellow-600 text-sm font-bold">📈</span>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-500">Taux succès</p>
+                                <p class="text-2xl font-bold text-gray-900">{{ stats.successRate|number_format(1) }}%</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Détails du code et utilisation récente -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Détails du code promo -->
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-medium text-gray-900">📋 Détails du code</h3>
+                        </div>
+                        <div class="px-6 py-4 space-y-4">
+                            <!-- Statut -->
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-medium text-gray-500">Statut:</span>
+                                <div class="flex items-center space-x-2">
+                                    {% if promoCode.isActive %}
+                                        {% if promoCode.isValid %}
+                                            <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">✅ Actif</span>
+                                        {% else %}
+                                            <span class="px-2 py-1 text-xs font-medium bg-orange-100 text-orange-800 rounded-full">⏰ Inactif</span>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">❌ Désactivé</span>
+                                    {% endif %}
+                                    <button onclick="toggleStatus({{ promoCode.id }})" class="text-sm text-blue-600 hover:text-blue-800">
+                                        {{ promoCode.isActive ? 'Désactiver' : 'Activer' }}
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Description -->
+                            {% if promoCode.description %}
+                                <div>
+                                    <span class="text-sm font-medium text-gray-500">Description:</span>
+                                    <p class="text-sm text-gray-900 mt-1">{{ promoCode.description }}</p>
+                                </div>
+                            {% endif %}
+
+                            <!-- Réduction -->
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-medium text-gray-500">Réduction:</span>
+                                <span class="text-lg font-bold text-green-600">{{ promoCode.discountDisplayValue }}</span>
+                            </div>
+
+                            <!-- Conditions -->
+                            {% if promoCode.minimumAmount %}
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm font-medium text-gray-500">Montant minimum:</span>
+                                    <span class="text-sm text-gray-900">{{ promoCode.minimumAmount }} F CFA</span>
+                                </div>
+                            {% endif %}
+
+                            {% if promoCode.maximumDiscount %}
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm font-medium text-gray-500">Réduction maximum:</span>
+                                    <span class="text-sm text-gray-900">{{ promoCode.maximumDiscount }} F CFA</span>
+                                </div>
+                            {% endif %}
+
+                            <!-- Période de validité -->
+                            <div class="border-t pt-4">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-sm font-medium text-gray-500">Valide du:</span>
+                                    <span class="text-sm text-gray-900">{{ promoCode.validFrom|date('d/m/Y H:i') }}</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm font-medium text-gray-500">Jusqu'au:</span>
+                                    <span class="text-sm text-gray-900">{{ promoCode.validUntil|date('d/m/Y H:i') }}</span>
+                                </div>
+                            </div>
+
+                            <!-- Limites d'usage -->
+                            <div class="border-t pt-4">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-sm font-medium text-gray-500">Usage actuel:</span>
+                                    <span class="text-sm text-gray-900">{{ promoCode.currentUsage }}</span>
+                                </div>
+                                {% if promoCode.maxUsageGlobal %}
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="text-sm font-medium text-gray-500">Limite globale:</span>
+                                        <span class="text-sm text-gray-900">{{ promoCode.maxUsageGlobal }}</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        {% set percentage = (promoCode.currentUsage / promoCode.maxUsageGlobal * 100)|round %}
+                                        <div class="bg-pink-600 h-2 rounded-full" style="width: {{ percentage }}%"></div>
+                                    </div>
+                                {% endif %}
+                                {% if promoCode.maxUsagePerUser %}
+                                    <div class="flex justify-between items-center mt-2">
+                                        <span class="text-sm font-medium text-gray-500">Limite par utilisateur:</span>
+                                        <span class="text-sm text-gray-900">{{ promoCode.maxUsagePerUser }}</span>
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Prestations éligibles -->
+                            {% if promoCode.eligiblePrestations|length > 0 %}
+                                <div class="border-t pt-4">
+                                    <span class="text-sm font-medium text-gray-500">Prestations éligibles:</span>
+                                    <div class="mt-2 space-y-1">
+                                        {% for prestation in promoCode.eligiblePrestations %}
+                                            <span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mr-1">
+                                                {{ prestation.title }}
+                                            </span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="border-t pt-4">
+                                    <span class="text-sm font-medium text-gray-500">Prestations éligibles:</span>
+                                    <span class="text-sm text-green-600 ml-2">✅ Toutes les prestations</span>
+                                </div>
+                            {% endif %}
+
+                            <!-- Dates de création/modification -->
+                            <div class="border-t pt-4 text-xs text-gray-500">
+                                <p>Créé le {{ promoCode.createdAt|date('d/m/Y à H:i') }}</p>
+                                {% if promoCode.updatedAt != promoCode.createdAt %}
+                                    <p>Modifié le {{ promoCode.updatedAt|date('d/m/Y à H:i') }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Utilisation récente -->
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-medium text-gray-900">🕒 Utilisation récente</h3>
+                        </div>
+                        <div class="px-6 py-4">
+                            {% if recentUsages|length > 0 %}
+                                <div class="space-y-4">
+                                    {% for usage in recentUsages %}
+                                        <div class="border-l-4 {{ usage.status == 'validated' ? 'border-green-400 bg-green-50' : (usage.status == 'revoked' ? 'border-red-400 bg-red-50' : 'border-yellow-400 bg-yellow-50') }} pl-4 py-2">
+                                            <div class="flex justify-between items-start">
+                                                <div>
+                                                    <p class="text-sm font-medium text-gray-900">
+                                                        {{ usage.user.fullName }}
+                                                    </p>
+                                                    <p class="text-xs text-gray-500">{{ usage.user.email }}</p>
+                                                    {% if usage.originalAmount %}
+                                                        <p class="text-xs text-gray-600 mt-1">
+                                                            {% if usage.discountAmount %}
+                                                                {{ usage.originalAmount }} F CFA → {{ usage.finalAmount }} F CFA ({{ usage.discountAmount }} F CFA d'économie)
+                                                            {% else %}
+                                                                Montant: {{ usage.originalAmount }} F CFA
+                                                            {% endif %}
+                                                        </p>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="text-right">
+                                                    <span class="inline-block px-2 py-1 text-xs rounded {{ usage.status == 'validated' ? 'bg-green-100 text-green-800' : (usage.status == 'revoked' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800') }}">
+                                                        {{ usage.statusLabel }}
+                                                    </span>
+                                                    <p class="text-xs text-gray-500 mt-1">
+                                                        {{ usage.attemptedAt|date('d/m/Y H:i') }}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            {% if usage.notes %}
+                                                <p class="text-xs text-gray-600 mt-2 italic">{{ usage.notes }}</p>
+                                            {% endif %}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                
+                                {% if stats.totalAttempts > 10 %}
+                                    <div class="mt-4 text-center">
+                                        <p class="text-sm text-gray-500">{{ stats.totalAttempts - 10 }} autres tentatives...</p>
+                                    </div>
+                                {% endif %}
+                            {% else %}
+                                <div class="text-center py-8">
+                                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                                    </svg>
+                                    <h3 class="mt-2 text-sm font-medium text-gray-900">Aucune utilisation</h3>
+                                    <p class="mt-1 text-sm text-gray-500">Ce code n'a pas encore été utilisé</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Zone de suppression (danger) -->
+                {% if stats.validatedUsages == 0 %}
+                    <div class="mt-6 bg-red-50 border border-red-200 rounded-lg p-4">
+                            <div class="flex-shrink-0">
+                                <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" clip-rule="evenodd"/>
+                                    <path fill-rule="evenodd" d="M4 5a2 2 0 012-2h8a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 2a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <div class="ml-3">
+                                <h3 class="text-sm font-medium text-red-800">Zone de danger</h3>
+                                <div class="mt-2 text-sm text-red-700">
+                                    <p class="mb-2">Ce code n'a aucune utilisation validée. Vous pouvez le supprimer définitivement.</p>
+                                    <form action="{{ path('app_promo_code_delete', {'id': promoCode.id}) }}" method="POST" 
+                                          onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce code promo ? Cette action est irréversible.')" 
+                                          style="display: inline;">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ promoCode.id) }}">
+                                        <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded text-sm">
+                                            🗑️ Supprimer définitivement
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleStatus(promoCodeId) {
+    fetch(`/dashboard/promo-codes/${promoCodeId}/toggle-status`, {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Erreur: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Erreur technique');
+    });
+}
+</script>
+{% endblock %}

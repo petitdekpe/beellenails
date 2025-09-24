@@ -1,16 +1,8 @@
-{% extends 'base.html.twig' %}
+{% extends 'dashboard.html.twig' %}
 
 {% block title %}Dashboard - Nouvelle Formation{% endblock %}
 
-{% block body %}
-<div class="min-h-screen bg-gray-50">
-    <div class="flex">
-        <!-- Sidebar -->
-        {% include '_sidebar.html.twig' %}
-        
-        <!-- Main Content -->
-        <div class="flex-1 lg:ml-8">
-            <div class="px-4 py-6 sm:px-6 lg:px-8">
+{% block content %}
                 <!-- Header -->
                 <div class="mb-6">
                     <div class="flex items-center justify-between">
@@ -169,8 +161,4 @@
                         {{ form_end(form) }}
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-</div>
 {% endblock %}

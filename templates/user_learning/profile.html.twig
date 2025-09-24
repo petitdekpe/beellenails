@@ -1,0 +1,209 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Profil d'Apprentissage{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-gray-50">
+    <div class="pt-16 md:pt-20"></div>
+
+    <div class="px-4 py-6 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div class="flex flex-col lg:flex-row gap-8">
+
+            <!-- Sidebar -->
+            <div class="lg:w-64 flex-shrink-0">
+                {% include 'user_learning/_sidebar.html.twig' %}
+            </div>
+
+            <!-- Main Content -->
+            <div class="flex-1">
+                <!-- Header -->
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold text-gray-900">👤 Mon Profil d'Apprentissage</h1>
+                    <p class="text-gray-600 mt-1">Suivez vos progrès et vos réussites</p>
+                </div>
+
+                <div class="space-y-8">
+
+                    <!-- User Info Card -->
+                    <div class="bg-gradient-to-r from-pink-500 to-purple-600 rounded-lg shadow-sm overflow-hidden">
+                        <div class="p-6 text-white">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                                    <span class="text-2xl">👤</span>
+                                </div>
+                                <div>
+                                    <h2 class="text-2xl font-bold">{{ app.user.prenom }} {{ app.user.nom }}</h2>
+                                    <p class="text-pink-100">{{ app.user.email }}</p>
+                                    <p class="text-pink-100 text-sm mt-1">
+                                        Membre depuis {{ app.user.createdAt ? app.user.createdAt|date('F Y') : 'récemment' }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stats Overview -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="bg-white rounded-lg shadow-sm p-6 text-center">
+                            <div class="w-12 h-12 mx-auto mb-4 bg-blue-100 rounded-full flex items-center justify-center">
+                                <span class="text-blue-600 text-xl">📚</span>
+                            </div>
+                            <p class="text-3xl font-bold text-blue-600">{{ stats.activeEnrollments ?? 0 }}</p>
+                            <p class="text-sm text-gray-600">Formations en cours</p>
+                        </div>
+
+                        <div class="bg-white rounded-lg shadow-sm p-6 text-center">
+                            <div class="w-12 h-12 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center">
+                                <span class="text-green-600 text-xl">🏆</span>
+                            </div>
+                            <p class="text-3xl font-bold text-green-600">{{ stats.completedEnrollments ?? 0 }}</p>
+                            <p class="text-sm text-gray-600">Formations terminées</p>
+                        </div>
+
+                        <div class="bg-white rounded-lg shadow-sm p-6 text-center">
+                            <div class="w-12 h-12 mx-auto mb-4 bg-purple-100 rounded-full flex items-center justify-center">
+                                <span class="text-purple-600 text-xl">⏱️</span>
+                            </div>
+                            <p class="text-3xl font-bold text-purple-600">
+                                {% if totalTimeSpent > 3600 %}
+                                    {{ (totalTimeSpent / 3600)|round }}h
+                                {% else %}
+                                    {{ (totalTimeSpent / 60)|round }}min
+                                {% endif %}
+                            </p>
+                            <p class="text-sm text-gray-600">Temps d'étude total</p>
+                        </div>
+
+                        <div class="bg-white rounded-lg shadow-sm p-6 text-center">
+                            <div class="w-12 h-12 mx-auto mb-4 bg-orange-100 rounded-full flex items-center justify-center">
+                                <span class="text-orange-600 text-xl">📖</span>
+                            </div>
+                            <p class="text-3xl font-bold text-orange-600">{{ completedModules ?? 0 }}</p>
+                            <p class="text-sm text-gray-600">Modules complétés</p>
+                        </div>
+                    </div>
+
+                    <!-- Progress Chart -->
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">📊 Progression Globale</h3>
+                        {% set totalFormations = (stats.activeEnrollments ?? 0) + (stats.completedEnrollments ?? 0) %}
+                        {% if totalFormations > 0 %}
+                            {% set progressPercentage = ((stats.completedEnrollments ?? 0) / totalFormations * 100)|round %}
+                            <div class="mb-4">
+                                <div class="flex items-center justify-between text-sm text-gray-600 mb-2">
+                                    <span>Formations terminées</span>
+                                    <span>{{ stats.completedEnrollments ?? 0 }}/{{ totalFormations }} ({{ progressPercentage }}%)</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-3">
+                                    <div class="bg-gradient-to-r from-pink-500 to-purple-600 h-3 rounded-full transition-all duration-500" style="width: {{ progressPercentage }}%"></div>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-4 text-center text-sm">
+                                <div>
+                                    <p class="text-gray-600">En cours</p>
+                                    <p class="font-semibold text-blue-600">{{ stats.activeEnrollments ?? 0 }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-600">Terminées</p>
+                                    <p class="font-semibold text-green-600">{{ stats.completedEnrollments ?? 0 }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-600">Total</p>
+                                    <p class="font-semibold text-gray-900">{{ totalFormations }}</p>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="text-center py-8">
+                                <span class="text-4xl mb-4 block">🎯</span>
+                                <p class="text-gray-600">Aucune formation en cours</p>
+                                <a href="{{ path('app_formation_index') }}"
+                                   class="inline-flex items-center px-4 py-2 mt-4 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700">
+                                    Découvrir des formations
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Recent Achievements -->
+                    {% if recentCompletions is not empty %}
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">🏅 Réussites Récentes</h3>
+                        <div class="space-y-4">
+                            {% for completion in recentCompletions %}
+                                <div class="flex items-center space-x-4 p-4 bg-green-50 rounded-lg">
+                                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                        <span class="text-green-600 text-xl">🎓</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <h4 class="font-medium text-gray-900">{{ completion.formation.title }}</h4>
+                                        <p class="text-sm text-gray-600">
+                                            Terminée le {{ completion.completedAt|date('d/m/Y') }}
+                                        </p>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <a href="{{ path('app_user_learning_certificate', {enrollmentId: completion.id}) }}"
+                                           class="inline-flex items-center px-3 py-1 text-xs font-medium text-green-700 bg-green-100 rounded-full hover:bg-green-200">
+                                            🏆 Certificat
+                                        </a>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Learning Goals -->
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">🎯 Mes Objectifs d'Apprentissage</h3>
+
+                        {% if (stats.activeEnrollments ?? 0) > 0 %}
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
+                                    <div>
+                                        <h4 class="font-medium text-gray-900">Formations en cours</h4>
+                                        <p class="text-sm text-gray-600">Terminer {{ stats.activeEnrollments }} formation{% if stats.activeEnrollments > 1 %}s{% endif %} active{% if stats.activeEnrollments > 1 %}s{% endif %}</p>
+                                    </div>
+                                    <span class="inline-flex items-center px-3 py-1 text-xs font-medium text-blue-700 bg-blue-100 rounded-full">
+                                        En cours
+                                    </span>
+                                </div>
+
+                                {% if totalTimeSpent < 3600 %}
+                                <div class="flex items-center justify-between p-4 bg-purple-50 rounded-lg">
+                                    <div>
+                                        <h4 class="font-medium text-gray-900">Temps d'étude hebdomadaire</h4>
+                                        <p class="text-sm text-gray-600">Atteindre 1h d'étude par semaine</p>
+                                    </div>
+                                    <span class="inline-flex items-center px-3 py-1 text-xs font-medium text-purple-700 bg-purple-100 rounded-full">
+                                        Objectif
+                                    </span>
+                                </div>
+                                {% endif %}
+
+                                <div class="text-center pt-4">
+                                    <a href="{{ path('app_user_learning_formations') }}"
+                                       class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700">
+                                        📚 Voir mes formations
+                                    </a>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="text-center py-8">
+                                <span class="text-4xl mb-4 block">🚀</span>
+                                <h4 class="font-medium text-gray-900 mb-2">Commencez votre parcours d'apprentissage</h4>
+                                <p class="text-gray-600 mb-4">Découvrez nos formations et développez vos compétences</p>
+                                <a href="{{ path('app_formation_index') }}"
+                                   class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700">
+                                    Explorer les formations
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

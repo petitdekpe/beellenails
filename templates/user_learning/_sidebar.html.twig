@@ -1,0 +1,78 @@
+<div class="bg-white rounded-lg shadow-sm overflow-hidden sticky top-6">
+    <div class="px-6 py-4 border-b border-gray-200">
+        <h3 class="text-lg font-bold text-gray-900">📚 Mon Espace</h3>
+    </div>
+    
+    <nav class="p-4">
+        <div class="space-y-2">
+            <a href="{{ path('app_user_learning_dashboard') }}" 
+               class="flex items-center px-3 py-2 text-sm font-medium rounded-md 
+               {{ app.request.get('_route') == 'app_user_learning_dashboard' ? 'bg-pink-100 text-pink-700' : 'text-gray-700 hover:bg-gray-100' }}">
+                <span class="mr-3">🏠</span>
+                Tableau de bord
+            </a>
+            
+            <a href="{{ path('app_user_learning_formations') }}" 
+               class="flex items-center px-3 py-2 text-sm font-medium rounded-md 
+               {{ app.request.get('_route') == 'app_user_learning_formations' ? 'bg-pink-100 text-pink-700' : 'text-gray-700 hover:bg-gray-100' }}">
+                <span class="mr-3">🎓</span>
+                Mes formations
+            </a>
+            
+            <a href="{{ path('app_user_learning_profile') }}" 
+               class="flex items-center px-3 py-2 text-sm font-medium rounded-md 
+               {{ app.request.get('_route') == 'app_user_learning_profile' ? 'bg-pink-100 text-pink-700' : 'text-gray-700 hover:bg-gray-100' }}">
+                <span class="mr-3">👤</span>
+                Mon profil
+            </a>
+            
+            <div class="border-t border-gray-200 my-4"></div>
+            
+            <a href="{{ path('app_formation_index') }}"
+               class="flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-100">
+                <span class="mr-3">🔍</span>
+                Catalogue formations
+            </a>
+        </div>
+    </nav>
+    
+    <!-- Quick Progress Summary -->
+    <div class="border-t border-gray-200 p-4">
+        <h4 class="text-sm font-semibold text-gray-900 mb-3">📊 Progression rapide</h4>
+        <div class="space-y-3">
+            <!-- Get user's active enrollments for quick access -->
+            {% set activeEnrollments = app.user ? get_user_active_enrollments(app.user) : [] %}
+            
+            {% if activeEnrollments is not empty %}
+                {% for enrollment in activeEnrollments|slice(0, 2) %}
+                    <div>
+                        <div class="flex justify-between text-xs text-gray-600 mb-1">
+                            <span class="truncate pr-2">{{ enrollment.formation.nom }}</span>
+                            <span>{{ enrollment.progressPercentage }}%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-1.5">
+                            <div class="bg-pink-600 h-1.5 rounded-full" 
+                                 style="width: {{ enrollment.progressPercentage }}%"></div>
+                        </div>
+                    </div>
+                {% endfor %}
+                
+                {% if activeEnrollments|length > 2 %}
+                    <a href="{{ path('app_user_learning_formations') }}" 
+                       class="text-xs text-pink-600 hover:text-pink-700">
+                        +{{ activeEnrollments|length - 2 }} autres formations
+                    </a>
+                {% endif %}
+            {% else %}
+                <div class="text-center text-sm text-gray-500">
+                    <span class="block text-2xl mb-2">🎯</span>
+                    <p>Aucune formation en cours</p>
+                    <a href="{{ path('app_formation_index') }}" 
+                       class="text-pink-600 hover:text-pink-700 text-xs">
+                        Découvrir →
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>

@@ -4,161 +4,772 @@
 
 {% block body %}
 <div class="min-h-screen bg-gray-50">
-    <div class="flex">
-        <!-- Sidebar -->
-        {% include '_sidebar.html.twig' %}
+    <!-- Espaceur pour éviter que la navbar cache le contenu -->
+    <div class="pt-16 md:pt-20"></div>
+    
+    <div class="px-4 py-6 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         
-        <!-- Main Content -->
-        <div class="flex-1 lg:ml-2 xl:ml-8">
-            <div class="px-2 py-4 sm:px-4 lg:px-6">
-                <!-- Header intégré -->
-                <div class="mb-6">
-                    <h1 class="text-2xl font-bold text-gray-900">{{ formation.nom }}</h1>
-                    <p class="text-sm text-gray-600">Détails de la formation</p>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    
-                    <!-- Informations principales -->
-                    <div class="bg-white rounded-lg shadow">
-                        <div class="px-6 py-4 border-b border-gray-200">
-                            <h3 class="text-lg font-medium text-gray-900">
-                                📋 Informations générales
-                            </h3>
-                        </div>
-                        <div class="px-6 py-4">
-                            <div class="space-y-4">
-                                <div class="flex justify-between items-start">
-                                    <span class="text-sm font-medium text-gray-600">ID:</span>
-                                    <span class="text-sm text-gray-900 font-mono">#{{ formation.id }}</span>
-                                </div>
-                                
-                                <div class="flex justify-between items-start">
-                                    <span class="text-sm font-medium text-gray-600">Nom:</span>
-                                    <span class="text-sm text-gray-900 font-medium">{{ formation.nom }}</span>
-                                </div>
-                                
-                                <div class="flex justify-between items-start">
-                                    <span class="text-sm font-medium text-gray-600">Prix:</span>
-                                    <span class="text-lg font-bold text-green-600">{{ formation.cout|number_format(0, ',', ' ') }} FCFA</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Image de la formation -->
-                    {% if formation.imageName %}
-                    <div class="bg-white rounded-lg shadow">
-                        <div class="px-6 py-4 border-b border-gray-200">
-                            <h3 class="text-lg font-medium text-gray-900">
-                                📷 Image de la formation
-                            </h3>
-                        </div>
-                        <div class="px-6 py-4">
-                            <div class="aspect-video bg-gray-100 rounded-lg overflow-hidden">
-                                <img src="{{ vich_uploader_asset(formation, 'image') }}" 
-                                     alt="{{ formation.nom }}"
-                                     class="w-full h-full object-cover">
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
-
-                    <!-- Description -->
-                    {% if formation.description %}
-                    <div class="bg-white rounded-lg shadow">
-                        <div class="px-6 py-4 border-b border-gray-200">
-                            <h3 class="text-lg font-medium text-gray-900">
-                                📝 Description
-                            </h3>
-                        </div>
-                        <div class="px-6 py-4">
-                            <p class="text-gray-700 leading-relaxed">{{ formation.description|nl2br }}</p>
-                        </div>
-                    </div>
-                    {% endif %}
-
-                    <!-- Objectifs -->
-                    {% if formation.objectif %}
-                    <div class="bg-white rounded-lg shadow">
-                        <div class="px-6 py-4 border-b border-gray-200">
-                            <h3 class="text-lg font-medium text-gray-900">
-                                🎯 Objectifs
-                            </h3>
-                        </div>
-                        <div class="px-6 py-4">
-                            <p class="text-gray-700 leading-relaxed">{{ formation.objectif|nl2br }}</p>
-                        </div>
-                    </div>
-                    {% endif %}
-
-                    <!-- Prérequis -->
-                    {% if formation.prerequis %}
-                    <div class="bg-white rounded-lg shadow">
-                        <div class="px-6 py-4 border-b border-gray-200">
-                            <h3 class="text-lg font-medium text-gray-900">
-                                📚 Prérequis
-                            </h3>
-                        </div>
-                        <div class="px-6 py-4">
-                            <p class="text-gray-700 leading-relaxed">{{ formation.prerequis|nl2br }}</p>
-                        </div>
-                    </div>
-                    {% endif %}
-
-                    <!-- Programme -->
-                    <div class="bg-white rounded-lg shadow lg:col-span-2">
-                        <div class="px-6 py-4 border-b border-gray-200">
-                            <h3 class="text-lg font-medium text-gray-900">
-                                📋 Programme de formation
-                            </h3>
-                        </div>
-                        <div class="px-6 py-4">
-                            <div class="prose prose-sm max-w-none text-gray-700">
-                                {{ formation.programme|nl2br }}
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Suivi et évaluation -->
-                    <div class="bg-white rounded-lg shadow lg:col-span-2">
-                        <div class="px-6 py-4 border-b border-gray-200">
-                            <h3 class="text-lg font-medium text-gray-900">
-                                📊 Suivi et évaluation
-                            </h3>
-                        </div>
-                        <div class="px-6 py-4">
-                            <div class="prose prose-sm max-w-none text-gray-700">
-                                {{ formation.suivi|nl2br }}
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-
-                <!-- Actions -->
-                <div class="mt-6 flex justify-between items-center">
-                    <a href="{{ path('app_dashboard_formation') }}" 
-                       class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
-                        ← Retour à la liste
+        <!-- Breadcrumb -->
+        <nav class="flex mb-6" aria-label="Breadcrumb">
+            <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                <li class="inline-flex items-center">
+                    <a href="{{ path('app_formation_index') }}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-pink-600">
+                        🎓 Formations
                     </a>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                        <svg class="w-3 h-3 mx-1 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="ml-1 text-sm font-medium text-gray-500">{{ formation.nom }}</span>
+                    </div>
+                </li>
+            </ol>
+        </nav>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Main Content -->
+            <div class="lg:col-span-2 space-y-8">
+                
+                <!-- Header Section -->
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                    {% if formation.imageName %}
+                        <div class="h-64 bg-gray-200">
+                            <img src="{{ vich_uploader_asset(formation, 'image') }}" 
+                                 alt="{{ formation.nom }}"
+                                 class="w-full h-full object-cover">
+                        </div>
+                    {% endif %}
                     
-                    <div class="flex space-x-3">
-                        <a href="{{ path('app_formation_edit', {'id': formation.id}) }}" 
-                           class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-pink-600 border border-transparent rounded-lg hover:bg-pink-700">
-                            ✏️ Modifier
-                        </a>
+                    <div class="p-6">
+                        <div class="flex items-start justify-between mb-4">
+                            <h1 class="text-3xl font-bold text-gray-900">{{ formation.nom }}</h1>
+                            {% if not formation.isAvailable %}
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
+                                    Non disponible
+                                </span>
+                            {% elseif formation.isFree %}
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                                    Gratuit
+                                </span>
+                            {% endif %}
+                        </div>
                         
-                        <div class="bg-white rounded-lg shadow p-4">
-                            <div class="flex items-center space-x-3">
-                                <span class="text-sm text-gray-600">Supprimer:</span>
-                                {{ include('formation/_delete_form.html.twig') }}
+                        <!-- Meta Information -->
+                        <div class="flex flex-wrap gap-4 mb-6">
+                            {% if formation.level %}
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                                    📊 {{ formation.level|capitalize }}
+                                </span>
+                            {% endif %}
+                            {% if formation.theme %}
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800">
+                                    🏷️ {{ formation.theme|replace({'_': ' '})|title }}
+                                </span>
+                            {% endif %}
+                            {% if formation.totalDuration > 0 %}
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
+                                    ⏱️ {{ (formation.totalDuration / 60)|round }}h {{ formation.totalDuration % 60 }}min
+                                </span>
+                            {% endif %}
+                            {% if formation.averageRating %}
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
+                                    ⭐ {{ formation.averageRating }}/5 ({{ formation.approvedReviews|length }} avis)
+                                </span>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Description -->
+                        {% if formation.description %}
+                            <p class="text-gray-700 leading-relaxed mb-6">{{ formation.description|nl2br }}</p>
+                        {% endif %}
+
+                        <!-- YouTube Video Preview -->
+                        {% if formation.youtubeVideoId %}
+                            <div class="mb-6">
+                                <h3 class="text-lg font-semibold mb-3">🎥 Aperçu de la formation</h3>
+                                <div class="relative aspect-video bg-gray-100 rounded-lg overflow-hidden">
+                                    <iframe 
+                                        src="https://www.youtube.com/embed/{{ formation.youtubeVideoId }}" 
+                                        frameborder="0" 
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                        allowfullscreen
+                                        class="w-full h-full">
+                                    </iframe>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Modules Section -->
+                {% if modules is not empty %}
+                    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h2 class="text-xl font-bold text-gray-900">📚 Contenu de la formation</h2>
+                        </div>
+                        <div class="divide-y divide-gray-200">
+                            {% for module in modules %}
+                                <div class="p-6">
+                                    <div class="flex items-start justify-between">
+                                        <div class="flex-1">
+                                            <div class="flex items-center mb-2">
+                                                <span class="inline-flex items-center justify-center w-6 h-6 bg-pink-100 text-pink-600 rounded-full text-sm font-semibold mr-3">
+                                                    {{ module.position }}
+                                                </span>
+                                                <h3 class="text-lg font-semibold text-gray-900">{{ module.title }}</h3>
+                                            </div>
+                                            {% if module.description %}
+                                                <p class="text-gray-600 mb-3 ml-9">{{ module.description|nl2br }}</p>
+                                            {% endif %}
+                                        </div>
+                                        <div class="ml-4 flex flex-col items-end">
+                                            <span class="text-sm text-gray-500">{{ module.formattedDuration }}</span>
+                                            {% if module.youtubeVideoId %}
+                                                <button data-video-id="{{ module.youtubeVideoId }}" 
+                                                        class="mt-2 inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-pink-700 bg-pink-100 hover:bg-pink-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 play-video-btn">
+                                                    ▶️ Voir la vidéo
+                                                </button>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+
+                <!-- Objectives & Prerequisites -->
+                <div class="grid md:grid-cols-2 gap-6">
+                    {% if formation.objectif %}
+                        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                            <div class="px-6 py-4 border-b border-gray-200">
+                                <h3 class="text-lg font-bold text-gray-900">🎯 Objectifs pédagogiques</h3>
+                            </div>
+                            <div class="p-6">
+                                <p class="text-gray-700 leading-relaxed">{{ formation.objectif|nl2br }}</p>
                             </div>
                         </div>
+                    {% endif %}
+
+                    {% if formation.prerequis %}
+                        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                            <div class="px-6 py-4 border-b border-gray-200">
+                                <h3 class="text-lg font-bold text-gray-900">📋 Prérequis</h3>
+                            </div>
+                            <div class="p-6">
+                                <p class="text-gray-700 leading-relaxed">{{ formation.prerequis|nl2br }}</p>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Target Audience -->
+                {% if formation.targetAudience %}
+                    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-bold text-gray-900">👥 Public cible</h3>
+                        </div>
+                        <div class="p-6">
+                            <p class="text-gray-700 leading-relaxed">{{ formation.targetAudience|nl2br }}</p>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <!-- Resources -->
+                {% if resources is not empty %}
+                    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-bold text-gray-900">📎 Ressources téléchargeables</h3>
+                        </div>
+                        <div class="p-6">
+                            <div class="grid gap-4">
+                                {% for resource in resources %}
+                                    <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
+                                        <div class="flex items-center">
+                                            <span class="text-2xl mr-3">{{ resource.typeIcon }}</span>
+                                            <div>
+                                                <h4 class="font-medium text-gray-900">{{ resource.title }}</h4>
+                                                {% if resource.description %}
+                                                    <p class="text-sm text-gray-600">{{ resource.description }}</p>
+                                                {% endif %}
+                                                <p class="text-xs text-gray-500">{{ resource.formattedFileSize }}</p>
+                                            </div>
+                                        </div>
+                                        <a href="{{ path('app_formation_download_resource', {id: formation.id, resourceId: resource.id}) }}" 
+                                           class="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700">
+                                            📥 Télécharger
+                                        </a>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <!-- Reviews Section -->
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-bold text-gray-900">⭐ Avis des participants</h3>
+                            {% if is_granted('ROLE_USER') %}
+                                <button id="add-review-btn" class="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-pink-700 bg-pink-100 hover:bg-pink-200">
+                                    ✍️ Donner mon avis
+                                </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    {% if reviewStats.total > 0 %}
+                        <!-- Review Stats -->
+                        <div class="p-6 border-b border-gray-200">
+                            <div class="flex items-center mb-4">
+                                <div class="text-3xl font-bold text-gray-900 mr-2">{{ reviewStats.average }}</div>
+                                <div>
+                                    <div class="flex items-center mb-1">
+                                        {% for i in 1..5 %}
+                                            <svg class="w-4 h-4 {{ i <= reviewStats.average ? 'text-yellow-400' : 'text-gray-300' }}" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                            </svg>
+                                        {% endfor %}
+                                    </div>
+                                    <div class="text-sm text-gray-600">{{ reviewStats.total }} avis</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Star Distribution -->
+                            <div class="space-y-2">
+                                {% for star in 5..1 %}
+                                    <div class="flex items-center">
+                                        <span class="text-sm text-gray-600 w-8">{{ star }}⭐</span>
+                                        <div class="flex-1 mx-3 bg-gray-200 rounded-full h-2">
+                                            {% set percentage = reviewStats.total > 0 ? (reviewStats[star] / reviewStats.total * 100) : 0 %}
+                                            <div class="bg-yellow-400 h-2 rounded-full" style="width: {{ percentage }}%"></div>
+                                        </div>
+                                        <span class="text-sm text-gray-600 w-8">{{ reviewStats[star] }}</span>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Individual Reviews -->
+                    <div class="divide-y divide-gray-200">
+                        {% if reviews is empty %}
+                            <div class="p-6 text-center text-gray-500">
+                                Aucun avis pour le moment. Soyez le premier à donner votre avis !
+                            </div>
+                        {% else %}
+                            {% for review in reviews %}
+                                <div class="p-6">
+                                    <div class="flex items-start">
+                                        <div class="flex-shrink-0">
+                                            <div class="w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center">
+                                                <span class="text-pink-600 font-semibold">{{ review.user.prenom|first }}{{ review.user.nom|first }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="ml-4 flex-1">
+                                            <div class="flex items-center justify-between">
+                                                <div>
+                                                    <h4 class="text-sm font-medium text-gray-900">{{ review.user.prenom }} {{ review.user.nom|first }}.</h4>
+                                                    <div class="flex items-center mt-1">
+                                                        {% for i in 1..5 %}
+                                                            <svg class="w-4 h-4 {{ i <= review.rating ? 'text-yellow-400' : 'text-gray-300' }}" fill="currentColor" viewBox="0 0 20 20">
+                                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                                            </svg>
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                                <span class="text-sm text-gray-500">{{ review.createdAt|date('d/m/Y') }}</span>
+                                            </div>
+                                            {% if review.comment %}
+                                                <p class="mt-2 text-gray-700">{{ review.comment|nl2br }}</p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="lg:col-span-1 space-y-6">
+                
+                <!-- Price & CTA -->
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden sticky top-6">
+                    <div class="p-6">
+                        <div class="text-center mb-6">
+                            {% if formation.isFree %}
+                                <div class="text-3xl font-bold text-green-600 mb-2">Gratuit</div>
+                            {% else %}
+                                <div class="text-3xl font-bold text-gray-900 mb-2">{{ formation.cout|number_format(0, ',', ' ') }} FCFA</div>
+                            {% endif %}
+                            
+                            <!-- Access Information -->
+                            {% if formation.accessType == 'relative' and formation.accessDuration %}
+                                <div class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 mb-2">
+                                    📅 Accès pendant {{ formation.accessDuration }} jours après inscription
+                                </div>
+                            {% elseif formation.accessType == 'fixed' and formation.startDate and formation.endDate %}
+                                <div class="bg-orange-50 border border-orange-200 rounded-lg p-3 mb-4">
+                                    <div class="flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-orange-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                        </svg>
+                                        <div class="text-center">
+                                            <p class="text-sm font-semibold text-orange-800">📅 Formation en session fixe</p>
+                                            <p class="text-xs text-orange-700 mt-1">
+                                                Du <span class="font-semibold">{{ formation.startDate|date('d/m/Y') }}</span> 
+                                                au <span class="font-semibold">{{ formation.endDate|date('d/m/Y') }}</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        {% if formation.isAvailable %}
+                            {% if is_granted('ROLE_USER') %}
+                                {% if formation.isFree %}
+                                    <button id="enroll-free-btn" data-formation-id="{{ formation.id }}"
+                                            class="w-full inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                                        🎉 S'inscrire gratuitement
+                                    </button>
+                                {% else %}
+                                    <!-- Payment Options (Always visible) -->
+                                    <div class="space-y-3">
+                                        <h4 class="text-sm font-medium text-gray-700 mb-3">Choisir votre méthode de paiement :</h4>
+                                        
+                                        <!-- Access Type Selection based on Formation configuration -->
+                                        {% if formation.accessType == 'relative' %}
+                                            <div class="mb-4">
+                                                <label class="block text-sm font-medium text-gray-700 mb-2">Accès à la formation :</label>
+                                                <div class="p-3 bg-blue-50 rounded-md">
+                                                    <p class="text-sm text-blue-800">
+                                                        <strong>Accès limité :</strong> {{ formation.accessDuration }} jours à partir de l'inscription
+                                                        ({{ formation.Cout }} F CFA)
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        {% elseif formation.accessType == 'fixed' %}
+                                            <div class="mb-4">
+                                                <label class="block text-sm font-medium text-gray-700 mb-2">Période de formation :</label>
+                                                <div class="p-3 bg-green-50 rounded-md">
+                                                    <p class="text-sm text-green-800">
+                                                        <strong>Session fixe :</strong>
+                                                        Du {{ formation.startDate|date('d/m/Y') }} au {{ formation.endDate|date('d/m/Y') }}
+                                                        ({{ formation.Cout }} F CFA)
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        {% else %}
+                                            <div class="mb-4">
+                                                <label class="block text-sm font-medium text-gray-700 mb-2">Accès à la formation :</label>
+                                                <div class="p-3 bg-purple-50 rounded-md">
+                                                    <p class="text-sm text-purple-800">
+                                                        <strong>Accès illimité</strong> à la formation
+                                                        ({{ formation.Cout }} F CFA)
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                        
+                                        {% set accessTypeValue = 'configured' %}
+                                        {% if formation.accessType == 'relative' %}
+                                            {% set accessTypeValue = 'configured_' ~ formation.accessDuration ~ '_days' %}
+                                        {% elseif formation.accessType == 'fixed' %}
+                                            {% set accessTypeValue = 'fixed_session' %}
+                                        {% else %}
+                                            {% set accessTypeValue = 'unlimited' %}
+                                        {% endif %}
+
+                                        <a href="{{ path('generic_payment_init', {
+                                                provider: 'fedapay',
+                                                paymentType: 'formation_full',
+                                                entityType: 'formation',
+                                                entityId: formation.id
+                                            }) }}?access_type={{ accessTypeValue }}"
+                                           class="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
+                                            <span class="text-2xl mr-3">🏦</span>
+                                            <div class="text-left">
+                                                <div class="font-medium">FedaPay</div>
+                                                <div class="text-sm text-gray-500">Mobile Money, Cartes bancaires</div>
+                                            </div>
+                                        </a>
+
+                                        <a href="{{ path('generic_payment_init', {
+                                                provider: 'feexpay',
+                                                paymentType: 'formation_full',
+                                                entityType: 'formation',
+                                                entityId: formation.id
+                                            }) }}?access_type={{ accessTypeValue }}"
+                                           class="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
+                                            <span class="text-2xl mr-3">💰</span>
+                                            <div class="text-left">
+                                                <div class="font-medium">FeexPay</div>
+                                                <div class="text-sm text-gray-500">Mobile Money, Paiements locaux</div>
+                                            </div>
+                                        </a>
+
+                                    </div>
+                                {% endif %}
+                            {% else %}
+                                <a href="{{ path('app_login') }}" 
+                                   class="w-full inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
+                                    🔐 Se connecter pour s'inscrire
+                                </a>
+                            {% endif %}
+                        {% else %}
+                            <button disabled class="w-full inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-400 bg-gray-100 cursor-not-allowed">
+                                Formation non disponible
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Instructor Info -->
+                {% if formation.instructorName %}
+                    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-bold text-gray-900">👨‍🏫 Votre formateur</h3>
+                        </div>
+                        <div class="p-6">
+                            {% if formation.instructorImageName %}
+                                <div class="w-16 h-16 mx-auto mb-4 rounded-full overflow-hidden">
+                                    <img src="{{ vich_uploader_asset(formation, 'instructorImage') }}" 
+                                         alt="{{ formation.instructorName }}" 
+                                         class="w-full h-full object-cover">
+                                </div>
+                            {% endif %}
+                            <h4 class="text-center font-semibold text-gray-900 mb-2">{{ formation.instructorName }}</h4>
+                            {% if formation.instructorBio %}
+                                <p class="text-sm text-gray-600 leading-relaxed">{{ formation.instructorBio|nl2br }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+
+                <!-- Formation Details -->
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-bold text-gray-900">ℹ️ Détails</h3>
+                    </div>
+                    <div class="p-6 space-y-4">
+                        {% if formation.level %}
+                            <div class="flex justify-between">
+                                <span class="text-sm font-medium text-gray-600">Niveau:</span>
+                                <span class="text-sm text-gray-900">{{ formation.level|capitalize }}</span>
+                            </div>
+                        {% endif %}
+                        
+                        {% if formation.theme %}
+                            <div class="flex justify-between">
+                                <span class="text-sm font-medium text-gray-600">Thématique:</span>
+                                <span class="text-sm text-gray-900">{{ formation.theme|replace({'_': ' '})|title }}</span>
+                            </div>
+                        {% endif %}
+                        
+                        {% if formation.totalDuration > 0 %}
+                            <div class="flex justify-between">
+                                <span class="text-sm font-medium text-gray-600">Durée totale:</span>
+                                <span class="text-sm text-gray-900">{{ (formation.totalDuration / 60)|round }}h {{ formation.totalDuration % 60 }}min</span>
+                            </div>
+                        {% endif %}
+                        
+                        {% if modules is not empty %}
+                            <div class="flex justify-between">
+                                <span class="text-sm font-medium text-gray-600">Modules:</span>
+                                <span class="text-sm text-gray-900">{{ modules|length }} modules</span>
+                            </div>
+                        {% endif %}
+                        
+                        {% if resources is not empty %}
+                            <div class="flex justify-between">
+                                <span class="text-sm font-medium text-gray-600">Ressources:</span>
+                                <span class="text-sm text-gray-900">{{ resources|length }} fichiers</span>
+                            </div>
+                        {% endif %}
+                        
+                        {% if formation.accessType %}
+                            <div class="flex justify-between">
+                                <span class="text-sm font-medium text-gray-600">Type d'accès:</span>
+                                <span class="text-sm text-gray-900">
+                                    {% if formation.accessType == 'relative' %}
+                                        📅 Flexible
+                                    {% else %}
+                                        🗓️ Session fixe
+                                    {% endif %}
+                                </span>
+                            </div>
+                        {% endif %}
+                        
+                        {% if formation.averageRating %}
+                            <div class="flex justify-between">
+                                <span class="text-sm font-medium text-gray-600">Note moyenne:</span>
+                                <span class="text-sm text-gray-900">⭐ {{ formation.averageRating }}/5</span>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Review Modal -->
+{% if is_granted('ROLE_USER') %}
+<div id="review-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Donner votre avis</h3>
+            <form id="review-form">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Note</label>
+                    <div class="flex space-x-1" id="rating-stars">
+                        {% for i in 1..5 %}
+                            <button type="button" data-rating="{{ i }}" class="star-btn w-8 h-8 text-gray-300 hover:text-yellow-400 focus:outline-none">
+                                <svg fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                </svg>
+                            </button>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="comment" class="block text-sm font-medium text-gray-700 mb-2">Commentaire (optionnel)</label>
+                    <textarea id="comment" rows="4" class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-pink-500 focus:border-pink-500" placeholder="Partagez votre expérience avec cette formation..."></textarea>
+                </div>
+                
+                <div class="flex justify-end space-x-3">
+                    <button type="button" id="cancel-review" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                        Annuler
+                    </button>
+                    <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-pink-600 border border-transparent rounded-md hover:bg-pink-700">
+                        Publier l'avis
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Video Modal -->
+<div id="video-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-75 overflow-y-auto h-full w-full z-50">
+    <div class="relative top-20 mx-auto p-5 border w-full max-w-4xl shadow-lg rounded-md bg-white">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-medium text-gray-900">Vidéo du module</h3>
+            <button id="close-video" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+        <div class="relative aspect-video bg-gray-100 rounded-lg overflow-hidden">
+            <iframe id="video-iframe" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="w-full h-full"></iframe>
+        </div>
+    </div>
+</div>
+
+<script>
+// Review functionality
+{% if is_granted('ROLE_USER') %}
+document.addEventListener('DOMContentLoaded', function() {
+    const addReviewBtn = document.getElementById('add-review-btn');
+    const reviewModal = document.getElementById('review-modal');
+    const cancelReviewBtn = document.getElementById('cancel-review');
+    const reviewForm = document.getElementById('review-form');
+    const starBtns = document.querySelectorAll('.star-btn');
+    let selectedRating = 0;
+
+    // Open modal
+    addReviewBtn?.addEventListener('click', function() {
+        reviewModal.classList.remove('hidden');
+    });
+
+    // Close modal
+    cancelReviewBtn?.addEventListener('click', function() {
+        reviewModal.classList.add('hidden');
+        resetForm();
+    });
+
+    // Star rating
+    starBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            selectedRating = parseInt(this.dataset.rating);
+            updateStars();
+        });
+
+        btn.addEventListener('mouseenter', function() {
+            const rating = parseInt(this.dataset.rating);
+            highlightStars(rating);
+        });
+    });
+
+    document.getElementById('rating-stars')?.addEventListener('mouseleave', function() {
+        updateStars();
+    });
+
+    function highlightStars(rating) {
+        starBtns.forEach((btn, index) => {
+            if (index < rating) {
+                btn.classList.remove('text-gray-300');
+                btn.classList.add('text-yellow-400');
+            } else {
+                btn.classList.remove('text-yellow-400');
+                btn.classList.add('text-gray-300');
+            }
+        });
+    }
+
+    function updateStars() {
+        highlightStars(selectedRating);
+    }
+
+    function resetForm() {
+        selectedRating = 0;
+        updateStars();
+        document.getElementById('comment').value = '';
+    }
+
+    // Submit review
+    reviewForm?.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        if (selectedRating === 0) {
+            alert('Veuillez sélectionner une note');
+            return;
+        }
+
+        const formData = {
+            rating: selectedRating,
+            comment: document.getElementById('comment').value
+        };
+
+        fetch('{{ path("app_formation_add_review", {id: formation.id}) }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                reviewModal.classList.add('hidden');
+                location.reload(); // Reload to show the new review
+            } else {
+                alert(data.error || 'Une erreur est survenue');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Une erreur est survenue');
+        });
+    });
+});
+{% endif %}
+
+<script>
+// Video functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const videoModal = document.getElementById('video-modal');
+    const videoIframe = document.getElementById('video-iframe');
+    const closeVideoBtn = document.getElementById('close-video');
+    const playVideoBtns = document.querySelectorAll('.play-video-btn');
+
+    // Open video modal
+    playVideoBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const videoId = this.dataset.videoId;
+            videoIframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+            videoModal.classList.remove('hidden');
+        });
+    });
+
+    // Close video modal
+    closeVideoBtn?.addEventListener('click', function() {
+        videoModal.classList.add('hidden');
+        videoIframe.src = '';
+    });
+
+    // Close modal on backdrop click
+    videoModal?.addEventListener('click', function(e) {
+        if (e.target === videoModal) {
+            videoModal.classList.add('hidden');
+            videoIframe.src = '';
+        }
+    });
+
+    // Payment functionality
+    {% if is_granted('ROLE_USER') %}
+    console.log('User is granted, setting up payment functionality');
+    const enrollFreeBtn = document.getElementById('enroll-free-btn');
+
+    // Payment buttons are now direct links, no JavaScript needed for payments
+
+    // Handle free enrollment
+    enrollFreeBtn?.addEventListener('click', function() {
+        const formationId = this.dataset.formationId;
+        
+        // Show loading state
+        this.innerHTML = '<div class="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full mx-auto"></div>';
+        this.disabled = true;
+        
+        enrollForFree(formationId, this);
+    });
+
+    // initiatePayment function removed - using direct links now
+
+    function enrollForFree(formationId, button) {
+        fetch(`/formation/enroll-free/${formationId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Inscription réussie ! Vous pouvez maintenant accéder à la formation.');
+                // Redirect to user dashboard or formation
+                if (data.redirect_url) {
+                    window.location.href = data.redirect_url;
+                } else {
+                    location.reload();
+                }
+            } else {
+                throw new Error(data.error || 'Erreur lors de l\'inscription');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Erreur : ' + error.message);
+            
+            // Restore button state
+            button.innerHTML = '🎉 S\'inscrire gratuitement';
+            button.disabled = false;
+        });
+    }
+
+    // Update price display when access type changes
+    accessTypeSelect?.addEventListener('change', function() {
+        const basePrice = {{ formation.cout }};
+        const selectedOption = this.options[this.selectedIndex];
+        const newPrice = selectedOption.text.match(/\d+/)[0];
+        
+        // Update the main price display if needed
+        // This could be enhanced to show the new price dynamically
+    });
+    {% else %}
+    console.log('User not granted, payment functionality disabled');
+    {% endif %}
+});
+</script>
 {% endblock %}

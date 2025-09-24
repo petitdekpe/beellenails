@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Votre formation expire dans 3 jours !</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f8fafc;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #f59e0b, #dc2626);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .header .emoji {
+            font-size: 48px;
+            margin-bottom: 10px;
+            display: block;
+        }
+        .content {
+            padding: 30px;
+        }
+        .urgent-alert {
+            background: #fef2f2;
+            border: 2px solid #dc2626;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        .urgent-alert .icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+            display: block;
+        }
+        .urgent-alert h2 {
+            color: #dc2626;
+            margin: 0 0 10px 0;
+            font-size: 22px;
+            font-weight: bold;
+        }
+        .urgent-alert p {
+            color: #7f1d1d;
+            margin: 0;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        .countdown-box {
+            background: linear-gradient(135deg, #f59e0b, #dc2626);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .countdown-box .number {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+        }
+        .countdown-box .text {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .formation-info {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-left: 4px solid #f59e0b;
+        }
+        .formation-info h3 {
+            margin: 0 0 15px 0;
+            color: #1f2937;
+            font-size: 18px;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .info-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        .info-label {
+            font-weight: 600;
+            color: #6b7280;
+        }
+        .info-value {
+            color: #1f2937;
+            font-weight: 600;
+        }
+        .progress-bar {
+            background: #e5e7eb;
+            border-radius: 10px;
+            height: 10px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background: linear-gradient(90deg, #f59e0b, #dc2626);
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+        .button {
+            display: inline-block;
+            background: linear-gradient(135deg, #dc2626, #991b1b);
+            color: white;
+            text-decoration: none;
+            padding: 18px 35px;
+            border-radius: 8px;
+            font-weight: 700;
+            text-align: center;
+            margin: 25px 0;
+            font-size: 16px;
+            transition: opacity 0.3s ease;
+            box-shadow: 0 4px 6px rgba(220, 38, 38, 0.3);
+        }
+        .button:hover {
+            opacity: 0.9;
+        }
+        .tips-box {
+            background: #fffbeb;
+            border: 1px solid #f59e0b;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .tips-box h4 {
+            color: #92400e;
+            margin: 0 0 15px 0;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .tips-box ul {
+            margin: 0;
+            padding-left: 20px;
+            color: #92400e;
+        }
+        .tips-box li {
+            margin-bottom: 8px;
+        }
+        .footer {
+            background: #f8fafc;
+            padding: 20px 30px;
+            text-align: center;
+            font-size: 14px;
+            color: #6b7280;
+            border-top: 1px solid #e5e7eb;
+        }
+        .footer a {
+            color: #dc2626;
+            text-decoration: none;
+        }
+        @media (max-width: 600px) {
+            .container {
+                margin: 10px;
+                border-radius: 8px;
+            }
+            .header, .content {
+                padding: 20px;
+            }
+            .info-row {
+                flex-direction: column;
+                gap: 5px;
+            }
+            .countdown-box .number {
+                font-size: 36px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <span class="emoji">🚨</span>
+            <h1>Attention ! Expiration imminente</h1>
+            <p>Plus que 3 jours pour terminer votre formation</p>
+        </div>
+        
+        <div class="content">
+            <div class="urgent-alert">
+                <span class="icon">⚠️</span>
+                <h2>Urgence - 3 jours restants !</h2>
+                <p>Votre accès expire le <strong>{{ expiresAt|date('d/m/Y à H:i') }}</strong></p>
+            </div>
+            
+            <div class="countdown-box">
+                <span class="number">3</span>
+                <span class="text">JOURS RESTANTS</span>
+            </div>
+            
+            <p>Bonjour <strong>{{ user.prenom }}</strong>,</p>
+            
+            <p><strong>Il ne vous reste plus que 3 jours</strong> pour accéder à votre formation. C'est le moment de vous concentrer sur votre apprentissage pour ne pas perdre votre accès !</p>
+            
+            <div class="formation-info">
+                <h3>📚 {{ formation.nom }}</h3>
+                
+                <div class="info-row">
+                    <span class="info-label">Progression actuelle :</span>
+                    <span class="info-value" style="color: {% if progressPercentage < 50 %}#dc2626{% elseif progressPercentage < 80 %}#f59e0b{% else %}#059669{% endif %};">{{ progressPercentage }}%</span>
+                </div>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: {{ progressPercentage }}%"></div>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label">Date d'expiration :</span>
+                    <span class="info-value" style="color: #dc2626;">{{ expiresAt|date('d/m/Y à H:i') }}</span>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label">Temps restant :</span>
+                    <span class="info-value" style="color: #dc2626; font-weight: bold;">{{ enrollment.timeUntilExpiration }}</span>
+                </div>
+            </div>
+            
+            <div style="text-align: center;">
+                <a href="{{ url('app_user_learning_formation_detail', {id: enrollment.id}) }}" class="button">
+                    🔥 CONTINUER MAINTENANT
+                </a>
+            </div>
+            
+            <div class="tips-box">
+                <h4>💡 Conseils pour optimiser vos 3 derniers jours :</h4>
+                <ul>
+                    <li>Consacrez <strong>au moins 1-2 heures par jour</strong> à votre formation</li>
+                    <li>Concentrez-vous sur les modules les plus importants</li>
+                    <li>Prenez des notes pour retenir les points clés</li>
+                    <li>N'hésitez pas à revoir les parties difficiles</li>
+                </ul>
+            </div>
+            
+            {% if progressPercentage < 100 %}
+            <div style="background: #fee2e2; border-left: 4px solid #dc2626; padding: 15px; margin: 20px 0; border-radius: 0 8px 8px 0;">
+                <p style="margin: 0; color: #7f1d1d; font-weight: 600;">
+                    🎯 <strong>Objectif :</strong> Terminez votre formation d'ici {{ expiresAt|date('d/m/Y') }} pour obtenir votre certificat et garder un accès permanent au contenu !
+                </p>
+            </div>
+            {% endif %}
+            
+            <p>Si vous avez des difficultés ou besoin d'aide pour terminer à temps, contactez-nous rapidement.</p>
+            
+            <p><strong>Ne laissez pas cette opportunité s'échapper !</strong><br>
+            L'équipe BelleNails</p>
+        </div>
+        
+        <div class="footer">
+            <p>
+                <a href="{{ url('app_user_learning_dashboard') }}">Mon espace d'apprentissage</a> | 
+                <a href="{{ url('app_dashboard') }}">Mon compte</a>
+            </p>
+            <p>BelleNails - Formation professionnelle en prothésie ongulaire</p>
+            <p style="font-size: 12px; color: #9ca3af; margin-top: 10px;">
+                Cet email a été envoyé automatiquement. Merci de ne pas y répondre.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

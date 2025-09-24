@@ -18,26 +18,10 @@
         Nous sommes impatients de vous accueillir pour ce moment privilégié !
     </div>
 
-    <div class="info-box">
-        <div class="info-title">
-            🗓️ Votre rendez-vous de demain
-        </div>
-        <div class="info-item">
-            <span class="info-label">Prestation :</span>
-            <span class="info-value">{{ rendezvous.prestation.title }}</span>
-        </div>
-        <div class="info-item">
-            <span class="info-label">Date :</span>
-            <span class="info-value">{{ rendezvous.day|date('d/m/Y') }}</span>
-        </div>
-        <div class="info-item">
-            <span class="info-label">Heure :</span>
-            <span class="info-value">{{ rendezvous.creneau.startTime|date('H:i') }} - {{ rendezvous.creneau.endTime|date('H:i') }}</span>
-        </div>
-        <div class="info-item">
-            <span class="info-label">Durée estimée :</span>
-            <span class="info-value">{{ rendezvous.prestation.duration }} minutes</span>
-        </div>
+    <div class="content-text">
+        🗓️ <strong>Votre rendez-vous de demain :</strong> nous vous attendons pour votre prestation <strong>{{ rendezvous.prestation.title }}</strong> 
+        le <strong>{{ rendezvous.day|date('d/m/Y') }}</strong> de <strong>{{ rendezvous.creneau.startTime|date('H:i') }}</strong> à 
+        <strong>{{ rendezvous.creneau.endTime|date('H:i') }}</strong> (durée estimée : {{ rendezvous.prestation.duration }} minutes).
     </div>
 
     <div class="content-text">

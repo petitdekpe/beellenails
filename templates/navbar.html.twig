@@ -41,7 +41,7 @@
                     </li>
                 {% else %}
                     <li>
-                        <a href="{{ path('app_users') }}" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-red-500 md:p-0 {% if app.request.attributes.get('_route') == 'app_users' %}  md:text-red-500  {% endif %}">Mon Profil</a>
+                        <a href="{{ path('app_profile') }}" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-red-500 md:p-0 {% if app.request.attributes.get('_route') == 'app_profile' or app.request.attributes.get('_route') starts with 'app_user_learning' %}  md:text-red-500  {% endif %}">Mon Profil</a>
                     </li>
                 {% endif %}
             {% else %}

@@ -25,6 +25,20 @@ class PrestationRepository extends ServiceEntityRepository
         parent::__construct($registry, Prestation::class);
     }
 
+    /**
+     * Trouve toutes les prestations groupées par catégorie
+     * @return Prestation[]
+     */
+    public function findAllGroupedByCategory(): array
+    {
+        return $this->createQueryBuilder('p')
+            ->leftJoin('p.categoryPrestation', 'c')
+            ->orderBy('c.NomCategory', 'ASC')
+            ->addOrderBy('p.title', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
 //    /**
 //     * @return Prestation[] Returns an array of Prestation objects
 //     */

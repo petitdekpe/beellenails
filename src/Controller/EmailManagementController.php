@@ -51,17 +51,21 @@ class EmailManagementController extends AbstractController
 
                 foreach ($users as $user) {
                     try {
+                        // Personnaliser le message avec les données du client
+                        $personalizedMessage = $this->personalizeMessage($message, $user);
+                        $personalizedSubject = $this->personalizeMessage($subject, $user);
+                        
                         $email = (new Email())
                             ->from('beellenailscare@beellenails.com')
                             ->replyTo('murielahodode@gmail.com')
                             ->to($user->getEmail())
-                            ->subject($subject)
+                            ->subject($personalizedSubject)
                             ->html($this->renderView('emails/bulk_email.html.twig', [
                                 'user' => $user,
-                                'message' => $message,
-                                'subject' => $subject
+                                'message' => $personalizedMessage,
+                                'subject' => $personalizedSubject
                             ]))
-                            ->text(strip_tags($message)); // Version texte
+                            ->text(strip_tags($personalizedMessage)); // Version texte
                             
                         // Ajouter les headers anti-spam
                         $email->getHeaders()
@@ -108,5 +112,23 @@ class EmailManagementController extends AbstractController
             'clients' => $clients,
             'total_clients' => count($clients)
         ]);
+    }
+    
+    /**
+     * Personnalise le message en remplaçant les balises par les données du client
+     */
+    private function personalizeMessage(string $message, User $user): string
+    {
+        $replacements = [
+            '{{prenom}}' => $user->getPrenom() ?? '',
+            '{{nom}}' => $user->getNom() ?? '',
+            '{{nom_complet}}' => $user->getFullName() ?? '',
+            '{{email}}' => $user->getEmail() ?? '',
+            '{{telephone}}' => $user->getPhone() ?? '',
+            '{{date}}' => (new \DateTime())->format('d/m/Y'),
+            '{{heure}}' => (new \DateTime())->format('H:i'),
+        ];
+        
+        return str_replace(array_keys($replacements), array_values($replacements), $message);
     }
 }

@@ -1,0 +1,263 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ enrollment.formation.nom }} - Mon Apprentissage{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-gray-50">
+    <div class="pt-16 md:pt-20"></div>
+    
+    <div class="px-4 py-6 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div class="flex flex-col lg:flex-row gap-8">
+            
+            <!-- Sidebar -->
+            <div class="lg:w-80">
+                {% include 'user_learning/_sidebar.html.twig' %}
+            </div>
+
+            <!-- Main Content -->
+            <div class="flex-1 space-y-8">
+                
+                <!-- Formation Header -->
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                    <div class="p-6 border-b border-gray-200">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <h1 class="text-2xl font-bold text-gray-900 mb-2">{{ enrollment.formation.nom }}</h1>
+                                <div class="flex flex-wrap gap-3 mb-4">
+                                    {% if enrollment.formation.level %}
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                                            📊 {{ enrollment.formation.level|capitalize }}
+                                        </span>
+                                    {% endif %}
+                                    
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium 
+                                        {% if enrollment.status == 'active' %}bg-green-100 text-green-800{% 
+                                        elseif enrollment.status == 'completed' %}bg-purple-100 text-purple-800{% 
+                                        else %}bg-red-100 text-red-800{% endif %}">
+                                        {% if enrollment.status == 'active' %}✅ Active{% 
+                                        elseif enrollment.status == 'completed' %}🏆 Terminée{% 
+                                        else %}⚠️ Expirée{% endif %}
+                                    </span>
+                                    
+                                    {% if enrollment.expiresAt %}
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium 
+                                            {% if enrollment.daysUntilExpiration <= 3 %}bg-red-100 text-red-800{% 
+                                            elseif enrollment.daysUntilExpiration <= 7 %}bg-orange-100 text-orange-800{% 
+                                            else %}bg-blue-100 text-blue-800{% endif %}">
+                                            ⏰ {{ enrollment.timeUntilExpiration }}
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            {% if enrollment.status == 'completed' %}
+                                <a href="{{ path('app_user_learning_certificate', {enrollmentId: enrollment.id}) }}" 
+                                   class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700">
+                                    📜 {{ enrollment.certificateGenerated ? 'Télécharger certificat' : 'Générer certificat' }}
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Progress Section -->
+                    <div class="p-6">
+                        <div class="mb-6">
+                            <div class="flex justify-between items-center mb-2">
+                                <h3 class="text-lg font-semibold text-gray-900">📊 Progression générale</h3>
+                                <span class="text-2xl font-bold text-pink-600">{{ enrollment.progressPercentage }}%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-3 mb-2">
+                                <div class="bg-gradient-to-r from-pink-500 to-purple-600 h-3 rounded-full transition-all duration-500" 
+                                     style="width: {{ enrollment.progressPercentage }}%"></div>
+                            </div>
+                            <div class="flex justify-between text-sm text-gray-600">
+                                <span>{{ progressStats.completedModules }}/{{ progressStats.totalModules }} modules terminés</span>
+                                <span>{{ (progressStats.totalTimeSpent / 60)|round }} min d'étude</span>
+                            </div>
+                        </div>
+
+                        <!-- Stats Grid -->
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div class="text-center p-4 bg-blue-50 rounded-lg">
+                                <p class="text-2xl font-bold text-blue-600">{{ progressStats.totalModules }}</p>
+                                <p class="text-sm text-blue-800">Modules total</p>
+                            </div>
+                            <div class="text-center p-4 bg-green-50 rounded-lg">
+                                <p class="text-2xl font-bold text-green-600">{{ progressStats.completedModules }}</p>
+                                <p class="text-sm text-green-800">Terminés</p>
+                            </div>
+                            <div class="text-center p-4 bg-orange-50 rounded-lg">
+                                <p class="text-2xl font-bold text-orange-600">{{ progressStats.startedModules - progressStats.completedModules }}</p>
+                                <p class="text-sm text-orange-800">En cours</p>
+                            </div>
+                            <div class="text-center p-4 bg-gray-50 rounded-lg">
+                                <p class="text-2xl font-bold text-gray-600">{{ progressStats.totalModules - progressStats.startedModules }}</p>
+                                <p class="text-sm text-gray-800">Non commencés</p>
+                            </div>
+                        </div>
+
+                        {% if nextModule %}
+                            <div class="mt-6 p-4 bg-pink-50 border border-pink-200 rounded-lg">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h4 class="font-semibold text-pink-800">🎯 Prochain module</h4>
+                                        <p class="text-pink-700">{{ nextModule.module.title }}</p>
+                                    </div>
+                                    <a href="{{ path('app_user_learning_module', {enrollmentId: enrollment.id, moduleId: nextModule.module.id}) }}" 
+                                       class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700">
+                                        Continuer →
+                                    </a>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Modules List -->
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h2 class="text-xl font-bold text-gray-900">📚 Modules de formation</h2>
+                    </div>
+                    <div class="divide-y divide-gray-200">
+                        {% for moduleProgress in moduleProgresses %}
+                            {% set module = moduleProgress.module %}
+                            {% set status = moduleProgress.status %}
+                            
+                            <div class="p-6 hover:bg-gray-50 transition-colors">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-start flex-1">
+                                        <div class="flex-shrink-0 mr-4">
+                                            <div class="w-8 h-8 rounded-full flex items-center justify-center
+                                                {% if status == 'completed' %}bg-green-100 text-green-600{% 
+                                                elseif status == 'in_progress' %}bg-blue-100 text-blue-600{% 
+                                                else %}bg-gray-100 text-gray-600{% endif %}">
+                                                {% if status == 'completed' %}✅{% 
+                                                elseif status == 'in_progress' %}▶️{% 
+                                                else %}⭕{% endif %}
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="flex-1">
+                                            <div class="flex items-center mb-1">
+                                                <span class="inline-flex items-center justify-center w-6 h-6 bg-pink-100 text-pink-600 rounded-full text-sm font-semibold mr-3">
+                                                    {{ module.position }}
+                                                </span>
+                                                <h3 class="text-lg font-semibold text-gray-900">{{ module.title }}</h3>
+                                            </div>
+                                            
+                                            {% if module.description %}
+                                                <p class="text-gray-600 mb-2">{{ module.description }}</p>
+                                            {% endif %}
+                                            
+                                            <div class="flex items-center space-x-4 text-sm text-gray-500">
+                                                <span>⏱️ {{ module.formattedDuration }}</span>
+                                                {% if moduleProgress.timeSpent > 0 %}
+                                                    <span>📊 {{ moduleProgress.formattedTimeSpent }} étudiées</span>
+                                                {% endif %}
+                                                {% if moduleProgress.videoPosition > 0 %}
+                                                    <span>📍 Arrêt à {{ moduleProgress.formattedVideoPosition }}</span>
+                                                {% endif %}
+                                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
+                                                    {% if status == 'completed' %}bg-green-100 text-green-800{% 
+                                                    elseif status == 'in_progress' %}bg-blue-100 text-blue-800{% 
+                                                    else %}bg-gray-100 text-gray-800{% endif %}">
+                                                    {{ moduleProgress.statusLabel }}
+                                                </span>
+                                            </div>
+                                            
+                                            {% if status == 'in_progress' %}
+                                                <div class="mt-2">
+                                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                                        <div class="bg-blue-600 h-2 rounded-full" 
+                                                             style="width: {{ moduleProgress.completionPercentage }}%"></div>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="ml-4">
+                                        {% if enrollment.isAccessible %}
+                                            <a href="{{ path('app_user_learning_module', {enrollmentId: enrollment.id, moduleId: module.id}) }}" 
+                                               class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md 
+                                               {% if status == 'completed' %}text-green-700 bg-green-100 hover:bg-green-200{% 
+                                               elseif status == 'in_progress' %}text-blue-700 bg-blue-100 hover:bg-blue-200{% 
+                                               else %}text-pink-700 bg-pink-100 hover:bg-pink-200{% endif %}">
+                                                {% if status == 'completed' %}✅ Revoir{% 
+                                                elseif status == 'in_progress' %}▶️ Continuer{% 
+                                                else %}🚀 Commencer{% endif %}
+                                            </a>
+                                        {% else %}
+                                            <span class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-500 bg-gray-100 rounded-md">
+                                                🔒 Accès expiré
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Formation Information -->
+                {% if enrollment.formation.instructorName or enrollment.formation.resources|length > 0 %}
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    
+                    <!-- Instructor Info -->
+                    {% if enrollment.formation.instructorName %}
+                    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-bold text-gray-900">👨‍🏫 Votre formateur</h3>
+                        </div>
+                        <div class="p-6">
+                            {% if enrollment.formation.instructorImageName %}
+                                <div class="w-16 h-16 mx-auto mb-4 rounded-full overflow-hidden">
+                                    <img src="{{ vich_uploader_asset(enrollment.formation, 'instructorImage') }}" 
+                                         alt="{{ enrollment.formation.instructorName }}" 
+                                         class="w-full h-full object-cover">
+                                </div>
+                            {% endif %}
+                            <h4 class="text-center font-semibold text-gray-900 mb-2">{{ enrollment.formation.instructorName }}</h4>
+                            {% if enrollment.formation.instructorBio %}
+                                <p class="text-sm text-gray-600 leading-relaxed">{{ enrollment.formation.instructorBio|nl2br }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Resources -->
+                    {% if enrollment.formation.resources|length > 0 %}
+                    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-bold text-gray-900">📎 Ressources</h3>
+                        </div>
+                        <div class="p-6">
+                            <div class="space-y-3">
+                                {% for resource in enrollment.formation.resources %}
+                                    <div class="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
+                                        <div class="flex items-center">
+                                            <span class="text-xl mr-3">{{ resource.typeIcon }}</span>
+                                            <div>
+                                                <h4 class="font-medium text-gray-900">{{ resource.title }}</h4>
+                                                <p class="text-sm text-gray-500">{{ resource.formattedFileSize }}</p>
+                                            </div>
+                                        </div>
+                                        {% if enrollment.isAccessible %}
+                                            <a href="{{ path('app_formation_download_resource', {id: enrollment.formation.id, resourceId: resource.id}) }}" 
+                                               class="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700">
+                                                📥 Télécharger
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

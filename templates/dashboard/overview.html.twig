@@ -1,15 +1,12 @@
-{% extends 'base.html.twig' %}
+{% extends 'dashboard.html.twig' %}
 
 {% block title %}Dashboard - Vue d'ensemble{% endblock %}
 
-{% block body %}
-<div class="min-h-screen bg-gray-50">
-    <div class="flex">
-        <!-- Sidebar -->
-        {% include '_sidebar.html.twig' %}
+{% block content %}
+<div class="max-w-7xl mx-auto">
         
         <!-- Main Content -->
-        <div class="flex-1 {% if is_granted('ROLE_ADMIN') %}lg:ml-8{% endif %}">
+        <div 
             <div class="px-4 py-6 sm:px-6 lg:px-8">
                 <!-- Header intégré -->
                 <div class="mb-6">

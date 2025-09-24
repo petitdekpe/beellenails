@@ -1,0 +1,448 @@
+{% extends 'dashboard.html.twig' %}
+
+{% block title %}Inscriptions - {{ formation.nom }}{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="d-flex align-items-center">
+                    <a href="{{ path('app_dashboard_formation_show', {id: formation.id}) }}" class="btn btn-link p-0 me-3">
+                        <i class="fas fa-arrow-left"></i> Retour
+                    </a>
+                    <h1 class="h3 mb-0 text-gray-800">👥 Inscriptions - {{ formation.nom }}</h1>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" data-toggle="modal" data-target="#enrollUserModal">
+                        <i class="fas fa-user-plus"></i> Nouvelle Inscription
+                    </button>
+                    <button class="btn btn-info" data-toggle="modal" data-target="#bulkActionsModal">
+                        <i class="fas fa-tasks"></i> Actions en Lot
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filtres -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Filtres</h6>
+                </div>
+                <div class="card-body">
+                    <form method="GET" action="{{ path('app_dashboard_formation_enrollments', {id: formation.id}) }}">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="search">Recherche</label>
+                                    <input type="text" class="form-control" id="search" name="search" 
+                                           value="{{ search }}" placeholder="Nom, prénom ou email...">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="status">Statut</label>
+                                    <select class="form-control" id="status" name="status">
+                                        <option value="all" {{ status == 'all' ? 'selected' : '' }}>Tous les statuts</option>
+                                        <option value="active" {{ status == 'active' ? 'selected' : '' }}>Actives</option>
+                                        <option value="completed" {{ status == 'completed' ? 'selected' : '' }}>Terminées</option>
+                                        <option value="expired" {{ status == 'expired' ? 'selected' : '' }}>Expirées</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3 d-flex align-items-end">
+                                <div class="form-group w-100">
+                                    <button type="submit" class="btn btn-primary btn-block">
+                                        <i class="fas fa-search"></i> Filtrer
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end">
+                                <div class="form-group w-100">
+                                    <button type="button" class="btn btn-success btn-block" onclick="exportEnrollments()">
+                                        <i class="fas fa-download"></i> Export
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Liste des inscriptions -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Inscriptions ({{ enrollments.getTotalItemCount }})
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input" id="selectAll">
+                                            <label class="custom-control-label" for="selectAll"></label>
+                                        </div>
+                                    </th>
+                                    <th>Utilisateur</th>
+                                    <th>Progression</th>
+                                    <th>Statut</th>
+                                    <th>Inscrit le</th>
+                                    <th>Expire le</th>
+                                    <th>Dernière activité</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for enrollment in enrollments %}
+                                <tr>
+                                    <td>
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input enrollment-checkbox" 
+                                                   id="enroll-{{ enrollment.id }}" data-enrollment-id="{{ enrollment.id }}">
+                                            <label class="custom-control-label" for="enroll-{{ enrollment.id }}"></label>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center text-white me-3" 
+                                                 style="width: 40px; height: 40px;">
+                                                {{ enrollment.user.prenom|slice(0,1)|upper }}{{ enrollment.user.nom|slice(0,1)|upper }}
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-0">{{ enrollment.user.prenom }} {{ enrollment.user.nom }}</h6>
+                                                <small class="text-muted">{{ enrollment.user.email }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="progress flex-grow-1 me-2" style="height: 8px;">
+                                                <div class="progress-bar bg-{% if enrollment.progressPercentage == 100 %}success{% elseif enrollment.progressPercentage > 50 %}info{% else %}warning{% endif %}" 
+                                                     style="width: {{ enrollment.progressPercentage }}%"></div>
+                                            </div>
+                                            <span class="small font-weight-bold">{{ enrollment.progressPercentage }}%</span>
+                                        </div>
+                                        {% if enrollment.totalTimeSpent > 0 %}
+                                            <small class="text-muted">
+                                                Temps : 
+                                                {% if enrollment.totalTimeSpent > 3600 %}
+                                                    {{ (enrollment.totalTimeSpent / 3600)|round(1) }}h
+                                                {% else %}
+                                                    {{ (enrollment.totalTimeSpent / 60)|round }}min
+                                                {% endif %}
+                                            </small>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-{% if enrollment.status == 'active' %}success{% elseif enrollment.status == 'completed' %}primary{% else %}warning{% endif %}">
+                                            {% if enrollment.status == 'active' %}✅ Active
+                                            {% elseif enrollment.status == 'completed' %}🏆 Terminée
+                                            {% else %}⚠️ Expirée{% endif %}
+                                        </span>
+                                    </td>
+                                    <td>{{ enrollment.enrolledAt|date('d/m/Y H:i') }}</td>
+                                    <td>
+                                        {% if enrollment.expiresAt %}
+                                            <span class="{% if enrollment.daysUntilExpiration <= 7 %}text-danger{% elseif enrollment.daysUntilExpiration <= 30 %}text-warning{% else %}text-success{% endif %}">
+                                                {{ enrollment.expiresAt|date('d/m/Y') }}
+                                            </span>
+                                            {% if enrollment.daysUntilExpiration >= 0 %}
+                                                <br><small class="text-muted">{{ enrollment.timeUntilExpiration }}</small>
+                                            {% endif %}
+                                        {% else %}
+                                            <span class="text-success">Illimité</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if enrollment.lastAccessedAt %}
+                                            {{ enrollment.lastAccessedAt|date('d/m/Y H:i') }}
+                                        {% else %}
+                                            <span class="text-muted">Jamais</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <button class="btn btn-sm btn-outline-primary dropdown-toggle" 
+                                                    type="button" data-toggle="dropdown">
+                                                Actions
+                                            </button>
+                                            <div class="dropdown-menu">
+                                                <a class="dropdown-item" href="{{ path('app_user_learning_formation_detail', {id: enrollment.id}) }}" target="_blank">
+                                                    <i class="fas fa-external-link-alt"></i> Voir l'espace utilisateur
+                                                </a>
+                                                <div class="dropdown-divider"></div>
+                                                
+                                                <h6 class="dropdown-header">Changer le statut :</h6>
+                                                {% if enrollment.status != 'active' %}
+                                                <a class="dropdown-item change-status" href="#" 
+                                                   data-enrollment-id="{{ enrollment.id }}" data-status="active">
+                                                    <i class="fas fa-play text-success"></i> Activer
+                                                </a>
+                                                {% endif %}
+                                                {% if enrollment.status != 'completed' %}
+                                                <a class="dropdown-item change-status" href="#" 
+                                                   data-enrollment-id="{{ enrollment.id }}" data-status="completed">
+                                                    <i class="fas fa-check text-primary"></i> Marquer terminée
+                                                </a>
+                                                {% endif %}
+                                                {% if enrollment.status != 'expired' %}
+                                                <a class="dropdown-item change-status" href="#" 
+                                                   data-enrollment-id="{{ enrollment.id }}" data-status="expired">
+                                                    <i class="fas fa-ban text-warning"></i> Expirer
+                                                </a>
+                                                {% endif %}
+                                                
+                                                <div class="dropdown-divider"></div>
+                                                
+                                                <a class="dropdown-item extend-access" href="#" 
+                                                   data-enrollment-id="{{ enrollment.id }}">
+                                                    <i class="fas fa-clock text-info"></i> Prolonger l'accès
+                                                </a>
+                                                
+                                                <a class="dropdown-item reset-progress" href="#" 
+                                                   data-enrollment-id="{{ enrollment.id }}">
+                                                    <i class="fas fa-undo text-warning"></i> Réinitialiser la progression
+                                                </a>
+                                                
+                                                <div class="dropdown-divider"></div>
+                                                
+                                                <a class="dropdown-item text-danger delete-enrollment" href="#" 
+                                                   data-enrollment-id="{{ enrollment.id }}" 
+                                                   data-user-name="{{ enrollment.user.prenom }} {{ enrollment.user.nom }}">
+                                                    <i class="fas fa-trash"></i> Supprimer l'inscription
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="8" class="text-center text-muted py-4">
+                                        <i class="fas fa-users fa-3x mb-3 d-block"></i>
+                                        Aucune inscription trouvée
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    {% if enrollments.pageCount > 1 %}
+                    <div class="d-flex justify-content-center">
+                        {{ knp_pagination_render(enrollments) }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal nouvelle inscription -->
+<div class="modal fade" id="enrollUserModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Nouvelle Inscription</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <form id="enrollUserForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="userEmail">Email de l'utilisateur</label>
+                        <input type="email" class="form-control" id="userEmail" name="userEmail" required
+                               placeholder="Saisir l'email de l'utilisateur...">
+                        <small class="form-text text-muted">Si l'utilisateur n'existe pas, il sera créé automatiquement.</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="accessType">Type d'accès</label>
+                        <select class="form-control" id="accessType" name="accessType">
+                            <option value="30_days">30 jours</option>
+                            <option value="60_days">60 jours</option>
+                            <option value="90_days">90 jours</option>
+                            <option value="1_year">1 an</option>
+                            <option value="lifetime">Accès à vie</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="sendEmail" name="sendEmail" checked>
+                            <label class="custom-control-label" for="sendEmail">
+                                Envoyer un email de notification à l'utilisateur
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Inscrire</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal prolongation d'accès -->
+<div class="modal fade" id="extendAccessModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Prolonger l'Accès</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <form id="extendAccessForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="extendDays">Nombre de jours à ajouter</label>
+                        <select class="form-control" id="extendDays" name="days">
+                            <option value="7">7 jours</option>
+                            <option value="14">14 jours</option>
+                            <option value="30" selected>30 jours</option>
+                            <option value="60">60 jours</option>
+                            <option value="90">90 jours</option>
+                            <option value="365">1 an</option>
+                        </select>
+                    </div>
+                    <input type="hidden" id="extendEnrollmentId" name="enrollmentId">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Prolonger</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Sélection multiple
+    document.getElementById('selectAll').addEventListener('change', function() {
+        const checkboxes = document.querySelectorAll('.enrollment-checkbox');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = this.checked;
+        });
+    });
+    
+    // Changement de statut
+    document.querySelectorAll('.change-status').forEach(function(link) {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const enrollmentId = this.dataset.enrollmentId;
+            const status = this.dataset.status;
+            
+            changeEnrollmentStatus(enrollmentId, status);
+        });
+    });
+    
+    // Prolongation d'accès
+    document.querySelectorAll('.extend-access').forEach(function(link) {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const enrollmentId = this.dataset.enrollmentId;
+            
+            document.getElementById('extendEnrollmentId').value = enrollmentId;
+            $('#extendAccessModal').modal('show');
+        });
+    });
+    
+    // Formulaire de prolongation
+    document.getElementById('extendAccessForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const enrollmentId = document.getElementById('extendEnrollmentId').value;
+        const days = document.getElementById('extendDays').value;
+        
+        extendAccess(enrollmentId, days);
+    });
+});
+
+function changeEnrollmentStatus(enrollmentId, status) {
+    fetch(`/dashboard/enrollment/${enrollmentId}/toggle-status`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: `status=${status}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert('success', data.message);
+            setTimeout(() => location.reload(), 1000);
+        } else {
+            showAlert('error', data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showAlert('error', 'Erreur lors de la mise à jour du statut');
+    });
+}
+
+function extendAccess(enrollmentId, days) {
+    fetch(`/dashboard/enrollment/${enrollmentId}/extend`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: `days=${days}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            $('#extendAccessModal').modal('hide');
+            showAlert('success', data.message);
+            setTimeout(() => location.reload(), 1000);
+        } else {
+            showAlert('error', data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showAlert('error', 'Erreur lors de la prolongation');
+    });
+}
+
+function exportEnrollments() {
+    const params = new URLSearchParams(window.location.search);
+    params.set('export', 'csv');
+    
+    window.location.href = `${window.location.pathname}?${params.toString()}`;
+}
+
+function showAlert(type, message) {
+    const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+    const alertHtml = `
+        <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="close" data-dismiss="alert">
+                <span>&times;</span>
+            </button>
+        </div>
+    `;
+    
+    document.querySelector('.container-fluid').insertAdjacentHTML('afterbegin', alertHtml);
+    
+    setTimeout(function() {
+        const alert = document.querySelector('.alert');
+        if (alert) {
+            alert.remove();
+        }
+    }, 3000);
+}
+</script>
+{% endblock %}

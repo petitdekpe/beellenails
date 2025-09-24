@@ -1,0 +1,194 @@
+{% extends 'dashboard.html.twig' %}
+
+{% block title %}Modération des Avis{% endblock %}
+
+{% block content %}
+<div class="p-4 pt-16">
+    <div class="max-w-7xl mx-auto">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-3xl font-bold text-gray-900">📝 Modération des Avis</h1>
+            <div class="flex items-center space-x-4">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
+                    {{ pendingReviews|length }} avis en attente
+                </span>
+            </div>
+        </div>
+
+        <!-- Avis en attente de modération -->
+        <div class="bg-white rounded-lg shadow-md mb-6">
+            <div class="p-6 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-blue-600">Avis en attente de modération</h3>
+            </div>
+            
+            {% if pendingReviews|length > 0 %}
+            <div class="divide-y divide-gray-200">
+                {% for review in pendingReviews %}
+                <div class="p-6">
+                    <div class="flex items-start space-x-4">
+                        <!-- Avatar utilisateur -->
+                        <div class="flex-shrink-0">
+                            <div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
+                                <span class="text-gray-600 font-semibold">
+                                    {{ review.user.prenom|first }}{{ review.user.nom|first }}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <!-- Contenu de l'avis -->
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h4 class="text-lg font-medium text-gray-900">{{ review.user.prenom }} {{ review.user.nom }}</h4>
+                                    <div class="flex items-center mt-1">
+                                        {% for i in 1..5 %}
+                                            <svg class="w-4 h-4 {{ i <= review.rating ? 'text-yellow-400' : 'text-gray-300' }}" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                            </svg>
+                                        {% endfor %}
+                                        <span class="ml-2 text-sm text-gray-600">({{ review.rating }}/5)</span>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-sm text-gray-500">{{ review.createdAt|date('d/m/Y H:i') }}</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Formation concernée -->
+                            <div class="mt-2">
+                                <p class="text-sm text-gray-600">
+                                    Formation: <strong>{{ review.formation.nom }}</strong>
+                                </p>
+                            </div>
+                            
+                            <!-- Commentaire -->
+                            {% if review.comment %}
+                            <div class="mt-3 p-3 bg-gray-50 rounded-lg">
+                                <p class="text-gray-800">{{ review.comment }}</p>
+                            </div>
+                            {% endif %}
+                            
+                            <!-- Actions -->
+                            <div class="mt-4 flex space-x-3">
+                                <button onclick="approveReview({{ review.id }})" 
+                                        class="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                                    <i class="fas fa-check mr-2"></i>Approuver
+                                </button>
+                                <button onclick="rejectReview({{ review.id }})" 
+                                        class="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                                    <i class="fas fa-times mr-2"></i>Rejeter
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="p-12 text-center">
+                <i class="fas fa-check-circle text-4xl text-green-400 mb-4"></i>
+                <p class="text-gray-500 text-lg">Aucun avis en attente de modération</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmation -->
+<div id="confirmModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3 text-center">
+            <div id="modal-icon" class="mx-auto flex items-center justify-center h-12 w-12 rounded-full">
+                <i id="modal-icon-inner" class="text-2xl"></i>
+            </div>
+            <h3 id="modal-title" class="text-lg font-medium text-gray-900 mt-5"></h3>
+            <div class="mt-2 px-7 py-3">
+                <p id="modal-message" class="text-sm text-gray-500"></p>
+            </div>
+            <div class="items-center px-4 py-3">
+                <button id="cancel-action" class="px-4 py-2 bg-gray-500 text-white text-base font-medium rounded-md w-20 mr-2 hover:bg-gray-400">
+                    Annuler
+                </button>
+                <button id="confirm-action" class="px-4 py-2 text-white text-base font-medium rounded-md w-20">
+                    Confirmer
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentReviewId = null;
+let currentAction = null;
+
+function approveReview(reviewId) {
+    currentReviewId = reviewId;
+    currentAction = 'approve';
+    
+    document.getElementById('modal-icon').className = 'mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100';
+    document.getElementById('modal-icon-inner').className = 'fas fa-check text-green-600 text-2xl';
+    document.getElementById('modal-title').textContent = 'Approuver l\'avis';
+    document.getElementById('modal-message').textContent = 'Êtes-vous sûr de vouloir approuver cet avis ? Il sera visible publiquement.';
+    document.getElementById('confirm-action').className = 'px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-base font-medium rounded-md w-20';
+    
+    document.getElementById('confirmModal').classList.remove('hidden');
+}
+
+function rejectReview(reviewId) {
+    currentReviewId = reviewId;
+    currentAction = 'reject';
+    
+    document.getElementById('modal-icon').className = 'mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100';
+    document.getElementById('modal-icon-inner').className = 'fas fa-times text-red-600 text-2xl';
+    document.getElementById('modal-title').textContent = 'Rejeter l\'avis';
+    document.getElementById('modal-message').textContent = 'Êtes-vous sûr de vouloir rejeter cet avis ? Il ne sera pas publié.';
+    document.getElementById('confirm-action').className = 'px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-base font-medium rounded-md w-20';
+    
+    document.getElementById('confirmModal').classList.remove('hidden');
+}
+
+document.getElementById('cancel-action').addEventListener('click', function() {
+    document.getElementById('confirmModal').classList.add('hidden');
+    currentReviewId = null;
+    currentAction = null;
+});
+
+document.getElementById('confirm-action').addEventListener('click', function() {
+    if (currentReviewId && currentAction) {
+        const url = currentAction === 'approve' 
+            ? `/dashboard/reviews/${currentReviewId}/approve`
+            : `/dashboard/reviews/${currentReviewId}/reject`;
+            
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload(); // Recharger la page pour voir les changements
+            } else {
+                alert('Erreur: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Une erreur est survenue');
+        });
+    }
+    
+    document.getElementById('confirmModal').classList.add('hidden');
+});
+
+// Fermer la modal en cliquant à l'extérieur
+document.getElementById('confirmModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        this.classList.add('hidden');
+        currentReviewId = null;
+        currentAction = null;
+    }
+});
+</script>
+{% endblock %}

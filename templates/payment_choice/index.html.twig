@@ -1,76 +1,151 @@
-<!DOCTYPE html>
-<html lang="en">
-	<head>
-		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>Choix du paiement</title>
-		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-		<style>
-			body,
-			html {
-				height: 100%;
-			}
-			.centered-content {
-				display: flex;
-				justify-content: center;
-				align-items: center;
-				height: 90vh;
-			}
-			.payment-button {
-				display: flex;
-				flex-direction: column;
-				justify-content: center;
-				align-items: center;
-				padding: 20px;
-				width: 150px;
-				height: 200px;
-				text-decoration: none;
-				color: inherit;
-			}
-			.payment-button img {
-				max-width: 100px;
-				max-height: 100px;
-				margin-bottom: 15px;
-			}
-			.disabled-link {
-				pointer-events: none; /* Empêche les interactions */
-				color: gray; /* Apparence grisée */
-				cursor: not-allowed;
-				opacity: 0.5;
-			}
-		</style>
-	</head>
-	<body>
+{% extends 'base.html.twig' %}
 
-		<div class="row text-center pt-5">
-			<h2>CHOISISSEZ VOTRE MOYEN DE PAIEMENT</h2>
-			<h5 class="text-xl text-center font-normal mb-5 pt-5 p-5">
-				En cas de
-				<strong class="text-pink-500">difficultés</strong>
-				à booker votre rendez-vous sur le site, consultez les disponibilités,<br>
-				choisissez le créneau voulu et contactez nous
-				<strong>
-					<a class="text-pink-500 underline" href="https://wa.me/22997853512">ICI</a>
-				</strong>
-				pour confirmer votre rendez-vous.
-			</h5>
-		</div>
+{% block title %}Choix du paiement{% endblock %}
 
-		<div class="centered-content">
-			<div class="row text-center">
-				<div class="btn-group" role="group" aria-label="Choix du paiement">
-					<a href="{{ path('payment_init', { rendezvous: rendezvous.id }) }}" class="col btn payment-button border border-2">
-						<img src="../assets/feda-logo.svg" alt="Fedapay">
-						<span>Fedapay</span>
-					</a>
-					<a href="{{ path('feexpay_form', { rendezvous: rendezvous.id }) }}" class="col btn payment-button border border-2 ms-3">
-						<img src="../assets/feexpay-logo.png" alt="Feexpay">
-						<span>Feexpay</span>
-					</a>
-				</div>
-			</div>
-		</div>
+{% block body %}
+<div class="min-h-screen bg-gray-50">
+    <!-- Espaceur pour éviter que la navbar cache le contenu -->
+    <div class="pt-16 md:pt-20"></div>
+    
+    <div class="px-4 py-6 sm:px-6 lg:px-8 max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">💳 Choisissez votre moyen de paiement</h1>
+            <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-blue-700">
+                            En cas de <strong class="text-pink-600">difficultés</strong> à réserver votre rendez-vous, 
+                            consultez les disponibilités, choisissez le créneau voulu et 
+                            <a href="https://wa.me/22997853512" class="text-pink-600 underline font-medium hover:text-pink-700">
+                                contactez-nous ici
+                            </a> 
+                            pour confirmer votre rendez-vous.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-	</body>
-</html>
+        <!-- Informations du rendez-vous -->
+        <div class="bg-white rounded-lg shadow-sm mb-6">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-lg font-medium text-gray-900">📋 Récapitulatif du rendez-vous</h2>
+            </div>
+            <div class="px-6 py-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-sm text-gray-600">Prestation</p>
+                        <p class="font-medium text-gray-900">{{ rendezvous.prestation.title }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600">Date et heure</p>
+                        <p class="font-medium text-gray-900">
+                            {{ rendezvous.day|date('d/m/Y') }} à {{ rendezvous.creneau }}
+                        </p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600">Durée</p>
+                        <p class="font-medium text-gray-900">{{ rendezvous.prestation.duration }} min</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600">Montant total</p>
+                        <p class="font-semibold text-xl text-pink-600">
+                            {{ rendezvous.totalCost|number_format(0, ',', ' ') }} F CFA
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Options de paiement -->
+        <div class="bg-white rounded-lg shadow-sm">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-lg font-medium text-gray-900">🏦 Méthodes de paiement disponibles</h2>
+            </div>
+            <div class="px-6 py-6">
+                {% if payment_methods|length > 0 %}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {% for method in payment_methods %}
+                            {% if method.identifier == 'fedapay' or method.identifier == 'feexpay' %}
+                                <a href="{{ path('generic_payment_init', {
+                                    provider: method.identifier,
+                                    paymentType: 'rendezvous_advance',
+                                    entityType: 'rendezvous',
+                                    entityId: rendezvous.id
+                                }) }}" 
+                                   class="group relative flex flex-col items-center p-6 border-2 border-gray-200 rounded-xl hover:border-pink-300 hover:shadow-md transition-all duration-200 bg-white hover:bg-pink-50">
+                                    <div class="flex-shrink-0 mb-4">
+                                        <div class="w-20 h-20 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center group-hover:from-pink-100 group-hover:to-pink-200 transition-all duration-200">
+                                            {% if method.logoPath %}
+                                                <img src="{{ method.logoPath }}" alt="{{ method.name }}" class="w-12 h-12 object-contain">
+                                            {% else %}
+                                                <i class="fas fa-credit-card text-2xl text-gray-400"></i>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <h3 class="text-lg font-semibold text-gray-900 group-hover:text-pink-600 transition-colors duration-200">
+                                        {{ method.name }}
+                                    </h3>
+                                    <p class="text-sm text-gray-600 text-center mt-2 group-hover:text-gray-700">
+                                        {{ method.description|default('Méthode de paiement sécurisée') }}
+                                    </p>
+                                    <div class="mt-4 flex items-center text-sm text-pink-600 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                        <span>Procéder au paiement</span>
+                                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                                        </svg>
+                                    </div>
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-12">
+                        <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                            <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                            </svg>
+                        </div>
+                        <h3 class="mt-2 text-sm font-medium text-gray-900">Aucune méthode de paiement disponible</h3>
+                        <p class="mt-1 text-sm text-gray-500">
+                            Tous les moyens de paiement sont temporairement indisponibles.
+                        </p>
+                        <div class="mt-6">
+                            <p class="text-sm text-gray-600">
+                                Veuillez 
+                                <a href="https://wa.me/22997853512" class="text-pink-600 underline font-medium hover:text-pink-700">
+                                    nous contacter directement
+                                </a> 
+                                pour finaliser votre réservation.
+                            </p>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Informations de sécurité -->
+        <div class="mt-6 bg-green-50 border border-green-200 rounded-lg p-4">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 1L5 6v6l5 5 5-5V6l-5-5zM8.5 6a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm0 6a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm5-6a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm0 6a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" clip-rule="evenodd"/>
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-sm font-medium text-green-800">🔒 Paiement 100% sécurisé</h3>
+                    <div class="mt-1 text-sm text-green-700">
+                        <p>Vos informations de paiement sont protégées par un cryptage SSL. Aucune donnée bancaire n'est stockée sur nos serveurs.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -9,10 +9,13 @@ namespace App\Controller;
 use App\Entity\Payment;
 use App\Entity\Rendezvous;
 use App\Service\FedapayService;
+use App\Service\PromoCodeService;
+use App\Repository\PaymentConfigurationRepository;
 use Symfony\Component\Mime\Email;
 use App\Repository\UserRepository;
 use App\Repository\PaymentRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,7 +27,8 @@ class PaymentController extends AbstractController
 {
     public function __construct(
         private readonly FedapayService $fedapayService,
-        private readonly EntityManagerInterface $entityManager
+        private readonly EntityManagerInterface $entityManager,
+        private readonly PaymentConfigurationRepository $paymentConfigRepository
     ) {}
 
     /**
@@ -36,15 +40,24 @@ class PaymentController extends AbstractController
 
         $user = $rendezvous->getUser();
 
+        // Récupérer le montant configurable pour l'acompte rendez-vous
+        $amount = $this->paymentConfigRepository->getRendezvousAdvanceAmount();
+        
+        // Debug: Log du montant configuré
+        error_log("[DEBUG Payment] Montant configuré récupéré: " . $amount);
+
         /** @var \FedaPay\Transaction $transaction */
         $transaction = $this->fedapayService->initTransaction(
             //montant
-            5000,
+            $amount,
             //description
             'Acompte sur Prestation',
             //utilisateur
             $user
         );
+        
+        // Debug: Log du montant retourné par FedaPay
+        error_log("[DEBUG Payment] Montant retourné par FedaPay: " . $transaction->amount);
 
         $token = $this->fedapayService->generateToken();
 
@@ -65,7 +78,7 @@ class PaymentController extends AbstractController
     }
 
     #[Route('/rendezvous/payment/callback', name: 'payment_callback')]
-    public function callback(Request $request, PaymentRepository $repository, UserInterface $user, MailerInterface $mailer): Response
+    public function callback(Request $request, PaymentRepository $repository, UserInterface $user, MailerInterface $mailer, PromoCodeService $promoCodeService, LoggerInterface $logger): Response
     {
         $transactionID = $request->get('id');
         $status = $request->get('status');
@@ -88,6 +101,16 @@ class PaymentController extends AbstractController
 
             if ($status !== 'approved') {
                 $rendezvous->setStatus('Tentative échouée');
+                
+                // Révoquer le code promo si il y en a un
+                if ($rendezvous->getPromoCode()) {
+                    $result = $promoCodeService->revokePromoCodeUsage($rendezvous, 'Paiement échoué');
+                    $logger->info("[Payment Callback] Code promo révoqué suite à l'échec", [
+                        'rendezvous_id' => $rendezvous->getId(),
+                        'reason' => 'Paiement échoué'
+                    ]);
+                }
+                
                 $this->entityManager->flush();
                 $this->entityManager->commit();
                 return $this->render('rendezvous/payment/error.html.twig', [
@@ -97,6 +120,16 @@ class PaymentController extends AbstractController
 
             $payment->setUpdatedAt(new \DateTime('now'))->setStatus($status);
             $rendezvous->setStatus('Rendez-vous pris');
+            
+            // Appliquer le code promo en attente s'il y en a un
+            if ($rendezvous->getPendingPromoCode()) {
+                $result = $promoCodeService->applyPendingPromoCode($rendezvous);
+                $logger->info("[Payment Callback] Code promo traité", [
+                    'rendezvous_id' => $rendezvous->getId(),
+                    'promo_result' => $result['isValid'] ? 'appliqué' : 'échoué',
+                    'message' => $result['message']
+                ]);
+            }
 
             $this->entityManager->flush();
             $this->entityManager->commit();
@@ -112,7 +145,7 @@ class PaymentController extends AbstractController
     }
 
     #[Route('/payment/callback', name: 'feda_callback', methods: ['POST'], format: 'json')]
-    public function fedaCallback(Request $request, PaymentRepository $repository, MailerInterface $mailer): Response
+    public function fedaCallback(Request $request, PaymentRepository $repository, MailerInterface $mailer, PromoCodeService $promoCodeService, LoggerInterface $logger): Response
     {
         $data = json_decode($request->getContent(), true)['entity'];
         $transactionID = $data['id'];
@@ -137,11 +170,30 @@ class PaymentController extends AbstractController
             if ($status === 'canceled' || $status === 'declined') {
                 $rendezvous->setStatus('Échec du paiement');
                 $payment->setStatus($status);
+                
+                // Révoquer le code promo si il y en a un
+                if ($rendezvous->getPromoCode()) {
+                    $result = $promoCodeService->revokePromoCodeUsage($rendezvous, 'Paiement échoué');
+                    $logger->info("[Payment Webhook] Code promo révoqué suite à l'échec", [
+                        'rendezvous_id' => $rendezvous->getId(),
+                        'reason' => 'Paiement échoué'
+                    ]);
+                }
             } elseif ($status === 'approved') {
                 $transaction = $this->fedapayService->getTransaction($transactionID);
 
                 $rendezvous->setPaid(true);
                 $rendezvous->setStatus('Rendez-vous pris');
+                
+                // Appliquer le code promo en attente s'il y en a un
+                if ($rendezvous->getPendingPromoCode()) {
+                    $result = $promoCodeService->applyPendingPromoCode($rendezvous);
+                    $logger->info("[Payment Webhook] Code promo traité", [
+                        'rendezvous_id' => $rendezvous->getId(),
+                        'promo_result' => $result['isValid'] ? 'appliqué' : 'échoué',
+                        'message' => $result['message']
+                    ]);
+                }
 
                 $userEmail = $rendezvous->getUser()->getEmail();
                 $email = (new Email())

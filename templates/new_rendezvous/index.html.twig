@@ -4,28 +4,23 @@
 
 {% block body %}
 <div class="min-h-screen bg-gray-50">
-    <div class="flex">
-        <!-- Sidebar -->
-        {% include '_sidebar.html.twig' %}
-        
-        <!-- Main Content -->
-        <div class="flex-1 lg:ml-8">
-            <div class="px-4 py-6 sm:px-6 lg:px-8">
-                <!-- Header intégré -->
-                <div class="mb-6">
-                    <h1 class="text-2xl font-bold text-gray-900">Nouveau Rendez-vous</h1>
-                    <p class="text-sm text-gray-600">Planifier un rendez-vous pour {{ rendezvous.prestation.title }}</p>
-                </div>
+    <!-- Espaceur pour éviter que la navbar cache le contenu -->
+    <div class="pt-16 md:pt-20"></div>
+    
+    <div class="px-4 py-6 sm:px-6 lg:px-8 max-w-4xl mx-auto">
+        <!-- Header intégré -->
+        <div class="mb-6">
+            <h1 class="text-2xl font-bold text-gray-900">Nouveau Rendez-vous</h1>
+            <p class="text-sm text-gray-600">Planifier un rendez-vous pour {{ rendezvous.prestation.title }}</p>
+        </div>
 
-                <!-- Formulaire de rendez-vous -->
-                <div class="bg-white rounded-lg shadow">
-                    <div class="px-6 py-4 border-b border-gray-200">
-                        <h2 class="text-lg font-medium text-gray-900">📅 Informations du rendez-vous</h2>
-                    </div>
-                    <div class="px-6 py-6">
-                        {{ include('new_rendezvous/_form.html.twig') }}
-                    </div>
-                </div>
+        <!-- Formulaire de rendez-vous -->
+        <div class="bg-white rounded-lg shadow">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-lg font-medium text-gray-900">📅 Informations du rendez-vous</h2>
+            </div>
+            <div class="px-6 py-6">
+                {{ include('new_rendezvous/_form.html.twig') }}
             </div>
         </div>
     </div>

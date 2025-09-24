@@ -10,6 +10,8 @@ use App\Entity\Payment;
 use App\Entity\Rendezvous;
 use App\Form\FeexPayFormType;
 use App\Service\FeexpayService;
+use App\Service\PromoCodeService;
+use App\Repository\PaymentConfigurationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -38,7 +40,8 @@ class PaymentFeexController extends AbstractController
         Rendezvous $rendezvous,
         FeexpayService $feexpayService,
         EntityManagerInterface $em,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        PaymentConfigurationRepository $paymentConfigRepository
     ): Response {
         $form = $this->createForm(FeexPayFormType::class);
         $form->handleRequest($request);
@@ -69,9 +72,12 @@ class PaymentFeexController extends AbstractController
         $data = $form->getData();
         $user = $rendezvous->getUser();
 
+        // Récupérer le montant configurable pour l'acompte rendez-vous
+        $amount = $paymentConfigRepository->getRendezvousAdvanceAmount();
+
         $logger->info('[FeexPay Init] Initiating payment', [
             'rendezvous_id' => $rendezvous->getId(),
-            'amount' => 100,
+            'amount' => $amount,
             'phone' => $data['phone'],
             'operator' => $data['operator'],
             'user_email' => $user->getEmail(),
@@ -79,7 +85,7 @@ class PaymentFeexController extends AbstractController
         ]);
 
         $response = $feexpayService->paiementLocal(
-            100,
+            $amount,
             $data['phone'],
             $data['operator'],
             $user->__toString(),
@@ -116,7 +122,8 @@ class PaymentFeexController extends AbstractController
             customer: $user,
             rendezvous: $rendezvous,
             mode: $feexpayService->getMode(),
-            provider: 'feexpay'
+            provider: 'feexpay',
+            amount: $amount
         );
 
         $em->persist($payment);
@@ -160,7 +167,8 @@ class PaymentFeexController extends AbstractController
         EntityManagerInterface $em,
         FeexpayService $feexpayService,
         LoggerInterface $logger,
-        MailerInterface $mailer
+        MailerInterface $mailer,
+        PromoCodeService $promoCodeService
     ): Response {
         $payment = $em->getRepository(Payment::class)->findOneBy(['reference' => $reference]);
 
@@ -190,6 +198,15 @@ class PaymentFeexController extends AbstractController
             if ($statusChanged) {
                 $oldStatus = $payment->getStatus();
                 $payment->setStatus($internalStatus)->setUpdatedAt(new \DateTime());
+                
+                // Mettre à jour le montant si fourni dans la réponse de l'API FeexPay
+                if (isset($feexpayResponse['amount']) && is_numeric($feexpayResponse['amount'])) {
+                    $payment->setAmount((int)$feexpayResponse['amount']);
+                    $logger->info("[Hybrid Polling] Montant mis à jour", [
+                        'reference' => $reference,
+                        'amount' => $feexpayResponse['amount']
+                    ]);
+                }
 
                 $rendezvous = $payment->getRendezvous();
 
@@ -198,6 +215,16 @@ class PaymentFeexController extends AbstractController
                     case 'successful':
                         if ($oldStatus !== 'successful') {
                             $rendezvous->setPaid(true)->setStatus('Rendez-vous pris');
+
+                            // Appliquer le code promo en attente s'il y en a un
+                            if ($rendezvous->getPendingPromoCode()) {
+                                $result = $promoCodeService->applyPendingPromoCode($rendezvous);
+                                $logger->info("[Hybrid Polling] Code promo traité", [
+                                    'rendezvous_id' => $rendezvous->getId(),
+                                    'promo_result' => $result['isValid'] ? 'appliqué' : 'échoué',
+                                    'message' => $result['message']
+                                ]);
+                            }
 
                             // Envoi des emails comme dans le webhook
                             $this->sendSuccessEmails($rendezvous, $mailer, $logger);
@@ -208,10 +235,26 @@ class PaymentFeexController extends AbstractController
 
                     case 'failed':
                         $rendezvous->setStatus('Échec du paiement');
+                        // Révoquer le code promo si il y en a un
+                        if ($rendezvous->getPromoCode()) {
+                            $result = $promoCodeService->revokePromoCodeUsage($rendezvous, 'Paiement échoué');
+                            $logger->info("[FeexPay Polling] Code promo révoqué suite à l'échec", [
+                                'rendezvous_id' => $rendezvous->getId(),
+                                'reason' => 'Paiement échoué'
+                            ]);
+                        }
                         break;
 
                     case 'canceled':
                         $rendezvous->setStatus('Paiement annulé');
+                        // Révoquer le code promo si il y en a un
+                        if ($rendezvous->getPromoCode()) {
+                            $result = $promoCodeService->revokePromoCodeUsage($rendezvous, 'Paiement annulé');
+                            $logger->info("[FeexPay Polling] Code promo révoqué suite à l'annulation", [
+                                'rendezvous_id' => $rendezvous->getId(),
+                                'reason' => 'Paiement annulé'
+                            ]);
+                        }
                         break;
 
                     case 'pending':
@@ -289,6 +332,76 @@ class PaymentFeexController extends AbstractController
             $logger->error('[Hybrid Polling] Erreur envoi emails', [
                 'error' => $e->getMessage()
             ]);
+        }
+    }
+
+    /**
+     * API endpoint pour annuler automatiquement un paiement après timeout
+     */
+    #[Route('/api/payment/feexpay/cancel/{reference}', name: 'api_feexpay_payment_cancel', methods: ['POST'])]
+    public function apiCancelPayment(
+        string $reference,
+        EntityManagerInterface $em,
+        LoggerInterface $logger,
+        PromoCodeService $promoCodeService
+    ): Response {
+        $payment = $em->getRepository(Payment::class)->findOneBy(['reference' => $reference]);
+
+        if (!$payment) {
+            return $this->json(['error' => 'Paiement introuvable'], 404);
+        }
+
+        // Vérifier si le paiement est déjà dans un état final
+        $currentStatus = $payment->getStatus();
+        if (in_array($currentStatus, ['successful', 'failed', 'canceled'])) {
+            return $this->json([
+                'message' => 'Paiement déjà dans un état final',
+                'current_status' => $currentStatus
+            ], 200);
+        }
+
+        try {
+            // Marquer le paiement comme annulé
+            $payment->setStatus('canceled')->setUpdatedAt(new \DateTime());
+            
+            $rendezvous = $payment->getRendezvous();
+            $rendezvous->setStatus('Paiement annulé - Timeout');
+
+            // Révoquer le code promo si il y en a un
+            if ($rendezvous->getPromoCode()) {
+                $result = $promoCodeService->revokePromoCodeUsage($rendezvous, 'Timeout - Annulation automatique');
+                $logger->info("[Auto Cancel] Code promo révoqué suite au timeout", [
+                    'rendezvous_id' => $rendezvous->getId(),
+                    'reason' => 'Timeout - Annulation automatique'
+                ]);
+            }
+
+            $em->flush();
+
+            $logger->info('[Auto Cancel] Paiement annulé automatiquement après timeout', [
+                'reference' => $reference,
+                'rendezvous_id' => $rendezvous->getId(),
+                'old_status' => $currentStatus,
+                'new_status' => 'canceled'
+            ]);
+
+            return $this->json([
+                'success' => true,
+                'message' => 'Paiement annulé automatiquement',
+                'reference' => $reference,
+                'old_status' => $currentStatus,
+                'new_status' => 'canceled'
+            ]);
+
+        } catch (\Exception $e) {
+            $logger->error('[Auto Cancel] Erreur lors de l\'annulation automatique', [
+                'reference' => $reference,
+                'error' => $e->getMessage()
+            ]);
+
+            return $this->json([
+                'error' => 'Erreur lors de l\'annulation'
+            ], 500);
         }
     }
 

@@ -1,0 +1,235 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Espace d'Apprentissage{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-gray-50">
+    <div class="pt-16 md:pt-20"></div>
+    
+    <div class="px-4 py-6 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div class="flex flex-col lg:flex-row gap-8">
+            
+            <!-- Sidebar -->
+            <div class="lg:w-80">
+                {% include 'user_learning/_sidebar.html.twig' %}
+            </div>
+
+            <!-- Main Content -->
+            <div class="flex-1 space-y-8">
+                
+                <!-- Welcome Header -->
+                <div class="bg-gradient-to-r from-pink-500 to-purple-600 rounded-lg shadow-sm overflow-hidden">
+                    <div class="p-6 text-white">
+                        <h1 class="text-2xl font-bold mb-2">👋 Bonjour {{ app.user.prenom }} !</h1>
+                        <p class="text-pink-100">Bienvenue dans votre espace d'apprentissage personnel</p>
+                    </div>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                    <span class="text-blue-600 font-semibold text-sm">📚</span>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Formations actives</p>
+                                <p class="text-2xl font-semibold text-gray-900">{{ stats.active }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                                    <span class="text-green-600 font-semibold text-sm">✅</span>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Formations terminées</p>
+                                <p class="text-2xl font-semibold text-gray-900">{{ stats.completed }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                                    <span class="text-purple-600 font-semibold text-sm">📊</span>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Progression moyenne</p>
+                                <p class="text-2xl font-semibold text-gray-900">{{ stats.avgProgress }}%</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
+                                    <span class="text-orange-600 font-semibold text-sm">⏱️</span>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Temps d'étude</p>
+                                <p class="text-2xl font-semibold text-gray-900">
+                                    {% if totalTimeSpent > 3600 %}
+                                        {{ (totalTimeSpent / 3600)|round }}h
+                                    {% else %}
+                                        {{ (totalTimeSpent / 60)|round }}min
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Active Formations -->
+                {% if activeEnrollments is not empty %}
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <h2 class="text-lg font-bold text-gray-900">🎯 Formations en cours</h2>
+                            <a href="{{ path('app_user_learning_formations') }}" class="text-sm text-pink-600 hover:text-pink-700">Voir tout →</a>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-4">
+                            {% for enrollment in activeEnrollments|slice(0, 3) %}
+                                <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h3 class="font-semibold text-gray-900">{{ enrollment.formation.nom }}</h3>
+                                        {% if enrollment.expiresAt %}
+                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium 
+                                                {% if enrollment.daysUntilExpiration <= 3 %}bg-red-100 text-red-800{% 
+                                                elseif enrollment.daysUntilExpiration <= 7 %}bg-orange-100 text-orange-800{% 
+                                                else %}bg-blue-100 text-blue-800{% endif %}">
+                                                ⏰ {{ enrollment.timeUntilExpiration }}
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <!-- Progress Bar -->
+                                    <div class="mb-3">
+                                        <div class="flex justify-between text-sm text-gray-600 mb-1">
+                                            <span>Progression</span>
+                                            <span>{{ enrollment.progressPercentage }}%</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-2">
+                                            <div class="bg-pink-600 h-2 rounded-full transition-all duration-300" 
+                                                 style="width: {{ enrollment.progressPercentage }}%"></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex items-center justify-between">
+                                        <div class="text-sm text-gray-500">
+                                            Dernier accès : {{ enrollment.lastAccessedAt|date('d/m/Y à H:i') }}
+                                        </div>
+                                        <a href="{{ path('app_user_learning_formation_detail', {id: enrollment.id}) }}" 
+                                           class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-pink-700 bg-pink-100 hover:bg-pink-200">
+                                            Continuer →
+                                        </a>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Recent Activity & Completed Formations -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    
+                    <!-- Recently Accessed -->
+                    {% if recentEnrollments is not empty %}
+                    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-bold text-gray-900">🕒 Récemment consultées</h3>
+                        </div>
+                        <div class="p-6">
+                            <div class="space-y-4">
+                                {% for enrollment in recentEnrollments %}
+                                    <div class="flex items-center space-x-4">
+                                        <div class="flex-shrink-0 w-12 h-12 bg-pink-100 rounded-lg flex items-center justify-center">
+                                            <span class="text-pink-600 font-semibold">🎓</span>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-sm font-medium text-gray-900 truncate">{{ enrollment.formation.nom }}</p>
+                                            <p class="text-sm text-gray-500">{{ enrollment.lastAccessedAt|date('d/m/Y à H:i') }}</p>
+                                        </div>
+                                        <div class="flex-shrink-0">
+                                            <a href="{{ path('app_user_learning_formation_detail', {id: enrollment.id}) }}" 
+                                               class="text-pink-600 hover:text-pink-700 text-sm">Reprendre</a>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Completed Formations -->
+                    {% if completedEnrollments is not empty %}
+                    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-bold text-gray-900">🏆 Formations terminées</h3>
+                        </div>
+                        <div class="p-6">
+                            <div class="space-y-4">
+                                {% for enrollment in completedEnrollments|slice(0, 3) %}
+                                    <div class="flex items-center space-x-4">
+                                        <div class="flex-shrink-0 w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                            <span class="text-green-600 font-semibold">✅</span>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-sm font-medium text-gray-900 truncate">{{ enrollment.formation.nom }}</p>
+                                            <p class="text-sm text-gray-500">Terminée le {{ enrollment.completedAt|date('d/m/Y') }}</p>
+                                        </div>
+                                        <div class="flex-shrink-0">
+                                            {% if enrollment.certificateGenerated %}
+                                                <a href="{{ path('app_user_learning_certificate', {enrollmentId: enrollment.id}) }}" 
+                                                   class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-md text-green-700 bg-green-100 hover:bg-green-200">
+                                                    📜 Certificat
+                                                </a>
+                                            {% else %}
+                                                <a href="{{ path('app_user_learning_certificate', {enrollmentId: enrollment.id}) }}" 
+                                                   class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200">
+                                                    📜 Générer certificat
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Call to Action -->
+                {% if stats.active == 0 %}
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                    <div class="p-8 text-center">
+                        <div class="w-16 h-16 mx-auto mb-4 bg-pink-100 rounded-full flex items-center justify-center">
+                            <span class="text-pink-600 text-2xl">🎓</span>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">Prêt(e) à commencer ?</h3>
+                        <p class="text-gray-600 mb-6">Découvrez notre catalogue de formations professionnelles en prothésie ongulaire</p>
+                        <a href="{{ path('app_formation_index') }}" 
+                           class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700">
+                            Voir les formations
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

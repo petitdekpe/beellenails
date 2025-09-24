@@ -1,0 +1,175 @@
+{% extends 'dashboard.html.twig' %}
+
+{% block title %}Modifier la configuration de paiement{% endblock %}
+
+{% block content %}
+<div class="p-6">
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">Modifier la configuration de paiement</h1>
+            <p class="text-gray-600 mt-1">Modifiez les paramètres de cette configuration</p>
+        </div>
+        <a href="{{ path('app_dashboard_payment_config_index') }}" 
+           class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            Retour à la liste
+        </a>
+    </div>
+
+    {% for type, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="mb-4 p-4 rounded-lg {% if type == 'success' %}bg-green-50 text-green-800 border border-green-200{% elseif type == 'error' %}bg-red-50 text-red-800 border border-red-200{% else %}bg-blue-50 text-blue-800 border border-blue-200{% endif %}">
+                <div class="flex">
+                    <div class="ml-3">
+                        <p class="text-sm">{{ message }}</p>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    <div class="max-w-2xl mx-auto">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="px-6 py-5 border-b border-gray-200">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 mr-4">
+                        {% if payment_configuration.type == 'rendezvous_advance' %}
+                            <div class="w-12 h-12 bg-pink-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 4v8a2 2 0 002 2h4a2 2 0 002-2v-8"></path>
+                                </svg>
+                            </div>
+                        {% elseif payment_configuration.type == 'formation_full' %}
+                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C20.168 18.477 18.582 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                                </svg>
+                            </div>
+                        {% elseif payment_configuration.type == 'formation_advance' %}
+                            <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                            </div>
+                        {% else %}
+                            <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                                </svg>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex items-center space-x-2 mb-1">
+                            <h2 class="text-lg font-semibold text-gray-900">{{ payment_configuration.label }}</h2>
+                            {% if payment_configuration.type == 'rendezvous_advance' %}
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-pink-100 text-pink-800">
+                                    📅 Rendez-vous
+                                </span>
+                            {% elseif payment_configuration.type == 'formation_full' %}
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                    📚 Formation
+                                </span>
+                            {% elseif payment_configuration.type == 'formation_advance' %}
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                    📝 Formation (Acompte)
+                                </span>
+                            {% else %}
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                    🔧 Personnalisé
+                                </span>
+                            {% endif %}
+                        </div>
+                        <p class="text-sm text-gray-600">Montant actuel : <span class="font-semibold text-pink-600">{{ payment_configuration.formattedAmount }}</span></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="px-6 py-6">
+                {{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        {{ form_label(form.type, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                        {{ form_widget(form.type, {'attr': {'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-50 text-gray-500 cursor-not-allowed focus:border-gray-300 focus:ring-0'}}) }}
+                        {{ form_errors(form.type) }}
+                        <p class="text-xs text-gray-500">Ce type ne peut pas être modifié après création</p>
+                    </div>
+                    
+                    <div class="space-y-2">
+                        {{ form_label(form.currency, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                        {{ form_widget(form.currency, {'attr': {'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500'}}) }}
+                        {{ form_errors(form.currency) }}
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    {{ form_label(form.label, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                    {{ form_widget(form.label, {'attr': {'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500', 'placeholder': 'Ex: Acompte pour rendez-vous'}}) }}
+                    {{ form_errors(form.label) }}
+                    <p class="text-xs text-gray-500">Nom affiché pour cette configuration</p>
+                </div>
+
+                <div class="space-y-2">
+                    {{ form_label(form.amount, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                    <div class="mt-1 relative rounded-md shadow-sm">
+                        {{ form_widget(form.amount, {'attr': {'class': 'block w-full pl-3 pr-12 rounded-md border-gray-300 focus:border-pink-500 focus:ring-pink-500', 'placeholder': '5000'}}) }}
+                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                            <span class="text-gray-500 sm:text-sm">{{ payment_configuration.currency }}</span>
+                        </div>
+                    </div>
+                    {{ form_errors(form.amount) }}
+                    <p class="text-xs text-gray-500">Montant en {{ payment_configuration.currency }}</p>
+                </div>
+
+                <div class="space-y-2">
+                    {{ form_label(form.description, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                    {{ form_widget(form.description, {'attr': {'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500', 'rows': 3, 'placeholder': 'Description optionnelle...'}}) }}
+                    {{ form_errors(form.description) }}
+                    <p class="text-xs text-gray-500">Description optionnelle de cette configuration</p>
+                </div>
+
+                <div class="flex items-center space-x-3">
+                    <div class="flex items-center h-5">
+                        {{ form_widget(form.isActive, {'attr': {'class': 'h-4 w-4 text-pink-600 focus:ring-pink-500 border-gray-300 rounded'}}) }}
+                    </div>
+                    <div class="text-sm">
+                        {{ form_label(form.isActive, null, {'label_attr': {'class': 'font-medium text-gray-700'}}) }}
+                        <p class="text-gray-500">Désactivez temporairement cette configuration si nécessaire</p>
+                    </div>
+                    {{ form_errors(form.isActive) }}
+                </div>
+
+                <div class="flex justify-end space-x-3 pt-6 border-t border-gray-200">
+                    <a href="{{ path('app_dashboard_payment_config_index') }}" 
+                       class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                        Annuler
+                    </a>
+                    <button type="submit" 
+                            class="inline-flex items-center px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white text-sm font-medium rounded-lg transition-colors">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        Enregistrer les modifications
+                    </button>
+                </div>
+
+                {{ form_end(form) }}
+            </div>
+        </div>
+
+        {% if payment_configuration.updatedAt %}
+            <div class="mt-4 p-4 bg-gray-50 rounded-lg">
+                <div class="flex items-center text-sm text-gray-600">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Dernière modification le {{ payment_configuration.updatedAt|date('d/m/Y à H:i') }}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
