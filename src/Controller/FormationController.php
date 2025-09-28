@@ -9,6 +9,7 @@ use App\Entity\Formation;
 use App\Entity\FormationReview;
 use App\Entity\FormationModule;
 use App\Entity\FormationResource;
+use App\Entity\FormationEnrollment;
 use App\Form\FormationType;
 use App\Repository\FormationRepository;
 use App\Repository\FormationReviewRepository;
@@ -90,12 +91,25 @@ class FormationController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_formation_show', methods: ['GET'])]
-    public function show(Formation $formation, FormationReviewRepository $reviewRepository): Response
+    public function show(Formation $formation, FormationReviewRepository $reviewRepository, EntityManagerInterface $entityManager): Response
     {
         $reviews = $reviewRepository->findVisibleByFormation($formation);
         $reviewStats = $reviewRepository->getReviewsStats($formation);
         $modules = $formation->getModules()->filter(fn($module) => $module->isActive());
         $resources = $formation->getResources()->filter(fn($resource) => $resource->isDownloadable());
+
+        // Check if user is enrolled in this formation
+        $isEnrolled = false;
+        $enrollment = null;
+        if ($this->getUser()) {
+            $enrollment = $entityManager->getRepository(FormationEnrollment::class)
+                ->findOneBy([
+                    'user' => $this->getUser(),
+                    'formation' => $formation,
+                    'status' => 'active'
+                ]);
+            $isEnrolled = $enrollment !== null;
+        }
 
         return $this->render('formation/show.html.twig', [
             'formation' => $formation,
@@ -103,6 +117,8 @@ class FormationController extends AbstractController
             'reviewStats' => $reviewStats,
             'modules' => $modules,
             'resources' => $resources,
+            'isEnrolled' => $isEnrolled,
+            'enrollment' => $enrollment,
         ]);
     }
 

@@ -1,0 +1,210 @@
+{% extends 'dashboard.html.twig' %}
+
+{% block title %}Paiements formations - Dashboard{% endblock %}
+
+{% block body %}
+<div class="container-fluid px-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0 text-gray-800">💰 Paiements des formations</h1>
+                <div>
+                    <small class="text-muted">{{ payments|length }} paiement{{ payments|length > 1 ? 's' : '' }}</small>
+                </div>
+            </div>
+
+            <!-- Statistics Cards -->
+            <div class="row mb-4">
+                {% set successfulPayments = payments|filter(p => p.status == 'approved')|length %}
+                {% set pendingPayments = payments|filter(p => p.status == 'pending')|length %}
+                {% set failedPayments = payments|filter(p => p.status in ['declined', 'failed'])|length %}
+                {% set totalAmount = 0 %}
+                {% for payment in payments %}
+                    {% if payment.status == 'approved' %}
+                        {% set totalAmount = totalAmount + payment.amount %}
+                    {% endif %}
+                {% endfor %}
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-success shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                        Paiements réussis</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ successfulPayments }}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-warning shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                        En attente</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ pendingPayments }}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-clock fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-danger shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                        Paiements échoués</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ failedPayments }}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-times-circle fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-info shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                        Revenus total</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ (totalAmount / 100)|number_format(0, ',', ' ') }} F</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payments Table -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Historique des paiements</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Référence</th>
+                                    <th>Utilisateur</th>
+                                    <th>Formation</th>
+                                    <th>Montant</th>
+                                    <th>Statut</th>
+                                    <th>Provider</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for payment in payments %}
+                                <tr>
+                                    <td>
+                                        <code>{{ payment.reference }}</code>
+                                    </td>
+                                    <td>
+                                        {% if payment.customer %}
+                                            <div>
+                                                <strong>{{ payment.customer.fullName }}</strong><br>
+                                                <small class="text-muted">{{ payment.customer.email }}</small>
+                                            </div>
+                                        {% else %}
+                                            <span class="text-muted">Utilisateur supprimé</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% set formation = null %}
+                                        {% if payment.entityId %}
+                                            {% set formation = payment.entityId %}
+                                        {% endif %}
+                                        <strong>{{ payment.description }}</strong><br>
+                                        <small class="text-muted">ID: {{ payment.entityId }}</small>
+                                    </td>
+                                    <td>
+                                        <strong>{{ (payment.amount / 100)|number_format(0, ',', ' ') }} {{ payment.currency }}</strong>
+                                    </td>
+                                    <td>
+                                        {% if payment.status == 'approved' %}
+                                            <span class="badge badge-success">Approuvé</span>
+                                        {% elseif payment.status == 'pending' %}
+                                            <span class="badge badge-warning">En attente</span>
+                                        {% elseif payment.status == 'declined' %}
+                                            <span class="badge badge-danger">Refusé</span>
+                                        {% elseif payment.status == 'failed' %}
+                                            <span class="badge badge-danger">Échoué</span>
+                                        {% else %}
+                                            <span class="badge badge-secondary">{{ payment.status|title }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if payment.provider == 'feexpay' %}
+                                            <span class="badge badge-info">💸 FeexPay</span>
+                                        {% elseif payment.provider == 'fedapay' %}
+                                            <span class="badge badge-primary">🏦 FedaPay</span>
+                                        {% else %}
+                                            <span class="badge badge-secondary">{{ payment.provider|title }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ payment.createdAt|date('d/m/Y H:i') }}</td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            {% if payment.status == 'approved' %}
+                                                <a href="{{ path('generic_payment_success', {reference: payment.reference}) }}"
+                                                   class="btn btn-sm btn-outline-success" title="Voir reçu"
+                                                   target="_blank">
+                                                    <i class="fas fa-receipt"></i>
+                                                </a>
+                                            {% endif %}
+                                            {% if payment.externalTransactionId %}
+                                                <button class="btn btn-sm btn-outline-info"
+                                                        title="ID Transaction: {{ payment.externalTransactionId }}">
+                                                    <i class="fas fa-info-circle"></i>
+                                                </button>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="8" class="text-center text-muted">Aucun paiement trouvé</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    $('#dataTable').DataTable({
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/French.json"
+        },
+        "order": [[ 6, "desc" ]],
+        "pageLength": 25
+    });
+});
+</script>
+{% endblock %}

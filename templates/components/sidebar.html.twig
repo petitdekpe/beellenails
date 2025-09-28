@@ -124,8 +124,20 @@
                 </button>
                 <ul id="dropdown-formations" class="{{ formation_active ? '' : 'hidden' }} py-2 space-y-2">
                     <li>
-                        <a href="{{ path('app_dashboard_formations_index') }}" 
+                        <a href="{{ path('app_dashboard_formations_index') }}"
                            class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 {{ route == 'app_dashboard_formations_index' ? 'bg-pink-100 font-medium' : '' }}">📚 Gestion des formations</a>
+                    </li>
+                    <li>
+                        <a href="{{ path('app_dashboard_formation_enrollments_all') }}"
+                           class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 {{ route == 'app_dashboard_formation_enrollments_all' ? 'bg-pink-100 font-medium' : '' }}">👥 Inscriptions</a>
+                    </li>
+                    <li>
+                        <a href="{{ path('app_dashboard_formation_payments_all') }}"
+                           class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 {{ route == 'app_dashboard_formation_payments_all' ? 'bg-pink-100 font-medium' : '' }}">💰 Paiements formations</a>
+                    </li>
+                    <li>
+                        <a href="{{ path('app_dashboard_formation_progress_all') }}"
+                           class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 {{ route == 'app_dashboard_formation_progress_all' ? 'bg-pink-100 font-medium' : '' }}">📊 Progressions</a>
                     </li>
                     <li>
                         <a href="{{ path('app_dashboard_formation_new') }}" 

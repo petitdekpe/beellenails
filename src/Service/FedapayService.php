@@ -38,21 +38,6 @@ class FedapayService
 		$this->fedaTransaction = $transaction;
 	}
 
-	public function initTransaction(int $amount, string $description, User $user)
-	{
-
-		$returnUrl = $this->urlGenerator->generate('payment_callback', [], UrlGeneratorInterface::ABSOLUTE_URL);
-		
-		$this->transaction = $this->fedaTransaction->create([
-			'description' => $description,
-			'amount' => $amount,
-			'currency' => ['iso' => 'XOF'],
-			'callback_url' => $returnUrl,
-			'customer' => $user->toArrayForPayment(),
-		]);
-
-		return $this->transaction;
-	}
 
 	public function generateToken()
 	{

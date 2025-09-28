@@ -334,7 +334,21 @@
                         
                         {% if formation.isAvailable %}
                             {% if is_granted('ROLE_USER') %}
-                                {% if formation.isFree %}
+                                {% if isEnrolled %}
+                                    <!-- User is already enrolled - Show access button -->
+                                    <a href="{{ path('app_user_learning_formation_detail', {id: formation.id}) }}"
+                                       class="w-full inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                        🎓 Accéder à ma formation
+                                    </a>
+                                    <div class="mt-3 p-3 bg-green-50 rounded-md">
+                                        <p class="text-sm text-green-800">
+                                            <strong>✅ Inscrit depuis le :</strong> {{ enrollment.enrolledAt|date('d/m/Y à H:i') }}
+                                            {% if enrollment.progressPercentage > 0 %}
+                                                <br><strong>Progression :</strong> {{ enrollment.progressPercentage }}%
+                                            {% endif %}
+                                        </p>
+                                    </div>
+                                {% elseif formation.isFree %}
                                     <button id="enroll-free-btn" data-formation-id="{{ formation.id }}"
                                             class="w-full inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                                         🎉 S'inscrire gratuitement

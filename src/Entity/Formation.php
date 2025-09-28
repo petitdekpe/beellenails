@@ -567,14 +567,14 @@ class Formation implements PayableEntityInterface
 
     public function getPaymentDescription(): string
     {
-        return "Formation : {$this->nom}";
+        return "Formation : {$this->Nom}";
     }
 
     public function getPaymentAmount(string $paymentType): int
     {
         return match($paymentType) {
-            'formation_full' => (int) $this->prix, // Prix complet de la formation
-            'formation_advance' => (int) ($this->prix * 0.3), // 30% d'acompte par défaut
+            'formation_full' => (int) $this->Cout, // Prix complet de la formation
+            'formation_advance' => (int) ($this->Cout * 0.3), // 30% d'acompte par défaut
             default => 0
         };
     }
@@ -597,12 +597,12 @@ class Formation implements PayableEntityInterface
 
     public function getSuccessRedirectRoute(): string
     {
-        return 'formation_payment_success';
+        return 'generic_payment_success';
     }
 
     public function getFailureRedirectRoute(): string
     {
-        return 'formation_payment_error';
+        return 'generic_payment_error';
     }
 
     public function getEntityType(): string
@@ -614,8 +614,8 @@ class Formation implements PayableEntityInterface
     {
         return [
             'formation_id' => $this->id,
-            'formation_name' => $this->nom,
-            'formation_price' => $this->prix,
+            'formation_name' => $this->Nom,
+            'formation_price' => $this->Cout,
             'formation_type' => $this->accessType
         ];
     }

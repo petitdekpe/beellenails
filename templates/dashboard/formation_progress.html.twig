@@ -1,0 +1,246 @@
+{% extends 'dashboard.html.twig' %}
+
+{% block title %}Progression formations - Dashboard{% endblock %}
+
+{% block body %}
+<div class="container-fluid px-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0 text-gray-800">📊 Suivi des progressions</h1>
+                <div>
+                    <small class="text-muted">{{ enrollments|length }} apprenant{{ enrollments|length > 1 ? 's' : '' }} actif{{ enrollments|length > 1 ? 's' : '' }}</small>
+                </div>
+            </div>
+
+            <!-- Progress Statistics -->
+            <div class="row mb-4">
+                {% set completedCount = 0 %}
+                {% set inProgressCount = 0 %}
+                {% set notStartedCount = 0 %}
+                {% set totalProgress = 0 %}
+
+                {% for enrollment in enrollments %}
+                    {% set progress = enrollment.progressPercentage|default(0) %}
+                    {% set totalProgress = totalProgress + progress %}
+                    {% if progress == 100 %}
+                        {% set completedCount = completedCount + 1 %}
+                    {% elseif progress > 0 %}
+                        {% set inProgressCount = inProgressCount + 1 %}
+                    {% else %}
+                        {% set notStartedCount = notStartedCount + 1 %}
+                    {% endif %}
+                {% endfor %}
+
+                {% set averageProgress = enrollments|length > 0 ? (totalProgress / enrollments|length) : 0 %}
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-success shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                        Formations terminées</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ completedCount }}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-trophy fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                        En cours</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ inProgressCount }}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-play-circle fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-warning shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                        Non commencées</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ notStartedCount }}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-pause-circle fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-info shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                        Progression moyenne</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ averageProgress|round }}%</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-chart-line fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Table -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Détail des progressions</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Apprenant</th>
+                                    <th>Formation</th>
+                                    <th>Inscription</th>
+                                    <th>Progression</th>
+                                    <th>Dernier accès</th>
+                                    <th>Temps d'étude</th>
+                                    <th>Statut</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for enrollment in enrollments %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div>
+                                                <strong>{{ enrollment.user.fullName }}</strong><br>
+                                                <small class="text-muted">{{ enrollment.user.email }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <strong>{{ enrollment.formation.nom }}</strong><br>
+                                        <small class="text-muted">{{ enrollment.formation.modules|length }} module{{ enrollment.formation.modules|length > 1 ? 's' : '' }}</small>
+                                    </td>
+                                    <td>{{ enrollment.enrolledAt|date('d/m/Y') }}</td>
+                                    <td>
+                                        {% set progress = enrollment.progressPercentage|default(0) %}
+                                        <div class="d-flex align-items-center">
+                                            <div class="progress flex-grow-1 mr-2" style="height: 20px;">
+                                                <div class="progress-bar
+                                                    {% if progress == 100 %}bg-success
+                                                    {% elseif progress >= 75 %}bg-info
+                                                    {% elseif progress >= 50 %}bg-warning
+                                                    {% elseif progress >= 25 %}bg-primary
+                                                    {% else %}bg-secondary
+                                                    {% endif %}"
+                                                     role="progressbar"
+                                                     style="width: {{ progress }}%"
+                                                     aria-valuenow="{{ progress }}"
+                                                     aria-valuemin="0"
+                                                     aria-valuemax="100">
+                                                </div>
+                                            </div>
+                                            <span class="font-weight-bold">{{ progress }}%</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if enrollment.lastAccessedAt %}
+                                            {{ enrollment.lastAccessedAt|date('d/m/Y H:i') }}<br>
+                                            <small class="text-muted">
+                                                {% set daysSince = date().diff(enrollment.lastAccessedAt).days %}
+                                                {% if daysSince == 0 %}
+                                                    Aujourd'hui
+                                                {% elseif daysSince == 1 %}
+                                                    Hier
+                                                {% else %}
+                                                    Il y a {{ daysSince }} jour{{ daysSince > 1 ? 's' : '' }}
+                                                {% endif %}
+                                            </small>
+                                        {% else %}
+                                            <span class="text-muted">Jamais consulté</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% set daysSinceEnrollment = date().diff(enrollment.enrolledAt).days %}
+                                        <span class="text-muted">{{ daysSinceEnrollment }} jour{{ daysSinceEnrollment > 1 ? 's' : '' }}</span>
+                                    </td>
+                                    <td>
+                                        {% if enrollment.progressPercentage == 100 %}
+                                            <span class="badge badge-success">Terminé</span>
+                                            {% if enrollment.completedAt %}
+                                                <br><small class="text-muted">{{ enrollment.completedAt|date('d/m/Y') }}</small>
+                                            {% endif %}
+                                        {% elseif enrollment.progressPercentage > 0 %}
+                                            <span class="badge badge-primary">En cours</span>
+                                        {% else %}
+                                            <span class="badge badge-warning">Non commencé</span>
+                                        {% endif %}
+
+                                        {% if enrollment.expiresAt and enrollment.expiresAt < date() %}
+                                            <br><span class="badge badge-danger mt-1">Expiré</span>
+                                        {% elseif enrollment.expiresAt %}
+                                            {% set daysUntilExpiry = date().diff(enrollment.expiresAt).days %}
+                                            {% if daysUntilExpiry <= 7 %}
+                                                <br><span class="badge badge-warning mt-1">Expire dans {{ daysUntilExpiry }} j.</span>
+                                            {% endif %}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="{{ path('app_user_learning_formation_detail', {id: enrollment.formation.id}) }}"
+                                               class="btn btn-sm btn-outline-primary" title="Voir détails">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="{{ path('app_formation_show', {id: enrollment.formation.id}) }}"
+                                               class="btn btn-sm btn-outline-success" title="Voir formation">
+                                                <i class="fas fa-graduation-cap"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="8" class="text-center text-muted">Aucune progression trouvée</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    $('#dataTable').DataTable({
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/French.json"
+        },
+        "order": [[ 3, "desc" ]],
+        "pageLength": 25,
+        "columnDefs": [
+            { "type": "num", "targets": 3 } // Sort progress column numerically
+        ]
+    });
+});
+</script>
+{% endblock %}

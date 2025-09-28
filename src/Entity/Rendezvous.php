@@ -415,7 +415,7 @@ class Rendezvous implements PayableEntityInterface
         // Cette méthode sera utilisée par le service PaymentTypeResolver
         // Pour l'instant, retourner une valeur par défaut
         return match($paymentType) {
-            'rendezvous_advance' => 5000, // Sera remplacé par la configuration
+            'rendezvous_advance' => 100000, // 1000 francs CFA minimum (100000 centimes)
             default => 0
         };
     }

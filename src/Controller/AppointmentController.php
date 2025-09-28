@@ -151,7 +151,7 @@ class AppointmentController extends AbstractController
             $session->remove('choixPrestation_data');
             $session->remove('choixDate_data');
 
-            return $this->redirectToRoute('payment_init', ['rendezvous' => $rendezvous->getId()]);
+            return $this->redirectToRoute('payment_choice', ['rendezvous' => $rendezvous->getId()]);
         }
 
         // Si le formulaire n'est pas soumis ou n'est pas valide, affichez le formulaire

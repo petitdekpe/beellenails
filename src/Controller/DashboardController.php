@@ -11,6 +11,8 @@ use App\Form\SearchType;
 use App\Model\SearchData;
 use App\Entity\Prestation;
 use App\Entity\Rendezvous;
+use App\Entity\FormationEnrollment;
+use App\Entity\Payment;
 use App\Form\DateCongeType;
 use App\Form\PrestationType;
 use App\Form\AdminAddRdvType;
@@ -653,6 +655,60 @@ class DashboardController extends AbstractController
     {
         return $this->render('dashboard/formation.html.twig', [
             'formations' => $formationRepository->findAll(),
+        ]);
+    }
+
+    // Gestion des inscriptions aux formations
+    #[Route('/dashboard/formation-enrollments-all', name: 'app_dashboard_formation_enrollments_all', methods: ['GET'])]
+    public function formationEnrollments(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $enrollments = $entityManager->getRepository(FormationEnrollment::class)
+            ->createQueryBuilder('e')
+            ->leftJoin('e.user', 'u')
+            ->leftJoin('e.formation', 'f')
+            ->orderBy('e.enrolledAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+
+        return $this->render('dashboard/formation_enrollments.html.twig', [
+            'enrollments' => $enrollments,
+        ]);
+    }
+
+    // Gestion des paiements formations
+    #[Route('/dashboard/formation-payments-all', name: 'app_dashboard_formation_payments_all', methods: ['GET'])]
+    public function formationPayments(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $payments = $entityManager->getRepository(Payment::class)
+            ->createQueryBuilder('p')
+            ->where('p.entityType = :entityType')
+            ->setParameter('entityType', 'formation')
+            ->leftJoin('p.customer', 'u')
+            ->orderBy('p.createdAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+
+        return $this->render('dashboard/formation_payments.html.twig', [
+            'payments' => $payments,
+        ]);
+    }
+
+    // Suivi des progressions
+    #[Route('/dashboard/formation-progress-all', name: 'app_dashboard_formation_progress_all', methods: ['GET'])]
+    public function formationProgress(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $enrollments = $entityManager->getRepository(FormationEnrollment::class)
+            ->createQueryBuilder('e')
+            ->leftJoin('e.user', 'u')
+            ->leftJoin('e.formation', 'f')
+            ->where('e.status = :status')
+            ->setParameter('status', 'active')
+            ->orderBy('e.progressPercentage', 'DESC')
+            ->getQuery()
+            ->getResult();
+
+        return $this->render('dashboard/formation_progress.html.twig', [
+            'enrollments' => $enrollments,
         ]);
     }
 

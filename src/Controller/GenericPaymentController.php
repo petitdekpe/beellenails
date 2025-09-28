@@ -13,6 +13,7 @@ use App\Service\FedapayService;
 use App\Service\FeexpayService;
 use App\Service\PaymentTypeResolver;
 use App\Service\PromoCodeService;
+use App\Service\NotificationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -30,18 +31,26 @@ class GenericPaymentController extends AbstractController
         private readonly PaymentTypeResolver $paymentTypeResolver,
         private readonly FedapayService $fedapayService,
         private readonly FeexpayService $feexpayService,
-        private readonly LoggerInterface $logger
+        private readonly LoggerInterface $logger,
+        private readonly NotificationService $notificationService
     ) {}
 
     #[Route('/payment/{provider}/{paymentType}/{entityType}/{entityId}', name: 'generic_payment_init', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_USER')]
     public function initPayment(
         string $provider,
         string $paymentType,
         string $entityType,
         int $entityId,
-        Request $request,
-        ?User $user = null
+        Request $request
     ): Response {
+        $this->logger->info('[Generic Payment] Starting payment init', [
+            'provider' => $provider,
+            'paymentType' => $paymentType,
+            'entityType' => $entityType,
+            'entityId' => $entityId
+        ]);
+
         // Validate provider
         if (!in_array($provider, ['fedapay', 'feexpay'])) {
             throw $this->createNotFoundException("Provider non supporté: {$provider}");
@@ -54,10 +63,32 @@ class GenericPaymentController extends AbstractController
 
         // Resolve entity
         $entity = $this->paymentTypeResolver->resolveEntityByTypeAndId($entityType, $entityId);
+
+        $this->logger->info('[Generic Payment] Entity resolved', [
+            'entity_class' => get_class($entity),
+            'entity_id' => $entity->getId()
+        ]);
+
+        // Check if payment is already completed for this entity
+        if ($entityType === 'rendezvous' && $entity instanceof \App\Entity\Rendezvous) {
+            if ($entity->getStatus() === 'Rendez-vous pris' || $entity->isPaid()) {
+                $this->addFlash('warning', 'Ce rendez-vous a déjà été payé et confirmé.');
+                return $this->redirectToRoute('app_dashboard_rendezvous');
+            }
+        } elseif ($entityType === 'formation' && $entity instanceof \App\Entity\Formation) {
+            // For formations, we can allow multiple enrollments, but we could add checks here if needed
+        }
+
+        // Get user for payment (use current logged-in user)
+        $currentUser = $this->getUser();
+        if (!$currentUser) {
+            throw $this->createAccessDeniedException('User must be logged in to make a payment');
+        }
+        $paymentUser = $this->paymentTypeResolver->getUserForPayment($entity, $currentUser);
         
-        // Get user for payment
-        $paymentUser = $this->paymentTypeResolver->getUserForPayment($entity, $user);
-        
+        // Get payment description
+        $description = $this->paymentTypeResolver->getPaymentDescription($paymentType, $entity);
+
         // Get payment amount (handle access_type for formations)
         $amount = $this->paymentTypeResolver->getPaymentAmount($paymentType, $entity);
 
@@ -80,9 +111,6 @@ class GenericPaymentController extends AbstractController
         if ($amount <= 0) {
             throw $this->createNotFoundException("Montant de paiement non configuré pour le type: {$paymentType}");
         }
-
-        // Get payment description
-        $description = $this->paymentTypeResolver->getPaymentDescription($paymentType, $entity);
 
         $this->logger->info('[Generic Payment Init] Initiating payment', [
             'provider' => $provider,
@@ -110,9 +138,24 @@ class GenericPaymentController extends AbstractController
         string $description
     ): Response {
         try {
+            $this->logger->info('[Generic Payment FedaPay] Starting transaction creation', [
+                'amount' => $amount,
+                'description' => $description,
+                'user_id' => $user->getId()
+            ]);
+
             // Initialize FedaPay transaction
-            $transaction = $this->fedapayService->initTransaction($amount, $description, $user);
+            $transaction = $this->fedapayService->createGenericTransaction($amount, $description, $user);
+
+            $this->logger->info('[Generic Payment FedaPay] Transaction created', [
+                'transaction_id' => $transaction->id ?? 'unknown'
+            ]);
+
             $token = $this->fedapayService->generateToken();
+
+            $this->logger->info('[Generic Payment FedaPay] Token generated', [
+                'token_url' => $token->url ?? 'unknown'
+            ]);
 
             // Create payment record
             $payment = new Payment();
@@ -154,7 +197,8 @@ class GenericPaymentController extends AbstractController
 
             return $this->render('payment/error.html.twig', [
                 'error' => 'Erreur lors de l\'initialisation du paiement FedaPay',
-                'entity' => $entity
+                'entity' => $entity,
+                'payment' => null
             ]);
         }
     }
@@ -339,7 +383,9 @@ class GenericPaymentController extends AbstractController
         if (!$transactionID) {
             $this->logger->error('[Generic Payment Callback] Transaction ID manquant');
             return $this->render('payment/error.html.twig', [
-                'error' => 'Transaction ID manquant'
+                'error' => 'Transaction ID manquant',
+                'payment' => null,
+                'entity' => null
             ]);
         }
 
@@ -378,7 +424,12 @@ class GenericPaymentController extends AbstractController
                 if (in_array($newStatus, ['approved', 'successful'])) {
                     $entity->onPaymentSuccess();
                     $this->entityManager->flush();
-                    
+
+                    // Envoyer les notifications email si c'est un rendez-vous
+                    if ($entity instanceof \App\Entity\Rendezvous) {
+                        $this->notificationService->sendPaymentConfirmation($entity);
+                    }
+
                     return $this->redirectToRoute('generic_payment_success', [
                         'reference' => $payment->getReference()
                     ]);
@@ -412,7 +463,9 @@ class GenericPaymentController extends AbstractController
             ]);
 
             return $this->render('payment/error.html.twig', [
-                'error' => 'Erreur lors du traitement du callback'
+                'error' => 'Erreur lors du traitement du callback',
+                'payment' => null,
+                'entity' => null
             ]);
         }
     }
@@ -553,6 +606,11 @@ class GenericPaymentController extends AbstractController
                 if ($entity && method_exists($entity, 'onPaymentSuccess')) {
                     $entity->onPaymentSuccess();
                     $this->entityManager->persist($entity);
+
+                    // Envoyer les notifications email si c'est un rendez-vous
+                    if ($entity instanceof \App\Entity\Rendezvous) {
+                        $this->notificationService->sendPaymentConfirmation($entity);
+                    }
                 }
             } catch (\Exception $e) {
                 $this->logger->error('[Generic Payment] Error updating entity on payment success', [
@@ -564,6 +622,41 @@ class GenericPaymentController extends AbstractController
         
         $this->entityManager->persist($payment);
         $this->entityManager->flush();
+    }
+
+    #[Route('/test-fedapay', name: 'test_fedapay')]
+    public function testFedaPay(): Response
+    {
+        try {
+            $this->logger->info('[Test FedaPay] Starting test');
+
+            $user = $this->getUser();
+            if (!$user) {
+                return new Response('No user logged in');
+            }
+
+            $this->logger->info('[Test FedaPay] User found', ['user_id' => $user->getId()]);
+
+            $transaction = $this->fedapayService->createGenericTransaction(
+                5000,
+                'Test transaction',
+                $user
+            );
+
+            $this->logger->info('[Test FedaPay] Transaction created', [
+                'transaction_id' => $transaction->id ?? 'unknown'
+            ]);
+
+            return new Response('FedaPay test successful');
+
+        } catch (\Exception $e) {
+            $this->logger->error('[Test FedaPay] Error', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return new Response('FedaPay test failed: ' . $e->getMessage());
+        }
     }
 
     private function calculateFormationPrice(\App\Entity\Formation $formation, string $accessType): int

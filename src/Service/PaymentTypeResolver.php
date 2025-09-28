@@ -110,7 +110,7 @@ class PaymentTypeResolver
 
         // Default fallback
         return match($paymentType) {
-            'rendezvous_advance' => 5000,
+            'rendezvous_advance' => 100000, // 1000 francs CFA minimum
             'formation_full' => 0,
             'formation_advance' => 0,
             'custom' => 0,
