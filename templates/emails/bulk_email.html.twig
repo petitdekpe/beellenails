@@ -27,10 +27,12 @@
             border-bottom: 2px solid #e91e63;
         }
         .logo {
-            color: #e91e63;
-            font-size: 28px;
-            font-weight: bold;
             margin-bottom: 10px;
+        }
+        .logo img {
+            max-height: 80px;
+            width: auto;
+            margin: 0 auto;
         }
         .greeting {
             font-size: 18px;
@@ -76,8 +78,10 @@
 <body>
     <div class="email-container">
         <div class="header">
-            <div class="logo">💅 Beelle Nails</div>
-            <div style="color: #666; font-size: 14px;">Institut de beauté spécialisé en soins des ongles</div>
+            <div class="logo">
+                <img src="https://beellenails.com/assets/logooff.png" alt="BeElle Nails" style="max-height: 80px; width: auto; display: block; margin: 0 auto;">
+            </div>
+            <div style="color: #666; font-size: 14px; margin-top: 10px;">Institut de beauté spécialisé en soins des ongles</div>
         </div>
         
         <div class="greeting">
@@ -94,21 +98,38 @@
         </div>
         
         <div class="footer">
-            <div class="contact-info">
-                <strong>📧 Email :</strong> beellenailscare@beellenails.com<br>
-                <strong>🌐 Site web :</strong> www.beellenails.com<br>
-                <strong>📱 Réservation en ligne disponible</strong>
+            <div style="text-align: center; margin-bottom: 20px;">
+                <img src="https://beellenails.com/assets/logooffwhite.png" alt="BeElle Nails" style="max-height: 60px; width: auto; display: inline-block;">
             </div>
-            
+
+            <div class="contact-info">
+                <strong>📍 Adresse :</strong> Vodjè, 2eme rue après la clinique de l'union en allant à gbegamey, au fond de la rue à droite, portail rose<br>
+                <strong>📧 Email :</strong> <a href="mailto:beellenailscare@beellenails.com" style="color: #e91e63; text-decoration: none;">beellenailscare@beellenails.com</a><br>
+                <strong>🌐 Site web :</strong> <a href="https://beellenails.com" style="color: #e91e63; text-decoration: none;">www.beellenails.com</a><br>
+                <strong>📱 WhatsApp :</strong> <a href="https://wa.me/22997853512" style="color: #e91e63; text-decoration: none;">+229 97 85 35 12</a>
+            </div>
+
+            <div style="text-align: center; margin: 20px 0;">
+                <a href="https://www.instagram.com/be.elle.beauty" style="display: inline-block; margin: 0 10px; color: #e91e63; text-decoration: none;">
+                    📷 Instagram
+                </a>
+                <a href="https://www.tiktok.com/@be_elle6" style="display: inline-block; margin: 0 10px; color: #e91e63; text-decoration: none;">
+                    🎵 TikTok
+                </a>
+                <a href="https://wa.me/22997853512" style="display: inline-block; margin: 0 10px; color: #e91e63; text-decoration: none;">
+                    💬 WhatsApp
+                </a>
+            </div>
+
             <div class="unsubscribe">
                 <strong>🔒 Confidentialité et désinscription</strong><br>
-                Vous recevez ce message car vous êtes client(e) chez Beelle Nails. Vos données sont protégées selon le RGPD.<br>
-                Pour vous désabonner : <a href="mailto:murielahodode@gmail.com?subject=Desinscription&body=Je souhaite me désabonner des communications Beelle Nails." style="color: #e91e63;">cliquez ici</a> ou répondez avec "STOP".
+                Vous recevez ce message car vous êtes client(e) chez BeElle Nails. Vos données sont protégées selon le RGPD.<br>
+                Pour vous désabonner : <a href="mailto:beellenailscare@beellenails.com?subject=Desinscription&body=Je souhaite me désabonner des communications BeElle Nails." style="color: #e91e63;">cliquez ici</a> ou répondez avec "STOP".
             </div>
-            
+
             <p style="margin-top: 15px; font-size: 12px; color: #999; text-align: center;">
-                <strong>Beelle Nails</strong> - Institut de beauté professionnel<br>
-                Email envoyé le {{ "now"|date("d/m/Y à H:i") }} - ID: {{ random(1000, 9999) }}
+                © 2025 <strong>BeElle Nails™</strong> - Institut de beauté professionnel - Tous droits réservés<br>
+                Email envoyé le {{ "now"|date("d/m/Y à H:i") }}
             </p>
         </div>
     </div>

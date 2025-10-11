@@ -1,0 +1,208 @@
+USER STORIES - MODULE CODES PROMO
+==================================
+
+👨‍💼 GESTION DES CODES PROMO (ADMIN)
+-------------------------------------
+
+US-P01: Créer un code promo
+En tant qu'administrateur
+Je veux créer un nouveau code promo avec ses paramètres (type, valeur, dates, limites)
+Afin de proposer des réductions aux clients
+
+US-P02: Générer un code aléatoire
+En tant qu'administrateur
+Je veux générer automatiquement un code promo unique
+Afin de gagner du temps et éviter les doublons
+
+US-P03: Voir la liste des codes promo
+En tant qu'administrateur
+Je veux consulter tous les codes promo avec leur statut
+Afin de gérer l'ensemble des promotions
+
+US-P04: Filtrer les codes promo
+En tant qu'administrateur
+Je veux filtrer les codes par statut (actif, expiré, inactif) et rechercher par nom/code
+Afin de trouver rapidement un code spécifique
+
+US-P05: Voir les détails d'un code promo
+En tant qu'administrateur
+Je veux consulter les détails et statistiques d'utilisation d'un code
+Afin de mesurer son efficacité
+
+US-P06: Modifier un code promo
+En tant qu'administrateur
+Je veux éditer les paramètres d'un code promo existant
+Afin d'ajuster les conditions de la promotion
+
+US-P07: Activer/Désactiver un code promo
+En tant qu'administrateur
+Je veux activer ou désactiver rapidement un code promo
+Afin de contrôler sa disponibilité sans le supprimer
+
+US-P08: Dupliquer un code promo
+En tant qu'administrateur
+Je veux dupliquer un code existant avec un nouveau code généré
+Afin de créer rapidement des promotions similaires
+
+US-P09: Supprimer un code promo
+En tant qu'administrateur
+Je veux supprimer un code promo non utilisé
+Afin de nettoyer la liste des codes obsolètes
+
+US-P10: Voir les codes expirant bientôt
+En tant qu'administrateur
+Je veux être alerté des codes qui expirent dans les 7 prochains jours
+Afin de décider de prolonger ou non les promotions
+
+
+📊 STATISTIQUES (ADMIN)
+------------------------
+
+US-P11: Consulter les statistiques globales
+En tant qu'administrateur
+Je veux voir les stats globales (codes actifs, total utilisations, CA généré)
+Afin d'avoir une vue d'ensemble des promotions
+
+US-P12: Voir les statistiques par période
+En tant qu'administrateur
+Je veux filtrer les statistiques par période (7j, 30j, 90j, 1an)
+Afin d'analyser les tendances
+
+US-P13: Voir les codes les plus utilisés
+En tant qu'administrateur
+Je veux consulter le top 10 des codes les plus utilisés
+Afin d'identifier les promotions les plus performantes
+
+US-P14: Voir les utilisateurs les plus actifs
+En tant qu'administrateur
+Je veux voir le top 10 des utilisateurs utilisant le plus de codes promo
+Afin d'identifier les comportements d'achat
+
+US-P15: Détecter les tentatives suspectes
+En tant qu'administrateur
+Je veux voir les tentatives d'utilisation échouées ou suspectes
+Afin de détecter d'éventuels abus
+
+
+💳 UTILISATION DES CODES (CLIENT)
+----------------------------------
+
+US-P16: Appliquer un code promo sur un rendez-vous
+En tant qu'utilisateur client
+Je veux entrer un code promo lors de la réservation
+Afin de bénéficier d'une réduction
+
+US-P17: Voir la réduction appliquée
+En tant qu'utilisateur client
+Je veux voir le montant de la réduction après avoir saisi le code
+Afin de vérifier l'économie réalisée
+
+US-P18: Voir les messages d'erreur clairs
+En tant qu'utilisateur client
+Je veux comprendre pourquoi mon code ne fonctionne pas (expiré, limite atteinte, etc.)
+Afin de savoir si je peux utiliser un autre code
+
+US-P19: Appliquer un code promo sur une formation
+En tant qu'utilisateur client
+Je veux utiliser un code promo lors de l'achat d'une formation
+Afin de payer moins cher
+
+
+🔒 RÈGLES DE VALIDATION
+------------------------
+
+US-P20: Valider le code actif
+Le système doit vérifier que le code est actif
+Afin d'empêcher l'utilisation de codes désactivés
+
+US-P21: Valider la période de validité
+Le système doit vérifier que la date actuelle est entre validFrom et validUntil
+Afin d'empêcher l'utilisation de codes expirés ou futurs
+
+US-P22: Valider le montant minimum
+Le système doit vérifier que le panier atteint le montant minimum requis
+Afin d'appliquer les conditions de la promotion
+
+US-P23: Valider la limite globale d'utilisation
+Le système doit vérifier que le nombre d'utilisations globales n'est pas dépassé
+Afin de limiter le budget de la promotion
+
+US-P24: Valider la limite par utilisateur
+Le système doit vérifier que l'utilisateur n'a pas dépassé sa limite d'utilisation
+Afin d'éviter les abus
+
+US-P25: Valider l'éligibilité de la prestation
+Le système doit vérifier que le code est valide pour la prestation choisie
+Afin d'appliquer les restrictions de la promotion
+
+
+💰 CALCUL DE RÉDUCTION
+-----------------------
+
+US-P26: Calculer une réduction en pourcentage
+Le système doit calculer X% du montant total
+Afin d'appliquer une réduction proportionnelle
+
+US-P27: Calculer une réduction en montant fixe
+Le système doit soustraire un montant fixe du total
+Afin d'appliquer une réduction absolue
+
+US-P28: Appliquer une réduction maximale
+Le système doit limiter la réduction au maximum défini (si configuré)
+Afin de contrôler le budget des promotions à pourcentage
+
+
+📝 TRAÇABILITÉ
+--------------
+
+US-P29: Enregistrer les tentatives d'utilisation
+Le système doit enregistrer chaque tentative (réussie ou échouée)
+Afin de tracer l'utilisation des codes
+
+US-P30: Incrémenter le compteur d'utilisation
+Le système doit augmenter currentUsage quand le code est validé
+Afin de suivre le nombre d'utilisations
+
+US-P31: Lier le code au rendez-vous
+Le système doit associer le code promo au rendez-vous créé
+Afin de garder l'historique des réductions appliquées
+
+
+NOTES POUR LE QA TESTER
+========================
+
+Routes principales à tester:
+- /dashboard/promo-codes (liste - ADMIN)
+- /dashboard/promo-codes/new (création - ADMIN)
+- /dashboard/promo-codes/{id} (détail - ADMIN)
+- /dashboard/promo-codes/{id}/edit (édition - ADMIN)
+- /dashboard/promo-codes/{id}/toggle-status (activation/désactivation - ADMIN)
+- /dashboard/promo-codes/{id}/duplicate (duplication - ADMIN)
+- /dashboard/promo-codes/{id}/delete (suppression - ADMIN)
+- /dashboard/promo-codes/stats (statistiques - ADMIN)
+- /dashboard/promo-codes/generate-code (génération - ADMIN)
+
+Service principal:
+- PromoCodeService->validatePromoCode() : validation complète
+- PromoCodeService->calculateDiscount() : calcul de réduction
+
+Points de vigilance:
+- Vérifier que seuls les ADMIN peuvent accéder aux routes de gestion
+- Tester tous les cas d'invalidation (expiré, inactif, limite atteinte, etc.)
+- Vérifier le calcul correct des réductions (pourcentage vs fixe)
+- Tester la limite maximale de réduction pour les pourcentages
+- Vérifier qu'on ne peut pas supprimer un code avec des utilisations validées
+- Tester la duplication (nouveau code généré, inactif par défaut)
+- Vérifier l'unicité des codes (pas de doublon)
+- Tester les filtres de recherche et de statut
+- Vérifier que les codes sont en majuscules automatiquement
+- Tester l'application sur différents types de prestations
+- Vérifier la pagination (20 items par page)
+
+Cas limites à tester:
+- Code expirant exactement aujourd'hui
+- Réduction de 100%
+- Montant minimum égal au panier
+- Limite d'utilisation à 1
+- Code sans prestations éligibles (valable pour toutes)
+- Code avec maximum discount sur un gros panier

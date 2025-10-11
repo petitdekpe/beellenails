@@ -1,0 +1,157 @@
+USER STORIES - MODULE FORMATIONS
+=================================
+
+📚 CONSULTATION DES FORMATIONS
+-------------------------------
+
+US-F01: Voir le catalogue des formations
+En tant qu'utilisateur visiteur
+Je veux consulter la liste de toutes les formations disponibles
+Afin de découvrir les contenus proposés
+
+US-F02: Filtrer les formations
+En tant qu'utilisateur visiteur
+Je veux filtrer les formations par thème, niveau, durée et disponibilité
+Afin de trouver rapidement une formation qui correspond à mes besoins
+
+US-F03: Voir les détails d'une formation
+En tant qu'utilisateur visiteur
+Je veux voir tous les détails d'une formation (modules, ressources, avis, prix)
+Afin de décider si je veux m'inscrire
+
+
+🎓 INSCRIPTION ET PAIEMENT
+---------------------------
+
+US-F04: S'inscrire à une formation gratuite
+En tant qu'utilisateur connecté
+Je veux m'inscrire directement à une formation gratuite
+Afin de commencer ma formation immédiatement
+
+US-F05: Payer et s'inscrire à une formation payante
+En tant qu'utilisateur connecté
+Je veux payer une formation via Stripe
+Afin de débloquer l'accès au contenu
+
+
+📖 APPRENTISSAGE
+----------------
+
+US-F06: Accéder à mon espace formations
+En tant qu'utilisateur inscrit
+Je veux voir mes formations actives et terminées
+Afin de suivre ma progression globale
+
+US-F07: Voir le détail d'une formation en cours
+En tant qu'utilisateur inscrit
+Je veux voir le programme complet avec ma progression
+Afin de savoir où j'en suis et ce qu'il me reste à faire
+
+US-F08: Consulter un module
+En tant qu'utilisateur inscrit
+Je veux accéder au contenu d'un module (vidéo, texte, ressources)
+Afin d'apprendre le contenu pédagogique
+
+US-F09: Marquer un module comme terminé
+En tant qu'utilisateur inscrit
+Je veux marquer un module comme complété
+Afin de progresser dans ma formation
+
+US-F10: Suivre ma progression
+En tant qu'utilisateur inscrit
+Je veux voir mon pourcentage de progression et temps passé
+Afin de mesurer mon avancement
+
+
+🏆 CERTIFICATION
+----------------
+
+US-F11: Obtenir un certificat
+En tant qu'utilisateur inscrit
+Je veux recevoir un certificat lorsque je termine une formation
+Afin de valoriser mon apprentissage
+
+US-F12: Télécharger mon certificat
+En tant qu'utilisateur inscrit
+Je veux télécharger mon certificat au format PDF
+Afin de le conserver et le partager
+
+
+⭐ AVIS ET FEEDBACK
+-------------------
+
+US-F13: Donner un avis sur une formation
+En tant qu'utilisateur connecté
+Je veux noter et commenter une formation
+Afin de partager mon expérience avec d'autres utilisateurs
+
+US-F14: Voir les avis d'une formation
+En tant qu'utilisateur visiteur
+Je veux consulter les avis et notes d'une formation
+Afin de me faire une opinion avant de m'inscrire
+
+
+📊 TABLEAU DE BORD
+------------------
+
+US-F15: Voir mon tableau de bord formations
+En tant qu'utilisateur inscrit
+Je veux voir mes statistiques (formations actives, complétées, temps total)
+Afin d'avoir une vue d'ensemble de mon parcours
+
+US-F16: Accéder rapidement à mes formations récentes
+En tant qu'utilisateur inscrit
+Je veux voir mes 3 dernières formations consultées
+Afin de reprendre rapidement où je me suis arrêté
+
+
+📥 RESSOURCES
+-------------
+
+US-F17: Télécharger des ressources
+En tant qu'utilisateur inscrit à une formation
+Je veux télécharger les fichiers mis à disposition
+Afin de les consulter hors ligne
+
+
+🔍 NAVIGATION
+-------------
+
+US-F18: Naviguer entre les modules
+En tant qu'utilisateur inscrit
+Je veux passer facilement d'un module à l'autre
+Afin de suivre le parcours pédagogique
+
+US-F19: Voir le module suivant suggéré
+En tant qu'utilisateur inscrit
+Je veux que le système me propose le prochain module à suivre
+Afin de suivre un parcours cohérent
+
+
+📧 NOTIFICATIONS
+----------------
+
+US-F20: Recevoir un email de confirmation d'inscription
+En tant qu'utilisateur inscrit
+Je veux recevoir un email confirmant mon inscription à une formation
+Afin d'avoir une trace de mon inscription
+
+
+NOTES POUR LE QA TESTER
+========================
+
+Routes principales à tester:
+- /formation (catalogue)
+- /formation/{id} (détail formation)
+- /mon-espace (dashboard)
+- /mon-espace/formations (liste mes formations)
+- /mon-espace/formation/{id} (détail progression)
+- /mon-espace/module/{enrollmentId}/{moduleId} (vue module)
+
+Points de vigilance:
+- Vérifier les permissions (utilisateur connecté vs non connecté)
+- Tester le flux complet de paiement Stripe
+- Vérifier la génération des certificats PDF
+- Tester la progression (pourcentage, temps passé)
+- Vérifier les filtres et la recherche dans le catalogue
+- Tester l'ajout d'avis (pas de doublon, modération)

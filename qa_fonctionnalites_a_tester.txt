@@ -1,0 +1,544 @@
+LISTE DES FONCTIONNALITÉS À TESTER - BEELLENAILS
+=================================================
+
+📋 LÉGENDE
+----------
+✅ = Fonctionnalité critique (doit absolument fonctionner)
+⚠️ = Fonctionnalité importante (à tester en priorité)
+ℹ️ = Fonctionnalité secondaire (à tester si temps disponible)
+
+
+═══════════════════════════════════════════════════════════════════════════════
+1. GESTION DES RENDEZ-VOUS (CÔTÉ CLIENT)
+═══════════════════════════════════════════════════════════════════════════════
+
+✅ US-RDV-001: Prise de rendez-vous - Nouveau flow (/newappointment)
+   - Sélection de la prestation
+   - Choix de la date et du créneau horaire
+   - Remplissage du formulaire client (nom, prénom, email, téléphone)
+   - Application d'un code promo (optionnel)
+   - Validation et création du RDV
+
+✅ US-RDV-002: Prise de rendez-vous - Flow calendrier (/prendrerdv)
+   - Affichage du calendrier interactif
+   - Sélection d'une prestation par catégorie
+   - Choix d'un créneau disponible
+   - Création du rendez-vous
+
+✅ US-RDV-003: Choix du mode de paiement
+   - Voir les montants (total, réduction si code promo)
+   - Choisir entre FedaPay et FeexPay (Mobile Money)
+   - Être redirigé vers la page de paiement
+
+✅ US-RDV-004: Paiement du rendez-vous
+   - Payer via le provider choisi
+   - Recevoir la confirmation de paiement
+   - Voir le statut du RDV passer à "Rendez-vous pris"
+
+⚠️ US-RDV-005: Consultation du profil client
+   - Voir ses rendez-vous à venir (/profil)
+   - Voir l'historique des rendez-vous passés
+   - Voir les statistiques (nombre de RDV, formations)
+
+ℹ️ US-RDV-006: Annulation de rendez-vous (client)
+   - Annuler un rendez-vous à venir
+   - Recevoir une confirmation par email
+
+
+═══════════════════════════════════════════════════════════════════════════════
+2. GESTION DES RENDEZ-VOUS (CÔTÉ ADMIN)
+═══════════════════════════════════════════════════════════════════════════════
+
+✅ US-ADMIN-RDV-001: Voir la liste des rendez-vous (/dashboard/rendezvous)
+   - Filtrer par statut, date, client
+   - Voir les détails de chaque RDV
+   - Paginer les résultats
+
+✅ US-ADMIN-RDV-002: Créer un rendez-vous manuellement (/dashboard/rendezvous/add)
+   - Sélectionner un client existant ou créer un nouveau
+   - Choisir la prestation
+   - Sélectionner date et créneau
+   - Définir le statut et le montant
+
+✅ US-ADMIN-RDV-003: Modifier un rendez-vous (/dashboard/rendezvous/{id}/edit)
+   - Changer la date/créneau
+   - Modifier le statut
+   - Ajuster le montant
+
+✅ US-ADMIN-RDV-004: Confirmer un rendez-vous (/dashboard/rendezvous/{id}/confirm)
+   - Passer le statut à "Rendez-vous confirmé"
+   - Envoyer un email de confirmation au client
+
+✅ US-ADMIN-RDV-005: Annuler un rendez-vous (/dashboard/rendezvous/{id}/cancel)
+   - Saisir un motif d'annulation
+   - Envoyer un email au client
+   - Libérer le créneau
+
+⚠️ US-ADMIN-RDV-006: Voir les statistiques des rendez-vous
+   - Nombre de RDV par statut
+   - Chiffre d'affaires par période
+   - Taux de conversion
+
+
+═══════════════════════════════════════════════════════════════════════════════
+3. GESTION DES CONGÉS
+═══════════════════════════════════════════════════════════════════════════════
+
+✅ US-CONGE-001: Créer un congé simple (/dashboard/create-conge)
+   - Sélectionner une date
+   - Bloquer tous les créneaux de cette date
+   - Voir la confirmation
+
+✅ US-CONGE-002: Créer plusieurs congés (/dashboard/create-conges)
+   - Sélectionner une période (date début - date fin)
+   - Bloquer tous les créneaux de la période
+   - Voir la liste des dates bloquées
+
+✅ US-CONGE-003: Annuler un congé simple (/dashboard/annuler-conge)
+   - Sélectionner une date de congé
+   - Débloquer les créneaux
+   - Rendre les créneaux à nouveau disponibles
+
+✅ US-CONGE-004: Annuler plusieurs congés (/dashboard/annuler-conges)
+   - Sélectionner une période
+   - Débloquer tous les créneaux de la période
+   - Confirmer l'annulation
+
+⚠️ US-CONGE-005: Voir le calendrier des congés (/dashboard/conges)
+   - Visualiser les périodes de congés
+   - Voir les créneaux bloqués
+
+
+═══════════════════════════════════════════════════════════════════════════════
+4. GESTION DES PRESTATIONS
+═══════════════════════════════════════════════════════════════════════════════
+
+✅ US-PRESTA-001: Créer une prestation (/dashboard/prestation/new)
+   - Saisir nom, description, prix, durée
+   - Associer à une catégorie
+   - Ajouter une image
+   - Publier ou mettre en brouillon
+
+✅ US-PRESTA-002: Modifier une prestation
+   - Éditer les informations
+   - Changer la catégorie
+   - Activer/désactiver
+
+⚠️ US-PRESTA-003: Voir la liste des prestations (/dashboard/prestation)
+   - Filtrer par catégorie
+   - Rechercher par nom
+   - Voir le nombre de RDV par prestation
+
+⚠️ US-PRESTA-004: Supprimer une prestation
+   - Vérifier qu'elle n'a pas de RDV associés
+   - Confirmer la suppression
+
+ℹ️ US-PRESTA-005: Gérer les catégories de prestations
+   - Créer, modifier, supprimer des catégories
+   - Réorganiser les prestations
+
+
+═══════════════════════════════════════════════════════════════════════════════
+5. FORMATIONS (CÔTÉ CLIENT)
+═══════════════════════════════════════════════════════════════════════════════
+
+✅ US-FORM-001: Voir le catalogue des formations (/formation)
+   - Filtrer par thème, niveau, prix, durée
+   - Voir les détails d'une formation
+   - Voir les avis et notes
+
+✅ US-FORM-002: S'inscrire à une formation gratuite
+   - Cliquer sur "S'inscrire"
+   - Accéder immédiatement au contenu
+   - Recevoir un email de confirmation
+
+✅ US-FORM-003: Acheter une formation payante
+   - Choisir le mode de paiement (FedaPay ou FeexPay)
+   - Payer via Mobile Money
+   - Accéder au contenu après paiement réussi
+
+✅ US-FORM-004: Accéder à l'espace formations (/mon-espace)
+   - Voir le dashboard avec statistiques
+   - Voir les formations actives
+   - Voir les formations terminées
+   - Accéder rapidement aux formations récentes
+
+✅ US-FORM-005: Suivre une formation (/mon-espace/formations)
+   - Voir la liste de ses formations
+   - Voir la progression de chaque formation
+   - Accéder au détail d'une formation
+
+✅ US-FORM-006: Consulter un module (/mon-espace/module/{enrollmentId}/{moduleId})
+   - Voir le contenu (vidéo, texte, ressources)
+   - Marquer le module comme terminé
+   - Naviguer au module suivant
+
+✅ US-FORM-007: Télécharger un certificat
+   - Terminer 100% de la formation
+   - Télécharger le certificat PDF
+   - Recevoir un email avec le certificat
+
+⚠️ US-FORM-008: Donner un avis sur une formation
+   - Noter de 1 à 5 étoiles
+   - Ajouter un commentaire
+   - Voir son avis en attente de modération
+
+⚠️ US-FORM-009: Télécharger des ressources
+   - Télécharger les fichiers joints à la formation
+   - Consulter les ressources hors ligne
+
+
+═══════════════════════════════════════════════════════════════════════════════
+6. FORMATIONS (CÔTÉ ADMIN)
+═══════════════════════════════════════════════════════════════════════════════
+
+✅ US-ADMIN-FORM-001: Créer une formation (/dashboard/formations/new)
+   - Remplir les informations (nom, description, prix, durée)
+   - Définir thème, niveau, prérequis
+   - Ajouter une image de couverture
+   - Créer les modules
+
+✅ US-ADMIN-FORM-002: Gérer les modules d'une formation
+   - Créer un nouveau module
+   - Modifier un module existant
+   - Réorganiser l'ordre des modules
+   - Activer/désactiver un module
+
+✅ US-ADMIN-FORM-003: Voir les inscriptions (/dashboard/formations/{id}/enrollments)
+   - Liste des apprenants inscrits
+   - Voir la progression de chaque apprenant
+   - Voir les paiements associés
+
+✅ US-ADMIN-FORM-004: Gérer les inscriptions
+   - Activer/suspendre une inscription
+   - Prolonger la durée d'accès
+   - Voir les statistiques de progression
+
+⚠️ US-ADMIN-FORM-005: Modérer les avis (/dashboard/reviews)
+   - Voir les avis en attente
+   - Approuver ou rejeter un avis
+   - Gérer la visibilité des avis
+
+⚠️ US-ADMIN-FORM-006: Voir les statistiques formations (/dashboard/formation)
+   - Nombre d'inscriptions actives/terminées
+   - Chiffre d'affaires généré
+   - Taux de complétion moyen
+   - Formations les plus populaires
+
+
+═══════════════════════════════════════════════════════════════════════════════
+7. CODES PROMO
+═══════════════════════════════════════════════════════════════════════════════
+
+✅ US-PROMO-001: Créer un code promo (/dashboard/promo-codes/new)
+   - Générer un code automatiquement ou saisir manuellement
+   - Choisir le type (pourcentage ou montant fixe)
+   - Définir la valeur de réduction
+   - Définir période de validité
+   - Limiter les utilisations (globale et par utilisateur)
+   - Restreindre à certaines prestations (optionnel)
+
+✅ US-PROMO-002: Appliquer un code promo (client)
+   - Saisir le code lors du paiement
+   - Voir la réduction appliquée
+   - Voir le nouveau total
+   - Comprendre l'erreur si le code ne fonctionne pas
+
+✅ US-PROMO-003: Gérer les codes promo (/dashboard/promo-codes)
+   - Voir la liste de tous les codes
+   - Filtrer par statut (actif, expiré, inactif)
+   - Rechercher par nom ou code
+   - Voir les statistiques d'utilisation
+
+⚠️ US-PROMO-004: Modifier un code promo (/dashboard/promo-codes/{id}/edit)
+   - Éditer les paramètres
+   - Activer/désactiver
+   - Prolonger la validité
+
+⚠️ US-PROMO-005: Dupliquer un code promo
+   - Copier un code existant
+   - Générer un nouveau code unique
+   - Le créer inactif par défaut
+
+⚠️ US-PROMO-006: Voir les statistiques des codes (/dashboard/promo-codes/stats)
+   - Codes les plus utilisés
+   - Utilisateurs les plus actifs
+   - Chiffre d'affaires perdu/gagné
+   - Tentatives suspectes
+
+ℹ️ US-PROMO-007: Supprimer un code promo
+   - Vérifier qu'il n'a pas été utilisé
+   - Confirmer la suppression
+   - Ou le désactiver s'il a été utilisé
+
+
+═══════════════════════════════════════════════════════════════════════════════
+8. GESTION DES PAIEMENTS
+═══════════════════════════════════════════════════════════════════════════════
+
+✅ US-PAY-001: Payer via FedaPay (Mobile Money)
+   - Choisir l'opérateur (MTN, Moov, etc.)
+   - Saisir le numéro de téléphone
+   - Confirmer le paiement sur son téléphone
+   - Recevoir la notification de paiement réussi
+
+✅ US-PAY-002: Payer via FeexPay (Mobile Money)
+   - Choisir l'opérateur
+   - Saisir le numéro de téléphone
+   - Confirmer le paiement
+   - Voir le statut de paiement mis à jour
+
+✅ US-PAY-003: Gérer les webhooks
+   - Recevoir les notifications de paiement (FedaPay, FeexPay)
+   - Mettre à jour le statut automatiquement
+   - Envoyer les confirmations par email
+
+✅ US-PAY-004: Voir les pages de paiement
+   - Page en attente (/payment/pending/{reference})
+   - Page de succès (/payment/success/{reference})
+   - Page d'erreur (/payment/error/{reference})
+
+⚠️ US-PAY-005: Voir l'historique des transactions (/dashboard/transactions)
+   - Liste de toutes les transactions
+   - Filtrer par statut, provider, type
+   - Voir les détails de chaque transaction
+
+⚠️ US-PAY-006: Configurer les méthodes de paiement (/dashboard/payment-methods)
+   - Activer/désactiver FedaPay, FeexPay
+   - Configurer les clés API
+   - Définir les frais et commissions
+
+⚠️ US-PAY-007: Télécharger un reçu de paiement
+   - Accéder au reçu depuis /payment/receipt/{reference}
+   - Télécharger le PDF
+   - Voir les détails de la transaction
+
+
+═══════════════════════════════════════════════════════════════════════════════
+9. GESTION DES UTILISATEURS
+═══════════════════════════════════════════════════════════════════════════════
+
+✅ US-USER-001: Inscription d'un client
+   - Remplir le formulaire (nom, prénom, email, téléphone, mot de passe)
+   - Valider l'email
+   - Se connecter
+
+✅ US-USER-002: Connexion
+   - Saisir email et mot de passe
+   - Accéder à son espace
+   - Voir ses RDV et formations
+
+⚠️ US-USER-003: Modifier son profil
+   - Changer ses informations personnelles
+   - Modifier son mot de passe
+   - Mettre à jour ses préférences
+
+⚠️ US-ADMIN-USER-001: Voir la liste des clients (/dashboard/clients)
+   - Voir tous les utilisateurs
+   - Filtrer par rôle (client, admin)
+   - Rechercher par nom/email
+   - Voir les statistiques par client
+
+⚠️ US-ADMIN-USER-002: Créer un client manuellement (/dashboard/inscription)
+   - Remplir les informations
+   - Définir le rôle
+   - Envoyer les identifiants par email
+
+ℹ️ US-ADMIN-USER-003: Modifier un utilisateur
+   - Éditer les informations
+   - Changer le rôle
+   - Activer/désactiver le compte
+
+
+═══════════════════════════════════════════════════════════════════════════════
+10. DASHBOARD & ANALYTICS
+═══════════════════════════════════════════════════════════════════════════════
+
+✅ US-DASH-001: Voir le dashboard principal (/dashboard)
+   - Statistiques globales (RDV, CA, clients)
+   - Graphiques de revenus
+   - RDV à venir aujourd'hui
+   - Activité récente
+
+⚠️ US-DASH-002: Voir les analytics avancées (/dashboard/analytics)
+   - Graphiques de revenus par période
+   - Évolution des inscriptions formations
+   - Comparaison avec période précédente
+   - Export des données
+
+⚠️ US-DASH-003: Voir les statistiques formations (/dashboard/formation)
+   - Inscriptions actives/terminées
+   - CA généré par les formations
+   - Progression moyenne
+   - Formations populaires
+
+ℹ️ US-DASH-004: Vue d'ensemble (/dashboard/overview)
+   - KPIs principaux
+   - Alertes et notifications
+   - Tâches en attente
+
+
+═══════════════════════════════════════════════════════════════════════════════
+11. GESTION DU CONTENU (CMS)
+═══════════════════════════════════════════════════════════════════════════════
+
+⚠️ US-CMS-001: Gérer les images de la page d'accueil (/dashboard/home-images)
+   - Ajouter une nouvelle image
+   - Modifier l'ordre des images
+   - Activer/désactiver une image
+   - Supprimer une image
+
+ℹ️ US-CMS-002: Gérer les emails automatiques (/dashboard/emails)
+   - Personnaliser les templates d'emails
+   - Prévisualiser les emails
+   - Activer/désactiver l'envoi automatique
+
+ℹ️ US-CMS-003: Gérer les créneaux horaires
+   - Créer de nouveaux créneaux
+   - Modifier les horaires existants
+   - Désactiver des créneaux
+
+
+═══════════════════════════════════════════════════════════════════════════════
+12. SÉCURITÉ & PERMISSIONS
+═══════════════════════════════════════════════════════════════════════════════
+
+✅ US-SEC-001: Contrôle d'accès ROLE_ADMIN
+   - Vérifier que seuls les admins accèdent au dashboard
+   - Bloquer l'accès aux clients
+
+✅ US-SEC-002: Contrôle d'accès ROLE_USER
+   - Vérifier que les clients accèdent à leur profil
+   - Bloquer l'accès aux données des autres clients
+
+⚠️ US-SEC-003: Protection CSRF
+   - Vérifier les tokens CSRF sur les formulaires
+   - Rejeter les requêtes sans token valide
+
+⚠️ US-SEC-004: Validation des entrées
+   - Vérifier la validation côté serveur
+   - Tester les injections SQL, XSS
+   - Vérifier les limites de fichiers uploadés
+
+
+═══════════════════════════════════════════════════════════════════════════════
+SCÉNARIOS DE TESTS COMPLETS (END-TO-END)
+═══════════════════════════════════════════════════════════════════════════════
+
+E2E-001: Parcours complet - Réservation de RDV avec paiement
+1. Client visite la page d'accueil
+2. Clique sur "Prendre RDV"
+3. Sélectionne une prestation
+4. Choisit une date et un créneau
+5. Remplit le formulaire
+6. Applique un code promo
+7. Choisit un mode de paiement
+8. Paie et reçoit la confirmation
+9. Reçoit l'email de confirmation
+10. Voir le RDV dans son profil
+
+E2E-002: Parcours complet - Achat de formation
+1. Client consulte le catalogue formations
+2. Clique sur une formation
+3. Voit les détails et avis
+4. Clique sur "S'inscrire"
+5. Paie la formation
+6. Accède au premier module
+7. Complète tous les modules
+8. Obtient son certificat
+9. Donne un avis
+
+E2E-003: Parcours admin - Gestion d'un RDV
+1. Admin se connecte
+2. Voit les nouveaux RDV sur le dashboard
+3. Clique sur un RDV en attente
+4. Confirme le RDV
+5. Email automatique envoyé au client
+6. Le jour J, marque le RDV comme terminé
+
+E2E-004: Parcours admin - Création d'une campagne promo
+1. Admin crée un code promo
+2. Définit -20% pour les nouvelles prestations
+3. Valide du 01/01 au 31/01
+4. Active le code
+5. Client l'utilise lors d'une réservation
+6. Admin voit les statistiques d'utilisation
+
+
+═══════════════════════════════════════════════════════════════════════════════
+TESTS DE RÉGRESSION (À VÉRIFIER APRÈS CHAQUE DÉPLOIEMENT)
+═══════════════════════════════════════════════════════════════════════════════
+
+REG-001: Les paiements FedaPay fonctionnent toujours
+REG-002: Les paiements FeexPay fonctionnent toujours
+REG-004: Les emails de confirmation sont envoyés
+REG-005: Les codes promo s'appliquent correctement
+REG-006: Les certificats se génèrent en PDF
+REG-007: Les webhooks sont reçus et traités
+REG-008: La progression des formations se met à jour
+REG-009: Les congés bloquent bien les créneaux
+REG-010: Le dashboard affiche les bonnes statistiques
+
+
+═══════════════════════════════════════════════════════════════════════════════
+TESTS DE PERFORMANCE
+═══════════════════════════════════════════════════════════════════════════════
+
+PERF-001: Temps de chargement de la page d'accueil < 3s
+PERF-002: Temps de chargement du catalogue formations < 2s
+PERF-003: Temps de réponse API paiement < 5s
+PERF-004: Génération du certificat PDF < 3s
+PERF-005: Chargement du dashboard admin < 4s
+
+
+═══════════════════════════════════════════════════════════════════════════════
+TESTS COMPATIBILITÉ NAVIGATEURS
+═══════════════════════════════════════════════════════════════════════════════
+
+BROWSER-001: Chrome (dernière version)
+BROWSER-002: Firefox (dernière version)
+BROWSER-003: Safari (dernière version)
+BROWSER-004: Edge (dernière version)
+BROWSER-005: Mobile Chrome (Android)
+BROWSER-006: Mobile Safari (iOS)
+
+
+═══════════════════════════════════════════════════════════════════════════════
+NOTES IMPORTANTES POUR LE QA TESTER
+═══════════════════════════════════════════════════════════════════════════════
+
+1. ENVIRONNEMENTS DE TEST
+   - Utiliser le mode test pour FedaPay (clés API de test)
+   - Utiliser le mode test pour FeexPay (clés API de test)
+   - Utiliser les numéros de téléphone de test pour Mobile Money
+   - Ne JAMAIS utiliser de vrais numéros ou comptes en production
+
+2. DONNÉES DE TEST
+   - Créer des comptes de test pour chaque rôle (client, admin)
+   - Utiliser des emails de test (+test dans Gmail)
+   - Créer des prestations et formations de test
+
+3. PRIORITÉS
+   - Tester d'abord les fonctionnalités ✅ (critiques)
+   - Puis les fonctionnalités ⚠️ (importantes)
+   - Enfin les fonctionnalités ℹ️ (secondaires)
+
+4. REPORTING DES BUGS
+   - Indiquer le numéro US concerné
+   - Décrire les étapes pour reproduire
+   - Ajouter des captures d'écran
+   - Préciser le navigateur et la plateforme
+   - Indiquer la sévérité (bloquant, majeur, mineur)
+
+5. CHECKLIST AVANT MISE EN PRODUCTION
+   □ Tous les tests ✅ sont OK
+   □ Les paiements FedaPay fonctionnent en environnement de test
+   □ Les paiements FeexPay fonctionnent en environnement de test
+   □ Les emails sont reçus correctement
+   □ Les webhooks FedaPay et FeexPay sont configurés
+   □ Les certificats se génèrent en PDF
+   □ Le dashboard affiche les bonnes données
+   □ Les codes promo fonctionnent
+   □ Les permissions sont correctes (ROLE_ADMIN, ROLE_USER)
+   □ Les formulaires sont validés côté serveur
+   □ Mobile responsive OK sur iOS et Android
