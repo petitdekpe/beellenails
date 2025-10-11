@@ -1,7 +1,7 @@
 <?php
 // SPDX-License-Identifier: Proprietary
 // Copyright (c) 2025 Jean-Yves A.
-// Auteur: Jean-Yves A. <murielahodode@gmail.com>
+// Auteur: Jean-Yves A. <jy.ahouanvoedo@gmail.com>
 
 namespace App\Controller;
 
@@ -17,17 +17,17 @@ class ProfileController extends AbstractController
 {
     #[Route('/profil', name: 'app_profile')]
     public function index(
-        RendezvousRepository $rendezvousRepository, 
+        RendezvousRepository $rendezvousRepository,
         FormationEnrollmentRepository $enrollmentRepository
     ): Response {
         $user = $this->getUser();
-        
+
         // Statistiques des rendez-vous
         $totalRendezvous = $rendezvousRepository->count([
             'user' => $user,
             'status' => ['Rendez-vous pris', 'Rendez-vous confirmé']
         ]);
-        
+
         $upcomingRendezvous = $rendezvousRepository->createQueryBuilder('r')
             ->where('r.user = :user')
             ->andWhere('r.status IN (:statuses)')
@@ -40,21 +40,21 @@ class ProfileController extends AbstractController
             ->setMaxResults(3)
             ->getQuery()
             ->getResult();
-        
+
         // Statistiques des formations
         $activeEnrollments = $enrollmentRepository->findBy([
             'user' => $user,
             'status' => 'active'
         ]);
-        
+
         $completedEnrollments = $enrollmentRepository->findBy([
             'user' => $user,
             'status' => 'completed'
         ]);
-        
+
         $totalStudyTime = 0;
         $avgProgress = 0;
-        
+
         $allEnrollments = array_merge($activeEnrollments, $completedEnrollments);
         if (!empty($allEnrollments)) {
             foreach ($allEnrollments as $enrollment) {
@@ -63,7 +63,7 @@ class ProfileController extends AbstractController
             }
             $avgProgress = round($avgProgress / count($allEnrollments));
         }
-        
+
         return $this->render('profile/index.html.twig', [
             'user' => $user,
             'rendezvous_stats' => [

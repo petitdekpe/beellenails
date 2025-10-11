@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Certificat de Formation - {{ enrollment.formation.Nom }}</title>
+    <style>
+        @page {
+            size: A4 landscape;
+            margin: 0;
+        }
+
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #2d3748;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .certificate-container {
+            width: 90%;
+            max-width: 800px;
+            background: white;
+            padding: 60px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border: 8px solid #f7fafc;
+            position: relative;
+            text-align: center;
+        }
+
+        .certificate-container::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            bottom: 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+        }
+
+        .header {
+            margin-bottom: 40px;
+        }
+
+        .company-name {
+            font-size: 28px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        .certificate-title {
+            font-size: 36px;
+            font-weight: bold;
+            color: #2d3748;
+            margin: 30px 0;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .awarded-to {
+            font-size: 18px;
+            color: #4a5568;
+            margin-bottom: 20px;
+        }
+
+        .student-name {
+            font-size: 42px;
+            font-weight: bold;
+            color: #2d3748;
+            margin: 20px 0;
+            border-bottom: 3px solid #667eea;
+            display: inline-block;
+            padding-bottom: 10px;
+        }
+
+        .completion-text {
+            font-size: 16px;
+            color: #4a5568;
+            margin: 30px 0;
+            line-height: 1.6;
+        }
+
+        .formation-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+            margin: 20px 0;
+            font-style: italic;
+        }
+
+        .details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 2px solid #e2e8f0;
+        }
+
+        .date-section, .signature-section {
+            text-align: center;
+            flex: 1;
+        }
+
+        .label {
+            font-size: 12px;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .value {
+            font-size: 14px;
+            font-weight: bold;
+            color: #2d3748;
+        }
+
+        .signature-line {
+            width: 200px;
+            height: 1px;
+            background: #2d3748;
+            margin: 20px auto 10px;
+        }
+
+        .stats {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 30px 0;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 20px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #718096;
+            margin-top: 5px;
+        }
+
+        .decorative-elements {
+            position: absolute;
+            top: 40px;
+            left: 40px;
+            right: 40px;
+            height: 20px;
+            background: repeating-linear-gradient(
+                90deg,
+                #667eea,
+                #667eea 10px,
+                #764ba2 10px,
+                #764ba2 20px
+            );
+        }
+
+        .seal {
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+            width: 80px;
+            height: 80px;
+            border: 3px solid #667eea;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            font-size: 12px;
+            font-weight: bold;
+            color: #667eea;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="certificate-container">
+        <div class="decorative-elements"></div>
+
+        <div class="header">
+            <div class="company-name">BELLE NAILS</div>
+            <div class="certificate-title">Certificat de Formation</div>
+        </div>
+
+        <div class="awarded-to">Ce certificat est décerné à</div>
+
+        <div class="student-name">{{ enrollment.user.prenom ~ ' ' ~ enrollment.user.nom }}</div>
+
+        <div class="completion-text">
+            pour avoir complété avec succès la formation
+        </div>
+
+        <div class="formation-name">{{ enrollment.formation.Nom }}</div>
+
+        {% if enrollment.formation.Description %}
+        <div style="font-size: 14px; color: #718096; margin: 20px 0; font-style: italic;">
+            {{ enrollment.formation.Description|length > 150 ? enrollment.formation.Description|slice(0, 150) ~ '...' : enrollment.formation.Description }}
+        </div>
+        {% endif %}
+
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-number">{{ enrollment.completedModulesCount }}</div>
+                <div class="stat-label">Modules Terminés</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">{{ enrollment.progressPercentage }}%</div>
+                <div class="stat-label">Progression</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">
+                    {% if enrollment.totalTimeSpent > 3600 %}
+                        {{ (enrollment.totalTimeSpent / 3600)|round(1) }}h
+                    {% else %}
+                        {{ (enrollment.totalTimeSpent / 60)|round }}min
+                    {% endif %}
+                </div>
+                <div class="stat-label">Temps d'Étude</div>
+            </div>
+            {% if enrollment.formation.duration %}
+            <div class="stat-item">
+                <div class="stat-number">{{ enrollment.formation.duration }}min</div>
+                <div class="stat-label">Durée Formation</div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="details">
+            <div class="date-section">
+                <div class="label">Date d'inscription</div>
+                <div class="value">{{ enrollment.enrolledAt|date('d/m/Y') }}</div>
+            </div>
+
+            <div class="date-section">
+                <div class="label">Date de completion</div>
+                <div class="value">{{ enrollment.completedAt|date('d/m/Y') }}</div>
+            </div>
+
+            <div class="signature-section">
+                <div class="signature-line"></div>
+                <div class="label">Signature Officielle</div>
+                <div class="value">Belle Nails Formation</div>
+            </div>
+        </div>
+
+        <div class="seal">
+            CERTIFIÉ<br>
+            {{ enrollment.completedAt|date('Y') }}
+        </div>
+    </div>
+</body>
+</html>

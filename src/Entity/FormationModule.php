@@ -135,10 +135,26 @@ class FormationModule
         if (!$this->youtubeUrl) {
             return null;
         }
-        
+
         // Extract YouTube video ID from various URL formats
-        preg_match('/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/', $this->youtubeUrl, $matches);
-        return $matches[1] ?? null;
+        $patterns = [
+            // youtube.com/watch?v=VIDEO_ID
+            '/(?:youtube\.com\/watch\?v=)([a-zA-Z0-9_-]{11})/',
+            // youtu.be/VIDEO_ID
+            '/(?:youtu\.be\/)([a-zA-Z0-9_-]{11})/',
+            // youtube.com/embed/VIDEO_ID
+            '/(?:youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/',
+            // youtube.com/v/VIDEO_ID
+            '/(?:youtube\.com\/v\/)([a-zA-Z0-9_-]{11})/',
+        ];
+
+        foreach ($patterns as $pattern) {
+            if (preg_match($pattern, $this->youtubeUrl, $matches)) {
+                return $matches[1];
+            }
+        }
+
+        return null;
     }
 
     public function getFormattedDuration(): string

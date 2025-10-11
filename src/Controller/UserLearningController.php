@@ -241,23 +241,121 @@ class UserLearningController extends AbstractController
         );
     }
 
-    #[Route('/profil', name: 'app_user_learning_profile')]
-    public function profile(): Response
-    {
-        $user = $this->getUser();
-        $stats = $this->enrollmentRepository->getUserStats($user);
-        $totalTimeSpent = $this->moduleProgressRepository->getTotalTimeSpentByUser($user);
-        $completedModules = $this->moduleProgressRepository->getCompletedModulesCountByUser($user);
-        
-        // Get recent achievements
-        $recentCompletions = $this->enrollmentRepository->findCompletedByUser($user);
-        $recentCompletions = array_slice($recentCompletions, 0, 5);
+    // #[Route('/profil', name: 'app_user_learning_profile')]
+    // public function profile(): Response
+    // {
+    //     $user = $this->getUser();
+    //     $stats = $this->enrollmentRepository->getUserStats($user);
+    //     $totalTimeSpent = $this->moduleProgressRepository->getTotalTimeSpentByUser($user);
+    //     $completedModules = $this->moduleProgressRepository->getCompletedModulesCountByUser($user);
+    //
+    //     // Get recent achievements
+    //     $recentCompletions = $this->enrollmentRepository->findCompletedByUser($user);
+    //     $recentCompletions = array_slice($recentCompletions, 0, 5);
+    //
+    //     return $this->render('user_learning/profile.html.twig', [
+    //         'stats' => $stats,
+    //         'totalTimeSpent' => $totalTimeSpent,
+    //         'completedModules' => $completedModules,
+    //         'recentCompletions' => $recentCompletions,
+    //     ]);
+    // }
 
-        return $this->render('user_learning/profile.html.twig', [
-            'stats' => $stats,
-            'totalTimeSpent' => $totalTimeSpent,
-            'completedModules' => $completedModules,
-            'recentCompletions' => $recentCompletions,
-        ]);
+    #[Route('/user-learning/api/complete/{enrollmentId}/{moduleId}', name: 'app_user_learning_api_complete', methods: ['POST'])]
+    public function apiCompleteModule(int $enrollmentId, int $moduleId): JsonResponse
+    {
+        try {
+            $enrollment = $this->entityManager->getRepository(FormationEnrollment::class)->find($enrollmentId);
+            if (!$enrollment) {
+                return $this->json(['success' => false, 'error' => 'Inscription introuvable'], 404);
+            }
+
+            $this->denyAccessUnlessGranted('view', $enrollment);
+
+            $module = $this->entityManager->getRepository(FormationModule::class)->find($moduleId);
+            if (!$module) {
+                return $this->json(['success' => false, 'error' => 'Module introuvable'], 404);
+            }
+
+            $moduleProgress = $this->moduleProgressRepository->findOneBy([
+                'enrollment' => $enrollment,
+                'module' => $module
+            ]);
+
+            if (!$moduleProgress) {
+                return $this->json(['success' => false, 'error' => 'Progrès du module introuvable'], 404);
+            }
+
+            // Marquer le module comme terminé
+            $moduleProgress->setCompleted(true);
+            $moduleProgress->setCompletedAt(new \DateTime());
+
+            // Mettre à jour le progrès de l'inscription
+            $enrollment->updateProgress();
+
+            $this->entityManager->flush();
+
+            return $this->json([
+                'success' => true,
+                'message' => 'Module marqué comme terminé',
+                'progressPercentage' => $enrollment->getProgressPercentage()
+            ]);
+
+        } catch (\Exception $e) {
+            return $this->json(['success' => false, 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    #[Route('/user-learning/api/progress/{enrollmentId}/{moduleId}', name: 'app_user_learning_api_progress', methods: ['POST'])]
+    public function apiSaveProgress(int $enrollmentId, int $moduleId, Request $request): JsonResponse
+    {
+        try {
+            $enrollment = $this->entityManager->getRepository(FormationEnrollment::class)->find($enrollmentId);
+            if (!$enrollment) {
+                return $this->json(['success' => false, 'error' => 'Inscription introuvable'], 404);
+            }
+
+            $this->denyAccessUnlessGranted('view', $enrollment);
+
+            $module = $this->entityManager->getRepository(FormationModule::class)->find($moduleId);
+            if (!$module) {
+                return $this->json(['success' => false, 'error' => 'Module introuvable'], 404);
+            }
+
+            $moduleProgress = $this->moduleProgressRepository->findOneBy([
+                'enrollment' => $enrollment,
+                'module' => $module
+            ]);
+
+            if (!$moduleProgress) {
+                return $this->json(['success' => false, 'error' => 'Progrès du module introuvable'], 404);
+            }
+
+            $data = json_decode($request->getContent(), true);
+
+            // Sauvegarder la position vidéo et le temps passé
+            if (isset($data['videoPosition'])) {
+                $moduleProgress->setVideoPosition((int) $data['videoPosition']);
+            }
+
+            if (isset($data['timeSpent'])) {
+                $moduleProgress->setTimeSpent((int) $data['timeSpent']);
+            }
+
+            // Marquer comme commencé si ce n'est pas déjà fait
+            if (!$moduleProgress->isStarted()) {
+                $moduleProgress->setStarted(true);
+                $moduleProgress->setStartedAt(new \DateTime());
+            }
+
+            $moduleProgress->setLastAccessedAt(new \DateTime());
+
+            $this->entityManager->flush();
+
+            return $this->json(['success' => true, 'message' => 'Progrès sauvegardé']);
+
+        } catch (\Exception $e) {
+            return $this->json(['success' => false, 'error' => $e->getMessage()], 500);
+        }
     }
 }

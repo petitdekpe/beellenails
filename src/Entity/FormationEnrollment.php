@@ -302,7 +302,21 @@ class FormationEnrollment
 
         $completedModules = $this->moduleProgresses->filter(fn($mp) => $mp->isCompleted())->count();
         $percentage = ($completedModules / $totalModules) * 100;
-        
+
         $this->setProgressPercentage(number_format($percentage, 2));
+    }
+
+    public function getTotalTimeSpent(): int
+    {
+        $totalTime = 0;
+        foreach ($this->moduleProgresses as $moduleProgress) {
+            $totalTime += $moduleProgress->getTimeSpent() ?? 0;
+        }
+        return $totalTime;
+    }
+
+    public function getCompletedModulesCount(): int
+    {
+        return $this->moduleProgresses->filter(fn($mp) => $mp->isCompleted())->count();
     }
 }

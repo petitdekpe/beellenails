@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reçu BeelleNails</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px 15px;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 25px;
+        }
+
+        .logo img {
+            height: 45px;
+            width: auto;
+        }
+
+        .contact-info {
+            text-align: right;
+        }
+
+        .contact-name {
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .contact-phone {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .contact-phone::before {
+            content: "📞";
+            margin-right: 5px;
+        }
+
+        .contact-note {
+            font-size: 9px;
+            color: #999;
+        }
+
+        .greeting {
+            margin-bottom: 25px;
+        }
+
+        .greeting h1 {
+            font-size: 18px;
+            font-weight: 400;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .greeting p {
+            font-size: 11px;
+            color: #666;
+        }
+
+        .divider {
+            height: 1px;
+            background-color: #e0e0e0;
+            margin: 20px 0;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .info-item h3 {
+            font-size: 11px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px;
+        }
+
+        .info-item p {
+            font-size: 10px;
+            color: #666;
+        }
+
+        .appointment-section {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .appointment-item h3 {
+            font-size: 10px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px;
+        }
+
+        .appointment-item p {
+            font-size: 10px;
+            color: #666;
+            word-wrap: break-word;
+        }
+
+        .totals {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 8px;
+            margin-bottom: 25px;
+        }
+
+        .total-row {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .total-label {
+            font-size: 11px;
+            color: #666;
+        }
+
+        .total-value {
+            font-size: 11px;
+            color: #333;
+            min-width: 120px;
+            text-align: right;
+        }
+
+        .final-total .total-label {
+            font-weight: 600;
+            color: #333;
+            font-size: 12px;
+        }
+
+        .final-total .total-value {
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .address {
+            text-align: center;
+            font-size: 10px;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        @media print {
+            body {
+                background-color: white;
+                padding: 0;
+            }
+
+            .container {
+                box-shadow: none;
+                border-radius: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px;
+            }
+
+            .info-grid,
+            .appointment-section {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .total-row {
+                gap: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                {% if logoBase64 %}
+                    <img src="{{ logoBase64 }}" alt="BeelleNails Logo">
+                {% else %}
+                    <img src="{{ absolute_url(asset('assets/logooff.png')) }}" alt="BeelleNails Logo">
+                {% endif %}
+            </div>
+            <div class="contact-info">
+                <div class="contact-name">Muriel AHODODE</div>
+                <div class="contact-phone">+229 97 12 34 56</div>
+                <div class="contact-note">Pour toute question, veuillez nous contacter.</div>
+            </div>
+        </div>
+
+        <div class="greeting">
+            <h1>Bonjour {{ app.user.prenom }},</h1>
+            <p>Merci pour votre achat</p>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="info-grid">
+            <div class="info-item">
+                <h3>Date de commande</h3>
+                <p>{{ payment.updatedAt|date('d/m/Y') }}</p>
+            </div>
+            <div class="info-item">
+                <h3>Paiement</h3>
+                <p>
+                    {% if payment.provider == 'feexpay' %}
+                        FeexPay
+                    {% elseif payment.provider == 'fedapay' %}
+                        FedaPay
+                    {% else %}
+                        {{ payment.provider|title }}
+                    {% endif %}
+                </p>
+            </div>
+            <div class="info-item">
+                <h3>Référence</h3>
+                <p>{{ payment.reference }}</p>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        {% if payment.entityType == 'rendezvous' and entity %}
+            <div class="appointment-section">
+                <div class="appointment-item">
+                    <h3>Date de Rendez-vous</h3>
+                    <p>{{ entity.day|date('d/m/Y') }}</p>
+                </div>
+                <div class="appointment-item">
+                    <h3>Créneau</h3>
+                    <p>{{ entity.creneau.startTime|date('H:i') }}</p>
+                </div>
+                <div class="appointment-item">
+                    <h3>Prestation</h3>
+                    <p>{{ entity.prestation.title }}</p>
+                </div>
+                <div class="appointment-item">
+                    <h3>Prix</h3>
+                    <p>{{ entity.prestation.price|number_format(0, ',', ' ') }} FCFA</p>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="totals">
+                <div class="total-row">
+                    <span class="total-label">Sous-total :</span>
+                    <span class="total-value">{{ entity.originalAmount|default(entity.prestation.price)|number_format(0, ',', ' ') }} FCFA</span>
+                </div>
+                <div class="total-row">
+                    <span class="total-label">Promo :</span>
+                    <span class="total-value">
+                        {% if entity.discountAmount %}
+                            -{{ entity.discountAmount|number_format(0, ',', ' ') }} FCFA
+                        {% else %}
+                            0 FCFA
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="total-row final-total">
+                    <span class="total-label">Total:</span>
+                    <span class="total-value">{{ payment.amount|number_format(0, ',', ' ') }} FCFA</span>
+                </div>
+            </div>
+        {% elseif payment.entityType == 'formation' and entity %}
+            <div class="appointment-section">
+                <div class="appointment-item">
+                    <h3>Formation</h3>
+                    <p>{{ entity.formation.Nom }}</p>
+                </div>
+                <div class="appointment-item">
+                    <h3>Durée</h3>
+                    <p>{{ entity.formation.modules|length }} modules</p>
+                </div>
+                <div class="appointment-item">
+                    <h3>Date d'inscription</h3>
+                    <p>{{ entity.enrolledAt|date('d/m/Y') }}</p>
+                </div>
+                <div class="appointment-item">
+                    <h3>Prix</h3>
+                    <p>{{ payment.amount|number_format(0, ',', ' ') }} FCFA</p>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="totals">
+                <div class="total-row">
+                    <span class="total-label">Sous-total :</span>
+                    <span class="total-value">{{ payment.amount|number_format(0, ',', ' ') }} FCFA</span>
+                </div>
+                <div class="total-row">
+                    <span class="total-label">Promo :</span>
+                    <span class="total-value">0 FCFA</span>
+                </div>
+                <div class="total-row final-total">
+                    <span class="total-label">Total:</span>
+                    <span class="total-value">{{ payment.amount|number_format(0, ',', ' ') }} FCFA</span>
+                </div>
+            </div>
+        {% endif %}
+
+        <div class="divider"></div>
+
+        <div class="address">
+            Vodjè, 2eme rue après la clinique de l'union en allant à gbegamey, au fond de la rue à droite, portail rose.
+        </div>
+    </div>
+</body>
+</html>

@@ -12,20 +12,13 @@
                 Tableau de bord
             </a>
             
-            <a href="{{ path('app_user_learning_formations') }}" 
-               class="flex items-center px-3 py-2 text-sm font-medium rounded-md 
+            <a href="{{ path('app_user_learning_formations') }}"
+               class="flex items-center px-3 py-2 text-sm font-medium rounded-md
                {{ app.request.get('_route') == 'app_user_learning_formations' ? 'bg-pink-100 text-pink-700' : 'text-gray-700 hover:bg-gray-100' }}">
                 <span class="mr-3">🎓</span>
                 Mes formations
             </a>
-            
-            <a href="{{ path('app_user_learning_profile') }}" 
-               class="flex items-center px-3 py-2 text-sm font-medium rounded-md 
-               {{ app.request.get('_route') == 'app_user_learning_profile' ? 'bg-pink-100 text-pink-700' : 'text-gray-700 hover:bg-gray-100' }}">
-                <span class="mr-3">👤</span>
-                Mon profil
-            </a>
-            
+
             <div class="border-t border-gray-200 my-4"></div>
             
             <a href="{{ path('app_formation_index') }}"

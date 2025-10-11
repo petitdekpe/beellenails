@@ -51,7 +51,7 @@
                             <div class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
                                 <!-- Formation Image -->
                                 {% if formation.imageName %}
-                                    <div class="h-48 bg-cover bg-center" style="background-image: url('{{ vich_uploader_asset(formation, 'imageFile') }}');">
+                                    <div class="h-48 bg-cover bg-center" style="background-image: url('{{ vich_uploader_asset(formation, 'image') }}');">
                                         <div class="h-full bg-black bg-opacity-20 flex items-end p-4">
                                             <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
                                                 {% if enrollment.status == 'active' %}bg-blue-100 text-blue-800
@@ -71,8 +71,8 @@
 
                                 <!-- Formation Content -->
                                 <div class="p-6">
-                                    <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ formation.title }}</h3>
-                                    <p class="text-gray-600 text-sm mb-4">{{ formation.description|length > 100 ? formation.description|slice(0, 100) ~ '...' : formation.description }}</p>
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ formation.Nom }}</h3>
+                                    <p class="text-gray-600 text-sm mb-4">{{ formation.Description|length > 100 ? formation.Description|slice(0, 100) ~ '...' : formation.Description }}</p>
 
                                     <!-- Progress Bar -->
                                     <div class="mb-4">

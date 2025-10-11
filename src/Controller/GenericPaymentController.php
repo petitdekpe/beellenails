@@ -7,6 +7,8 @@ namespace App\Controller;
 
 use App\Entity\Payment;
 use App\Entity\User;
+use App\Entity\FormationEnrollment;
+use App\Entity\ModuleProgress;
 use App\Form\FeexPayFormType;
 use App\Interface\PayableEntityInterface;
 use App\Service\FedapayService;
@@ -14,6 +16,7 @@ use App\Service\FeexpayService;
 use App\Service\PaymentTypeResolver;
 use App\Service\PromoCodeService;
 use App\Service\NotificationService;
+use App\Service\ReceiptPdfService;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -32,7 +35,8 @@ class GenericPaymentController extends AbstractController
         private readonly FedapayService $fedapayService,
         private readonly FeexpayService $feexpayService,
         private readonly LoggerInterface $logger,
-        private readonly NotificationService $notificationService
+        private readonly NotificationService $notificationService,
+        private readonly ReceiptPdfService $receiptPdfService
     ) {}
 
     #[Route('/payment/{provider}/{paymentType}/{entityType}/{entityId}', name: 'generic_payment_init', methods: ['GET', 'POST'])]
@@ -349,6 +353,39 @@ class GenericPaymentController extends AbstractController
         ]);
     }
 
+    #[Route('/payment/receipt/{reference}', name: 'generic_payment_receipt')]
+    public function receiptPayment(string $reference): Response
+    {
+        $payment = $this->entityManager->getRepository(Payment::class)
+            ->findOneBy(['reference' => $reference]);
+
+        if (!$payment) {
+            throw $this->createNotFoundException('Paiement introuvable');
+        }
+
+        $entity = $this->paymentTypeResolver->resolveEntity($payment);
+
+        // Generate PDF
+        $pdfContent = $this->receiptPdfService->generateReceiptPdf($payment, $entity);
+
+        // Create filename
+        $filename = sprintf(
+            'recu_beellenails_%s_%s.pdf',
+            $payment->getReference(),
+            (new \DateTime())->format('Ymd')
+        );
+
+        // Return PDF as download
+        return new Response(
+            $pdfContent,
+            Response::HTTP_OK,
+            [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => sprintf('attachment; filename="%s"', $filename),
+            ]
+        );
+    }
+
     #[Route('/payment/error/{reference}', name: 'generic_payment_error')]
     public function errorPayment(string $reference): Response
     {
@@ -423,6 +460,12 @@ class GenericPaymentController extends AbstractController
                 // Process status change
                 if (in_array($newStatus, ['approved', 'successful'])) {
                     $entity->onPaymentSuccess();
+
+                    // Créer une inscription pour les formations
+                    if ($entity instanceof \App\Entity\Formation) {
+                        $this->createFormationEnrollment($entity, $payment->getCustomer());
+                    }
+
                     $this->entityManager->flush();
 
                     // Envoyer les notifications email si c'est un rendez-vous
@@ -605,6 +648,12 @@ class GenericPaymentController extends AbstractController
                 $entity = $this->paymentTypeResolver->resolveEntity($payment);
                 if ($entity && method_exists($entity, 'onPaymentSuccess')) {
                     $entity->onPaymentSuccess();
+
+                    // Créer une inscription pour les formations
+                    if ($entity instanceof \App\Entity\Formation) {
+                        $this->createFormationEnrollment($entity, $payment->getCustomer());
+                    }
+
                     $this->entityManager->persist($entity);
 
                     // Envoyer les notifications email si c'est un rendez-vous
@@ -666,5 +715,69 @@ class GenericPaymentController extends AbstractController
         // Use the configured price from the formation regardless of access type
         // Access type is now configured in the formation itself, not chosen by user
         return $basePrice;
+    }
+
+    private function createFormationEnrollment(\App\Entity\Formation $formation, User $user): void
+    {
+        try {
+            // Vérifier si l'utilisateur n'est pas déjà inscrit à cette formation
+            $existingEnrollment = $this->entityManager->getRepository(FormationEnrollment::class)
+                ->findOneBy([
+                    'user' => $user,
+                    'formation' => $formation
+                ]);
+
+            if ($existingEnrollment) {
+                // Si l'inscription existe déjà, la réactiver si elle était expirée/annulée
+                if (in_array($existingEnrollment->getStatus(), ['expired', 'cancelled'])) {
+                    $existingEnrollment->setStatus('active');
+                    $existingEnrollment->setEnrolledAt(new \DateTime());
+                    $existingEnrollment->setLastAccessedAt(new \DateTime());
+
+                    $this->logger->info('[Formation Enrollment] Reactivated existing enrollment', [
+                        'enrollment_id' => $existingEnrollment->getId(),
+                        'user_id' => $user->getId(),
+                        'formation_id' => $formation->getId()
+                    ]);
+                }
+                return;
+            }
+
+            // Créer une nouvelle inscription
+            $enrollment = new FormationEnrollment();
+            $enrollment->setUser($user);
+            $enrollment->setFormation($formation);
+            $enrollment->setStatus('active');
+            $enrollment->setEnrolledAt(new \DateTime());
+            $enrollment->setLastAccessedAt(new \DateTime());
+
+            $this->entityManager->persist($enrollment);
+
+            // Créer les progrès de modules pour tous les modules actifs de la formation
+            foreach ($formation->getModules() as $module) {
+                if ($module->isActive()) {
+                    $moduleProgress = new ModuleProgress();
+                    $moduleProgress->setEnrollment($enrollment);
+                    $moduleProgress->setModule($module);
+                    $this->entityManager->persist($moduleProgress);
+                }
+            }
+
+            $this->logger->info('[Formation Enrollment] Created new enrollment after payment', [
+                'enrollment_id' => $enrollment->getId(),
+                'user_id' => $user->getId(),
+                'formation_id' => $formation->getId(),
+                'formation_name' => $formation->getNom()
+            ]);
+
+        } catch (\Exception $e) {
+            $this->logger->error('[Formation Enrollment] Error creating enrollment', [
+                'user_id' => $user->getId(),
+                'formation_id' => $formation->getId(),
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            throw $e;
+        }
     }
 }
