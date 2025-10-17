@@ -9,6 +9,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Mime\Email;
 use Twig\Environment;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Lock\LockFactory;
 
 #[AsMessageHandler]
 class SendReminderEmailsMessageHandler
@@ -17,23 +18,35 @@ class SendReminderEmailsMessageHandler
     private MailerInterface $mailer;
     private Environment $twig;
     private LoggerInterface $logger;
+    private LockFactory $lockFactory;
 
     public function __construct(
         RendezvousRepository $rendezVousRepository,
         MailerInterface $mailer,
         Environment $twig,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        LockFactory $lockFactory
     ) {
         $this->rendezVousRepository = $rendezVousRepository;
         $this->mailer = $mailer;
         $this->twig = $twig;
         $this->logger = $logger;
+        $this->lockFactory = $lockFactory;
     }
 
     public function __invoke(SendReminderEmailsMessage $message): void
     {
-        $upcomingAppointments = $this->rendezVousRepository->findUpcomingAppointments();
-        $emailCount = 0;
+        // Créer un verrou pour empêcher l'exécution simultanée
+        $lock = $this->lockFactory->createLock('send_reminder_emails_' . date('Y-m-d-H'));
+
+        if (!$lock->acquire()) {
+            $this->logger->info('Envoi de mails de rappel déjà en cours, abandon de cette exécution');
+            return;
+        }
+
+        try {
+            $upcomingAppointments = $this->rendezVousRepository->findUpcomingAppointments();
+            $emailCount = 0;
 
         foreach ($upcomingAppointments as $appointment) {
             try {
@@ -64,9 +77,12 @@ class SendReminderEmailsMessageHandler
             }
         }
 
-        $this->logger->info('Envoi des mails de rappel terminé', [
-            'emails_sent' => $emailCount,
-            'total_appointments' => count($upcomingAppointments)
-        ]);
+            $this->logger->info('Envoi des mails de rappel terminé', [
+                'emails_sent' => $emailCount,
+                'total_appointments' => count($upcomingAppointments)
+            ]);
+        } finally {
+            $lock->release();
+        }
     }
 }

@@ -9,6 +9,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Mime\Email;
 use Twig\Environment;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Lock\LockFactory;
 
 #[AsMessageHandler]
 class SendTomorrowReminderEmailsMessageHandler
@@ -17,23 +18,35 @@ class SendTomorrowReminderEmailsMessageHandler
     private MailerInterface $mailer;
     private Environment $twig;
     private LoggerInterface $logger;
+    private LockFactory $lockFactory;
 
     public function __construct(
         RendezvousRepository $rendezVousRepository,
         MailerInterface $mailer,
         Environment $twig,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        LockFactory $lockFactory
     ) {
         $this->rendezVousRepository = $rendezVousRepository;
         $this->mailer = $mailer;
         $this->twig = $twig;
         $this->logger = $logger;
+        $this->lockFactory = $lockFactory;
     }
 
     public function __invoke(SendTomorrowReminderEmailsMessage $message): void
     {
-        $tomorrowAppointments = $this->rendezVousRepository->findTomorrowAppointments();
-        $emailCount = 0;
+        // Créer un verrou pour empêcher l'exécution simultanée
+        $lock = $this->lockFactory->createLock('send_tomorrow_reminder_emails_' . date('Y-m-d-H'));
+
+        if (!$lock->acquire()) {
+            $this->logger->info('Envoi de mails de rappel J-1 déjà en cours, abandon de cette exécution');
+            return;
+        }
+
+        try {
+            $tomorrowAppointments = $this->rendezVousRepository->findTomorrowAppointments();
+            $emailCount = 0;
 
         foreach ($tomorrowAppointments as $appointment) {
             try {
@@ -64,9 +77,12 @@ class SendTomorrowReminderEmailsMessageHandler
             }
         }
 
-        $this->logger->info('Envoi des mails de rappel J-1 terminé', [
-            'emails_sent' => $emailCount,
-            'total_appointments' => count($tomorrowAppointments)
-        ]);
+            $this->logger->info('Envoi des mails de rappel J-1 terminé', [
+                'emails_sent' => $emailCount,
+                'total_appointments' => count($tomorrowAppointments)
+            ]);
+        } finally {
+            $lock->release();
+        }
     }
 }
