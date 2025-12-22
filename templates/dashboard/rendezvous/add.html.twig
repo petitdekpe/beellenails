@@ -151,6 +151,13 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     function loadAvailableSlots(selectedDate) {
+        // Désactiver le select et afficher le message de chargement
+        const currentSelect = document.getElementById('admin_add_rdv_creneau');
+        if (currentSelect) {
+            currentSelect.disabled = true;
+            currentSelect.innerHTML = '<option value="">Chargement en cours...</option>';
+        }
+
         if (availabilityMessage) {
             availabilityMessage.classList.remove('hidden');
             availabilityMessage.innerHTML = `
@@ -165,13 +172,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const xhr = new XMLHttpRequest();
         xhr.open('POST', '/get-available-slots', true);
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        
+
         xhr.onreadystatechange = function() {
             if (xhr.readyState === XMLHttpRequest.DONE) {
                 if (xhr.status === 200) {
                     const slots = JSON.parse(xhr.responseText);
                     updateSlotsDropdown(slots);
-                    
+
                     if (availabilityMessage) {
                         if (slots.length > 0) {
                             availabilityMessage.innerHTML = `
@@ -201,47 +208,49 @@ document.addEventListener('DOMContentLoaded', function() {
                             </div>
                         `;
                     }
+                    // En cas d'erreur, réinitialiser le select
+                    const errorSelect = document.getElementById('admin_add_rdv_creneau');
+                    if (errorSelect) {
+                        errorSelect.innerHTML = '<option value="">Erreur de chargement</option>';
+                        errorSelect.disabled = true;
+                    }
                 }
             }
         };
-        
+
         xhr.send('date=' + selectedDate);
     }
 
     function updateSlotsDropdown(slots) {
-        if (slotsDropdown) {
-            // Créer un nouveau select
-            const newSelect = document.createElement('select');
-            newSelect.id = 'admin_add_rdv_creneau';
-            newSelect.name = 'admin_add_rdv[creneau]';
-            newSelect.className = 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-pink-500 focus:border-pink-500 block w-full pl-10 p-3';
-            
+        const currentSelect = document.getElementById('admin_add_rdv_creneau');
+        if (currentSelect) {
+            // Vider le select
+            currentSelect.innerHTML = '';
+
             // Ajouter une option par défaut
             const defaultOption = document.createElement('option');
             defaultOption.value = '';
-            defaultOption.text = 'Sélectionnez un créneau';
-            newSelect.appendChild(defaultOption);
-            
+            defaultOption.text = slots.length > 0 ? 'Sélectionnez un créneau' : 'Aucun créneau disponible';
+            currentSelect.appendChild(defaultOption);
+
             // Ajouter les créneaux disponibles
             slots.forEach(function(slot) {
                 const option = document.createElement('option');
                 option.value = slot.id;
                 option.text = slot.libelle;
-                newSelect.appendChild(option);
+                currentSelect.appendChild(option);
             });
-            
-            // Remplacer l'ancien select
-            slotsDropdown.parentNode.replaceChild(newSelect, slotsDropdown);
-            
+
             // Activer/désactiver selon les créneaux
-            newSelect.disabled = slots.length === 0;
+            currentSelect.disabled = slots.length === 0;
         }
     }
 
     function resetSlotsDropdown() {
-        if (slotsDropdown) {
-            slotsDropdown.innerHTML = '<option value="">Sélectionnez d\'abord une date</option>';
-            slotsDropdown.disabled = true;
+        const currentSelect = document.getElementById('admin_add_rdv_creneau');
+        if (currentSelect) {
+            currentSelect.innerHTML = '<option value="">Sélectionnez d\'abord une date</option>';
+            currentSelect.disabled = true;
         }
         if (availabilityMessage) {
             availabilityMessage.classList.add('hidden');
