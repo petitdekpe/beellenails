@@ -413,13 +413,17 @@ class DashboardController extends AbstractController
             $userEmail = $rendezvous->getUser()->getEmail();
 
             $email = (new Email())
-                ->from('beellenailscare@beellenails.com')
+                ->from('BeElle Nails Care <reservation@beellegroup.com>')
                 ->to($userEmail)
+                ->replyTo('reservation@beellegroup.com')
                 ->subject('Informations de rendez-vous!')
                 ->html($this->renderView(
                     'emails/rendezvous_created.html.twig',
                     ['rendezvous' => $rendezvous]
                 ));
+            $email->getHeaders()
+                ->addTextHeader('X-Mailer', 'BeElle Nails Booking System')
+                ->addTextHeader('X-Auto-Response-Suppress', 'OOF, DR, RN, NRN, AutoReply');
             $mailer->send($email);
 
             return $this->redirectToRoute('app_dashboard_rendezvous', [], Response::HTTP_SEE_OTHER);
@@ -456,24 +460,32 @@ class DashboardController extends AbstractController
 
             // Envoyer l'e-mail au client
             $email = (new Email())
-                ->from('beellenailscare@beellenails.com')
+                ->from('BeElle Nails Care <reservation@beellegroup.com>')
                 ->to($userEmail)
+                ->replyTo('reservation@beellegroup.com')
                 ->subject('Votre Rendez-vous !')
                 ->html($this->renderView(
                     'emails/rendezvous_updated.html.twig',
                     ['rendezvous' => $rendezvous]
                 ));
+            $email->getHeaders()
+                ->addTextHeader('X-Mailer', 'BeElle Nails Booking System')
+                ->addTextHeader('X-Auto-Response-Suppress', 'OOF, DR, RN, NRN, AutoReply');
             $mailer->send($email);
 
             // Envoyer l'e-mail à l'admin
             $adminEmail = (new Email())
-                ->from('beellenailscare@beellenails.com')
+                ->from('BeElle Nails Care <reservation@beellegroup.com>')
                 ->to('murielahodode@gmail.com')
+                ->replyTo('reservation@beellegroup.com')
                 ->subject('Rendez-vous modifié')
                 ->html($this->renderView(
                     'emails/rendezvous_updated_admin.html.twig',
                     ['rendezvous' => $rendezvous]
                 ));
+            $adminEmail->getHeaders()
+                ->addTextHeader('X-Mailer', 'BeElle Nails Booking System')
+                ->addTextHeader('X-Auto-Response-Suppress', 'OOF, DR, RN, NRN, AutoReply');
             $mailer->send($adminEmail);
 
             return $this->redirectToRoute('app_dashboard_rendezvous');
@@ -513,13 +525,17 @@ class DashboardController extends AbstractController
         // Email utilisateur
         $userEmail = $rendezvous->getUser()->getEmail();
         $emailClient = (new Email())
-            ->from('beellenailscare@beellenails.com')
+            ->from('BeElle Nails Care <reservation@beellegroup.com>')
             ->to($userEmail)
+            ->replyTo('reservation@beellegroup.com')
             ->subject('Rendez-vous Annulé !')
             ->html($this->renderView(
                 'emails/rendezvous_canceled.html.twig',
                 ['rendezvous' => $rendezvous]
             ));
+        $emailClient->getHeaders()
+            ->addTextHeader('X-Mailer', 'BeElle Nails Booking System')
+            ->addTextHeader('X-Auto-Response-Suppress', 'OOF, DR, RN, NRN, AutoReply');
         $mailer->send($emailClient);
 
 
@@ -551,13 +567,17 @@ class DashboardController extends AbstractController
             // do anything else you need here, like send an email
             // Envoyer l'e-mail de création de compte
             $email = (new Email())
-                ->from('beellenailscare@beellenails.com')
+                ->from('BeElle Nails Care <reservation@beellegroup.com>')
                 ->to($user->getEmail())
+                ->replyTo('reservation@beellegroup.com')
                 ->subject('Votre inscription sur BeElleNails')
                 ->html($this->renderView(
                     'registration/email.html.twig',
                     ['user' => $user]
                 ));
+            $email->getHeaders()
+                ->addTextHeader('X-Mailer', 'BeElle Nails Booking System')
+                ->addTextHeader('X-Auto-Response-Suppress', 'OOF, DR, RN, NRN, AutoReply');
 
             $mailer->send($email);
 

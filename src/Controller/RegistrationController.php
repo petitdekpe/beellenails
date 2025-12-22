@@ -44,14 +44,18 @@ class RegistrationController extends AbstractController
             // do anything else you need here, like send an email
                         // Envoyer l'e-mail de création de compte
                         $email = (new Email())
-                        ->from('beellenailscare@beellenails.com')
+                        ->from('BeElle Nails Care <reservation@beellegroup.com>')
                         ->to($user->getEmail())
+                        ->replyTo('reservation@beellegroup.com')
                         ->subject('Votre inscription sur BeElleNails')
                         ->html($this->renderView(
                             'registration/email.html.twig',
                             ['user' => $user]
                         ));
-        
+                    $email->getHeaders()
+                        ->addTextHeader('X-Mailer', 'BeElle Nails Booking System')
+                        ->addTextHeader('X-Auto-Response-Suppress', 'OOF, DR, RN, NRN, AutoReply');
+
                     $mailer->send($email);
         
             return $userAuthenticator->authenticateUser($user, $appAuthenticator, $request);

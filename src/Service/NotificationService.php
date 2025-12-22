@@ -20,7 +20,9 @@ class NotificationService
         private readonly Environment $twig,
         private readonly LoggerInterface $logger,
         private readonly string $adminEmail = 'murielahodode@gmail.com',
-        private readonly string $fromEmail = 'beellenailscare@beellenails.com'
+        private readonly string $fromEmail = 'reservation@beellegroup.com',
+        private readonly string $fromName = 'BeElle Nails Care',
+        private readonly string $replyToEmail = 'reservation@beellegroup.com'
     ) {}
 
     /**
@@ -56,12 +58,16 @@ class NotificationService
     {
         try {
             $email = (new Email())
-                ->from($this->fromEmail)
+                ->from(sprintf('%s <%s>', $this->fromName, $this->fromEmail))
                 ->to($rendezvous->getUser()->getEmail())
-                ->subject('✅ Confirmation de votre rendez-vous - Paiement réussi')
+                ->replyTo($this->replyToEmail)
+                ->subject('Confirmation de votre rendez-vous - Paiement réussi')
                 ->html($this->twig->render('emails/rendezvous_created.html.twig', [
                     'rendezvous' => $rendezvous
-                ]));
+                ]))
+                ->getHeaders()
+                ->addTextHeader('X-Mailer', 'BeElle Nails Booking System')
+                ->addTextHeader('X-Auto-Response-Suppress', 'OOF, DR, RN, NRN, AutoReply');
 
             $this->mailer->send($email);
         } catch (TransportExceptionInterface $e) {
@@ -81,12 +87,16 @@ class NotificationService
     {
         try {
             $email = (new Email())
-                ->from($this->fromEmail)
+                ->from(sprintf('%s <%s>', $this->fromName, $this->fromEmail))
                 ->to($this->adminEmail)
-                ->subject('🎉 Nouveau rendez-vous payé !')
+                ->replyTo($this->replyToEmail)
+                ->subject('Nouveau rendez-vous payé')
                 ->html($this->twig->render('emails/rendezvous_created_admin.html.twig', [
                     'rendezvous' => $rendezvous
-                ]));
+                ]))
+                ->getHeaders()
+                ->addTextHeader('X-Mailer', 'BeElle Nails Booking System')
+                ->addTextHeader('X-Auto-Response-Suppress', 'OOF, DR, RN, NRN, AutoReply');
 
             $this->mailer->send($email);
         } catch (TransportExceptionInterface $e) {
@@ -106,13 +116,17 @@ class NotificationService
     {
         try {
             $email = (new Email())
-                ->from($this->fromEmail)
+                ->from(sprintf('%s <%s>', $this->fromName, $this->fromEmail))
                 ->to($rendezvous->getUser()->getEmail())
-                ->subject('❌ Échec du paiement - Rendez-vous en attente')
+                ->replyTo($this->replyToEmail)
+                ->subject('Échec du paiement - Rendez-vous en attente')
                 ->html($this->twig->render('emails/payment_failed.html.twig', [
                     'rendezvous' => $rendezvous,
                     'reason' => $reason
-                ]));
+                ]))
+                ->getHeaders()
+                ->addTextHeader('X-Mailer', 'BeElle Nails Booking System')
+                ->addTextHeader('X-Auto-Response-Suppress', 'OOF, DR, RN, NRN, AutoReply');
 
             $this->mailer->send($email);
 
@@ -135,12 +149,16 @@ class NotificationService
     {
         try {
             $email = (new Email())
-                ->from($this->fromEmail)
+                ->from(sprintf('%s <%s>', $this->fromName, $this->fromEmail))
                 ->to($rendezvous->getUser()->getEmail())
-                ->subject('⏰ Rappel - Paiement en attente')
+                ->replyTo($this->replyToEmail)
+                ->subject('Rappel - Paiement en attente')
                 ->html($this->twig->render('emails/payment_pending.html.twig', [
                     'rendezvous' => $rendezvous
-                ]));
+                ]))
+                ->getHeaders()
+                ->addTextHeader('X-Mailer', 'BeElle Nails Booking System')
+                ->addTextHeader('X-Auto-Response-Suppress', 'OOF, DR, RN, NRN, AutoReply');
 
             $this->mailer->send($email);
 

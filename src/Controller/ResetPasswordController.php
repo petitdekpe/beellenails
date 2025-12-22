@@ -161,14 +161,19 @@ class ResetPasswordController extends AbstractController
         }
 
         $email = (new TemplatedEmail())
-            ->from(new Address('beellenailscare@beellenails.com', 'BeElle Nails'))
+            ->from(new Address('reservation@beellegroup.com', 'BeElle Nails Care'))
             ->to($user->getEmail())
+            ->replyTo('reservation@beellegroup.com')
             ->subject('Réinitialisation de votre mot de passe - BeElle Nails')
             ->htmlTemplate('reset_password/email.html.twig')
             ->context([
                 'resetToken' => $resetToken,
             ])
         ;
+
+        $email->getHeaders()
+            ->addTextHeader('X-Mailer', 'BeElle Nails Booking System')
+            ->addTextHeader('X-Auto-Response-Suppress', 'OOF, DR, RN, NRN, AutoReply');
 
         $mailer->send($email);
 

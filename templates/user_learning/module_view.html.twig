@@ -2,6 +2,52 @@
 
 {% block title %}{{ module.title }} - {{ enrollment.formation.Nom }}{% endblock %}
 
+{% block stylesheets %}
+{{ parent() }}
+<style>
+  .video-container {
+    position: relative;
+    padding-bottom: 56.25%; /* Ratio 16:9 */
+    height: 0;
+    overflow: hidden;
+  }
+
+  .video-container #youtube-player {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Masque le logo YouTube en bas à droite */
+  .video-container::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 80px;
+    height: 60px;
+    background: rgba(0, 0, 0, 0.8);
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  /* Masque le bouton "Copier le lien" en haut à droite */
+  .video-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 150px;
+    height: 50px;
+    background: rgba(0, 0, 0, 0.8);
+    pointer-events: none;
+    z-index: 10;
+  }
+</style>
+{% endblock %}
+
 {% block body %}
 <div class="min-h-screen bg-gray-50">
     <div class="pt-16 md:pt-20"></div>
@@ -81,15 +127,17 @@
                 {% if module.youtubeUrl %}
                 <div class="bg-white rounded-lg shadow-sm overflow-hidden">
                     <div class="max-w-4xl mx-auto">
-                        <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
-                            <div id="youtube-player" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></div>
-                            <div id="video-error" class="absolute inset-0 flex items-center justify-center bg-gray-900 text-white hidden">
+                        <div class="video-container">
+                            <div id="youtube-player">
+                                <iframe src="https://www.youtube-nocookie.com/embed/{{ module.youtubeVideoId }}?controls=0&modestbranding=1&rel=0&showinfo=0&playsinline=1&enablejsapi=1"
+                                        frameborder="0"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowfullscreen>
+                                </iframe>
+                            </div>
+                            <div id="video-error" class="absolute inset-0 flex items-center justify-center bg-gray-900 text-white hidden" style="pointer-events: auto;">
                                 <div class="text-center">
                                     <p class="mb-4">❌ Vidéo non disponible pour l'intégration</p>
-                                    <a href="{{ module.youtubeUrl }}" target="_blank"
-                                       class="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md">
-                                        🎬 Regarder sur YouTube
-                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -102,11 +150,6 @@
                                         class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700">
                                     ▶️ Lecture
                                 </button>
-
-                                <a href="{{ module.youtubeUrl }}" target="_blank"
-                                   class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                                    🔗 Ouvrir sur YouTube
-                                </a>
 
                                 {% if moduleProgress.videoPosition > 0 %}
                                     <span class="text-sm text-gray-600">
@@ -205,8 +248,8 @@
     </div>
 </div>
 
-<!-- YouTube API Script -->
-<script src="https://www.youtube.com/iframe_api"></script>
+<!-- Player.js Script -->
+<script src="https://cdn.embed.ly/player-0.1.0.min.js"></script>
 <script>
     let player;
     let progressSaveInterval;
@@ -220,61 +263,32 @@
     console.log('Progress URL:', progressUrl);
     console.log('Complete URL:', completeUrl);
 
-    // YouTube Player API
-    function onYouTubeIframeAPIReady() {
-        const videoId = '{{ module.youtubeVideoId }}';
-        console.log('Video ID:', videoId);
+    // Initialize Player.js
+    document.addEventListener('DOMContentLoaded', function() {
+        const iframe = document.querySelector('#youtube-player iframe');
 
-        if (!videoId) {
-            showVideoError('ID vidéo YouTube non trouvé');
+        if (!iframe) {
+            showVideoError('Élément vidéo non trouvé');
             return;
         }
 
         try {
-            player = new YT.Player('youtube-player', {
-                height: '100%',
-                width: '100%',
-                videoId: videoId,
-                playerVars: {
-                    'autoplay': 0,
-                    'controls': 1,
-                    'start': startPosition,
-                    'rel': 0,
-                    'modestbranding': 1
-                },
-                events: {
-                    'onReady': onPlayerReady,
-                    'onStateChange': onPlayerStateChange,
-                    'onError': onPlayerError
-                }
-            });
+            player = new playerjs.Player(iframe);
+
+            player.on('ready', onPlayerReady);
+            player.on('play', onPlayerPlay);
+            player.on('pause', onPlayerPause);
+            player.on('ended', onPlayerEnded);
+            player.on('error', onPlayerError);
         } catch (error) {
-            console.error('Erreur lors de la création du player YouTube:', error);
+            console.error('Erreur lors de la création du player:', error);
             showVideoError('Erreur lors du chargement du player vidéo');
         }
-    }
+    });
 
-    function onPlayerError(event) {
-        console.error('Erreur YouTube Player:', event.data);
-        let errorMessage = 'Erreur de lecture vidéo';
-
-        switch(event.data) {
-            case 2:
-                errorMessage = 'ID vidéo invalide';
-                break;
-            case 5:
-                errorMessage = 'Erreur de lecture HTML5';
-                break;
-            case 100:
-                errorMessage = 'Vidéo introuvable';
-                break;
-            case 101:
-            case 150:
-                errorMessage = 'Vidéo non disponible (restrictions du propriétaire)';
-                break;
-        }
-
-        showVideoError(errorMessage);
+    function onPlayerError(error) {
+        console.error('Erreur Player:', error);
+        showVideoError('Erreur de lecture vidéo');
     }
 
     function showVideoError(message) {
@@ -284,29 +298,34 @@
         errorDiv.classList.remove('hidden');
     }
 
-    function onPlayerReady(event) {
-        // Start saving progress every 10 seconds when video starts
+    function onPlayerReady() {
+        console.log('Player ready');
         updateTimeDisplay();
-        
+
         // Resume from saved position if exists
         if (startPosition > 0) {
-            player.seekTo(startPosition, true);
+            player.setCurrentTime(startPosition);
         }
     }
 
-    function onPlayerStateChange(event) {
-        if (event.data == YT.PlayerState.PLAYING) {
-            document.getElementById('play-pause-btn').innerHTML = '⏸️ Pause';
-            startProgressTracking();
-        } else if (event.data == YT.PlayerState.PAUSED) {
-            document.getElementById('play-pause-btn').innerHTML = '▶️ Lecture';
-            stopProgressTracking();
-            saveProgress();
-        } else if (event.data == YT.PlayerState.ENDED) {
-            stopProgressTracking();
-            if (!isCompleted) {
-                markModuleComplete();
-            }
+    function onPlayerPlay() {
+        console.log('Video playing');
+        document.getElementById('play-pause-btn').innerHTML = '⏸️ Pause';
+        startProgressTracking();
+    }
+
+    function onPlayerPause() {
+        console.log('Video paused');
+        document.getElementById('play-pause-btn').innerHTML = '▶️ Lecture';
+        stopProgressTracking();
+        saveProgress();
+    }
+
+    function onPlayerEnded() {
+        console.log('Video ended');
+        stopProgressTracking();
+        if (!isCompleted) {
+            markModuleComplete();
         }
     }
 
@@ -329,33 +348,38 @@
     }
 
     function saveProgress() {
-        if (!player || !player.getCurrentTime) return;
-        
-        let currentTime = Math.floor(player.getCurrentTime());
-        let duration = Math.floor(player.getDuration());
-        
-        fetch(progressUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
-            },
-            body: JSON.stringify({
-                videoPosition: currentTime,
-                timeSpent: currentTime - startPosition + {{ moduleProgress.timeSpent }}
-            })
-        }).catch(error => console.error('Error saving progress:', error));
+        if (!player) return;
+
+        player.getCurrentTime(function(currentTime) {
+            player.getDuration(function(duration) {
+                currentTime = Math.floor(currentTime);
+                duration = Math.floor(duration);
+
+                fetch(progressUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({
+                        videoPosition: currentTime,
+                        timeSpent: currentTime - startPosition + {{ moduleProgress.timeSpent }}
+                    })
+                }).catch(error => console.error('Error saving progress:', error));
+            });
+        });
     }
 
     function checkAutoCompletion() {
         if (isCompleted || !player) return;
-        
-        let currentTime = player.getCurrentTime();
-        let duration = player.getDuration();
-        
-        if (duration > 0 && currentTime / duration >= 0.95) {
-            markModuleComplete();
-        }
+
+        player.getCurrentTime(function(currentTime) {
+            player.getDuration(function(duration) {
+                if (duration > 0 && currentTime / duration >= 0.95) {
+                    markModuleComplete();
+                }
+            });
+        });
     }
 
     function markModuleComplete() {
@@ -376,15 +400,19 @@
     }
 
     function updateTimeDisplay() {
-        if (!player || !player.getCurrentTime) return;
-        
-        let currentTime = Math.floor(player.getCurrentTime());
-        let duration = Math.floor(player.getDuration());
-        
-        document.getElementById('current-time').textContent = formatTime(currentTime);
-        if (duration > 0) {
-            document.getElementById('duration').textContent = formatTime(duration);
-        }
+        if (!player) return;
+
+        player.getCurrentTime(function(currentTime) {
+            player.getDuration(function(duration) {
+                currentTime = Math.floor(currentTime);
+                duration = Math.floor(duration);
+
+                document.getElementById('current-time').textContent = formatTime(currentTime);
+                if (duration > 0) {
+                    document.getElementById('duration').textContent = formatTime(duration);
+                }
+            });
+        });
     }
 
     function formatTime(seconds) {
@@ -395,11 +423,13 @@
 
     // Event listeners
     document.getElementById('play-pause-btn').addEventListener('click', function() {
-        if (player.getPlayerState() === YT.PlayerState.PLAYING) {
-            player.pauseVideo();
-        } else {
-            player.playVideo();
-        }
+        player.getPaused(function(paused) {
+            if (paused) {
+                player.play();
+            } else {
+                player.pause();
+            }
+        });
     });
 
     {% if moduleProgress.status != 'completed' %}
@@ -412,13 +442,16 @@
 
     // Save progress when leaving page
     window.addEventListener('beforeunload', function() {
-        if (player && player.getCurrentTime) {
-            navigator.sendBeacon(progressUrl, 
-                JSON.stringify({
-                    videoPosition: Math.floor(player.getCurrentTime()),
-                    timeSpent: Math.floor(player.getCurrentTime()) - startPosition + {{ moduleProgress.timeSpent }}
-                })
-            );
+        if (player) {
+            player.getCurrentTime(function(currentTime) {
+                currentTime = Math.floor(currentTime);
+                navigator.sendBeacon(progressUrl,
+                    JSON.stringify({
+                        videoPosition: currentTime,
+                        timeSpent: currentTime - startPosition + {{ moduleProgress.timeSpent }}
+                    })
+                );
+            });
         }
     });
 </script>

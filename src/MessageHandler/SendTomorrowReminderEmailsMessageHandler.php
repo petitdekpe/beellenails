@@ -52,13 +52,18 @@ class SendTomorrowReminderEmailsMessageHandler
             try {
                 $user = $appointment->getUser();
                 $email = (new Email())
-                    ->from('beellenailscare@beellenails.com')
+                    ->from('BeElle Nails Care <reservation@beellegroup.com>')
                     ->to($user->getEmail())
+                    ->replyTo('reservation@beellegroup.com')
                     ->subject('Rappel : Rendez-vous demain chez BeElle Nails')
                     ->html($this->twig->render(
                         'emails/rendezvous_tomorrow_reminder.html.twig',
                         ['rendezvous' => $appointment]
                     ));
+
+                $email->getHeaders()
+                    ->addTextHeader('X-Mailer', 'BeElle Nails Booking System')
+                    ->addTextHeader('X-Auto-Response-Suppress', 'OOF, DR, RN, NRN, AutoReply');
 
                 $this->mailer->send($email);
                 $emailCount++;

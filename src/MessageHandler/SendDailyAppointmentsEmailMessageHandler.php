@@ -48,12 +48,17 @@ class SendDailyAppointmentsEmailMessageHandler
             $appointments = $this->rendezvousRepository->findTomorrowAppointments();
 
             $email = (new Email())
-                ->from('beellenailscare@beellenails.com')
+                ->from('BeElle Nails Care <reservation@beellegroup.com>')
                 ->to('murielahodode@gmail.com')
+                ->replyTo('reservation@beellegroup.com')
                 ->subject('Rendez-vous pour demain')
                 ->html($this->twig->render('emails/rendezvous_daily_appointments.html.twig', [
                     'appointments' => $appointments,
                 ]));
+
+            $email->getHeaders()
+                ->addTextHeader('X-Mailer', 'BeElle Nails Booking System')
+                ->addTextHeader('X-Auto-Response-Suppress', 'OOF, DR, RN, NRN, AutoReply');
 
             $this->mailer->send($email);
 

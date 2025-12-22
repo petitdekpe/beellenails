@@ -89,7 +89,7 @@ class GenericPaymentController extends AbstractController
             throw $this->createAccessDeniedException('User must be logged in to make a payment');
         }
         $paymentUser = $this->paymentTypeResolver->getUserForPayment($entity, $currentUser);
-        
+
         // Get payment description
         $description = $this->paymentTypeResolver->getPaymentDescription($paymentType, $entity);
 
@@ -127,7 +127,7 @@ class GenericPaymentController extends AbstractController
         ]);
 
         // Route to specific provider handler
-        return match($provider) {
+        return match ($provider) {
             'fedapay' => $this->handleFedaPayInit($paymentType, $entity, $paymentUser, $amount, $description),
             'feexpay' => $this->handleFeexPayInit($request, $paymentType, $entity, $paymentUser, $amount, $description),
             default => throw $this->createNotFoundException("Provider non implémenté: {$provider}")
@@ -192,7 +192,6 @@ class GenericPaymentController extends AbstractController
                 'payment' => $payment,
                 'entity' => $entity
             ]);
-
         } catch (\Exception $e) {
             $this->logger->error('[Generic Payment FedaPay] Error during initialization', [
                 'error' => $e->getMessage(),
@@ -298,7 +297,6 @@ class GenericPaymentController extends AbstractController
             return $this->redirectToRoute('generic_payment_pending', [
                 'reference' => $response['reference']
             ]);
-
         } catch (\Exception $e) {
             $this->logger->error('[Generic Payment FeexPay] Error during initialization', [
                 'error' => $e->getMessage(),
@@ -440,11 +438,11 @@ class GenericPaymentController extends AbstractController
 
             // Get fresh transaction data from FedaPay
             $transaction = $this->fedapayService->getTransaction($transactionID);
-            
+
             // Update payment with fresh data
             $oldStatus = $payment->getStatus();
             $payment->parseTransaction($transaction);
-            
+
             // Resolve entity
             $entity = $this->paymentTypeResolver->resolveEntity($payment);
 
@@ -479,7 +477,7 @@ class GenericPaymentController extends AbstractController
                 } else if (in_array($newStatus, ['declined', 'failed'])) {
                     $entity->onPaymentFailure();
                     $this->entityManager->flush();
-                    
+
                     return $this->redirectToRoute('generic_payment_error', [
                         'reference' => $payment->getReference()
                     ]);
@@ -489,7 +487,7 @@ class GenericPaymentController extends AbstractController
             $this->entityManager->flush();
 
             // Redirect based on status
-            return match($status) {
+            return match ($status) {
                 'approved', 'successful' => $this->redirectToRoute('generic_payment_success', [
                     'reference' => $payment->getReference()
                 ]),
@@ -497,7 +495,6 @@ class GenericPaymentController extends AbstractController
                     'reference' => $payment->getReference()
                 ])
             };
-
         } catch (\Exception $e) {
             $this->logger->error('[Generic Payment Callback] Erreur lors du traitement', [
                 'transaction_id' => $transactionID,
@@ -524,24 +521,26 @@ class GenericPaymentController extends AbstractController
         }
 
         $forceApiCheck = $request->query->getBoolean('force_api', false);
-        
+
         // Si force_api=true ET le paiement est encore pending ET c'est FeexPay
-        if ($forceApiCheck && 
-            $payment->getStatus() === 'pending' && 
-            $payment->getProvider() === 'feexpay') {
-            
+        if (
+            $forceApiCheck &&
+            $payment->getStatus() === 'pending' &&
+            $payment->getProvider() === 'feexpay'
+        ) {
+
             $this->logger->info('[Generic Payment] Force API check requested', [
                 'reference' => $reference,
                 'current_status' => $payment->getStatus()
             ]);
-            
+
             // Appel API FeexPay pour vérifier le vrai statut
             try {
                 $apiStatus = $this->checkFeexPayApiStatus($payment);
-                
+
                 if ($apiStatus && $apiStatus !== 'pending') {
                     $this->updatePaymentFromApiStatus($payment, $apiStatus);
-                    
+
                     $this->logger->info('[Generic Payment] Status updated from API', [
                         'reference' => $reference,
                         'old_status' => 'pending',
@@ -602,32 +601,31 @@ class GenericPaymentController extends AbstractController
         try {
             // Appel à l'API FeexPay pour vérifier le statut
             $response = $this->feexpayService->getPaiementStatus($payment->getReference());
-            
+
             $this->logger->info('[Generic Payment] FeexPay API Status Check', [
                 'reference' => $payment->getReference(),
                 'api_response' => $response
             ]);
-            
+
             // Vérifier si la réponse indique une erreur d'API
             if (isset($response['error']) && $response['error'] === true) {
                 throw new \Exception($response['message'] ?? 'Erreur API FeexPay');
             }
-            
+
             // Mapper les statuts FeexPay vers nos statuts internes
             // FeexPay peut retourner: status, state, ou autres champs
             $apiStatus = $response['status'] ?? $response['state'] ?? $response['transaction_status'] ?? null;
-            
+
             if ($apiStatus) {
-                return match(strtolower($apiStatus)) {
+                return match (strtolower($apiStatus)) {
                     'success', 'successful', 'completed', 'approved', 'paid' => 'successful',
                     'failed', 'declined', 'cancelled', 'error', 'rejected' => 'failed',
                     'pending', 'processing', 'waiting' => 'pending',
                     default => 'pending'
                 };
             }
-            
+
             return null;
-            
         } catch (\Exception $e) {
             $this->logger->error('[Generic Payment] FeexPay API Status Check Error', [
                 'reference' => $payment->getReference(),
@@ -641,7 +639,7 @@ class GenericPaymentController extends AbstractController
     {
         $payment->setStatus($apiStatus);
         $payment->setUpdatedAt(new \DateTimeImmutable());
-        
+
         // Mettre à jour l'entité liée si le paiement est réussi
         if ($apiStatus === 'successful') {
             try {
@@ -668,7 +666,7 @@ class GenericPaymentController extends AbstractController
                 ]);
             }
         }
-        
+
         $this->entityManager->persist($payment);
         $this->entityManager->flush();
     }
@@ -697,7 +695,6 @@ class GenericPaymentController extends AbstractController
             ]);
 
             return new Response('FedaPay test successful');
-
         } catch (\Exception $e) {
             $this->logger->error('[Test FedaPay] Error', [
                 'error' => $e->getMessage(),
@@ -769,7 +766,6 @@ class GenericPaymentController extends AbstractController
                 'formation_id' => $formation->getId(),
                 'formation_name' => $formation->getNom()
             ]);
-
         } catch (\Exception $e) {
             $this->logger->error('[Formation Enrollment] Error creating enrollment', [
                 'user_id' => $user->getId(),

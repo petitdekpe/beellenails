@@ -5,6 +5,7 @@
 
 namespace App\Service;
 
+use App\Entity\FormationEnrollment;
 use App\Repository\FormationEnrollmentRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Mailer\MailerInterface;
@@ -94,8 +95,9 @@ class ExpirationNotificationService
             };
 
             $email = (new Email())
-                ->from('noreply@beellenails.com')
+                ->from('BeElle Nails Care <reservation@beellegroup.com>')
                 ->to($user->getEmail())
+                ->replyTo('reservation@beellegroup.com')
                 ->subject($subject)
                 ->html($this->twig->render($template, [
                     'user' => $user,
@@ -105,6 +107,10 @@ class ExpirationNotificationService
                     'expiresAt' => $enrollment->getExpiresAt(),
                     'progressPercentage' => $enrollment->getProgressPercentage(),
                 ]));
+
+            $email->getHeaders()
+                ->addTextHeader('X-Mailer', 'BeElle Nails Booking System')
+                ->addTextHeader('X-Auto-Response-Suppress', 'OOF, DR, RN, NRN, AutoReply');
 
             $this->mailer->send($email);
 

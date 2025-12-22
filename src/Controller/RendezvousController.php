@@ -153,24 +153,32 @@ class RendezvousController extends AbstractController
 
             // Envoyer l'e-mail après la modification du rendez-vous
             $email = (new Email())
-                ->from('beellenailscare@beellenails.com')
+                ->from('BeElle Nails Care <reservation@beellegroup.com>')
                 ->to($userEmail)
+                ->replyTo('reservation@beellegroup.com')
                 ->subject('Votre Rendez-vous a été modifié')
                 ->html($this->renderView(
                     'emails/rendezvous_updated.html.twig',
                     ['rendezvous' => $rendezvous]
                 ));
+            $email->getHeaders()
+                ->addTextHeader('X-Mailer', 'BeElle Nails Booking System')
+                ->addTextHeader('X-Auto-Response-Suppress', 'OOF, DR, RN, NRN, AutoReply');
             $mailer->send($email);
 
             // Envoyer l'e-mail à l'admin
             $adminEmail = (new Email())
-                ->from('beellenailscare@beellenails.com')
+                ->from('BeElle Nails Care <reservation@beellegroup.com>')
                 ->to('murielahodode@gmail.com')
+                ->replyTo('reservation@beellegroup.com')
                 ->subject('Rendez-vous modifié par le client')
                 ->html($this->renderView(
                     'emails/rendezvous_updated_admin.html.twig',
                     ['rendezvous' => $rendezvous]
                 ));
+            $adminEmail->getHeaders()
+                ->addTextHeader('X-Mailer', 'BeElle Nails Booking System')
+                ->addTextHeader('X-Auto-Response-Suppress', 'OOF, DR, RN, NRN, AutoReply');
             $mailer->send($adminEmail);
 
             return $this->redirectToRoute('app_users', [], Response::HTTP_SEE_OTHER);
@@ -215,25 +223,33 @@ class RendezvousController extends AbstractController
 
         // Envoyer l'e-mail après la création du rendez-vous
         $email = (new Email())
-            ->from('beellenailscare@beellenails.com')
+            ->from('BeElle Nails Care <reservation@beellegroup.com>')
             ->to($userEmail)
+            ->replyTo('reservation@beellegroup.com')
             ->subject('Rendez-vous Annulé !')
             ->html($this->renderView(
                 'emails/rendezvous_canceled.html.twig',
                 ['rendezvous' => $rendezvous]
             ));
+        $email->getHeaders()
+            ->addTextHeader('X-Mailer', 'BeElle Nails Booking System')
+            ->addTextHeader('X-Auto-Response-Suppress', 'OOF, DR, RN, NRN, AutoReply');
 
         $mailer->send($email);
 
         // Email admin
         $emailAdmin = (new Email())
-            ->from('beellenailscare@beellenails.com')
+            ->from('BeElle Nails Care <reservation@beellegroup.com>')
             ->to('murielahodode@gmail.com')
+            ->replyTo('reservation@beellegroup.com')
             ->subject('Un rendez-vous a été annulé')
             ->html($this->renderView(
                 'emails/rendezvous_canceled_admin.html.twig',
                 ['rendezvous' => $rendezvous]
             ));
+        $emailAdmin->getHeaders()
+            ->addTextHeader('X-Mailer', 'BeElle Nails Booking System')
+            ->addTextHeader('X-Auto-Response-Suppress', 'OOF, DR, RN, NRN, AutoReply');
         $mailer->send($emailAdmin);
         return $this->redirectToRoute('app_users', [], Response::HTTP_SEE_OTHER);
     }

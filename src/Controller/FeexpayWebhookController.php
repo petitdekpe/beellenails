@@ -168,12 +168,16 @@ class FeexpayWebhookController extends AbstractController
         try {
             $userEmail = $rendezvous->getUser()->getEmail();
             $email = (new Email())
-                ->from('beellenailscare@beellenails.com')
+                ->from('BeElle Nails Care <reservation@beellegroup.com>')
                 ->to($userEmail)
+                ->replyTo('reservation@beellegroup.com')
                 ->subject('Informations de rendez-vous!')
                 ->html($this->renderView('emails/rendezvous_created.html.twig', [
                     'rendezvous' => $rendezvous
                 ]));
+            $email->getHeaders()
+                ->addTextHeader('X-Mailer', 'BeElle Nails Booking System')
+                ->addTextHeader('X-Auto-Response-Suppress', 'OOF, DR, RN, NRN, AutoReply');
 
             $mailer->send($email);
             $logger->info("[FeexPay Webhook] Email client envoyé à: {$userEmail}");
@@ -188,12 +192,16 @@ class FeexpayWebhookController extends AbstractController
     {
         try {
             $adminEmail = (new Email())
-                ->from('beellenailscare@beellenails.com')
+                ->from('BeElle Nails Care <reservation@beellegroup.com>')
                 ->to('murielahodode@gmail.com')
+                ->replyTo('reservation@beellegroup.com')
                 ->subject('Nouveau Rendez-vous !')
                 ->html($this->renderView('emails/rendezvous_created_admin.html.twig', [
                     'rendezvous' => $rendezvous
                 ]));
+            $adminEmail->getHeaders()
+                ->addTextHeader('X-Mailer', 'BeElle Nails Booking System')
+                ->addTextHeader('X-Auto-Response-Suppress', 'OOF, DR, RN, NRN, AutoReply');
 
             $mailer->send($adminEmail);
             $logger->info('[FeexPay Webhook] Email admin envoyé');

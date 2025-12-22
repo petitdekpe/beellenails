@@ -56,8 +56,8 @@ class EmailManagementController extends AbstractController
                         $personalizedSubject = $this->personalizeMessage($subject, $user);
                         
                         $email = (new Email())
-                            ->from('beellenailscare@beellenails.com')
-                            ->replyTo('murielahodode@gmail.com')
+                            ->from('BeElle Nails Care <reservation@beellegroup.com>')
+                            ->replyTo('reservation@beellegroup.com')
                             ->to($user->getEmail())
                             ->subject($personalizedSubject)
                             ->html($this->renderView('emails/bulk_email.html.twig', [
@@ -66,12 +66,12 @@ class EmailManagementController extends AbstractController
                                 'subject' => $personalizedSubject
                             ]))
                             ->text(strip_tags($personalizedMessage)); // Version texte
-                            
+
                         // Ajouter les headers anti-spam
                         $email->getHeaders()
-                            ->addTextHeader('X-Mailer', 'Beelle Nails Care System')
-                            ->addTextHeader('X-Auto-Response-Suppress', 'OOF, DR, RN, NRN')
-                            ->addTextHeader('List-Unsubscribe', '<mailto:murielahodode@gmail.com?subject=Unsubscribe>')
+                            ->addTextHeader('X-Mailer', 'BeElle Nails Booking System')
+                            ->addTextHeader('X-Auto-Response-Suppress', 'OOF, DR, RN, NRN, AutoReply')
+                            ->addTextHeader('List-Unsubscribe', '<mailto:reservation@beellegroup.com?subject=Unsubscribe>')
                             ->addTextHeader('Precedence', 'bulk');
                         
                         $mailer->send($email);
