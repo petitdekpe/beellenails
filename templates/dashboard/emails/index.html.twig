@@ -14,6 +14,7 @@
                     <p class="text-sm text-gray-600">{{ total_clients }} clients enregistrés</p>
                 </div>
 
+
                 <!-- Messages flash -->
                 {% for message in app.flashes('success') %}
                     <div class="mb-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded relative">
@@ -69,7 +70,7 @@
                         <!-- Options de destinataires -->
                         <div class="border-t border-gray-200 pt-6">
                             <h3 class="text-md font-medium text-gray-900 mb-4">Destinataires</h3>
-                            
+
                             <!-- Envoyer à tous -->
                             <div class="mb-4">
                                 <div class="flex items-center">
@@ -79,15 +80,98 @@
                                 <p class="mt-1 text-xs text-gray-500">Cochez cette case pour envoyer l'email à tous les clients ({{ total_clients }} personnes)</p>
                             </div>
 
-                            <!-- Sélection manuelle -->
-                            <div id="manual-selection" class="mb-4">
-                                {{ form_label(form.recipients, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
-                                {{ form_widget(form.recipients) }}
-                                {{ form_errors(form.recipients) }}
-                                <p class="mt-1 text-xs text-gray-500">
-                                    Maintenez Ctrl (Cmd sur Mac) pour sélectionner plusieurs clients. 
-                                    Cette option est ignorée si "Envoyer à tous" est coché.
-                                </p>
+                            <!-- Listes prédéfinies -->
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Ou sélectionner une liste prédéfinie</label>
+                                <div class="space-y-2">
+                                    {% for key, list in mailing_lists %}
+                                        <label class="flex items-start p-3 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer">
+                                            <input
+                                                type="radio"
+                                                name="mailing_list"
+                                                value="{{ key }}"
+                                                class="mailing-list-radio mt-1 rounded-full border-gray-300 text-pink-600 shadow-sm focus:border-pink-300 focus:ring focus:ring-pink-200 focus:ring-opacity-50"
+                                            >
+                                            <div class="ml-3 flex-1">
+                                                <div class="flex items-center justify-between">
+                                                    <span class="text-sm font-medium text-gray-900">{{ list.name }}</span>
+                                                    <span class="text-xs font-semibold px-2 py-1 bg-pink-100 text-pink-700 rounded-full">
+                                                        {{ list.count }} client(s)
+                                                    </span>
+                                                </div>
+                                                <p class="text-xs text-gray-500 mt-1">{{ list.description }}</p>
+                                            </div>
+                                        </label>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <!-- Liste avec checkboxes -->
+                            <div id="checkbox-selection" class="mb-4">
+                                <div class="mb-3">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Sélectionner des clients</label>
+                                    <!-- Barre de recherche filtre -->
+                                    <input
+                                        type="text"
+                                        id="client-search"
+                                        placeholder="🔍 Rechercher par nom, prénom ou email..."
+                                        class="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 mb-2"
+                                    >
+                                </div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <p class="text-xs text-gray-500">
+                                        <span id="visible-count">{{ clients|length }}</span> client(s) affiché(s) •
+                                        <span id="selected-count">0</span> sélectionné(s)
+                                    </p>
+                                    <div class="flex gap-2">
+                                        <button
+                                            type="button"
+                                            onclick="selectAllVisibleClients()"
+                                            class="text-xs text-pink-600 hover:text-pink-700 font-medium"
+                                        >
+                                            ✓ Sélectionner visibles
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onclick="deselectAllClients()"
+                                            class="text-xs text-gray-600 hover:text-gray-700 font-medium"
+                                        >
+                                            ✕ Tout désélectionner
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="border border-gray-300 rounded-lg max-h-96 overflow-y-auto bg-gray-50">
+                                    <div id="clients-list" class="divide-y divide-gray-200">
+                                        {% if clients is empty %}
+                                            <div class="p-4 text-center text-gray-500" id="no-clients-message">
+                                                Aucun client enregistré
+                                            </div>
+                                        {% else %}
+                                            {% for client in clients %}
+                                                <label class="client-item flex items-center p-3 hover:bg-gray-100 cursor-pointer"
+                                                       data-search="{{ (client.prenom ~ ' ' ~ client.nom ~ ' ' ~ client.email)|lower }}">
+                                                    <input
+                                                        type="checkbox"
+                                                        name="selected_users[]"
+                                                        value="{{ client.id }}"
+                                                        class="client-checkbox rounded border-gray-300 text-pink-600 shadow-sm focus:border-pink-300 focus:ring focus:ring-pink-200 focus:ring-opacity-50"
+                                                    >
+                                                    <div class="ml-3 flex-1">
+                                                        <div class="text-sm font-medium text-gray-900">
+                                                            {{ client.prenom }} {{ client.nom }}
+                                                        </div>
+                                                        <div class="text-xs text-gray-500">
+                                                            {{ client.email }}
+                                                        </div>
+                                                    </div>
+                                                </label>
+                                            {% endfor %}
+                                            <div class="p-4 text-center text-gray-500 hidden" id="no-results-message">
+                                                Aucun client ne correspond à votre recherche
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -128,20 +212,114 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const sendToAllCheckbox = document.getElementById('bulk_email_sendToAll');
-    const recipientsSelect = document.getElementById('bulk_email_recipients');
-    
-    function toggleRecipients() {
-        if (sendToAllCheckbox.checked) {
-            recipientsSelect.disabled = true;
-            recipientsSelect.style.opacity = '0.5';
+    const checkboxSelection = document.getElementById('checkbox-selection');
+    const clientCheckboxes = document.querySelectorAll('.client-checkbox');
+    const selectedCountSpan = document.getElementById('selected-count');
+    const visibleCountSpan = document.getElementById('visible-count');
+    const searchInput = document.getElementById('client-search');
+    const clientItems = document.querySelectorAll('.client-item');
+    const noResultsMessage = document.getElementById('no-results-message');
+
+    // Fonction pour mettre à jour le compteur de sélectionnés
+    function updateSelectedCount() {
+        const checkedCount = document.querySelectorAll('.client-checkbox:checked').length;
+        selectedCountSpan.textContent = checkedCount;
+    }
+
+    // Fonction pour mettre à jour le compteur de visibles
+    function updateVisibleCount() {
+        const visibleCount = document.querySelectorAll('.client-item:not(.hidden)').length;
+        visibleCountSpan.textContent = visibleCount;
+
+        // Afficher/masquer le message "Aucun résultat"
+        if (visibleCount === 0 && searchInput.value.trim() !== '') {
+            noResultsMessage.classList.remove('hidden');
         } else {
-            recipientsSelect.disabled = false;
-            recipientsSelect.style.opacity = '1';
+            noResultsMessage.classList.add('hidden');
         }
     }
-    
+
+    // Fonction de recherche/filtre en temps réel
+    function filterClients() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+
+        clientItems.forEach(item => {
+            const searchData = item.getAttribute('data-search');
+            if (searchData.includes(searchTerm)) {
+                item.classList.remove('hidden');
+            } else {
+                item.classList.add('hidden');
+            }
+        });
+
+        updateVisibleCount();
+    }
+
+    // Fonction pour activer/désactiver la sélection manuelle
+    function toggleRecipients() {
+        const mailingListRadios = document.querySelectorAll('.mailing-list-radio');
+        const anyListSelected = Array.from(mailingListRadios).some(radio => radio.checked);
+
+        if (sendToAllCheckbox.checked || anyListSelected) {
+            checkboxSelection.style.opacity = '0.5';
+            checkboxSelection.style.pointerEvents = 'none';
+        } else {
+            checkboxSelection.style.opacity = '1';
+            checkboxSelection.style.pointerEvents = 'auto';
+        }
+    }
+
+    // Sélectionner tous les clients VISIBLES
+    window.selectAllVisibleClients = function() {
+        document.querySelectorAll('.client-item:not(.hidden) .client-checkbox').forEach(checkbox => {
+            checkbox.checked = true;
+        });
+        updateSelectedCount();
+    };
+
+    // Désélectionner tous les clients
+    window.deselectAllClients = function() {
+        clientCheckboxes.forEach(checkbox => {
+            checkbox.checked = false;
+        });
+        updateSelectedCount();
+    };
+
+    // Écouter la saisie dans le champ de recherche (en temps réel)
+    searchInput.addEventListener('input', filterClients);
+
+    // Écouter les changements sur les checkboxes
+    clientCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', updateSelectedCount);
+    });
+
+    // Écouter les changements sur "Envoyer à tous"
     sendToAllCheckbox.addEventListener('change', toggleRecipients);
-    toggleRecipients(); // Initial state
+
+    // Écouter les changements sur les listes prédéfinies
+    document.querySelectorAll('.mailing-list-radio').forEach(radio => {
+        radio.addEventListener('change', function() {
+            // Désélectionner "Envoyer à tous" si une liste est sélectionnée
+            if (this.checked) {
+                sendToAllCheckbox.checked = false;
+            }
+            toggleRecipients();
+        });
+    });
+
+    // Désélectionner les listes si on coche "Envoyer à tous"
+    sendToAllCheckbox.addEventListener('change', function() {
+        if (this.checked) {
+            document.querySelectorAll('.mailing-list-radio').forEach(radio => {
+                radio.checked = false;
+            });
+        }
+    });
+
+    // État initial
+    toggleRecipients();
+    updateSelectedCount();
+    updateVisibleCount();
 });
 </script>
 {% endblock %}

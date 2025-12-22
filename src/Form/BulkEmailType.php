@@ -62,7 +62,11 @@ class BulkEmailType extends AbstractType
                 'label' => 'Ou sélectionner des clients spécifiques',
                 'attr' => [
                     'class' => 'block w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500',
-                    'size' => 8
+                    'size' => 8,
+                    'style' => 'display: none;'
+                ],
+                'label_attr' => [
+                    'style' => 'display: none;'
                 ],
                 'query_builder' => function (UserRepository $repository) {
                     return $repository->createQueryBuilder('u')

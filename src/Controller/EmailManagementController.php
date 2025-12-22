@@ -16,6 +16,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\Mime\Address;
 
 #[IsGranted('ROLE_ADMIN')]
 class EmailManagementController extends AbstractController
@@ -32,7 +33,13 @@ class EmailManagementController extends AbstractController
             $message = $data['message'];
             $recipients = $data['recipients'];
             $sendToAll = $data['sendToAll'];
-            
+
+            // Récupérer les IDs sélectionnés via checkboxes
+            $selectedIds = $request->request->all('selected_users') ?? [];
+
+            // Récupérer la liste sélectionnée
+            $selectedList = $request->request->get('mailing_list');
+
             $emailsSent = 0;
             $errors = [];
 
@@ -44,21 +51,41 @@ class EmailManagementController extends AbstractController
                         ->setParameter('admin_role', '%ROLE_ADMIN%')
                         ->getQuery()
                         ->getResult();
+                } elseif ($selectedList === 'loyal_clients') {
+                    // Liste : Clients fidèles de l'année en cours
+                    $users = $userRepository->findLoyalClientsCurrentYear();
+                } elseif ($selectedList === 'clients_to_reconquer') {
+                    // Liste : Clients à reconquérir
+                    $users = $userRepository->findClientsToReconquer();
+                } elseif (!empty($selectedIds)) {
+                    // Envoyer aux utilisateurs sélectionnés via checkboxes
+                    $users = $userRepository->createQueryBuilder('u')
+                        ->where('u.id IN (:ids)')
+                        ->setParameter('ids', $selectedIds)
+                        ->getQuery()
+                        ->getResult();
                 } else {
-                    // Envoyer aux utilisateurs sélectionnés
+                    // Fallback: utiliser la sélection du select
                     $users = $recipients;
                 }
 
                 foreach ($users as $user) {
                     try {
+                        // Valider l'adresse email avant de continuer
+                        $userEmail = $user->getEmail();
+                        if (empty($userEmail) || !filter_var($userEmail, FILTER_VALIDATE_EMAIL)) {
+                            $errors[] = "Erreur pour {$userEmail}: Adresse email invalide";
+                            continue;
+                        }
+
                         // Personnaliser le message avec les données du client
                         $personalizedMessage = $this->personalizeMessage($message, $user);
                         $personalizedSubject = $this->personalizeMessage($subject, $user);
-                        
+
                         $email = (new Email())
                             ->from('BeElle Nails Care <reservation@beellegroup.com>')
                             ->replyTo('reservation@beellegroup.com')
-                            ->to($user->getEmail())
+                            ->to($userEmail)
                             ->subject($personalizedSubject)
                             ->html($this->renderView('emails/bulk_email.html.twig', [
                                 'user' => $user,
@@ -73,7 +100,7 @@ class EmailManagementController extends AbstractController
                             ->addTextHeader('X-Auto-Response-Suppress', 'OOF, DR, RN, NRN, AutoReply')
                             ->addTextHeader('List-Unsubscribe', '<mailto:reservation@beellegroup.com?subject=Unsubscribe>')
                             ->addTextHeader('Precedence', 'bulk');
-                        
+
                         $mailer->send($email);
                         $emailsSent++;
                     } catch (\Exception $e) {
@@ -107,10 +134,26 @@ class EmailManagementController extends AbstractController
             ->getQuery()
             ->getResult();
 
+        // Récupérer les listes dynamiques avec leurs compteurs
+        $loyalClients = $userRepository->findLoyalClientsCurrentYear();
+        $clientsToReconquer = $userRepository->findClientsToReconquer();
+
         return $this->render('dashboard/emails/index.html.twig', [
             'form' => $form->createView(),
             'clients' => $clients,
-            'total_clients' => count($clients)
+            'total_clients' => count($clients),
+            'mailing_lists' => [
+                'loyal_clients' => [
+                    'name' => 'Clients fidèles ' . date('Y'),
+                    'description' => 'Clients avec au moins 2 rendez-vous cette année',
+                    'count' => count($loyalClients)
+                ],
+                'clients_to_reconquer' => [
+                    'name' => 'Clients à reconquérir',
+                    'description' => 'Clients actifs en ' . (date('Y') - 1) . ' mais peu actifs cette année',
+                    'count' => count($clientsToReconquer)
+                ]
+            ]
         ]);
     }
     
