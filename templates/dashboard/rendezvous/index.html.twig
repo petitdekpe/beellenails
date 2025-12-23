@@ -62,9 +62,9 @@
 										<td class="px-4 py-3">{{ rendezvous.status }}</td>
 										<td class="px-4 py-3">
 											{% if rendezvous.imageName %}
-												<a href="{{ vich_uploader_asset(rendezvous, 'image') }}">
+												<button type="button" onclick="openImageModal('{{ vich_uploader_asset(rendezvous, 'image') }}')" class="cursor-pointer">
 													<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewbox="0 -960 960 960" width="24px" fill="#BE185D"><path d="M480-320q75 0 127.5-52.5T660-500q0-75-52.5-127.5T480-680q-75 0-127.5 52.5T300-500q0 75 52.5 127.5T480-320Zm0-72q-45 0-76.5-31.5T372-500q0-45 31.5-76.5T480-608q45 0 76.5 31.5T588-500q0 45-31.5 76.5T480-392Zm0 192q-146 0-266-81.5T40-500q54-137 174-218.5T480-800q146 0 266 81.5T920-500q-54 137-174 218.5T480-200Z"/></svg>
-												</a>
+												</button>
 												{% else %}Aucune image
 											{% endif %}
 										</td>
@@ -134,7 +134,38 @@
 	</div>
 </section>
 
+<!-- Modal pour afficher l'image -->
+<div id="imageModal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4" onclick="closeImageModal()">
+	<div class="relative max-w-4xl max-h-full" onclick="event.stopPropagation()">
+		<button onclick="closeImageModal()" class="absolute -top-10 right-0 text-white hover:text-gray-300 text-3xl font-bold">
+			&times;
+		</button>
+		<img id="modalImage" src="" alt="Image du rendez-vous" class="max-w-full max-h-[90vh] rounded-lg shadow-2xl">
+	</div>
+</div>
+
 <script>
+	function openImageModal(imageUrl) {
+		const modal = document.getElementById('imageModal');
+		const modalImage = document.getElementById('modalImage');
+		modalImage.src = imageUrl;
+		modal.classList.remove('hidden');
+		document.body.style.overflow = 'hidden';
+	}
+
+	function closeImageModal() {
+		const modal = document.getElementById('imageModal');
+		modal.classList.add('hidden');
+		document.body.style.overflow = 'auto';
+	}
+
+	// Fermer avec la touche Échap
+	document.addEventListener('keydown', (e) => {
+		if (e.key === 'Escape') {
+			closeImageModal();
+		}
+	});
+
 	document.addEventListener('DOMContentLoaded', () => {
 const ITEMS_PER_PAGE = 3;
 const blocks = Array.from(document.querySelectorAll('.date-block'));
