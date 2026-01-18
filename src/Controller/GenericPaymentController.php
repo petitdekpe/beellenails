@@ -407,7 +407,7 @@ class GenericPaymentController extends AbstractController
     public function paymentCallback(Request $request): Response
     {
         $transactionID = $request->get('id');
-        $status = $request->get('status');
+        $status = strtolower((string) $request->get('status', ''));
 
         $this->logger->info('[Generic Payment Callback] Callback reçu', [
             'transaction_id' => $transactionID,
@@ -415,17 +415,16 @@ class GenericPaymentController extends AbstractController
             'query_params' => $request->query->all()
         ]);
 
+        // Si transaction ID manquant, rediriger vers generic_payment_error
         if (!$transactionID) {
             $this->logger->error('[Generic Payment Callback] Transaction ID manquant');
-            return $this->render('payment/error.html.twig', [
-                'error' => 'Transaction ID manquant',
-                'payment' => null,
-                'entity' => null
+            return $this->redirectToRoute('generic_payment_error', [
+                'reference' => $request->get('reference', 'unknown')
             ]);
         }
 
         try {
-            // Find payment by transaction ID
+            // Récupérer le paiement correspondant
             $payment = $this->entityManager->getRepository(Payment::class)
                 ->findOneBy(['transactionID' => $transactionID]);
 
@@ -433,40 +432,38 @@ class GenericPaymentController extends AbstractController
                 $this->logger->error('[Generic Payment Callback] Paiement introuvable', [
                     'transaction_id' => $transactionID
                 ]);
-                throw $this->createNotFoundException('Paiement introuvable');
+                return $this->redirectToRoute('generic_payment_error', [
+                    'reference' => $request->get('reference', 'unknown')
+                ]);
             }
 
-            // Get fresh transaction data from FedaPay
+            // Mettre à jour le paiement avec les données fraîches de FedaPay
             $transaction = $this->fedapayService->getTransaction($transactionID);
-
-            // Update payment with fresh data
-            $oldStatus = $payment->getStatus();
+            $oldStatus = strtolower($payment->getStatus() ?? '');
             $payment->parseTransaction($transaction);
 
-            // Resolve entity
+            $newStatus = strtolower($payment->getStatus() ?? '');
             $entity = $this->paymentTypeResolver->resolveEntity($payment);
 
-            // Handle status change
-            $newStatus = $payment->getStatus();
-            if ($oldStatus !== $newStatus) {
-                $this->logger->info('[Generic Payment Callback] Changement de statut', [
-                    'payment_id' => $payment->getId(),
-                    'old_status' => $oldStatus,
-                    'new_status' => $newStatus
-                ]);
+            $this->logger->info('[Generic Payment Callback] Statut du paiement mis à jour', [
+                'payment_id' => $payment->getId(),
+                'old_status' => $oldStatus,
+                'new_status' => $newStatus
+            ]);
 
-                // Process status change
-                if (in_array($newStatus, ['approved', 'successful'])) {
+            // Si le statut a changé, traiter le succès ou l'échec
+            if ($oldStatus !== $newStatus) {
+                if (in_array($newStatus, ['approved', 'successful'], true)) {
                     $entity->onPaymentSuccess();
 
-                    // Créer une inscription pour les formations
+                    // Créer l'inscription si c'est une formation
                     if ($entity instanceof \App\Entity\Formation) {
                         $this->createFormationEnrollment($entity, $payment->getCustomer());
                     }
 
                     $this->entityManager->flush();
 
-                    // Envoyer les notifications email si c'est un rendez-vous
+                    // Envoyer notification si c'est un rendez-vous
                     if ($entity instanceof \App\Entity\Rendezvous) {
                         $this->notificationService->sendPaymentConfirmation($entity);
                     }
@@ -474,7 +471,9 @@ class GenericPaymentController extends AbstractController
                     return $this->redirectToRoute('generic_payment_success', [
                         'reference' => $payment->getReference()
                     ]);
-                } else if (in_array($newStatus, ['declined', 'failed'])) {
+                }
+
+                if (in_array($newStatus, ['declined', 'failed'], true)) {
                     $entity->onPaymentFailure();
                     $this->entityManager->flush();
 
@@ -486,7 +485,7 @@ class GenericPaymentController extends AbstractController
 
             $this->entityManager->flush();
 
-            // Redirect based on status
+            // Redirection finale basée sur le statut reçu
             return match ($status) {
                 'approved', 'successful' => $this->redirectToRoute('generic_payment_success', [
                     'reference' => $payment->getReference()
@@ -502,13 +501,16 @@ class GenericPaymentController extends AbstractController
                 'trace' => $e->getTraceAsString()
             ]);
 
-            return $this->render('payment/error.html.twig', [
-                'error' => 'Erreur lors du traitement du callback',
-                'payment' => null,
-                'entity' => null
+            // Redirection sécurisée vers page d'erreur avec référence si possible
+            $reference = $payment->getReference() ?? $request->get('reference', 'unknown');
+            return $this->redirectToRoute('generic_payment_error', [
+                'reference' => $reference
             ]);
         }
     }
+
+
+
 
     #[Route('/payment/status/{reference}', name: 'generic_payment_status', methods: ['GET'])]
     public function checkStatus(string $reference, Request $request): JsonResponse

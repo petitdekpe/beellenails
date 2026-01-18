@@ -3,7 +3,6 @@
 // Copyright (c) 2025 Jean-Yves A.
 // Auteur: Jean-Yves A. <murielahodode@gmail.com>
 
-
 namespace App\Service;
 
 use App\Entity\Rendezvous;
@@ -31,10 +30,7 @@ class NotificationService
     public function sendPaymentConfirmation(Rendezvous $rendezvous): void
     {
         try {
-            // Email au client
             $this->sendCustomerConfirmation($rendezvous);
-
-            // Email à l'admin
             $this->sendAdminNotification($rendezvous);
 
             $this->logger->info('Notifications de paiement envoyées', [
@@ -46,8 +42,6 @@ class NotificationService
                 'rendezvous_id' => $rendezvous->getId(),
                 'error' => $e->getMessage()
             ]);
-
-            // On ne relance pas l'exception pour ne pas bloquer le processus de paiement
         }
     }
 
@@ -64,10 +58,11 @@ class NotificationService
                 ->subject('Confirmation de votre rendez-vous - Paiement réussi')
                 ->html($this->twig->render('emails/rendezvous_created.html.twig', [
                     'rendezvous' => $rendezvous
-                ]))
-                ->getHeaders()
-                ->addTextHeader('X-Mailer', 'BeElle Nails Booking System')
-                ->addTextHeader('X-Auto-Response-Suppress', 'OOF, DR, RN, NRN, AutoReply');
+                ]));
+
+            // Headers personnalisés
+            $email->getHeaders()->addTextHeader('X-Mailer', 'BeElle Nails Booking System');
+            $email->getHeaders()->addTextHeader('X-Auto-Response-Suppress', 'OOF, DR, RN, NRN, AutoReply');
 
             $this->mailer->send($email);
         } catch (TransportExceptionInterface $e) {
@@ -93,10 +88,11 @@ class NotificationService
                 ->subject('Nouveau rendez-vous payé')
                 ->html($this->twig->render('emails/rendezvous_created_admin.html.twig', [
                     'rendezvous' => $rendezvous
-                ]))
-                ->getHeaders()
-                ->addTextHeader('X-Mailer', 'BeElle Nails Booking System')
-                ->addTextHeader('X-Auto-Response-Suppress', 'OOF, DR, RN, NRN, AutoReply');
+                ]));
+
+            // Headers personnalisés
+            $email->getHeaders()->addTextHeader('X-Mailer', 'BeElle Nails Booking System');
+            $email->getHeaders()->addTextHeader('X-Auto-Response-Suppress', 'OOF, DR, RN, NRN, AutoReply');
 
             $this->mailer->send($email);
         } catch (TransportExceptionInterface $e) {
@@ -123,10 +119,11 @@ class NotificationService
                 ->html($this->twig->render('emails/payment_failed.html.twig', [
                     'rendezvous' => $rendezvous,
                     'reason' => $reason
-                ]))
-                ->getHeaders()
-                ->addTextHeader('X-Mailer', 'BeElle Nails Booking System')
-                ->addTextHeader('X-Auto-Response-Suppress', 'OOF, DR, RN, NRN, AutoReply');
+                ]));
+
+            // Headers personnalisés
+            $email->getHeaders()->addTextHeader('X-Mailer', 'BeElle Nails Booking System');
+            $email->getHeaders()->addTextHeader('X-Auto-Response-Suppress', 'OOF, DR, RN, NRN, AutoReply');
 
             $this->mailer->send($email);
 
@@ -155,10 +152,11 @@ class NotificationService
                 ->subject('Rappel - Paiement en attente')
                 ->html($this->twig->render('emails/payment_pending.html.twig', [
                     'rendezvous' => $rendezvous
-                ]))
-                ->getHeaders()
-                ->addTextHeader('X-Mailer', 'BeElle Nails Booking System')
-                ->addTextHeader('X-Auto-Response-Suppress', 'OOF, DR, RN, NRN, AutoReply');
+                ]));
+
+            // Headers personnalisés
+            $email->getHeaders()->addTextHeader('X-Mailer', 'BeElle Nails Booking System');
+            $email->getHeaders()->addTextHeader('X-Auto-Response-Suppress', 'OOF, DR, RN, NRN, AutoReply');
 
             $this->mailer->send($email);
 
