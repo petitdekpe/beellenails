@@ -48,7 +48,7 @@ class RendezvousType extends AbstractType
                 'mapped' => false,
                 'constraints' => [
                     new NotBlank([
-                        'message' => 'Veuillez sélectionner une catégorie',
+                        'message' => 'Merci de choisir un type de prestation (mains, pieds, etc.)',
                     ]),
                 ],
             ])
@@ -103,7 +103,7 @@ class RendezvousType extends AbstractType
                 'label' => 'Choisissez une prestation',
                 'constraints' => [
                     new NotBlank([
-                        'message' => 'Veuillez sélectionner une prestation',
+                        'message' => 'Merci de choisir la prestation que vous souhaitez',
                     ]),
                 ],
             ]);

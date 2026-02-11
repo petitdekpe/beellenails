@@ -26,23 +26,42 @@ class Rendezvous implements PayableEntityInterface
     #[ORM\Column]
     private ?int $id = null;
 
-    #[Assert\NotBlank(groups: ['with_prestation'], message: 'Veuillez choisir une prestation')]
+    #[Assert\NotBlank(groups: ['with_prestation'], message: 'Merci de choisir la prestation que vous souhaitez')]
     #[Assert\NotBlank(groups: ['without_prestation'], allowNull: true)]
     #[ORM\ManyToOne(inversedBy: 'rendezvouses')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Prestation $prestation = null;
 
+    #[Assert\NotNull(message: 'Merci d\'ajouter une photo de vos ongles pour continuer')]
+    #[Assert\Image(
+        maxSize: '5M',
+        maxSizeMessage: 'Votre photo est trop lourde. Essayez de prendre une photo moins détaillée ou de la réduire avant de l\'envoyer.',
+        mimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'],
+        mimeTypesMessage: 'Ce type de fichier n\'est pas accepté. Merci d\'envoyer une photo au format JPG, PNG ou prise directement avec votre téléphone.',
+        minWidth: 100,
+        minWidthMessage: 'Cette photo est trop petite. Merci d\'envoyer une photo de meilleure qualité.',
+        maxWidth: 8000,
+        maxWidthMessage: 'Cette photo est trop grande. Merci de la réduire avant de l\'envoyer.',
+        minHeight: 100,
+        minHeightMessage: 'Cette photo est trop petite. Merci d\'envoyer une photo de meilleure qualité.',
+        maxHeight: 8000,
+        maxHeightMessage: 'Cette photo est trop grande. Merci de la réduire avant de l\'envoyer.',
+        corruptedMessage: 'Nous n\'arrivons pas à lire cette photo. Merci d\'en envoyer une autre.',
+        uploadIniSizeErrorMessage: 'Votre photo est trop lourde. Essayez de prendre une photo moins détaillée ou de la réduire.',
+        uploadFormSizeErrorMessage: 'Votre photo est trop lourde. Essayez de prendre une photo moins détaillée ou de la réduire.',
+        uploadErrorMessage: 'Un problème est survenu lors de l\'envoi de votre photo. Merci de réessayer.',
+    )]
     #[Vich\UploadableField(mapping: 'rendezvous', fileNameProperty: 'imageName')]
     private ?File $image = null;
 
     #[ORM\Column(length: 255)]
     private ?string $imageName = null;
 
-    #[Assert\NotBlank(message: 'Veuillez choisir une date de rendez-vous')]
+    #[Assert\NotBlank(message: 'Merci de choisir une date pour votre rendez-vous')]
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $day = null;
 
-    #[Assert\NotBlank(message: 'Plus de créneau libre pour cette date. Choisissez une date avec des créneaux libres affichés.')]
+    #[Assert\NotBlank(message: 'Merci de choisir un créneau horaire. Si aucun créneau n\'apparaît, choisissez une autre date.')]
     #[ORM\ManyToOne(inversedBy: 'rendezvouses')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Creneau $creneau = null;
