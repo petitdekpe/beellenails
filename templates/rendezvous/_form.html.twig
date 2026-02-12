@@ -448,19 +448,10 @@
                     });
                 }
 
-                // Vérifier l'image
+                // Vérifier le type d'image (pas de restriction de taille)
                 const imageInput = form.querySelector('input[type="file"]');
                 if (imageInput && imageInput.files.length > 0) {
                     const file = imageInput.files[0];
-                    const maxSize = 5 * 1024 * 1024; // 5Mo
-
-                    if (file.size > maxSize) {
-                        sendLog('validation_error', 'Image trop volumineuse', {
-                            field: 'image',
-                            value: `${(file.size / 1024 / 1024).toFixed(2)} Mo`,
-                            details: `Taille: ${file.size} bytes, Max: ${maxSize} bytes`
-                        });
-                    }
 
                     const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
                     if (!allowedTypes.includes(file.type)) {

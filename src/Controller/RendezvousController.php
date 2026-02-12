@@ -39,9 +39,19 @@ class RendezvousController extends AbstractController
         $rendezvous = new Rendezvous();
         $rendezvous->setStatus("Validé");
 
-        $form = $this->createForm(RendezvousType::class, $rendezvous);
+        $form = $this->createForm(RendezvousType::class, $rendezvous, [
+            'validation_groups' => ['admin'],
+            'image_required' => false,
+        ]);
         $form->handleRequest($request);
 
+        // Si l'admin n'a pas fourni d'image, utiliser l'image par défaut
+        if ($form->isSubmitted() && $rendezvous->getImage() === null) {
+            $defaultImagePath = $this->getParameter('kernel.project_dir') . '/public/assets/images/rendezvous/default.png';
+            if (file_exists($defaultImagePath)) {
+                $rendezvous->setImage(new \Symfony\Component\HttpFoundation\File\File($defaultImagePath));
+            }
+        }
 
         if ($form->isSubmitted() && $form->isValid()) {
 

@@ -32,23 +32,14 @@ class Rendezvous implements PayableEntityInterface
     #[ORM\JoinColumn(nullable: false)]
     private ?Prestation $prestation = null;
 
-    #[Assert\NotNull(message: 'Merci d\'ajouter une photo de vos ongles pour continuer')]
+    #[Assert\NotNull(
+        message: 'Merci d\'ajouter une photo de vos ongles pour continuer',
+        groups: ['Default']
+    )]
     #[Assert\Image(
-        maxSize: '5M',
-        maxSizeMessage: 'Votre photo est trop lourde. Essayez de prendre une photo moins détaillée ou de la réduire avant de l\'envoyer.',
         mimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'],
         mimeTypesMessage: 'Ce type de fichier n\'est pas accepté. Merci d\'envoyer une photo au format JPG, PNG ou prise directement avec votre téléphone.',
-        minWidth: 100,
-        minWidthMessage: 'Cette photo est trop petite. Merci d\'envoyer une photo de meilleure qualité.',
-        maxWidth: 8000,
-        maxWidthMessage: 'Cette photo est trop grande. Merci de la réduire avant de l\'envoyer.',
-        minHeight: 100,
-        minHeightMessage: 'Cette photo est trop petite. Merci d\'envoyer une photo de meilleure qualité.',
-        maxHeight: 8000,
-        maxHeightMessage: 'Cette photo est trop grande. Merci de la réduire avant de l\'envoyer.',
         corruptedMessage: 'Nous n\'arrivons pas à lire cette photo. Merci d\'en envoyer une autre.',
-        uploadIniSizeErrorMessage: 'Votre photo est trop lourde. Essayez de prendre une photo moins détaillée ou de la réduire.',
-        uploadFormSizeErrorMessage: 'Votre photo est trop lourde. Essayez de prendre une photo moins détaillée ou de la réduire.',
         uploadErrorMessage: 'Un problème est survenu lors de l\'envoi de votre photo. Merci de réessayer.',
     )]
     #[Vich\UploadableField(mapping: 'rendezvous', fileNameProperty: 'imageName')]

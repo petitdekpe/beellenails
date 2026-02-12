@@ -336,7 +336,10 @@ class DashboardController extends AbstractController
     public function new(Request $request, EntityManagerInterface $entityManager, MailerInterface $mailer, RendezvousRepository $rendezvousRepository, PromoCodeService $promoCodeService, LoggerInterface $logger): Response
     {
         $rendezvous = new Rendezvous();
-        $form = $this->createForm(AdminAddRdvType::class, $rendezvous);
+        $rendezvous->setImageName('default.png');
+        $form = $this->createForm(AdminAddRdvType::class, $rendezvous, [
+            'validation_groups' => ['admin'],
+        ]);
         $form->handleRequest($request);
 
 

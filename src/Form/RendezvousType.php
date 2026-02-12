@@ -84,7 +84,7 @@ class RendezvousType extends AbstractType
             ])
             ->add('image', VichImageType::class, [
                 'label' => 'Une photo de vos mains / pieds',
-                'required' => true,
+                'required' => $options['image_required'],
                 'attr' => ['class' => 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5'],
                 'help' => 'Ajouter une photo de vos ongles des mains ou des pieds, naturels sans capsules et sans vernis afin que nous puissions les analyser. Dans le cas où vous souhaiteriez venir avec une pose non faites chez nous pour une dépose avant votre prestation, un supplément de 10.000f sera facturé pour la dépose complète.'
 
@@ -123,6 +123,7 @@ class RendezvousType extends AbstractType
         $resolver->setDefaults([
             'data_class' => Rendezvous::class,
             'creneau_repository' => null,
+            'image_required' => true,
         ]);
     }
 }
