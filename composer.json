@@ -55,13 +55,29 @@
         "twig/twig": "^2.12|^3.0",
         "vich/uploader-bundle": "^2.2"
     },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5",
+        "symfony/browser-kit": "6.4.*",
+        "symfony/css-selector": "6.4.*",
+        "symfony/debug-bundle": "6.4.*",
+        "symfony/maker-bundle": "^1.0",
+        "symfony/phpunit-bridge": "^7.0",
+        "symfony/stopwatch": "6.4.*",
+        "symfony/web-profiler-bundle": "6.4.*"
+    },
     "config": {
         "allow-plugins": {
             "php-http/discovery": true,
             "symfony/flex": true,
             "symfony/runtime": true
         },
-        "sort-packages": true
+        "sort-packages": true,
+        "audit": {
+            "ignore": [
+                "PKSA-9kgp-18nh-fg87",
+                "PKSA-58fs-7xtr-x4q5"
+            ]
+        }
     },
     "autoload": {
         "psr-4": {
@@ -102,15 +118,5 @@
             "allow-contrib": false,
             "require": "6.4.*"
         }
-    },
-    "require-dev": {
-        "phpunit/phpunit": "^9.5",
-        "symfony/browser-kit": "6.4.*",
-        "symfony/css-selector": "6.4.*",
-        "symfony/debug-bundle": "6.4.*",
-        "symfony/maker-bundle": "^1.0",
-        "symfony/phpunit-bridge": "^7.0",
-        "symfony/stopwatch": "6.4.*",
-        "symfony/web-profiler-bundle": "6.4.*"
     }
 }

@@ -445,7 +445,9 @@ class DashboardController extends AbstractController
         $originalCreneau = $rendezvous->getCreneau();
         
         // Création d'un formulaire personnalisé avec seulement les champs 'day' et 'creneau'
-        $form = $this->createForm(RendezvousModifyType::class, $rendezvous);
+        $form = $this->createForm(RendezvousModifyType::class, $rendezvous, [
+            'validation_groups' => ['admin'],
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -494,7 +496,7 @@ class DashboardController extends AbstractController
             return $this->redirectToRoute('app_dashboard_rendezvous');
         }
 
-        return $this->render('rendezvous/edit.html.twig', [
+        return $this->render('dashboard/rendezvous/edit.html.twig', [
             'rendezvous' => $rendezvous,
             'form' => $form->createView(),
         ]);
