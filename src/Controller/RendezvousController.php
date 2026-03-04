@@ -130,10 +130,12 @@ class RendezvousController extends AbstractController
     #[Route('/{id}/edit', name: 'app_rendezvous_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Rendezvous $rendezvous, EntityManagerInterface $entityManager, MailerInterface $mailer): Response
     {
+        $isAdmin = $this->isGranted('ROLE_ADMIN');
+
         // Sauvegarder les anciennes informations avant la modification
         $originalDay = $rendezvous->getDay();
         $originalCreneau = $rendezvous->getCreneau();
-        
+
         // Création d'un formulaire personnalisé avec seulement les champs 'day' et 'creneau'
         $form = $this->createForm(RendezvousModifyType::class, $rendezvous);
         $form->handleRequest($request);
@@ -191,10 +193,17 @@ class RendezvousController extends AbstractController
                 ->addTextHeader('X-Auto-Response-Suppress', 'OOF, DR, RN, NRN, AutoReply');
             $mailer->send($adminEmail);
 
-            return $this->redirectToRoute('app_users', [], Response::HTTP_SEE_OTHER);
+            if ($isAdmin) {
+                return $this->redirectToRoute('app_users', [], Response::HTTP_SEE_OTHER);
+            }
+
+            $this->addFlash('success', 'Votre rendez-vous a bien été reporté. Vous recevrez un email de confirmation.');
+            return $this->redirectToRoute('app_profile', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('rendezvous/edit.html.twig', [
+        $template = $isAdmin ? 'rendezvous/edit.html.twig' : 'rendezvous/edit_profile.html.twig';
+
+        return $this->render($template, [
             'rendezvous' => $rendezvous,
             'form' => $form->createView(),
         ]);

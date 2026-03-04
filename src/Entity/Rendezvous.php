@@ -48,11 +48,11 @@ class Rendezvous implements PayableEntityInterface
     #[ORM\Column(length: 255)]
     private ?string $imageName = null;
 
-    #[Assert\NotBlank(message: 'Merci de choisir une date pour votre rendez-vous')]
+    #[Assert\NotBlank(message: 'Merci de choisir une date pour votre rendez-vous', groups: ['Default', 'modify'])]
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $day = null;
 
-    #[Assert\NotBlank(message: 'Merci de choisir un créneau horaire. Si aucun créneau n\'apparaît, choisissez une autre date.')]
+    #[Assert\NotBlank(message: 'Merci de choisir un créneau horaire. Si aucun créneau n\'apparaît, choisissez une autre date.', groups: ['Default', 'modify'])]
     #[ORM\ManyToOne(inversedBy: 'rendezvouses')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Creneau $creneau = null;

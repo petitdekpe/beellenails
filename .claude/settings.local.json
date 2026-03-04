@@ -153,7 +153,11 @@
       "Read(/C:\\Users\\flora\\beellenails\\templates\\dashboard/**)",
       "Read(/C:\\Users\\flora\\beellenails\\templates\\dashboard/**)",
       "mcp__ide__getDiagnostics",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(xargs grep -l \"signalement\\\\|report\")",
+      "Bash(xargs grep -l \"signalement\\\\|Report\\\\|Signalement\")",
+      "Bash(xargs grep -l \"user\\\\|User\")",
+      "Bash(xargs grep -l \"profile\\\\|Profile\")"
     ],
     "defaultMode": "acceptEdits"
   }
