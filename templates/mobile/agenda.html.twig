@@ -1,0 +1,103 @@
+{% extends 'mobile/base.html.twig' %}
+
+{% block title %}Agenda - Mobile{% endblock %}
+{% block page_title %}Agenda{% endblock %}
+
+{% block stylesheets %}
+<style>
+    #calendar .fc-toolbar { flex-wrap: wrap; gap: 0.5rem; }
+    #calendar .fc-toolbar-title { font-size: 1rem; font-weight: 700; }
+    #calendar .fc-button {
+        font-size: 0.75rem !important;
+        padding: 0.375rem 0.625rem !important;
+        background-color: #ec4899 !important;
+        border-color: #ec4899 !important;
+        border-radius: 0.5rem !important;
+    }
+    #calendar .fc-button:hover, #calendar .fc-button-active {
+        background-color: #db2777 !important;
+        border-color: #db2777 !important;
+    }
+    #calendar .fc-event { cursor: pointer; }
+    #calendar .fc-daygrid-event-dot { display: none; }
+    .fc { background: white; border-radius: 1rem; padding: 0.75rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+    .fc-col-header-cell-cushion, .fc-toolbar-title { text-transform: capitalize; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <p class="text-sm text-gray-500">Visualisez vos rendez-vous</p>
+</div>
+
+<!-- Actions rapides -->
+<div class="grid grid-cols-2 gap-3 mb-4">
+    <a href="{{ path('app_mobile_rdv_add') }}" class="card flex items-center gap-3 p-3 !mb-0 active:bg-pink-50 transition-colors">
+        <div class="w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center flex-shrink-0">
+            <svg class="w-5 h-5 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+        </div>
+        <span class="text-sm font-semibold text-gray-700">Nouveau RDV</span>
+    </a>
+    <a href="{{ path('app_mobile_rendezvous') }}" class="card flex items-center gap-3 p-3 !mb-0 active:bg-gray-50 transition-colors">
+        <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
+            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+            </svg>
+        </div>
+        <span class="text-sm font-semibold text-gray-700">Liste RDV</span>
+    </a>
+</div>
+
+<!-- Légende -->
+<div class="card !mb-4">
+    <div class="flex flex-wrap gap-3">
+        <div class="flex items-center gap-1.5">
+            <div class="w-3 h-3 rounded-full bg-orange-400"></div>
+            <span class="text-xs text-gray-600">Pris</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+            <div class="w-3 h-3 rounded-full bg-green-500"></div>
+            <span class="text-xs text-gray-600">Confirmé</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+            <div class="w-3 h-3 rounded-full bg-red-500"></div>
+            <span class="text-xs text-gray-600">Congé</span>
+        </div>
+    </div>
+</div>
+
+<!-- Calendrier -->
+<div id="calendar"></div>
+{% endblock %}
+
+{% block javascripts %}
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const calendarEl = document.getElementById('calendar');
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+        events: {{ eventsJson | raw }},
+        initialView: 'dayGridMonth',
+        firstDay: 1,
+        hiddenDays: [0, 1],
+        headerToolbar: {
+            left: 'prev,next',
+            center: 'title',
+            right: 'today'
+        },
+        locale: 'fr',
+        height: 'auto',
+        eventClick(info) {
+            const e = info.event;
+            const start = e.start ? e.start.toLocaleString('fr-FR') : '';
+            const end   = e.end   ? e.end.toLocaleString('fr-FR')   : '';
+            const msg = `${e.title}\n${e.extendedProps.prestation || ''}\n${start}${end ? ' → ' + end : ''}`;
+            alert(msg);
+        }
+    });
+    calendar.render();
+});
+</script>
+{% endblock %}

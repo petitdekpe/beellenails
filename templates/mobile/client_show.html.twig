@@ -1,0 +1,186 @@
+{% extends 'mobile/base.html.twig' %}
+
+{% block title %}{{ user.fullName }} - Mobile{% endblock %}
+{% block page_title %}Profil client{% endblock %}
+
+{% block topbar_left %}
+<a href="{{ path('app_mobile_clients') }}" class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100">
+    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+    </svg>
+</a>
+{% endblock %}
+
+{% block content %}
+<!-- En-tête client -->
+<div class="card mb-4 text-center">
+    <div class="w-20 h-20 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-3">
+        <span class="text-2xl font-bold text-pink-600">
+            {% if user.Prenom and user.Nom %}
+                {{ user.Prenom|slice(0,1)|upper }}{{ user.Nom|slice(0,1)|upper }}
+            {% else %}
+                ?
+            {% endif %}
+        </span>
+    </div>
+    <h2 class="text-xl font-bold text-gray-900">{{ user.fullName }}</h2>
+    <p class="text-sm text-gray-500 mt-0.5">Client depuis {{ user.createdAt ? user.createdAt|date('M Y') : 'N/A' }}</p>
+    {% set totalRdv = 0 %}
+    {% for rdv in rendezvous %}
+        {% if rdv.status in ['Rendez-vous pris', 'Rendez-vous confirmé'] %}
+            {% set totalRdv = totalRdv + 1 %}
+        {% endif %}
+    {% endfor %}
+    {% if totalRdv >= 5 %}
+        <div class="mt-2 inline-flex items-center gap-1 px-3 py-1 bg-orange-50 text-orange-600 rounded-full text-xs font-semibold">
+            ⭐ Client fidèle — {{ totalRdv }} RDV
+        </div>
+    {% elseif totalRdv > 0 %}
+        <div class="mt-2 inline-flex items-center gap-1 px-3 py-1 bg-green-50 text-green-600 rounded-full text-xs font-semibold">
+            {{ totalRdv }} rendez-vous
+        </div>
+    {% endif %}
+</div>
+
+<!-- Coordonnées -->
+<div class="card mb-4">
+    <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wide mb-3">Coordonnées</h3>
+    <div class="space-y-3">
+        <a href="mailto:{{ user.email }}" class="flex items-center gap-3 group">
+            <div class="w-9 h-9 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                </svg>
+            </div>
+            <div>
+                <p class="text-xs text-gray-400">Email</p>
+                <p class="text-sm font-medium text-gray-900 group-hover:text-blue-600 transition-colors">{{ user.email }}</p>
+            </div>
+        </a>
+
+        {% if user.Phone %}
+            <a href="tel:{{ user.Phone }}" class="flex items-center gap-3 group">
+                <div class="w-9 h-9 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-400">Téléphone</p>
+                    <p class="text-sm font-medium text-gray-900 group-hover:text-green-600 transition-colors">{{ user.Phone }}</p>
+                </div>
+            </a>
+        {% else %}
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-400">Téléphone</p>
+                    <p class="text-sm text-gray-400 italic">Non renseigné</p>
+                </div>
+            </div>
+        {% endif %}
+
+        {% if user.birthday %}
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 bg-pink-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <span class="text-base">🎂</span>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-400">Anniversaire</p>
+                    <p class="text-sm font-medium text-gray-900">{{ user.birthday|date('d/m/Y') }}</p>
+                </div>
+            </div>
+        {% endif %}
+
+        {% if user.genre %}
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <svg class="w-4 h-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-400">Genre</p>
+                    <p class="text-sm font-medium text-gray-900">{{ user.genre }}</p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Actions -->
+<div class="grid grid-cols-2 gap-3 mb-4">
+    <a href="{{ path('app_mobile_rdv_add') }}"
+       class="card flex items-center justify-center gap-2 p-3 !mb-0 bg-pink-50 border border-pink-100 active:bg-pink-100 transition-colors">
+        <svg class="w-5 h-5 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+        </svg>
+        <span class="text-sm font-semibold text-pink-700">Nouveau RDV</span>
+    </a>
+    <a href="mailto:{{ user.email }}"
+       class="card flex items-center justify-center gap-2 p-3 !mb-0 bg-blue-50 border border-blue-100 active:bg-blue-100 transition-colors">
+        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+        </svg>
+        <span class="text-sm font-semibold text-blue-700">Envoyer email</span>
+    </a>
+</div>
+
+<!-- Historique des RDV -->
+<div class="mb-2">
+    <h3 class="text-sm font-bold text-gray-700 mb-3">Historique des rendez-vous ({{ rendezvous|length }})</h3>
+
+    {% if rendezvous|length > 0 %}
+        {% for rdv in rendezvous %}
+            <div class="card">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex-1">
+                        <p class="font-semibold text-gray-900 text-sm">{{ rdv.prestation.title }}</p>
+                        <div class="flex items-center gap-2 mt-1 text-xs text-gray-500">
+                            <span>{{ rdv.day|date('d/m/Y') }}</span>
+                            <span>•</span>
+                            <span>{{ rdv.creneau.startTime|date('H:i') }}</span>
+                            {% if rdv.totalCost %}
+                                <span>•</span>
+                                <span class="text-pink-600 font-semibold">{{ rdv.totalCost }} XOF</span>
+                            {% endif %}
+                        </div>
+                        {% if rdv.supplement|length > 0 %}
+                            <p class="text-xs text-gray-400 mt-1">
+                                + {% for s in rdv.supplement %}{{ s.title }}{% if not loop.last %}, {% endif %}{% endfor %}
+                            </p>
+                        {% endif %}
+                    </div>
+                    <div class="flex flex-col items-end gap-1 flex-shrink-0">
+                        <span class="badge-status
+                            {% if rdv.status == 'Rendez-vous pris' %}badge-pris
+                            {% elseif rdv.status == 'Rendez-vous confirmé' %}badge-confirme
+                            {% elseif rdv.status == 'Annulé' %}badge-annule
+                            {% elseif rdv.status == 'Reporté' %}badge-reporte
+                            {% else %}badge-other{% endif %}">
+                            {% if rdv.status == 'Rendez-vous pris' %}Pris
+                            {% elseif rdv.status == 'Rendez-vous confirmé' %}Confirmé
+                            {% else %}{{ rdv.status }}{% endif %}
+                        </span>
+                        {% if rdv.status not in ['Annulé', 'Congé'] %}
+                            <a href="{{ path('app_mobile_rdv_edit', {'id': rdv.id}) }}"
+                               class="text-xs text-blue-500 font-medium">Reporter</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="card text-center py-6">
+            <svg class="mx-auto w-10 h-10 text-gray-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+            <p class="text-sm text-gray-400">Aucun rendez-vous pour ce client</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

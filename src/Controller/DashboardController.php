@@ -289,6 +289,15 @@ class DashboardController extends AbstractController
         ]);
     }
 
+    //Fiche d'un client
+    #[Route('/dashboard/clients/{id}', name: 'app_dashboard_user_show', methods: ['GET'])]
+    public function userShow(User $user): Response
+    {
+        return $this->render('dashboard/user/show.html.twig', [
+            'user' => $user,
+        ]);
+    }
+
     //Liste des transactions
     #[Route('/dashboard/transactions', name: 'app_dashboard_transactions', methods: ['GET'])]
     public function payment(Request $request, PaymentRepository $paymentRepository, PaginatorInterface $paginator): Response
