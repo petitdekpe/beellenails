@@ -8,9 +8,11 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Entity\Rendezvous;
 use App\Form\AdminAddRdvType;
+use App\Form\RegistrationFormType;
 use App\Form\RendezvousModifyType;
 use App\Repository\UserRepository;
 use App\Repository\RendezvousRepository;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use App\Service\PromoCodeService;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
@@ -263,7 +265,8 @@ class MobileController extends AbstractController
                 // Email admin
                 $emailAdmin = (new Email())
                     ->from('BeElle Nails Care <reservation@beellegroup.com>')
-                    ->to('murielahodode@gmail.com')
+                    ->to('murielahodode@gmail.com', 'resabeelle@gmail.com')
+                    ->bcc('petitdekpe@gmail.com')
                     ->replyTo('reservation@beellegroup.com')
                     ->subject('Rendez-vous modifié')
                     ->html($this->renderView('emails/rendezvous_updated_admin.html.twig', ['rendezvous' => $rendezvous]));
@@ -308,6 +311,54 @@ class MobileController extends AbstractController
         return $this->render('mobile/clients.html.twig', [
             'users'  => $users,
             'search' => $search,
+        ]);
+    }
+
+    // Ajouter un client
+    #[Route('/clients/new', name: 'app_mobile_client_add', methods: ['GET', 'POST'])]
+    public function clientAdd(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        UserPasswordHasherInterface $userPasswordHasher,
+        MailerInterface $mailer,
+        LoggerInterface $logger
+    ): Response {
+        $user = new User();
+        $form = $this->createForm(RegistrationFormType::class, $user);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $user->setPassword(
+                $userPasswordHasher->hashPassword(
+                    $user,
+                    $form->get('plainPassword')->getData()
+                )
+            );
+
+            $entityManager->persist($user);
+            $entityManager->flush();
+
+            try {
+                $email = (new Email())
+                    ->from('BeElle Nails Care <reservation@beellegroup.com>')
+                    ->to($user->getEmail())
+                    ->replyTo('reservation@beellegroup.com')
+                    ->subject('Votre inscription sur BeElleNails')
+                    ->html($this->renderView('registration/email.html.twig', ['user' => $user]));
+                $email->getHeaders()
+                    ->addTextHeader('X-Mailer', 'BeElle Nails Booking System')
+                    ->addTextHeader('X-Auto-Response-Suppress', 'OOF, DR, RN, NRN, AutoReply');
+                $mailer->send($email);
+            } catch (\Exception $e) {
+                $logger->warning('[Mobile] Erreur envoi email inscription: ' . $e->getMessage());
+            }
+
+            $this->addFlash('success', 'Client créé avec succès !');
+            return $this->redirectToRoute('app_mobile_clients');
+        }
+
+        return $this->render('mobile/client_add.html.twig', [
+            'form' => $form->createView(),
         ]);
     }
 

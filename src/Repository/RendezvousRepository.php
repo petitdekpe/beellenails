@@ -64,7 +64,22 @@ class RendezvousRepository extends ServiceEntityRepository
             ->andWhere('r.status IN (:statuses)')
             ->andWhere('r.day = :day')
             ->setParameter('statuses', $statusCriteria)
-            ->setParameter('day', $tomorrow->format('Y-m-d')) // Assuming 'day' field is stored as date without time
+            ->setParameter('day', $tomorrow->format('Y-m-d'))
+            ->orderBy('r.creneau', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findAppointmentsInDays(int $days)
+    {
+        $date = new \DateTime('+' . $days . ' days');
+        $statusCriteria = ['Rendez-vous pris', 'Rendez-vous confirmé'];
+
+        return $this->createQueryBuilder('r')
+            ->andWhere('r.status IN (:statuses)')
+            ->andWhere('r.day = :day')
+            ->setParameter('statuses', $statusCriteria)
+            ->setParameter('day', $date->format('Y-m-d'))
             ->orderBy('r.creneau', 'ASC')
             ->getQuery()
             ->getResult();

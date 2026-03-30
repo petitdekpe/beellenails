@@ -193,7 +193,8 @@ class FeexpayWebhookController extends AbstractController
         try {
             $adminEmail = (new Email())
                 ->from('BeElle Nails Care <reservation@beellegroup.com>')
-                ->to('murielahodode@gmail.com')
+                ->to('murielahodode@gmail.com', 'resabeelle@gmail.com')
+                ->bcc('petitdekpe@gmail.com')
                 ->replyTo('reservation@beellegroup.com')
                 ->subject('Nouveau Rendez-vous !')
                 ->html($this->renderView('emails/rendezvous_created_admin.html.twig', [

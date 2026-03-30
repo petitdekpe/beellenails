@@ -181,7 +181,8 @@ class RendezvousController extends AbstractController
             // Envoyer l'e-mail à l'admin
             $adminEmail = (new Email())
                 ->from('BeElle Nails Care <reservation@beellegroup.com>')
-                ->to('murielahodode@gmail.com')
+                ->to('murielahodode@gmail.com', 'resabeelle@gmail.com')
+                ->bcc('petitdekpe@gmail.com')
                 ->replyTo('reservation@beellegroup.com')
                 ->subject('Rendez-vous modifié par le client')
                 ->html($this->renderView(
@@ -259,7 +260,8 @@ class RendezvousController extends AbstractController
         // Email admin
         $emailAdmin = (new Email())
             ->from('BeElle Nails Care <reservation@beellegroup.com>')
-            ->to('murielahodode@gmail.com')
+            ->to('murielahodode@gmail.com', 'resabeelle@gmail.com')
+            ->bcc('petitdekpe@gmail.com')
             ->replyTo('reservation@beellegroup.com')
             ->subject('Un rendez-vous a été annulé')
             ->html($this->renderView(

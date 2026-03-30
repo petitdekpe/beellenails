@@ -490,7 +490,8 @@ class DashboardController extends AbstractController
             // Envoyer l'e-mail à l'admin
             $adminEmail = (new Email())
                 ->from('BeElle Nails Care <reservation@beellegroup.com>')
-                ->to('murielahodode@gmail.com')
+                ->to('murielahodode@gmail.com', 'resabeelle@gmail.com')
+                ->bcc('petitdekpe@gmail.com')
                 ->replyTo('reservation@beellegroup.com')
                 ->subject('Rendez-vous modifié')
                 ->html($this->renderView(

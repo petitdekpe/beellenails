@@ -49,7 +49,8 @@ class SendDailyAppointmentsEmailMessageHandler
 
             $email = (new Email())
                 ->from('BeElle Nails Care <reservation@beellegroup.com>')
-                ->to('murielahodode@gmail.com')
+                ->to('murielahodode@gmail.com', 'resabeelle@gmail.com')
+                ->bcc('petitdekpe@gmail.com')
                 ->replyTo('reservation@beellegroup.com')
                 ->subject('Rendez-vous pour demain')
                 ->html($this->twig->render('emails/rendezvous_daily_appointments.html.twig', [

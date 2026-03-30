@@ -4,6 +4,20 @@
 {% block page_title %}Clients{% endblock %}
 
 {% block content %}
+<!-- En-tête avec bouton ajout -->
+<div class="flex items-center justify-between mb-4">
+    <span class="text-sm text-gray-500">
+        {% if users|length > 0 %}{{ users.getTotalItemCount }} client(s){% endif %}
+    </span>
+    <a href="{{ path('app_mobile_client_add') }}"
+       class="flex items-center gap-1.5 px-3 py-2 bg-pink-500 text-white text-sm font-semibold rounded-xl hover:bg-pink-600 active:bg-pink-700 transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
+        </svg>
+        Nouveau client
+    </a>
+</div>
+
 <!-- Recherche -->
 <form method="GET" class="mb-4">
     <div class="flex gap-2">
@@ -25,7 +39,6 @@
 </form>
 
 {% if users|length > 0 %}
-    <p class="text-xs text-gray-500 mb-3">{{ users.getTotalItemCount }} client(s)</p>
 
     {% for user in users %}
         <a href="{{ path('app_mobile_client_show', {'id': user.id}) }}" class="card flex items-center gap-3 active:bg-gray-50 transition-colors">

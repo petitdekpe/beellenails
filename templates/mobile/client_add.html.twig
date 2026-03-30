@@ -1,0 +1,95 @@
+{% extends 'mobile/base.html.twig' %}
+
+{% block title %}Nouveau client - Mobile{% endblock %}
+{% block page_title %}Nouveau client{% endblock %}
+
+{% block content %}
+
+{% for label, messages in app.flashes %}
+    {% for message in messages %}
+        <div class="mb-4 px-4 py-3 rounded-xl text-sm font-medium
+            {% if label == 'success' %}bg-green-50 text-green-700 border border-green-200
+            {% elseif label == 'error' %}bg-red-50 text-red-700 border border-red-200
+            {% else %}bg-yellow-50 text-yellow-700 border border-yellow-200{% endif %}">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endfor %}
+
+{{ form_start(form, {attr: {novalidate: 'novalidate', class: 'space-y-4'}}) }}
+
+    <!-- Nom -->
+    <div class="card space-y-4">
+        <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Identité</h2>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Prénom</label>
+            {{ form_widget(form.Prenom, {attr: {class: 'form-control', placeholder: 'Prénom'}}) }}
+            {% if form.Prenom.vars.errors|length %}
+                <p class="text-xs text-red-500 mt-1">{{ form_errors(form.Prenom) }}</p>
+            {% endif %}
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Nom</label>
+            {{ form_widget(form.Nom, {attr: {class: 'form-control', placeholder: 'Nom'}}) }}
+            {% if form.Nom.vars.errors|length %}
+                <p class="text-xs text-red-500 mt-1">{{ form_errors(form.Nom) }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Contact -->
+    <div class="card space-y-4">
+        <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Contact</h2>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            {{ form_widget(form.email, {attr: {class: 'form-control', placeholder: 'email@exemple.com', type: 'email'}}) }}
+            {% if form.email.vars.errors|length %}
+                <p class="text-xs text-red-500 mt-1">{{ form_errors(form.email) }}</p>
+            {% endif %}
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Téléphone</label>
+            <p class="text-xs text-gray-400 mb-1">Utilisé comme mot de passe initial du client</p>
+            {{ form_widget(form.Phone, {attr: {class: 'form-control', placeholder: '06 00 00 00 00', type: 'tel', id: 'phone-field'}}) }}
+            {% if form.Phone.vars.errors|length %}
+                <p class="text-xs text-red-500 mt-1">{{ form_errors(form.Phone) }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Champ caché CGU (requis par le form mais géré côté admin) -->
+    <div class="hidden">
+        {{ form_widget(form.agreeTerms) }}
+        {{ form_widget(form.plainPassword) }}
+    </div>
+
+    <button type="submit"
+            class="w-full py-3.5 bg-pink-500 text-white font-semibold rounded-xl text-base hover:bg-pink-600 active:bg-pink-700 transition-colors">
+        Créer le client
+    </button>
+
+{{ form_end(form) }}
+
+{% endblock %}
+
+{% block javascripts %}
+<script>
+// Forcer agreeTerms à true (le client est créé par un admin)
+document.addEventListener('DOMContentLoaded', function() {
+    const terms = document.querySelector('input[type="checkbox"][id*="agreeTerms"]');
+    if (terms) terms.checked = true;
+
+    // Copier le téléphone dans plainPassword avant soumission
+    const phoneField = document.getElementById('phone-field');
+    const form = phoneField?.closest('form');
+    form?.addEventListener('submit', function() {
+        const pwd = document.querySelector('input[id*="plainPassword"]');
+        if (pwd && phoneField) pwd.value = phoneField.value;
+    });
+});
+</script>
+{% endblock %}

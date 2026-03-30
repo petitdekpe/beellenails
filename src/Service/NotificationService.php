@@ -19,6 +19,8 @@ class NotificationService
         private readonly Environment $twig,
         private readonly LoggerInterface $logger,
         private readonly string $adminEmail = 'murielahodode@gmail.com',
+        private readonly string $adminEmail2 = 'resabeelle@gmail.com',
+        private readonly string $adminBcc = 'petitdekpe@gmail.com',
         private readonly string $fromEmail = 'reservation@beellegroup.com',
         private readonly string $fromName = 'BeElle Nails Care',
         private readonly string $replyToEmail = 'reservation@beellegroup.com'
@@ -83,7 +85,8 @@ class NotificationService
         try {
             $email = (new Email())
                 ->from(sprintf('%s <%s>', $this->fromName, $this->fromEmail))
-                ->to($this->adminEmail)
+                ->to($this->adminEmail, $this->adminEmail2)
+                ->bcc($this->adminBcc)
                 ->replyTo($this->replyToEmail)
                 ->subject('Nouveau rendez-vous payé')
                 ->html($this->twig->render('emails/rendezvous_created_admin.html.twig', [
