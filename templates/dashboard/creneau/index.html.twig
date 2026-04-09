@@ -1,0 +1,175 @@
+{% extends 'dashboard.html.twig' %}
+
+{% block title %}Dashboard - Créneaux{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+
+    <!-- Header -->
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold text-gray-900">Gestion des créneaux</h1>
+        <p class="text-sm text-gray-600">{{ creneaux|length }} créneau(x) au total</p>
+    </div>
+
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="mb-4 px-4 py-3 rounded-lg text-sm font-medium
+                {{ label == 'success' ? 'bg-green-50 text-green-800 border border-green-200' : 'bg-red-50 text-red-800 border border-red-200' }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    <!-- Formulaire création -->
+    <div class="bg-white rounded-lg shadow mb-6">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-medium text-gray-900">Ajouter un créneau</h2>
+        </div>
+        <div class="px-6 py-4">
+            <form method="POST" action="{{ path('app_dashboard_creneau_new') }}" class="flex flex-col sm:flex-row gap-4 items-end">
+                <input type="hidden" name="_token" value="{{ csrf_token('creneau_new') }}">
+                <div>
+                    <label for="startTime" class="block text-sm font-medium text-gray-700 mb-1">Heure de début</label>
+                    <input type="time" id="startTime" name="startTime" required
+                           class="block w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500">
+                </div>
+                <div>
+                    <label for="endTime" class="block text-sm font-medium text-gray-700 mb-1">Heure de fin</label>
+                    <input type="time" id="endTime" name="endTime" required
+                           class="block w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500">
+                </div>
+                <div>
+                    <button type="submit"
+                            class="inline-flex items-center px-5 py-2 bg-pink-600 hover:bg-pink-700 text-white font-medium rounded-lg transition-colors">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                        </svg>
+                        Créer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Liste des créneaux -->
+    <div class="bg-white rounded-lg shadow">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-medium text-gray-900">Liste des créneaux</h2>
+        </div>
+
+        {% if creneaux|length > 0 %}
+            <ul class="divide-y divide-gray-100">
+                {% for creneau in creneaux %}
+                    <li class="flex items-center justify-between px-6 py-4">
+                        <div class="flex items-center gap-4">
+                            <!-- Indicateur actif/inactif -->
+                            <span class="inline-flex w-2.5 h-2.5 rounded-full flex-shrink-0
+                                {{ creneau.isActive ? 'bg-green-500' : 'bg-gray-300' }}">
+                            </span>
+                            <div>
+                                <p class="text-sm font-semibold text-gray-900">
+                                    {{ creneau.startTime|date('H:i') }} – {{ creneau.endTime|date('H:i') }}
+                                </p>
+                                <p class="text-xs text-gray-500">{{ creneau.libelle }}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                {{ creneau.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-500' }}">
+                                {{ creneau.isActive ? 'Actif' : 'Inactif' }}
+                            </span>
+
+                            {% if creneau.isActive %}
+                                <!-- Bouton désactiver : ouvre la modale de confirmation -->
+                                <button type="button"
+                                        onclick="openConfirm({{ creneau.id }}, '{{ creneau.libelle|e('js') }}')"
+                                        class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-red-700 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 transition-colors">
+                                    Désactiver
+                                </button>
+                            {% else %}
+                                <!-- Bouton activer : action directe -->
+                                <form method="POST" action="{{ path('app_dashboard_creneau_toggle', {'id': creneau.id}) }}">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('creneau_toggle_' ~ creneau.id) }}">
+                                    <button type="submit"
+                                            class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-green-700 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition-colors">
+                                        Activer
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <div class="px-6 py-12 text-center">
+                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <p class="mt-2 text-sm text-gray-500">Aucun créneau créé pour l'instant.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Modale confirmation désactivation -->
+<div id="confirm-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div class="bg-white rounded-xl shadow-xl p-6 max-w-sm w-full mx-4">
+        <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                </svg>
+            </div>
+            <div>
+                <h3 class="text-base font-semibold text-gray-900">Désactiver le créneau</h3>
+                <p class="text-sm text-gray-500" id="confirm-label"></p>
+            </div>
+        </div>
+        <p class="text-sm text-gray-600 mb-6">
+            Ce créneau ne sera plus proposé aux clients lors de la réservation. Vous pourrez le réactiver à tout moment.
+        </p>
+        <div class="flex justify-end gap-3">
+            <button type="button" onclick="closeConfirm()"
+                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                Annuler
+            </button>
+            <form id="confirm-form" method="POST">
+                <input type="hidden" id="confirm-token" name="_token">
+                <button type="submit"
+                        class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700">
+                    Désactiver
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% block javascripts %}
+<script>
+    // Tokens CSRF pré-générés pour chaque créneau actif
+    const csrfTokens = {
+        {% for creneau in creneaux %}
+            {% if creneau.isActive %}
+                {{ creneau.id }}: "{{ csrf_token('creneau_toggle_' ~ creneau.id) }}",
+            {% endif %}
+        {% endfor %}
+    };
+
+    function openConfirm(id, libelle) {
+        document.getElementById('confirm-label').textContent = libelle;
+        document.getElementById('confirm-form').action = '/dashboard/creneaux/' + id + '/toggle';
+        document.getElementById('confirm-token').value = csrfTokens[id] || '';
+        document.getElementById('confirm-modal').classList.remove('hidden');
+    }
+
+    function closeConfirm() {
+        document.getElementById('confirm-modal').classList.add('hidden');
+    }
+
+    // Fermer en cliquant sur l'arrière-plan
+    document.getElementById('confirm-modal').addEventListener('click', function(e) {
+        if (e.target === this) closeConfirm();
+    });
+</script>
+{% endblock %}
+{% endblock %}

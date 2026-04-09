@@ -197,6 +197,17 @@
                 </ul>
             </li>
 
+            <!-- Créneaux -->
+            <li>
+                <a href="{{ path('app_dashboard_creneaux') }}"
+                   class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 {{ route starts with 'app_dashboard_creneau' ? 'bg-pink-100 font-semibold text-pink-700' : '' }}">
+                    <svg class="w-5 h-5 text-gray-500 transition duration-75 group-hover:text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span class="ml-3">Créneaux</span>
+                </a>
+            </li>
+
             <!-- Emails -->
             {% set email_active = route == 'app_dashboard_emails' %}
             <li>

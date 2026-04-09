@@ -63,7 +63,9 @@ class RendezvousType extends AbstractType
             ->add('creneau', EntityType::class, [
                 'label' => 'Choisissez un créneau',
                 'class' => Creneau::class,
-                'choice_label' => 'libelle',
+                'choice_label' => function (Creneau $creneau) {
+                    return $creneau->getStartTime()->format('H:i');
+                },
                 'required' => true,
                 'attr' => ['class' => 'hidden bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5'],
             ])

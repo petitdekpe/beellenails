@@ -673,7 +673,9 @@
                 defaultOption.text = 'Sélectionnez un créneau';
                 selectElement.appendChild(defaultOption);
 
-                slots.forEach(function(slot) {
+                slots.slice().sort(function(a, b) {
+                    return a.libelle.localeCompare(b.libelle);
+                }).forEach(function(slot) {
                     var option = document.createElement('option');
                     option.value = slot.id;
                     option.text = slot.libelle;

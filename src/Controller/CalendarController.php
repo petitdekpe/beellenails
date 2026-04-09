@@ -170,8 +170,9 @@ class CalendarController extends AbstractController
             // Formate les créneaux disponibles pour les envoyer en réponse
             $formattedSlots = [];
             foreach ($availableSlots as $slot) {
-                $formattedSlots[] = ['id' => $slot->getId(), 'libelle' => $slot->getLibelle()];
+                $formattedSlots[] = ['id' => $slot->getId(), 'libelle' => $slot->getStartTime()->format('H:i'), 'sort' => $slot->getStartTime()->format('H:i:s')];
             }
+            usort($formattedSlots, fn($a, $b) => strcmp($a['sort'], $b['sort']));
 
             $logger->info('[PrendreRdv] Créneaux disponibles récupérés avec succès', [
                 'ip' => $clientIp,

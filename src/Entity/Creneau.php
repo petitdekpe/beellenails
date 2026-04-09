@@ -32,6 +32,9 @@ class Creneau
     #[ORM\Column(length: 255)]
     private ?string $libelle = null;
 
+    #[ORM\Column]
+    private bool $isActive = true;
+
     public function __construct()
     {
         $this->rendezvouses = new ArrayCollection();
@@ -39,7 +42,7 @@ class Creneau
 
     public function __toString(): string
     {
-        return $this->libelle;
+        return $this->startTime ? $this->startTime->format('H:i') : $this->libelle;
     }
 
     public function getId(): ?int
@@ -109,6 +112,18 @@ class Creneau
     public function setLibelle(string $libelle): static
     {
         $this->libelle = $libelle;
+
+        return $this;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(bool $isActive): static
+    {
+        $this->isActive = $isActive;
 
         return $this;
     }

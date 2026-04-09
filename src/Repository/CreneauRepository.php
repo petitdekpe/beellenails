@@ -41,8 +41,9 @@ class CreneauRepository extends ServiceEntityRepository
         $twoHoursLater = clone $currentTime;
         $twoHoursLater->modify('+1 hours');
 
-        return $this->createQueryBuilder('c')
+        $results = $this->createQueryBuilder('c')
             ->leftJoin('c.rendezvouses', 'r', 'WITH', 'r.day = :selectedDate')
+            ->andWhere('c.isActive = true')
             ->andWhere('r.id IS NULL OR c.id NOT IN (
             SELECT cr.id FROM App\Entity\Creneau cr
             INNER JOIN cr.rendezvouses re
@@ -56,6 +57,10 @@ class CreneauRepository extends ServiceEntityRepository
             ->setParameter('twoHoursLater', $twoHoursLater->format('H:i:s'))
             ->getQuery()
             ->getResult();
+
+        usort($results, fn($a, $b) => $a->getStartTime() <=> $b->getStartTime());
+
+        return $results;
     }
 
 
