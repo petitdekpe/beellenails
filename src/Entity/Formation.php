@@ -49,7 +49,7 @@ class Formation implements PayableEntityInterface
     #[Vich\UploadableField(mapping: 'formation', fileNameProperty: 'imageName')]
     private ?File $image = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $imageName = null;
 
     #[ORM\Column(type: Types::TEXT)]
