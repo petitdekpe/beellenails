@@ -103,6 +103,9 @@ class Formation implements PayableEntityInterface
     #[ORM\Column]
     private ?bool $isActive = true;
 
+    #[ORM\Column(length: 50)]
+    private string $certificateTemplate = 'default';
+
     #[ORM\OneToMany(mappedBy: 'formation', targetEntity: FormationReview::class, orphanRemoval: true)]
     private Collection $reviews;
 
@@ -618,5 +621,17 @@ class Formation implements PayableEntityInterface
             'formation_price' => $this->Cout,
             'formation_type' => $this->accessType
         ];
+    }
+
+    public function getCertificateTemplate(): string
+    {
+        return $this->certificateTemplate;
+    }
+
+    public function setCertificateTemplate(string $certificateTemplate): static
+    {
+        $this->certificateTemplate = $certificateTemplate;
+
+        return $this;
     }
 }

@@ -11,31 +11,28 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Component\Security\Http\Util\TargetPathTrait;
 
 class SecurityController extends AbstractController
 {
+    use TargetPathTrait;
+
     #[Route(path: '/connexion', name: 'app_login')]
     public function login(AuthenticationUtils $authenticationUtils, Request $request): Response
     {
-        // if ($this->getUser()) {
-        //     return $this->redirectToRoute('target_path');
-        // }
+        $redirect = $request->query->get('redirect');
 
-        // Récupérer l'URL de retour depuis la session
-        $returnTo = $request->getSession()->get('returnTo');
+        if ($redirect) {
+            $this->saveTargetPath($request->getSession(), 'main', $redirect);
+        }
 
-        // Supprimer l'URL de retour de la session
-        $request->getSession()->remove('returnTo');
-
-        // get the login error if there is one
         $error = $authenticationUtils->getLastAuthenticationError();
-        // last username entered by the user
         $lastUsername = $authenticationUtils->getLastUsername();
 
         return $this->render('security/login.html.twig', [
             'last_username' => $lastUsername,
-            'error' => $error,
-            'returnTo' => $returnTo, // Passer l'URL de retour à la vue
+            'error'         => $error,
+            'redirect'      => $redirect,
         ]);
 
     }

@@ -434,7 +434,7 @@
                                     </div>
                                 {% endif %}
                             {% else %}
-                                <a href="{{ path('app_login') }}" 
+                                <a href="{{ path('app_login') }}?redirect={{ app.request.uri|url_encode }}"
                                    class="w-full inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
                                     🔐 Se connecter pour s'inscrire
                                 </a>

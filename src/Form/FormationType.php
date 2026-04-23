@@ -163,6 +163,14 @@ class FormationType extends AbstractType
                 'data' => true,
                 'attr' => ['class' => 'w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500'],
             ])
+            ->add('certificateTemplate', ChoiceType::class, [
+                'label' => 'Modèle d\'attestation',
+                'choices' => [
+                    'Modèle Élégant (rose/doré)' => 'default',
+                    'Modèle Classique (bleu/gris)' => 'classic',
+                ],
+                'attr' => ['class' => 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5'],
+            ])
             ->add('modules', CollectionType::class, [
                 'entry_type' => FormationModuleType::class,
                 'entry_options' => ['label' => false],

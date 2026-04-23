@@ -16,18 +16,24 @@ class CertificateService
         private Environment $twig
     ) {}
 
+    private const TEMPLATES = [
+        'default' => 'certificates/formation_certificate.html.twig',
+        'classic' => 'pdf/certificate.html.twig',
+    ];
+
     public function generateCertificate(FormationEnrollment $enrollment): string
     {
-        // Configure DOMPDF
         $options = new Options();
         $options->set('defaultFont', 'Arial');
         $options->set('isRemoteEnabled', true);
         $options->set('isHtml5ParserEnabled', true);
-        
+
         $dompdf = new Dompdf($options);
 
-        // Generate HTML for certificate
-        $html = $this->twig->render('certificates/formation_certificate.html.twig', [
+        $templateKey = $enrollment->getFormation()->getCertificateTemplate();
+        $template = self::TEMPLATES[$templateKey] ?? self::TEMPLATES['default'];
+
+        $html = $this->twig->render($template, [
             'enrollment' => $enrollment,
             'user' => $enrollment->getUser(),
             'formation' => $enrollment->getFormation(),

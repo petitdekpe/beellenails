@@ -19,7 +19,7 @@
 			{% endif %}
 			<p class="text-2xl font-semibold text-black-500 mb-10">
 				C’est votre premier rendez-vous ?
-				<br><a href="{{ path('app_register') }}" class="font-medium text-pink-600 underline">Créez un compte pour continuer.</a>
+				<br><a href="{{ path('app_register') }}{{ redirect is defined and redirect ? '?redirect=' ~ redirect|url_encode : '' }}" class="font-medium text-pink-600 underline">Créez un compte pour continuer.</a>
 			</p>
 			<div class="w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-lg xl:p-0 md:w-full">
 				<div class="p-6 space-y-4 md:space-y-6 sm:p-8">
