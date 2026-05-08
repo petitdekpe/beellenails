@@ -241,17 +241,30 @@
                 </div>
             </div>
 
+            <!-- Modèle d'attestation -->
+            <div class="border-t border-gray-200 pt-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Attestation</h3>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">{{ form_label(form.certificateTemplate) }}</label>
+                    {{ form_widget(form.certificateTemplate) }}
+                    {{ form_errors(form.certificateTemplate) }}
+                </div>
+            </div>
+
             <!-- Form Actions -->
             <div class="border-t border-gray-200 pt-6 flex justify-end space-x-3">
-                <a href="{{ path('app_dashboard_formations_index') }}" 
+                <a href="{{ path('app_dashboard_formations_index') }}"
                    class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
                     Annuler
                 </a>
-                <button type="submit" 
+                <button type="submit"
                         class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-pink-600 hover:bg-pink-700">
                     Créer la formation
                 </button>
             </div>
+
+            {% do form.modules.setRendered() %}
+            {% do form.resources.setRendered() %}
 
             {{ form_end(form) }}
         </div>

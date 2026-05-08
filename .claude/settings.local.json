@@ -157,7 +157,8 @@
       "Bash(xargs grep -l \"signalement\\\\|report\")",
       "Bash(xargs grep -l \"signalement\\\\|Report\\\\|Signalement\")",
       "Bash(xargs grep -l \"user\\\\|User\")",
-      "Bash(xargs grep -l \"profile\\\\|Profile\")"
+      "Bash(xargs grep -l \"profile\\\\|Profile\")",
+      "Bash(gh pr *)"
     ],
     "defaultMode": "acceptEdits"
   }
