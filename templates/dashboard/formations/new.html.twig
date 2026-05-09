@@ -8,381 +8,597 @@
     <div class="flex items-center justify-between">
         <div>
             <h1 class="text-2xl font-bold text-gray-900">Créer une nouvelle formation</h1>
-            <p class="text-gray-600">Ajoutez une nouvelle formation à votre catalogue</p>
+            <p class="text-gray-600">Complétez les 5 étapes pour publier votre formation</p>
         </div>
-        <a href="{{ path('app_dashboard_formations_index') }}" 
+        <a href="{{ path('app_dashboard_formations_index') }}"
            class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
             ← Retour à la liste
         </a>
     </div>
 
-    <!-- Form Card -->
-    <div class="bg-white rounded-lg shadow-sm">
-        <div class="px-6 py-4 border-b border-gray-200">
-            <h2 class="text-lg font-semibold text-gray-900">Informations de la formation</h2>
-        </div>
-
-        <div class="p-6">
-            {{ form_start(form, {'attr': {'class': 'space-y-6', 'enctype': 'multipart/form-data'}}) }}
-            
-            <!-- Basic Information -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">{{ form_label(form.Nom) }}</label>
-                    {{ form_widget(form.Nom, {'attr': {'placeholder': 'Ex: Formation complète en prothésie ongulaire'}}) }}
-                    {{ form_errors(form.Nom) }}
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Prix (F CFA)</label>
-                    {{ form_widget(form.Cout, {'attr': {'placeholder': 'Ex: 150'}}) }}
-                    {{ form_errors(form.Cout) }}
-                </div>
+    <!-- Step Indicator -->
+    <div class="bg-white rounded-lg shadow-sm px-6 py-5">
+        <div class="relative flex items-start justify-between">
+            <!-- Connecting line -->
+            <div class="absolute top-5 left-0 right-0 h-0.5 bg-gray-200 z-0 mx-10">
+                <div id="progress-line" class="h-full bg-pink-500 transition-all duration-500" style="width: 0%"></div>
             </div>
 
-            <!-- Description -->
+            {% set stepDefs = [
+                {label: 'Informations', sub: 'Base'},
+                {label: 'Contenu', sub: 'Pédagogie'},
+                {label: 'Médias', sub: 'Formateur'},
+                {label: 'Accès', sub: 'Attestation'},
+                {label: 'Modules', sub: 'Ressources'}
+            ] %}
+            {% for s in stepDefs %}
+            <div class="step-dot flex flex-col items-center relative z-10" data-n="{{ loop.index }}">
+                <div class="w-10 h-10 rounded-full border-2 flex items-center justify-center font-bold text-sm transition-all duration-300
+                    {% if loop.first %}bg-pink-600 border-pink-600 text-white{% else %}bg-white border-gray-300 text-gray-400{% endif %}">
+                    <span class="dot-num">{{ loop.index }}</span>
+                    <span class="dot-check hidden text-base">✓</span>
+                </div>
+                <div class="mt-2 text-center">
+                    <div class="text-xs font-semibold {% if loop.first %}text-pink-600{% else %}text-gray-400{% endif %} dot-label">{{ s.label }}</div>
+                    <div class="text-xs text-gray-400">{{ s.sub }}</div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Form Card -->
+    <div class="bg-white rounded-lg shadow-sm">
+        {{ form_start(form, {'attr': {'class': '', 'enctype': 'multipart/form-data', 'id': 'formation-form', 'novalidate': 'novalidate'}}) }}
+
+        <!-- ═══════════════ STEP 1 : Informations de base ═══════════════ -->
+        <div class="form-step p-6 space-y-6" data-step="1">
+            <div class="pb-4 border-b border-gray-100">
+                <h2 class="text-lg font-semibold text-gray-900">Informations de base</h2>
+                <p class="text-sm text-gray-500 mt-1">Les informations essentielles visibles par les apprenants</p>
+            </div>
+
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">{{ form_label(form.Description) }}</label>
-                {{ form_widget(form.Description, {'attr': {'rows': 4, 'placeholder': 'Décrivez votre formation en détail...'}}) }}
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Nom de la formation <span class="text-red-500">*</span>
+                </label>
+                {{ form_widget(form.Nom, {'attr': {'placeholder': 'Ex : Formation complète en prothésie ongulaire'}}) }}
+                {{ form_errors(form.Nom) }}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Description <span class="text-red-500">*</span>
+                </label>
+                {{ form_widget(form.Description, {'attr': {'rows': 4, 'placeholder': 'Décrivez votre formation en détail…'}}) }}
                 {{ form_errors(form.Description) }}
             </div>
 
-            <!-- Category & Level -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Thématique</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Thématique</label>
                     {{ form_widget(form.theme) }}
                     {{ form_errors(form.theme) }}
                 </div>
-
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Niveau</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Niveau</label>
                     {{ form_widget(form.level) }}
                     {{ form_errors(form.level) }}
                 </div>
             </div>
 
-            <!-- Duration & Free Option -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">{{ form_label(form.duration) }}</label>
-                    {{ form_widget(form.duration) }}
-                    {{ form_errors(form.duration) }}
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Prix (F CFA) <span class="text-red-500">*</span>
+                    </label>
+                    {{ form_widget(form.Cout, {'attr': {'placeholder': 'Ex : 150000'}}) }}
+                    {{ form_errors(form.Cout) }}
                 </div>
-
-                <div class="flex items-center">
-                    {{ form_widget(form.isFree) }}
-                    <label class="ml-2 text-sm font-medium text-gray-700">{{ form_label(form.isFree) }}</label>
-                    {{ form_errors(form.isFree) }}
+                <div class="flex flex-col justify-end gap-3 pb-1">
+                    <div class="flex items-center gap-2">
+                        {{ form_widget(form.isFree) }}
+                        <label class="text-sm font-medium text-gray-700">Formation gratuite</label>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        {{ form_widget(form.isActive) }}
+                        <label class="text-sm font-medium text-gray-700">Formation active</label>
+                    </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Pedagogical Content -->
+        <!-- ═══════════════ STEP 2 : Contenu pédagogique ═══════════════ -->
+        <div class="form-step p-6 space-y-6 hidden" data-step="2">
+            <div class="pb-4 border-b border-gray-100">
+                <h2 class="text-lg font-semibold text-gray-900">Contenu pédagogique</h2>
+                <p class="text-sm text-gray-500 mt-1">Définissez les objectifs et le programme de la formation</p>
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Objectifs pédagogiques</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Objectifs pédagogiques</label>
                     {{ form_widget(form.Objectif, {'attr': {'rows': 4, 'placeholder': 'Quels sont les objectifs de cette formation ?'}}) }}
                     {{ form_errors(form.Objectif) }}
                 </div>
-
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Prérequis</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Prérequis</label>
                     {{ form_widget(form.Prerequis, {'attr': {'rows': 4, 'placeholder': 'Quels sont les prérequis nécessaires ?'}}) }}
                     {{ form_errors(form.Prerequis) }}
                 </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Programme</label>
-                    {{ form_widget(form.Programme, {'attr': {'rows': 4, 'placeholder': 'Décrivez le programme de la formation...'}}) }}
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Programme <span class="text-red-500">*</span>
+                    </label>
+                    {{ form_widget(form.Programme, {'attr': {'rows': 4, 'placeholder': 'Décrivez le programme de la formation…'}}) }}
                     {{ form_errors(form.Programme) }}
                 </div>
-
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Modalités de suivi</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Modalités de suivi <span class="text-red-500">*</span>
+                    </label>
                     {{ form_widget(form.Suivi, {'attr': {'rows': 4, 'placeholder': 'Comment le suivi sera-t-il effectué ?'}}) }}
                     {{ form_errors(form.Suivi) }}
                 </div>
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">{{ form_label(form.targetAudience) }}</label>
-                {{ form_widget(form.targetAudience) }}
+                <label class="block text-sm font-medium text-gray-700 mb-1">Public cible</label>
+                {{ form_widget(form.targetAudience, {'attr': {'rows': 3, 'placeholder': 'Décrivez le public cible de cette formation…'}}) }}
                 {{ form_errors(form.targetAudience) }}
             </div>
 
-            <!-- Images -->
+            <div class="w-full md:w-1/2">
+                <label class="block text-sm font-medium text-gray-700 mb-1">{{ form_label(form.duration) }}</label>
+                {{ form_widget(form.duration) }}
+                {{ form_errors(form.duration) }}
+            </div>
+        </div>
+
+        <!-- ═══════════════ STEP 3 : Formateur & Médias ═══════════════ -->
+        <div class="form-step p-6 space-y-6 hidden" data-step="3">
+            <div class="pb-4 border-b border-gray-100">
+                <h2 class="text-lg font-semibold text-gray-900">Formateur & Médias</h2>
+                <p class="text-sm text-gray-500 mt-1">Ajoutez les visuels et les informations du formateur</p>
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">{{ form_label(form.image) }}</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Image de couverture</label>
                     {{ form_widget(form.image) }}
                     {{ form_errors(form.image) }}
+                    <p class="text-xs text-gray-400 mt-1">Recommandé : 1200×630 px, format JPG/PNG</p>
                 </div>
-
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">{{ form_label(form.youtubeUrl) }}</label>
-                    {{ form_widget(form.youtubeUrl) }}
+                    <label class="block text-sm font-medium text-gray-700 mb-1">{{ form_label(form.youtubeUrl) }}</label>
+                    {{ form_widget(form.youtubeUrl, {'attr': {'placeholder': 'https://www.youtube.com/watch?v=…'}}) }}
                     {{ form_errors(form.youtubeUrl) }}
+                    <p class="text-xs text-gray-400 mt-1">Vidéo de présentation affichée sur la page de la formation</p>
                 </div>
             </div>
 
-            <!-- Instructor Info -->
-            <div class="border-t border-gray-200 pt-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Informations du formateur</h3>
-                
+            <div class="border-t border-gray-100 pt-6">
+                <h3 class="text-sm font-semibold text-gray-700 mb-4">Informations du formateur</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ form_label(form.instructorName) }}</label>
-                        {{ form_widget(form.instructorName, {'attr': {'placeholder': 'Ex: Marie Dubois'}}) }}
+                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ form_label(form.instructorName) }}</label>
+                        {{ form_widget(form.instructorName, {'attr': {'placeholder': 'Ex : Marie Dupont'}}) }}
                         {{ form_errors(form.instructorName) }}
                     </div>
-
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ form_label(form.instructorImage) }}</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ form_label(form.instructorImage) }}</label>
                         {{ form_widget(form.instructorImage) }}
                         {{ form_errors(form.instructorImage) }}
                     </div>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">{{ form_label(form.instructorBio) }}</label>
-                    {{ form_widget(form.instructorBio, {'attr': {'placeholder': 'Présentez l\'expérience et les qualifications du formateur...'}}) }}
-                    {{ form_errors(form.instructorBio) }}
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ form_label(form.instructorBio) }}</label>
+                        {{ form_widget(form.instructorBio, {'attr': {'rows': 4, 'placeholder': 'Présentez l\'expérience et les qualifications du formateur…'}}) }}
+                        {{ form_errors(form.instructorBio) }}
+                    </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Access Management -->
-            <div class="border-t border-gray-200 pt-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Gestion des accès</h3>
-                
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- ═══════════════ STEP 4 : Accès & Attestation ═══════════════ -->
+        <div class="form-step p-6 space-y-6 hidden" data-step="4">
+            <div class="pb-4 border-b border-gray-100">
+                <h2 class="text-lg font-semibold text-gray-900">Accès & Attestation</h2>
+                <p class="text-sm text-gray-500 mt-1">Configurez les règles d'accès et choisissez le modèle d'attestation</p>
+            </div>
+
+            <!-- Accès -->
+            <div>
+                <h3 class="text-sm font-semibold text-gray-700 mb-4">Gestion des accès</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ form_label(form.accessType) }}</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ form_label(form.accessType) }}</label>
                         {{ form_widget(form.accessType) }}
                         {{ form_errors(form.accessType) }}
                     </div>
-
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ form_label(form.accessDuration) }}</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ form_label(form.accessDuration) }}</label>
                         {{ form_widget(form.accessDuration) }}
                         {{ form_errors(form.accessDuration) }}
                     </div>
-
-                    <div class="flex items-center">
-                        {{ form_widget(form.isActive) }}
-                        <label class="ml-2 text-sm font-medium text-gray-700">{{ form_label(form.isActive) }}</label>
-                        {{ form_errors(form.isActive) }}
-                    </div>
                 </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="fixed-dates" style="display: none;">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4" id="fixed-dates" style="display:none">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ form_label(form.startDate) }}</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ form_label(form.startDate) }}</label>
                         {{ form_widget(form.startDate) }}
                         {{ form_errors(form.startDate) }}
                     </div>
-
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ form_label(form.endDate) }}</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ form_label(form.endDate) }}</label>
                         {{ form_widget(form.endDate) }}
                         {{ form_errors(form.endDate) }}
                     </div>
                 </div>
             </div>
 
-            <!-- Modules Section -->
-            <div class="border-t border-gray-200 pt-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Modules de formation</h3>
-                <div class="bg-gray-50 rounded-lg p-4 mb-4">
-                    <p class="text-sm text-gray-600 mb-2">Les modules permettent de structurer votre formation en chapitres.</p>
-                    <button type="button" id="add-module" class="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700">
-                        + Ajouter un module
+            <!-- Attestation -->
+            <div class="border-t border-gray-100 pt-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-sm font-semibold text-gray-700">Modèle d'attestation</h3>
+                    <span class="text-xs text-gray-400">Cliquez "Voir en grand" pour prévisualiser</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Modèle Élégant -->
+                    <label class="cursor-pointer group" id="card-default">
+                        <input type="radio" name="cert_radio" value="default" class="hidden" checked onchange="syncCertTemplate(this.value)">
+                        <div class="border-2 border-pink-500 bg-pink-50 rounded-xl p-4 transition-all group-hover:shadow-md cert-card" data-val="default">
+                            <!-- Mini preview -->
+                            <div class="w-full aspect-video rounded-lg mb-3 overflow-hidden relative"
+                                 style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%)">
+                                <div class="absolute inset-0 flex flex-col items-center justify-center text-white p-3">
+                                    <div class="text-xs font-bold tracking-widest opacity-80 mb-1">BELLE NAILS</div>
+                                    <div class="text-sm font-bold tracking-wider">Certificat de Formation</div>
+                                    <div class="w-12 border-b border-white/50 my-2"></div>
+                                    <div class="text-xs opacity-70">Marie Dupont</div>
+                                </div>
+                            </div>
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <div class="font-semibold text-gray-900 text-sm">Modèle Élégant</div>
+                                    <div class="text-xs text-gray-500">Violet & doré — style diplôme</div>
+                                </div>
+                                <div class="flex items-center gap-1 mt-0.5">
+                                    <div class="w-4 h-4 rounded-full bg-pink-600 border-2 border-pink-700 flex items-center justify-center">
+                                        <div class="w-2 h-2 rounded-full bg-white"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <a href="{{ path('app_dashboard_formation_certificate_preview', {template: 'default'}) }}"
+                               target="_blank"
+                               onclick="event.stopPropagation()"
+                               class="mt-3 inline-flex items-center text-xs text-pink-600 hover:text-pink-800 font-medium">
+                                Voir en grand →
+                            </a>
+                        </div>
+                    </label>
+
+                    <!-- Modèle Classique -->
+                    <label class="cursor-pointer group" id="card-classic">
+                        <input type="radio" name="cert_radio" value="classic" class="hidden" onchange="syncCertTemplate(this.value)">
+                        <div class="border-2 border-gray-200 rounded-xl p-4 transition-all group-hover:shadow-md cert-card" data-val="classic">
+                            <!-- Mini preview -->
+                            <div class="w-full aspect-video rounded-lg mb-3 overflow-hidden relative"
+                                 style="background: #fff; border: 3px solid #1e293b;">
+                                <div class="absolute inset-2 border-2 border-pink-500 rounded flex flex-col items-center justify-center p-2">
+                                    <div class="text-xs font-bold text-pink-500 mb-1">💅 BelleNails Academy</div>
+                                    <div class="text-sm font-bold text-gray-800 tracking-wider">Certificat</div>
+                                    <div class="text-xs text-gray-400">de Réussite Professionnelle</div>
+                                    <div class="text-xs font-bold text-pink-500 mt-1">Marie Dupont</div>
+                                </div>
+                            </div>
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <div class="font-semibold text-gray-900 text-sm">Modèle Classique</div>
+                                    <div class="text-xs text-gray-500">Rose & sombre — style académique</div>
+                                </div>
+                                <div class="flex items-center gap-1 mt-0.5">
+                                    <div class="w-4 h-4 rounded-full bg-white border-2 border-gray-300"></div>
+                                </div>
+                            </div>
+                            <a href="{{ path('app_dashboard_formation_certificate_preview', {template: 'classic'}) }}"
+                               target="_blank"
+                               onclick="event.stopPropagation()"
+                               class="mt-3 inline-flex items-center text-xs text-pink-600 hover:text-pink-800 font-medium">
+                                Voir en grand →
+                            </a>
+                        </div>
+                    </label>
+                </div>
+
+                <!-- Hidden real form field -->
+                <div class="hidden">{{ form_widget(form.certificateTemplate) }}</div>
+                {{ form_errors(form.certificateTemplate) }}
+            </div>
+        </div>
+
+        <!-- ═══════════════ STEP 5 : Modules & Ressources ═══════════════ -->
+        <div class="form-step p-6 space-y-6 hidden" data-step="5">
+            <div class="pb-4 border-b border-gray-100">
+                <h2 class="text-lg font-semibold text-gray-900">Modules & Ressources</h2>
+                <p class="text-sm text-gray-500 mt-1">Structurez la formation (optionnel — vous pourrez compléter après création)</p>
+            </div>
+
+            <!-- Modules -->
+            <div>
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-sm font-semibold text-gray-700">Modules de formation</h3>
+                    <button type="button" id="add-module"
+                            class="inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700">
+                        + Module
                     </button>
                 </div>
-                
-                <div id="modules-collection" data-index="{{ form.modules|length }}" data-prototype="{{ form_widget(form.modules.vars.prototype)|e('html_attr') }}">
+                <div id="modules-collection"
+                     data-index="{{ form.modules|length }}"
+                     data-prototype="{{ form_widget(form.modules.vars.prototype)|e('html_attr') }}">
                     {% for moduleForm in form.modules %}
-                        <div class="module-item bg-white border border-gray-200 rounded-lg p-4 mb-4">
-                            <div class="flex justify-between items-center mb-3">
-                                <h4 class="font-medium text-gray-900">Module #<span class="module-number">{{ loop.index }}</span></h4>
-                                <button type="button" class="remove-module text-red-600 hover:text-red-800 text-sm">
-                                    Supprimer
-                                </button>
-                            </div>
-                            {{ form_widget(moduleForm) }}
+                    <div class="module-item bg-gray-50 border border-gray-200 rounded-lg p-4 mb-3">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="font-medium text-gray-800 text-sm">Module #<span class="module-number">{{ loop.index }}</span></span>
+                            <button type="button" class="remove-module text-red-500 hover:text-red-700 text-xs font-medium">Supprimer</button>
                         </div>
+                        {{ form_widget(moduleForm) }}
+                    </div>
                     {% endfor %}
                 </div>
             </div>
 
-            <!-- Resources Section -->
-            <div class="border-t border-gray-200 pt-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Ressources téléchargeables</h3>
-                <div class="bg-gray-50 rounded-lg p-4 mb-4">
-                    <p class="text-sm text-gray-600 mb-2">Ajoutez des fichiers que les participants pourront télécharger.</p>
-                    <button type="button" id="add-resource" class="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
-                        + Ajouter une ressource
+            <!-- Resources -->
+            <div class="border-t border-gray-100 pt-6">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-sm font-semibold text-gray-700">Ressources téléchargeables</h3>
+                    <button type="button" id="add-resource"
+                            class="inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                        + Ressource
                     </button>
                 </div>
-                
-                <div id="resources-collection" data-index="{{ form.resources|length }}" data-prototype="{{ form_widget(form.resources.vars.prototype)|e('html_attr') }}">
+                <div id="resources-collection"
+                     data-index="{{ form.resources|length }}"
+                     data-prototype="{{ form_widget(form.resources.vars.prototype)|e('html_attr') }}">
                     {% for resourceForm in form.resources %}
-                        <div class="resource-item bg-white border border-gray-200 rounded-lg p-4 mb-4">
-                            <div class="flex justify-between items-center mb-3">
-                                <h4 class="font-medium text-gray-900">Ressource #<span class="resource-number">{{ loop.index }}</span></h4>
-                                <button type="button" class="remove-resource text-red-600 hover:text-red-800 text-sm">
-                                    Supprimer
-                                </button>
-                            </div>
-                            {{ form_widget(resourceForm) }}
+                    <div class="resource-item bg-gray-50 border border-gray-200 rounded-lg p-4 mb-3">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="font-medium text-gray-800 text-sm">Ressource #<span class="resource-number">{{ loop.index }}</span></span>
+                            <button type="button" class="remove-resource text-red-500 hover:text-red-700 text-xs font-medium">Supprimer</button>
                         </div>
+                        {{ form_widget(resourceForm) }}
+                    </div>
                     {% endfor %}
                 </div>
             </div>
+        </div>
 
-            <!-- Modèle d'attestation -->
-            <div class="border-t border-gray-200 pt-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Attestation</h3>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">{{ form_label(form.certificateTemplate) }}</label>
-                    {{ form_widget(form.certificateTemplate) }}
-                    {{ form_errors(form.certificateTemplate) }}
-                </div>
-            </div>
-
-            <!-- Form Actions -->
-            <div class="border-t border-gray-200 pt-6 flex justify-end space-x-3">
+        <!-- ═══ Navigation ═══ -->
+        <div class="px-6 py-4 border-t border-gray-100 bg-gray-50 rounded-b-lg flex items-center justify-between">
+            <button type="button" id="prev-btn" onclick="prevStep()"
+                    class="hidden px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                ← Précédent
+            </button>
+            <span id="step-label" class="text-sm text-gray-400">Étape 1 sur 5</span>
+            <div class="flex gap-3">
                 <a href="{{ path('app_dashboard_formations_index') }}"
-                   class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                   class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
                     Annuler
                 </a>
-                <button type="submit"
-                        class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-pink-600 hover:bg-pink-700">
-                    Créer la formation
+                <button type="button" id="next-btn" onclick="nextStep()"
+                        class="px-5 py-2 rounded-md text-sm font-medium text-white bg-pink-600 hover:bg-pink-700">
+                    Suivant →
+                </button>
+                <button type="submit" id="submit-btn"
+                        class="hidden px-5 py-2 rounded-md text-sm font-medium text-white bg-green-600 hover:bg-green-700">
+                    Créer la formation ✓
                 </button>
             </div>
-
-            {% do form.modules.setRendered() %}
-            {% do form.resources.setRendered() %}
-
-            {{ form_end(form) }}
         </div>
+
+        {% do form.certificateTemplate.setRendered() %}
+        {% do form.modules.setRendered() %}
+        {% do form.resources.setRendered() %}
+        {{ form_end(form) }}
     </div>
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Handle access type change
-    const accessTypeSelect = document.querySelector('#formation_accessType');
-    const fixedDatesDiv = document.getElementById('fixed-dates');
-    
-    function toggleFixedDates() {
-        if (accessTypeSelect.value === 'fixed') {
-            fixedDatesDiv.style.display = 'grid';
-        } else {
-            fixedDatesDiv.style.display = 'none';
-        }
-    }
-    
-    accessTypeSelect.addEventListener('change', toggleFixedDates);
-    toggleFixedDates(); // Initial call
+<!-- Error toast -->
+<div id="step-toast"
+     class="fixed top-5 right-5 z-50 bg-red-100 border border-red-400 text-red-800 text-sm px-4 py-3 rounded-lg shadow-lg hidden transition-all">
+    Veuillez remplir tous les champs obligatoires (<span class="text-red-500">*</span>) avant de continuer.
+</div>
 
-    // Collection handling for modules
-    const modulesCollection = document.getElementById('modules-collection');
-    const addModuleBtn = document.getElementById('add-module');
-    
-    addModuleBtn.addEventListener('click', function() {
-        const index = modulesCollection.dataset.index;
-        const prototype = modulesCollection.dataset.prototype;
-        
-        if (prototype) {
-            const newForm = prototype.replace(/__name__/g, index);
-            const wrapper = document.createElement('div');
-            wrapper.className = 'module-item bg-white border border-gray-200 rounded-lg p-4 mb-4';
-            wrapper.innerHTML = `
-                <div class="flex justify-between items-center mb-3">
-                    <h4 class="font-medium text-gray-900">Module #<span class="module-number">${parseInt(index) + 1}</span></h4>
-                    <button type="button" class="remove-module text-red-600 hover:text-red-800 text-sm">
-                        Supprimer
-                    </button>
-                </div>
-                ${newForm}
-            `;
-            
-            modulesCollection.appendChild(wrapper);
-            modulesCollection.dataset.index = parseInt(index) + 1;
-            updateModuleNumbers();
+<script>
+let currentStep = 1;
+const TOTAL = 5;
+
+const REQUIRED = {
+    1: ['formation_Nom', 'formation_Description', 'formation_Cout'],
+    2: ['formation_Programme', 'formation_Suivi'],
+    3: [], 4: [], 5: []
+};
+
+function showStep(n) {
+    document.querySelectorAll('.form-step').forEach(el => el.classList.add('hidden'));
+    document.querySelector(`.form-step[data-step="${n}"]`).classList.remove('hidden');
+
+    // Progress line
+    const pct = ((n - 1) / (TOTAL - 1)) * 100;
+    document.getElementById('progress-line').style.width = pct + '%';
+
+    // Step dots
+    document.querySelectorAll('.step-dot').forEach(dot => {
+        const dn = parseInt(dot.dataset.n);
+        const circle = dot.querySelector('.w-10');
+        const num = dot.querySelector('.dot-num');
+        const check = dot.querySelector('.dot-check');
+        const label = dot.querySelector('.dot-label');
+
+        circle.classList.remove('bg-pink-600','border-pink-600','text-white','bg-white','border-gray-300','text-gray-400','bg-green-500','border-green-500');
+        if (dn < n) {
+            circle.classList.add('bg-green-500','border-green-500','text-white');
+            num.classList.add('hidden');
+            check.classList.remove('hidden');
+            label.classList.remove('text-pink-600','text-gray-400');
+            label.classList.add('text-green-600');
+        } else if (dn === n) {
+            circle.classList.add('bg-pink-600','border-pink-600','text-white');
+            num.classList.remove('hidden');
+            check.classList.add('hidden');
+            label.classList.remove('text-gray-400','text-green-600');
+            label.classList.add('text-pink-600');
+        } else {
+            circle.classList.add('bg-white','border-gray-300','text-gray-400');
+            num.classList.remove('hidden');
+            check.classList.add('hidden');
+            label.classList.remove('text-pink-600','text-green-600');
+            label.classList.add('text-gray-400');
         }
     });
-    
-    // Handle module removal
-    modulesCollection.addEventListener('click', function(e) {
+
+    // Navigation buttons
+    document.getElementById('prev-btn').classList.toggle('hidden', n === 1);
+    document.getElementById('next-btn').classList.toggle('hidden', n === TOTAL);
+    document.getElementById('submit-btn').classList.toggle('hidden', n !== TOTAL);
+    document.getElementById('step-label').textContent = `Étape ${n} sur ${TOTAL}`;
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function validateStep(n) {
+    const ids = REQUIRED[n] || [];
+    let ok = true;
+    ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (!el.value.trim()) {
+            el.classList.add('border-red-500');
+            ok = false;
+        } else {
+            el.classList.remove('border-red-500');
+        }
+    });
+    if (!ok) {
+        const toast = document.getElementById('step-toast');
+        toast.classList.remove('hidden');
+        setTimeout(() => toast.classList.add('hidden'), 3500);
+    }
+    return ok;
+}
+
+function nextStep() {
+    if (validateStep(currentStep) && currentStep < TOTAL) {
+        currentStep++;
+        showStep(currentStep);
+    }
+}
+
+function prevStep() {
+    if (currentStep > 1) {
+        currentStep--;
+        showStep(currentStep);
+    }
+}
+
+function syncCertTemplate(val) {
+    const select = document.getElementById('formation_certificateTemplate');
+    if (select) select.value = val;
+    // Update card borders
+    document.querySelectorAll('.cert-card').forEach(card => {
+        if (card.dataset.val === val) {
+            card.classList.remove('border-gray-200');
+            card.classList.add('border-pink-500', 'bg-pink-50');
+            card.querySelector('.w-4').innerHTML = '<div class="w-2 h-2 rounded-full bg-pink-600"></div>';
+        } else {
+            card.classList.add('border-gray-200');
+            card.classList.remove('border-pink-500', 'bg-pink-50');
+            card.querySelector('.w-4').innerHTML = '';
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    showStep(1);
+
+    // Access type toggle
+    const accessTypeEl = document.getElementById('formation_accessType');
+    const fixedDates = document.getElementById('fixed-dates');
+    if (accessTypeEl) {
+        const toggle = () => {
+            fixedDates.style.display = accessTypeEl.value === 'fixed' ? 'grid' : 'none';
+        };
+        accessTypeEl.addEventListener('change', toggle);
+        toggle();
+    }
+
+    // Sync cert template select → radio on load
+    const certSelect = document.getElementById('formation_certificateTemplate');
+    if (certSelect) {
+        certSelect.addEventListener('change', () => syncCertTemplate(certSelect.value));
+        syncCertTemplate(certSelect.value || 'default');
+    }
+
+    // If form was submitted with errors, find and show the first step with errors
+    const allErrors = document.querySelectorAll('.form-error, [class*="text-red-600"]:not(button):not(a)');
+    if (allErrors.length > 0) {
+        for (let s = 1; s <= TOTAL; s++) {
+            const stepEl = document.querySelector(`.form-step[data-step="${s}"]`);
+            const ids = REQUIRED[s] || [];
+            const hasErr = ids.some(id => {
+                const el = document.getElementById(id);
+                return el && !el.value.trim();
+            });
+            if (hasErr) { currentStep = s; showStep(s); break; }
+        }
+    }
+
+    // Modules collection
+    const modulesCol = document.getElementById('modules-collection');
+    document.getElementById('add-module')?.addEventListener('click', () => {
+        const idx = parseInt(modulesCol.dataset.index);
+        const proto = modulesCol.dataset.prototype.replace(/__name__/g, idx);
+        const div = document.createElement('div');
+        div.className = 'module-item bg-gray-50 border border-gray-200 rounded-lg p-4 mb-3';
+        div.innerHTML = `<div class="flex justify-between items-center mb-3">
+            <span class="font-medium text-gray-800 text-sm">Module #<span class="module-number">${idx + 1}</span></span>
+            <button type="button" class="remove-module text-red-500 hover:text-red-700 text-xs font-medium">Supprimer</button>
+        </div>${proto}`;
+        modulesCol.appendChild(div);
+        modulesCol.dataset.index = idx + 1;
+        renum(modulesCol, '.module-number');
+    });
+    modulesCol?.addEventListener('click', e => {
         if (e.target.classList.contains('remove-module')) {
             e.target.closest('.module-item').remove();
-            updateModuleNumbers();
+            renum(modulesCol, '.module-number');
         }
     });
-    
-    function updateModuleNumbers() {
-        const moduleItems = modulesCollection.querySelectorAll('.module-item');
-        moduleItems.forEach((item, index) => {
-            const numberSpan = item.querySelector('.module-number');
-            if (numberSpan) {
-                numberSpan.textContent = index + 1;
-            }
-        });
-    }
 
-    // Collection handling for resources
-    const resourcesCollection = document.getElementById('resources-collection');
-    const addResourceBtn = document.getElementById('add-resource');
-    
-    addResourceBtn.addEventListener('click', function() {
-        const index = resourcesCollection.dataset.index;
-        const prototype = resourcesCollection.dataset.prototype;
-        
-        if (prototype) {
-            const newForm = prototype.replace(/__name__/g, index);
-            const wrapper = document.createElement('div');
-            wrapper.className = 'resource-item bg-white border border-gray-200 rounded-lg p-4 mb-4';
-            wrapper.innerHTML = `
-                <div class="flex justify-between items-center mb-3">
-                    <h4 class="font-medium text-gray-900">Ressource #<span class="resource-number">${parseInt(index) + 1}</span></h4>
-                    <button type="button" class="remove-resource text-red-600 hover:text-red-800 text-sm">
-                        Supprimer
-                    </button>
-                </div>
-                ${newForm}
-            `;
-            
-            resourcesCollection.appendChild(wrapper);
-            resourcesCollection.dataset.index = parseInt(index) + 1;
-            updateResourceNumbers();
-        }
+    // Resources collection
+    const resourcesCol = document.getElementById('resources-collection');
+    document.getElementById('add-resource')?.addEventListener('click', () => {
+        const idx = parseInt(resourcesCol.dataset.index);
+        const proto = resourcesCol.dataset.prototype.replace(/__name__/g, idx);
+        const div = document.createElement('div');
+        div.className = 'resource-item bg-gray-50 border border-gray-200 rounded-lg p-4 mb-3';
+        div.innerHTML = `<div class="flex justify-between items-center mb-3">
+            <span class="font-medium text-gray-800 text-sm">Ressource #<span class="resource-number">${idx + 1}</span></span>
+            <button type="button" class="remove-resource text-red-500 hover:text-red-700 text-xs font-medium">Supprimer</button>
+        </div>${proto}`;
+        resourcesCol.appendChild(div);
+        resourcesCol.dataset.index = idx + 1;
+        renum(resourcesCol, '.resource-number');
     });
-    
-    // Handle resource removal
-    resourcesCollection.addEventListener('click', function(e) {
+    resourcesCol?.addEventListener('click', e => {
         if (e.target.classList.contains('remove-resource')) {
             e.target.closest('.resource-item').remove();
-            updateResourceNumbers();
+            renum(resourcesCol, '.resource-number');
         }
     });
-    
-    function updateResourceNumbers() {
-        const resourceItems = resourcesCollection.querySelectorAll('.resource-item');
-        resourceItems.forEach((item, index) => {
-            const numberSpan = item.querySelector('.resource-number');
-            if (numberSpan) {
-                numberSpan.textContent = index + 1;
-            }
-        });
-    }
 
-    // Initialize numbers
-    updateModuleNumbers();
-    updateResourceNumbers();
+    function renum(col, selector) {
+        col.querySelectorAll(selector).forEach((el, i) => el.textContent = i + 1);
+    }
 });
 </script>
 {% endblock %}

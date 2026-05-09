@@ -1,6 +1,7 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ formation.nom }} - Formation{% endblock %}
+{% block title %}{{ formation.nom }} - Formation à Cotonou | BeElle Nails{% endblock %}
+{% block meta_description %}{{ formation.nom }} : formation professionnelle en esthétique à Cotonou avec BeElle Nails. {% if formation.description %}{{ formation.description|striptags|slice(0, 120) }}...{% else %}Inscrivez-vous et obtenez votre attestation.{% endif %}{% endblock %}
 
 {% block body %}
 <div class="min-h-screen bg-gray-50">

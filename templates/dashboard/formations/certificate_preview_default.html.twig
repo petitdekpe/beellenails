@@ -1,0 +1,174 @@
+{% extends 'dashboard.html.twig' %}
+
+{% block title %}Prévisualisation — Modèle Élégant{% endblock %}
+
+{% block content %}
+<div class="space-y-4">
+    <!-- Header -->
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">Modèle Élégant</h1>
+            <p class="text-sm text-gray-500">Violet & doré — style diplôme classique</p>
+        </div>
+        <div class="flex gap-3">
+            <a href="{{ path('app_dashboard_formation_certificate_preview', {template: 'classic'}) }}"
+               class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                Voir Modèle Classique →
+            </a>
+            <a href="javascript:history.back()"
+               class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                ← Retour
+            </a>
+        </div>
+    </div>
+
+    <div class="bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 text-sm text-amber-800">
+        Ceci est une prévisualisation avec des données fictives. Le PDF généré contiendra les vraies informations de l'apprenant et de la formation.
+    </div>
+
+    <!-- Certificate preview -->
+    <div class="bg-white rounded-lg shadow-sm p-4 overflow-auto">
+        <div class="min-w-[700px]">
+
+            <div style="
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                padding: 40px;
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                min-height: 500px;
+            ">
+                <div style="
+                    width: 100%;
+                    max-width: 800px;
+                    background: white;
+                    padding: 50px;
+                    border-radius: 16px;
+                    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+                    border: 8px solid #f7fafc;
+                    position: relative;
+                    text-align: center;
+                    font-family: Georgia, 'Times New Roman', serif;
+                ">
+                    <!-- Inner border -->
+                    <div style="
+                        position: absolute; top: 20px; left: 20px; right: 20px; bottom: 20px;
+                        border: 2px solid #e2e8f0; border-radius: 10px; pointer-events: none;
+                    "></div>
+
+                    <!-- Top decorative stripe -->
+                    <div style="
+                        position: absolute; top: 40px; left: 40px; right: 40px; height: 16px;
+                        background: repeating-linear-gradient(90deg, #667eea, #667eea 10px, #764ba2 10px, #764ba2 20px);
+                        border-radius: 4px;
+                    "></div>
+
+                    <div style="margin-top: 30px;">
+                        <!-- Company -->
+                        <div style="font-size: 26px; font-weight: bold; color: #667eea; letter-spacing: 3px; margin-bottom: 8px;">
+                            BELLE NAILS
+                        </div>
+
+                        <!-- Title -->
+                        <div style="font-size: 34px; font-weight: bold; color: #2d3748; text-transform: uppercase; letter-spacing: 3px; margin: 24px 0 16px;">
+                            Certificat de Formation
+                        </div>
+
+                        <!-- Awarded to -->
+                        <div style="font-size: 16px; color: #4a5568; margin-bottom: 16px;">
+                            Ce certificat est décerné à
+                        </div>
+
+                        <!-- Name -->
+                        <div style="
+                            font-size: 40px; font-weight: bold; color: #2d3748;
+                            border-bottom: 3px solid #667eea; display: inline-block;
+                            padding-bottom: 8px; margin: 0 0 20px;
+                        ">
+                            Marie Dupont
+                        </div>
+
+                        <!-- Completion -->
+                        <div style="font-size: 15px; color: #4a5568; margin-bottom: 16px;">
+                            pour avoir complété avec succès la formation
+                        </div>
+
+                        <!-- Formation name -->
+                        <div style="font-size: 22px; font-weight: bold; color: #667eea; font-style: italic; margin-bottom: 12px;">
+                            Formation Prothésie Ongulaire Avancée
+                        </div>
+
+                        <!-- Description -->
+                        <div style="font-size: 13px; color: #718096; font-style: italic; margin: 8px 0 20px;">
+                            Formation professionnelle complète en prothésie ongulaire…
+                        </div>
+
+                        <!-- Stats -->
+                        <div style="
+                            background: #f7fafc; padding: 18px; border-radius: 10px;
+                            display: flex; justify-content: space-around; margin: 20px 0;
+                        ">
+                            <div style="text-align: center;">
+                                <div style="font-size: 20px; font-weight: bold; color: #667eea;">8</div>
+                                <div style="font-size: 11px; color: #718096; margin-top: 4px;">Modules Terminés</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 20px; font-weight: bold; color: #667eea;">100%</div>
+                                <div style="font-size: 11px; color: #718096; margin-top: 4px;">Progression</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 20px; font-weight: bold; color: #667eea;">8h</div>
+                                <div style="font-size: 11px; color: #718096; margin-top: 4px;">Temps d'Étude</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 20px; font-weight: bold; color: #667eea;">480min</div>
+                                <div style="font-size: 11px; color: #718096; margin-top: 4px;">Durée Formation</div>
+                            </div>
+                        </div>
+
+                        <!-- Footer details -->
+                        <div style="
+                            display: flex; justify-content: space-between; align-items: center;
+                            margin-top: 30px; padding-top: 20px;
+                            border-top: 2px solid #e2e8f0;
+                        ">
+                            <div style="text-align: center; flex: 1;">
+                                <div style="font-size: 11px; color: #718096; text-transform: uppercase; letter-spacing: 1px;">Date d'inscription</div>
+                                <div style="font-size: 13px; font-weight: bold; color: #2d3748; margin-top: 6px;">01/04/2025</div>
+                            </div>
+                            <div style="text-align: center; flex: 1;">
+                                <div style="font-size: 11px; color: #718096; text-transform: uppercase; letter-spacing: 1px;">Date de complétion</div>
+                                <div style="font-size: 13px; font-weight: bold; color: #2d3748; margin-top: 6px;">09/05/2025</div>
+                            </div>
+                            <div style="text-align: center; flex: 1;">
+                                <div style="width: 160px; height: 1px; background: #2d3748; margin: 16px auto 8px;"></div>
+                                <div style="font-size: 11px; color: #718096; text-transform: uppercase; letter-spacing: 1px;">Signature Officielle</div>
+                                <div style="font-size: 13px; font-weight: bold; color: #2d3748; margin-top: 4px;">Belle Nails Formation</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Seal -->
+                    <div style="
+                        position: absolute; bottom: 36px; right: 36px;
+                        width: 72px; height: 72px;
+                        border: 3px solid #667eea; border-radius: 50%;
+                        display: flex; align-items: center; justify-content: center;
+                        font-size: 11px; font-weight: bold; color: #667eea;
+                        text-align: center; background: white;
+                        font-family: Arial, sans-serif;
+                    ">
+                        CERTIFIÉ<br>2025
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <p class="text-xs text-center text-gray-400">
+        Le PDF final sera généré en format A4 paysage. Les couleurs et proportions peuvent légèrement varier à l'impression.
+    </p>
+</div>
+{% endblock %}

@@ -257,6 +257,16 @@ class DashboardFormationController extends AbstractController
         ]);
     }
 
+    #[Route('/certificate-preview/{template}', name: 'app_dashboard_formation_certificate_preview', methods: ['GET'])]
+    public function certificatePreview(string $template): Response
+    {
+        if (!in_array($template, ['default', 'classic'], true)) {
+            throw $this->createNotFoundException('Modèle inconnu.');
+        }
+
+        return $this->render('dashboard/formations/certificate_preview_' . $template . '.html.twig');
+    }
+
     #[Route('/{id}/enrollments', name: 'app_dashboard_formation_enrollments', methods: ['GET'])]
     public function enrollments(
         Formation $formation, 

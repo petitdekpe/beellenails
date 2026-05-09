@@ -1,40 +1,66 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 	<head>
 		<meta charset="UTF-8">
-		<title>
-			{% block title %}BeElle Nails
-			{% endblock %}
-		</title>
+		<title>{% block title %}BeElle Nails - Institut de beauté à Cotonou{% endblock %}</title>
 
 		<!-- Primary Meta Tags -->
-		<title>BeElle Nails</title>
-		<meta name="title" content="BeElle Nails"/>
-		<meta
-		name="description" content="Manucure et pédicure russe, faux ongles sans colle, traitement des ongles naturels."/>
+		<meta name="title" content="{% block meta_title %}BeElle Nails - Institut de beauté à Cotonou{% endblock %}"/>
+		<meta name="description" content="{% block meta_description %}Institut de beauté à Cotonou : manucure et pédicure russe, faux ongles sans colle, nail art, formations professionnelles. Vodjè, Cotonou.{% endblock %}"/>
+		<meta name="keywords" content="{% block meta_keywords %}manucure Cotonou, pédicure Cotonou, nail art Cotonou, faux ongles Cotonou, institut beauté Cotonou, ongles Bénin, BeElle Nails{% endblock %}"/>
+		<meta name="robots" content="index, follow"/>
 
+		<!-- Geo Tags -->
+		<meta name="geo.region" content="BJ"/>
+		<meta name="geo.placename" content="Cotonou"/>
+		<meta name="geo.position" content="6.3654;2.4183"/>
+		<meta name="ICBM" content="6.3654, 2.4183"/>
 
 		<!-- Open Graph / Facebook -->
-		<meta property="og:type" content="website"/>
+		<meta property="og:type" content="{% block og_type %}website{% endblock %}"/>
 		<meta property="og:url" content="https://nails.beellegroup.com/"/>
-		<meta property="og:title" content="BeElle Nails"/>
-		<meta property="og:description" content="Manucure et pédicure russe, faux ongles sans colle, traitement des ongles naturels."/>
-
-		<meta
-		property="twitter:image" content="https://nails.beellegroup.com/assets/metatags.png"/>
-
+		<meta property="og:title" content="{% block og_title %}BeElle Nails - Institut de beauté à Cotonou{% endblock %}"/>
+		<meta property="og:description" content="{% block og_description %}Institut de beauté à Cotonou : manucure et pédicure russe, faux ongles sans colle, nail art, formations professionnelles.{% endblock %}"/>
+		<meta property="og:image" content="https://nails.beellegroup.com/assets/metatags.png"/>
+		<meta property="og:locale" content="fr_BJ"/>
 
 		<!-- Twitter -->
 		<meta property="twitter:card" content="summary_large_image"/>
 		<meta property="twitter:url" content="https://nails.beellegroup.com/"/>
-		<meta property="twitter:title" content="BeElle Nails"/>
-		<meta property="twitter:description" content="Manucure et pédicure russe, faux ongles sans colle, traitement des ongles naturels."/>
+		<meta property="twitter:title" content="{% block twitter_title %}BeElle Nails - Institut de beauté à Cotonou{% endblock %}"/>
+		<meta property="twitter:description" content="{% block twitter_description %}Institut de beauté à Cotonou : manucure et pédicure russe, faux ongles sans colle, nail art, formations professionnelles.{% endblock %}"/>
+		<meta property="twitter:image" content="https://nails.beellegroup.com/assets/metatags.png"/>
 
-		<meta
-		property="twitter:image" content="https://nails.beellegroup.com/assets/metatags.png"/>
-
-
-		<!-- Meta Tags Generated with https://metatags.io -->
+		<!-- JSON-LD Local Business -->
+		<script type="application/ld+json">
+		{
+			"@context": "https://schema.org",
+			"@type": "BeautySalon",
+			"name": "BeElle Nails",
+			"description": "Institut de beauté spécialisé en manucure russe, pédicure russe, faux ongles et nail art à Cotonou, Bénin.",
+			"url": "https://nails.beellegroup.com",
+			"telephone": "+22997853512",
+			"address": {
+				"@type": "PostalAddress",
+				"streetAddress": "Vodjè, 2ème rue après la clinique de l'union, portail rose",
+				"addressLocality": "Cotonou",
+				"addressCountry": "BJ"
+			},
+			"geo": {
+				"@type": "GeoCoordinates",
+				"latitude": 6.3654,
+				"longitude": 2.4183
+			},
+			"image": "https://nails.beellegroup.com/assets/metatags.png",
+			"sameAs": [
+				"https://www.instagram.com/be.elle.beauty",
+				"https://www.tiktok.com/@be_elle6"
+			],
+			"priceRange": "$$",
+			"currenciesAccepted": "XOF",
+			"openingHours": "Mo-Sa 08:00-19:00"
+		}
+		</script>
 
 		<link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
 		<link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
@@ -90,7 +116,7 @@
 
 	</body>
 
-	{% if not (app.request.attributes.get('_route') starts with 'app_dashboard') 
+	{% if not (app.request.attributes.get('_route') starts with 'app_dashboard')
 		and not (app.request.attributes.get('_route') starts with 'dashboard_home_images')
 		and not (app.request.attributes.get('_route') starts with 'app_promo_code')
 		and app.request.attributes.get('_route') not in ['app_login', 'app_register', 'app_prestation_new', 'app_formation_new', 'create_conges', 'cancel_conge', 'cancel_conges']
@@ -100,7 +126,7 @@
 			<a href="#" class="flex justify-center items-center text-2xl font-semibold text-gray-900">
 				<img src="{{ asset('assets/logooffwhite.png') }}" class="h-16" alt="Logo">
 			</a>
-			<p class="my-6 text-white text-center">Vodjè, 2eme rue après la clinique de l’union en allant à gbegamey, au fond de la rue à droite, portail rose.</p>
+			<p class="my-6 text-white text-center">Vodjè, 2eme rue après la clinique de l'union en allant à gbegamey, au fond de la rue à droite, portail rose.</p>
 			<ul class="flex flex-wrap justify-center items-center mb-6 text-white">
 				<li>
 					<a href="{{ path('app_home') }}" class="mr-4 hover:underline md:mr-6 ">Accueil</a>
