@@ -1,0 +1,141 @@
+{% extends 'user_learning/base.html.twig' %}
+
+{% block title %}Quiz - {{ module.title }}{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 py-8">
+
+    <div class="mb-6">
+        <p class="text-sm text-gray-500">{{ enrollment.formation.Nom }}</p>
+        <h1 class="text-2xl font-bold text-gray-900 mt-1">Quiz : {{ module.title }}</h1>
+    </div>
+
+    {% if bestAttempt and moduleProgress.isCompleted %}
+        <div class="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center gap-3">
+            <svg class="w-6 h-6 text-green-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <div>
+                <p class="font-semibold text-green-800">Module validé !</p>
+                <p class="text-sm text-green-700">Meilleur score : {{ bestAttempt.score|number_format(0) }}%</p>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Historique -->
+    {% if attempts|length > 0 %}
+        <div class="mb-6 bg-white rounded-lg shadow p-4">
+            <h2 class="text-sm font-semibold text-gray-700 mb-3">Tentatives précédentes</h2>
+            <div class="space-y-2">
+                {% for attempt in attempts %}
+                    {% if attempt.isCompleted %}
+                    <div class="flex items-center justify-between text-sm">
+                        <span class="text-gray-600">Tentative {{ attempt.attemptNumber }}</span>
+                        <div class="flex items-center gap-3">
+                            <span class="font-semibold {{ attempt.isPassed ? 'text-green-600' : 'text-red-600' }}">
+                                {{ attempt.score|number_format(0) }}%
+                            </span>
+                            <span class="px-2 py-0.5 rounded-full text-xs {{ attempt.isPassed ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
+                                {{ attempt.isPassed ? 'Réussi' : 'Échoué' }}
+                            </span>
+                            <a href="{{ path('app_quiz_attempt_result', {'id': attempt.id}) }}"
+                               class="text-pink-600 hover:underline">Voir</a>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    {% if canAttempt %}
+        <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800">
+            Score minimum : <strong>{{ quiz.passingScore }}%</strong> —
+            {% if not quiz.isUnlimitedAttempts %}
+                Tentative {{ attemptCount + 1 }} / {{ quiz.maxAttempts }}
+            {% else %}
+                Tentatives illimitées
+            {% endif %}
+        </div>
+
+        <form id="quiz-form">
+            {% for question in quiz.questions %}
+            <div class="bg-white rounded-lg shadow mb-4 p-6">
+                <p class="font-medium text-gray-900 mb-4">
+                    <span class="text-gray-400 mr-2">{{ loop.index }}.</span>{{ question.questionText }}
+                </p>
+                {% if not question.isSingleChoice %}
+                    <p class="text-xs text-gray-500 mb-3">Plusieurs réponses possibles</p>
+                {% endif %}
+                <div class="space-y-2">
+                    {% for answer in question.answers %}
+                    <label class="flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:border-pink-300 cursor-pointer transition-colors">
+                        <input type="{{ question.isSingleChoice ? 'radio' : 'checkbox' }}"
+                               name="question_{{ question.id }}"
+                               value="{{ answer.id }}"
+                               data-question="{{ question.id }}"
+                               class="w-4 h-4 text-pink-600 flex-shrink-0">
+                        <span class="text-sm text-gray-700">{{ answer.answerText }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+
+            <button type="submit" id="submit-btn"
+                    class="w-full py-3 bg-pink-600 hover:bg-pink-700 text-white font-semibold rounded-lg transition-colors">
+                Soumettre mes réponses
+            </button>
+        </form>
+
+    {% else %}
+        <div class="bg-white rounded-lg shadow p-6 text-center text-gray-500">
+            Vous avez atteint le nombre maximum de tentatives ({{ quiz.maxAttempts }}).
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+document.getElementById('quiz-form')?.addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.textContent = 'Envoi en cours...';
+
+    const answers = {};
+    document.querySelectorAll('[data-question]').forEach(input => {
+        if (input.checked) {
+            const qId = input.dataset.question;
+            if (!answers[qId]) answers[qId] = [];
+            answers[qId].push(parseInt(input.value));
+        }
+    });
+
+    try {
+        const res = await fetch('{{ path('app_quiz_attempt_submit', {'enrollmentId': enrollment.id, 'moduleId': module.id}) }}', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ answers })
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+            window.location.href = data.redirectUrl;
+        } else {
+            alert(data.error || 'Une erreur est survenue.');
+            btn.disabled = false;
+            btn.textContent = 'Soumettre mes réponses';
+        }
+    } catch {
+        alert('Erreur réseau, veuillez réessayer.');
+        btn.disabled = false;
+        btn.textContent = 'Soumettre mes réponses';
+    }
+});
+</script>
+{% endblock %}

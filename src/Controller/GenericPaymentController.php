@@ -639,6 +639,18 @@ class GenericPaymentController extends AbstractController
 
     private function updatePaymentFromApiStatus(Payment $payment, string $apiStatus): void
     {
+        // Si le rendezvous est déjà payé, le paiement est forcément successful — ne pas écraser
+        if ($payment->getEntityType() === 'rendezvous') {
+            $entity = $this->paymentTypeResolver->resolveEntity($payment);
+            if ($entity instanceof \App\Entity\Rendezvous && $entity->isPaid()) {
+                $payment->setStatus('successful');
+                $payment->setUpdatedAt(new \DateTimeImmutable());
+                $this->entityManager->persist($payment);
+                $this->entityManager->flush();
+                return;
+            }
+        }
+
         $payment->setStatus($apiStatus);
         $payment->setUpdatedAt(new \DateTimeImmutable());
 

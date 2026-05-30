@@ -10,6 +10,7 @@ use App\Entity\FormationReview;
 use App\Entity\FormationModule;
 use App\Entity\FormationResource;
 use App\Entity\FormationEnrollment;
+use App\Entity\User;
 use App\Form\FormationType;
 use App\Repository\FormationRepository;
 use App\Repository\FormationReviewRepository;
@@ -68,7 +69,7 @@ class FormationController extends AbstractController
             if ($formation->isFree()) {
                 $formation->setCout(0);
             }
-            
+
             // Handle modules positions
             $position = 1;
             foreach ($formation->getModules() as $module) {
@@ -77,7 +78,7 @@ class FormationController extends AbstractController
                 }
                 $position++;
             }
-            
+
             $entityManager->persist($formation);
             $entityManager->flush();
 
@@ -95,8 +96,8 @@ class FormationController extends AbstractController
     {
         $reviews = $reviewRepository->findVisibleByFormation($formation);
         $reviewStats = $reviewRepository->getReviewsStats($formation);
-        $modules = $formation->getModules()->filter(fn($module) => $module->isActive());
-        $resources = $formation->getResources()->filter(fn($resource) => $resource->isDownloadable());
+        $modules = $formation->getModules()->filter(fn(FormationModule $module) => $module->isActive());
+        $resources = $formation->getResources()->filter(fn(FormationResource $resource) => $resource->isDownloadable());
 
         // Check if user is enrolled in this formation
         $isEnrolled = false;
@@ -126,8 +127,9 @@ class FormationController extends AbstractController
     #[IsGranted('ROLE_USER')]
     public function addReview(Request $request, Formation $formation, EntityManagerInterface $entityManager, FormationReviewRepository $reviewRepository): JsonResponse
     {
+        /** @var User $user */
         $user = $this->getUser();
-        
+
         // Check if user already reviewed this formation
         if ($reviewRepository->hasUserReviewedFormation($user, $formation)) {
             return new JsonResponse(['error' => 'Vous avez déjà donné votre avis sur cette formation'], 400);
@@ -173,13 +175,13 @@ class FormationController extends AbstractController
     public function downloadResource(Formation $formation, int $resourceId, EntityManagerInterface $entityManager): Response
     {
         $resource = $entityManager->getRepository(FormationResource::class)->find($resourceId);
-        
+
         if (!$resource || $resource->getFormation() !== $formation || !$resource->isDownloadable()) {
             throw $this->createNotFoundException('Resource not found or not downloadable');
         }
 
         $filePath = $this->getParameter('kernel.project_dir') . '/public/assets/files/formations/' . $resource->getFileName();
-        
+
         if (!file_exists($filePath)) {
             throw $this->createNotFoundException('File not found');
         }
@@ -208,7 +210,7 @@ class FormationController extends AbstractController
                 }
                 $position++;
             }
-            
+
             $entityManager->flush();
 
             return $this->redirectToRoute('app_formation_index', [], Response::HTTP_SEE_OTHER);
@@ -223,7 +225,7 @@ class FormationController extends AbstractController
     #[Route('/{id}', name: 'app_formation_delete', methods: ['POST'])]
     public function delete(Request $request, Formation $formation, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$formation->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $formation->getId(), $request->request->get('_token'))) {
             $entityManager->remove($formation);
             $entityManager->flush();
         }

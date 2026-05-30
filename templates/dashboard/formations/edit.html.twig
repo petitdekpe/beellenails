@@ -276,27 +276,50 @@
 
             <!-- Modules Section -->
             <div class="border-t border-gray-200 pt-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Modules de formation</h3>
-                <div class="bg-gray-50 rounded-lg p-4 mb-4">
-                    <p class="text-sm text-gray-600 mb-2">Les modules permettent de structurer votre formation en chapitres.</p>
-                    <button type="button" id="add-module" class="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-medium text-gray-900">Modules de formation</h3>
+                    <a href="{{ path('app_formation_module_new', {'formationId': formation.id}) }}"
+                       class="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700">
                         + Ajouter un module
-                    </button>
+                    </a>
                 </div>
-                
-                <div id="modules-collection" data-index="{{ form.modules|length }}" data-prototype="{{ form_widget(form.modules.vars.prototype)|e('html_attr') }}">
-                    {% for moduleForm in form.modules %}
-                        <div class="module-item bg-white border border-gray-200 rounded-lg p-4 mb-4">
-                            <div class="flex justify-between items-center mb-3">
-                                <h4 class="font-medium text-gray-900">Module #<span class="module-number">{{ loop.index }}</span></h4>
-                                <button type="button" class="remove-module text-red-600 hover:text-red-800 text-sm">
-                                    Supprimer
-                                </button>
+                {% set modules = formation.modules|sort((a, b) => a.position <=> b.position) %}
+                {% if modules|length > 0 %}
+                    <div class="divide-y divide-gray-200 border border-gray-200 rounded-lg overflow-hidden">
+                        {% for module in modules %}
+                        <div class="flex items-center gap-3 px-4 py-3 bg-white hover:bg-gray-50">
+                            <span class="w-6 h-6 flex-shrink-0 rounded-full bg-pink-100 text-pink-600 text-xs font-bold flex items-center justify-center">
+                                {{ module.position }}
+                            </span>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium text-gray-900 truncate">{{ module.title }}</p>
+                                <p class="text-xs text-gray-500">
+                                    {{ module.formattedDuration }}
+                                    {% if module.hasActiveQuiz %}· <span class="text-indigo-600">📝 Quiz ({{ module.quiz.questionsCount }} q.)</span>{% endif %}
+                                    {% if not module.isActive %}· <span class="text-gray-400">Inactif</span>{% endif %}
+                                </p>
                             </div>
-                            {{ form_widget(moduleForm) }}
+                            <div class="flex gap-2 flex-shrink-0">
+                                <a href="{{ path('app_formation_module_edit', {'formationId': formation.id, 'id': module.id}) }}"
+                                   class="px-3 py-1.5 text-sm border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                                    Modifier
+                                </a>
+                                <form method="POST" action="{{ path('app_formation_module_delete', {'formationId': formation.id, 'id': module.id}) }}"
+                                      onsubmit="return confirm('Supprimer ce module ?')">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete_module_' ~ module.id) }}">
+                                    <button type="submit" class="px-3 py-1.5 text-sm border border-red-200 rounded-md text-red-600 bg-white hover:bg-red-50">
+                                        Supprimer
+                                    </button>
+                                </form>
+                            </div>
                         </div>
-                    {% endfor %}
-                </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-sm text-gray-500 bg-gray-50 rounded-lg p-4">
+                        Aucun module. Cliquez sur "Ajouter un module" pour commencer.
+                    </p>
+                {% endif %}
             </div>
 
             <!-- Resources Section -->
@@ -354,7 +377,6 @@
                 </div>
             </div>
 
-            {% do form.modules.setRendered() %}
             {% do form.resources.setRendered() %}
 
             {{ form_end(form) }}

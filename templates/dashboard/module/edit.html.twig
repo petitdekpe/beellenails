@@ -1,0 +1,281 @@
+{% extends 'dashboard.html.twig' %}
+
+{% block title %}{{ module ? 'Modifier' : 'Nouveau' }} module - {{ formation.Nom }}{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto px-4 py-6">
+
+    <div class="mb-6 flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">{{ module ? 'Modifier le module' : 'Nouveau module' }}</h1>
+            <p class="text-sm text-gray-500 mt-1">{{ formation.Nom }}</p>
+        </div>
+        <a href="{{ path('app_formation_edit', {'id': formation.id}) }}"
+           class="text-sm text-gray-500 hover:text-gray-700">← Retour</a>
+    </div>
+
+    {% for message in app.flashes('success') %}
+        <div class="mb-4 p-4 bg-green-50 border border-green-200 text-green-800 rounded-lg">{{ message }}</div>
+    {% endfor %}
+
+    <form method="POST">
+
+        <!-- Informations du module -->
+        <div class="bg-white rounded-lg shadow mb-6">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-lg font-medium text-gray-900">Informations du module</h2>
+            </div>
+            <div class="px-6 py-4 space-y-4">
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Titre *</label>
+                        <input type="text" name="title" required
+                               value="{{ module ? module.title : '' }}"
+                               placeholder="Ex : Introduction aux techniques de base"
+                               class="block w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-pink-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Position</label>
+                        <input type="number" name="position" min="1"
+                               value="{{ module ? module.position : nextPosition }}"
+                               class="block w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-pink-500">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                    <textarea name="description" rows="3"
+                              placeholder="Décrivez le contenu de ce module..."
+                              class="block w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-pink-500">{{ module ? module.description : '' }}</textarea>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Durée (minutes) *</label>
+                        <input type="number" name="duration" min="1" required
+                               value="{{ module ? module.duration : '' }}"
+                               placeholder="Ex : 45"
+                               class="block w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-pink-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">URL YouTube</label>
+                        <input type="url" name="youtube_url"
+                               value="{{ module ? module.youtubeUrl : '' }}"
+                               placeholder="https://www.youtube.com/watch?v=..."
+                               class="block w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-pink-500">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" name="is_active" value="1"
+                               {{ (not module or module.isActive) ? 'checked' : '' }}
+                               class="w-4 h-4 text-pink-600 rounded">
+                        <span class="text-sm font-medium text-gray-700">Module actif</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Quiz -->
+        <div class="bg-white rounded-lg shadow mb-6">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <label class="flex items-center gap-3 cursor-pointer">
+                    <input type="checkbox" name="quiz_enabled" id="quiz-enabled" value="1"
+                           {{ (module and module.quiz) ? 'checked' : '' }}
+                           class="w-4 h-4 text-pink-600 rounded">
+                    <div>
+                        <span class="text-lg font-medium text-gray-900">Quiz de fin de module</span>
+                        <p class="text-sm text-gray-500">L'apprenant devra réussir ce quiz pour valider le module</p>
+                    </div>
+                </label>
+            </div>
+
+            <div id="quiz-section" class="{{ (not module or not module.quiz) ? 'hidden' : '' }}">
+                <div class="px-6 py-4 bg-gray-50 border-b border-gray-200 grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Score minimum (%)</label>
+                        <input type="number" name="passing_score" min="0" max="100"
+                               value="{{ (module and module.quiz) ? module.quiz.passingScore : 70 }}"
+                               class="block w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-pink-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Tentatives max (vide = illimité)</label>
+                        <input type="number" name="max_attempts" min="1"
+                               value="{{ (module and module.quiz and module.quiz.maxAttempts) ? module.quiz.maxAttempts : '' }}"
+                               placeholder="Illimité"
+                               class="block w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-pink-500">
+                    </div>
+                    <div class="flex items-end">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" name="quiz_active" value="1"
+                                   {{ (not module or not module.quiz or module.quiz.isActive) ? 'checked' : '' }}
+                                   class="w-4 h-4 text-pink-600 rounded">
+                            <span class="text-sm font-medium text-gray-700">Quiz actif</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Questions -->
+                <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+                    <span class="text-sm font-semibold text-gray-700">Questions</span>
+                    <button type="button" id="add-question"
+                            class="px-3 py-1.5 bg-pink-600 hover:bg-pink-700 text-white text-sm font-medium rounded-lg">
+                        + Ajouter une question
+                    </button>
+                </div>
+
+                <div id="questions-container" class="divide-y divide-gray-100">
+                    {% if module and module.quiz %}
+                        {% for question in module.quiz.questions %}
+                        <div class="question-block px-6 py-4" data-index="{{ loop.index0 }}">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-sm font-semibold text-gray-700">Question <span class="q-number">{{ loop.index }}</span></span>
+                                <button type="button" class="remove-question text-red-500 hover:text-red-700 text-sm">Supprimer</button>
+                            </div>
+                            <div class="mb-3">
+                                <textarea name="questions[{{ loop.index0 }}][text]" rows="2" required
+                                          placeholder="Texte de la question"
+                                          class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-pink-500">{{ question.questionText }}</textarea>
+                            </div>
+                            <div class="flex gap-4 mb-3">
+                                <label class="flex items-center gap-1.5 text-sm cursor-pointer">
+                                    <input type="radio" name="questions[{{ loop.index0 }}][type]" value="single"
+                                           {{ question.type == 'single' ? 'checked' : '' }} class="text-pink-600"> Choix unique
+                                </label>
+                                <label class="flex items-center gap-1.5 text-sm cursor-pointer">
+                                    <input type="radio" name="questions[{{ loop.index0 }}][type]" value="multiple"
+                                           {{ question.type == 'multiple' ? 'checked' : '' }} class="text-pink-600"> Choix multiple
+                                </label>
+                            </div>
+                            <div class="answers-container space-y-2 mb-3">
+                                {% for answer in question.answers %}
+                                <div class="flex items-center gap-2">
+                                    <input type="checkbox" name="questions[{{ loop.parent.loop.index0 }}][answers][{{ loop.index0 }}][correct]" value="1"
+                                           {{ answer.isCorrect ? 'checked' : '' }} class="w-4 h-4 text-green-500 rounded flex-shrink-0">
+                                    <input type="text" name="questions[{{ loop.parent.loop.index0 }}][answers][{{ loop.index0 }}][text]"
+                                           value="{{ answer.answerText }}" placeholder="Réponse" required
+                                           class="flex-1 rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-pink-500">
+                                    <button type="button" class="remove-answer text-gray-400 hover:text-red-500 flex-shrink-0">✕</button>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            <button type="button" class="add-answer text-sm text-pink-600 hover:text-pink-800">+ Ajouter une réponse</button>
+                            <div class="mt-3">
+                                <input type="text" name="questions[{{ loop.index0 }}][explanation]"
+                                       value="{{ question.explanation }}"
+                                       placeholder="Explication (optionnel, affichée dans la correction)"
+                                       class="block w-full rounded-lg border border-gray-200 bg-blue-50 px-3 py-1.5 text-sm">
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+
+                <div id="no-questions" class="px-6 py-6 text-center text-gray-400 text-sm {{ (module and module.quiz and module.quiz.questions|length > 0) ? 'hidden' : '' }}">
+                    Cliquez sur "Ajouter une question" pour commencer.
+                </div>
+            </div>
+        </div>
+
+        <div class="flex gap-3">
+            <button type="submit"
+                    class="px-6 py-2 bg-pink-600 hover:bg-pink-700 text-white font-medium rounded-lg transition-colors">
+                {{ module ? 'Mettre à jour' : 'Créer le module' }}
+            </button>
+            <a href="{{ path('app_formation_edit', {'id': formation.id}) }}"
+               class="px-6 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors">
+                Annuler
+            </a>
+        </div>
+
+    </form>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+// Toggle quiz section
+document.getElementById('quiz-enabled').addEventListener('change', function() {
+    document.getElementById('quiz-section').classList.toggle('hidden', !this.checked);
+});
+
+let questionCount = {{ (module and module.quiz) ? module.quiz.questions|length : 0 }};
+
+function updateQuestionNumbers() {
+    document.querySelectorAll('.question-block').forEach((block, i) => {
+        block.dataset.index = i;
+        block.querySelector('.q-number').textContent = i + 1;
+        block.querySelectorAll('[name]').forEach(el => {
+            el.name = el.name.replace(/questions\[\d+\]/, `questions[${i}]`);
+        });
+    });
+    questionCount = document.querySelectorAll('.question-block').length;
+    document.getElementById('no-questions').classList.toggle('hidden', questionCount > 0);
+}
+
+function createAnswerRow(qIndex, aIndex) {
+    const div = document.createElement('div');
+    div.className = 'flex items-center gap-2';
+    div.innerHTML = `
+        <input type="checkbox" name="questions[${qIndex}][answers][${aIndex}][correct]" value="1" class="w-4 h-4 text-green-500 rounded flex-shrink-0">
+        <input type="text" name="questions[${qIndex}][answers][${aIndex}][text]" placeholder="Réponse" required
+               class="flex-1 rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-pink-500">
+        <button type="button" class="remove-answer text-gray-400 hover:text-red-500 flex-shrink-0">✕</button>`;
+    return div;
+}
+
+document.getElementById('add-question').addEventListener('click', () => {
+    const idx = questionCount;
+    const div = document.createElement('div');
+    div.className = 'question-block px-6 py-4 border-t border-gray-100';
+    div.dataset.index = idx;
+    div.innerHTML = `
+        <div class="flex items-center justify-between mb-3">
+            <span class="text-sm font-semibold text-gray-700">Question <span class="q-number">${idx + 1}</span></span>
+            <button type="button" class="remove-question text-red-500 hover:text-red-700 text-sm">Supprimer</button>
+        </div>
+        <div class="mb-3">
+            <textarea name="questions[${idx}][text]" rows="2" required placeholder="Texte de la question"
+                      class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-pink-500"></textarea>
+        </div>
+        <div class="flex gap-4 mb-3">
+            <label class="flex items-center gap-1.5 text-sm cursor-pointer">
+                <input type="radio" name="questions[${idx}][type]" value="single" checked class="text-pink-600"> Choix unique
+            </label>
+            <label class="flex items-center gap-1.5 text-sm cursor-pointer">
+                <input type="radio" name="questions[${idx}][type]" value="multiple" class="text-pink-600"> Choix multiple
+            </label>
+        </div>
+        <div class="answers-container space-y-2 mb-3"></div>
+        <button type="button" class="add-answer text-sm text-pink-600 hover:text-pink-800">+ Ajouter une réponse</button>
+        <div class="mt-3">
+            <input type="text" name="questions[${idx}][explanation]" placeholder="Explication (optionnel)"
+                   class="block w-full rounded-lg border border-gray-200 bg-blue-50 px-3 py-1.5 text-sm">
+        </div>`;
+    const container = div.querySelector('.answers-container');
+    container.appendChild(createAnswerRow(idx, 0));
+    container.appendChild(createAnswerRow(idx, 1));
+    document.getElementById('questions-container').appendChild(div);
+    questionCount++;
+    document.getElementById('no-questions').classList.add('hidden');
+});
+
+document.getElementById('questions-container').addEventListener('click', e => {
+    if (e.target.classList.contains('remove-question')) {
+        e.target.closest('.question-block').remove();
+        updateQuestionNumbers();
+    }
+    if (e.target.classList.contains('remove-answer')) {
+        const container = e.target.closest('.answers-container');
+        if (container.children.length > 2) e.target.closest('.flex').remove();
+    }
+    if (e.target.classList.contains('add-answer')) {
+        const block = e.target.closest('.question-block');
+        const container = block.querySelector('.answers-container');
+        container.appendChild(createAnswerRow(block.dataset.index, container.children.length));
+    }
+});
+</script>
+{% endblock %}

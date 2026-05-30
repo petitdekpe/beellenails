@@ -52,6 +52,12 @@ class ModuleProgress
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $notes = null; // Notes personnelles de l'utilisateur
 
+    #[ORM\Column(nullable: true)]
+    private ?bool $quizPassed = null; // null = pas de quiz ou non tenté
+
+    #[ORM\Column(type: Types::DECIMAL, precision: 5, scale: 2, nullable: true)]
+    private ?string $quizScore = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -161,9 +167,12 @@ class ModuleProgress
             $percentage = min(100, ($videoPosition / ($this->module->getDuration() * 60)) * 100);
             $this->completionPercentage = number_format($percentage, 2);
             
-            // Auto-complete if reached near end (95%)
+            // À 95% : vidéo terminée. Si pas de quiz actif, compléter directement.
             if ($percentage >= 95 && !$this->completed) {
-                $this->setCompleted(true);
+                $this->completionPercentage = '100.00';
+                if (!$this->module->hasActiveQuiz()) {
+                    $this->setCompleted(true);
+                }
             }
         }
         
@@ -207,6 +216,35 @@ class ModuleProgress
     {
         $this->notes = $notes;
         return $this;
+    }
+
+    public function isQuizPassed(): ?bool { return $this->quizPassed; }
+
+    public function getQuizScore(): ?float
+    {
+        return $this->quizScore !== null ? (float) $this->quizScore : null;
+    }
+
+    public function recordQuizResult(float $score, bool $passed): static
+    {
+        $this->quizScore = number_format($score, 2);
+        $this->quizPassed = $passed;
+
+        if ($passed && !$this->completed) {
+            $this->setCompleted(true);
+        }
+
+        return $this;
+    }
+
+    public function isVideoWatched(): bool
+    {
+        return (float) ($this->completionPercentage ?? 0) >= 100.0;
+    }
+
+    public function canTakeQuiz(): bool
+    {
+        return $this->isVideoWatched() && $this->module->hasActiveQuiz();
     }
 
     public function getFormattedTimeSpent(): string

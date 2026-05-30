@@ -110,13 +110,11 @@
                         'Tentative':            'bg-orange-100 text-orange-800',
                         'Congé':                'bg-purple-100 text-purple-800'
                     } %}
-                    {% set status_class = status_colors[rdv.status] ?? 'bg-gray-100 text-gray-800' %}
+                    {% set effective_status = rdv.paid ? 'Rendez-vous pris' : rdv.status %}
+                    {% set status_class = status_colors[effective_status] ?? 'bg-gray-100 text-gray-800' %}
                     <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ status_class }}">
-                        {{ rdv.status }}
+                        {{ effective_status }}
                     </span>
-                    {% if rdv.paid %}
-                        <p class="text-xs text-green-600 mt-0.5">✅ Payé</p>
-                    {% endif %}
                 </div>
             </div>
 
@@ -190,7 +188,7 @@
                 {% endif %}
 
                 {% if not isConfirmed %}
-                    <a href="{{ path('app_admin_rdv_confirm', {'id': rdv.id}) }}"
+                    <a href="{{ path('app_admin_rdv_confirm', {'id': rdv.id, 'from': 'mobile'}) }}"
                        class="flex items-center gap-1.5 px-3 py-2 bg-green-50 text-green-600 rounded-xl text-xs font-semibold">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>

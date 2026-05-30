@@ -121,11 +121,21 @@ class UserLearningController extends AbstractController
         // Get all module progresses for navigation
         $allProgresses = $this->moduleProgressRepository->findByEnrollment($enrollment);
 
+        $quiz = $module->getQuiz();
+        $quizUrl = null;
+        if ($quiz && $quiz->isActive()) {
+            $quizUrl = $this->generateUrl('app_quiz_attempt_show', [
+                'enrollmentId' => $enrollment->getId(),
+                'moduleId' => $module->getId(),
+            ]);
+        }
+
         return $this->render('user_learning/module_view.html.twig', [
             'enrollment' => $enrollment,
             'module' => $module,
             'moduleProgress' => $moduleProgress,
             'allProgresses' => $allProgresses,
+            'quizUrl' => $quizUrl,
         ]);
     }
 
@@ -152,20 +162,25 @@ class UserLearningController extends AbstractController
             $moduleProgress->addTimeSpent((int) $data['timeSpent']);
         }
         
-        // Mark as completed if requested
+        // Mark as completed if requested — seulement s'il n'y a pas de quiz actif
         if (isset($data['completed']) && $data['completed']) {
-            $moduleProgress->setCompleted(true);
-            
-            // Update enrollment progress
-            $moduleProgress->getEnrollment()->updateProgress();
+            if (!$moduleProgress->getModule()->hasActiveQuiz()) {
+                $moduleProgress->setCompleted(true);
+                $moduleProgress->getEnrollment()->updateProgress();
+            }
         }
 
         $this->entityManager->flush();
 
+        $quizRequired = $moduleProgress->getModule()->hasActiveQuiz()
+            && $moduleProgress->isVideoWatched()
+            && !$moduleProgress->isCompleted();
+
         return new JsonResponse([
             'success' => true,
             'progress' => $moduleProgress->getCompletionPercentage(),
-            'enrollmentProgress' => $moduleProgress->getEnrollment()->getProgressPercentage()
+            'enrollmentProgress' => $moduleProgress->getEnrollment()->getProgressPercentage(),
+            'quizRequired' => $quizRequired,
         ]);
     }
 

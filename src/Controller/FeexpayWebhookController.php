@@ -9,6 +9,7 @@ namespace App\Controller;
 use App\Entity\Payment;
 use App\Service\PromoCodeService;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\DBAL\LockMode;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -57,100 +58,112 @@ class FeexpayWebhookController extends AbstractController
                 return new JsonResponse(['error' => 'Payment not found'], Response::HTTP_NOT_FOUND);
             }
 
-            // Convertir le statut FeexPay vers notre statut interne
-            $internalStatus = Payment::convertFeexStatus($feexStatus);
-            $oldStatus = $payment->getStatus();
+            // Transaction + verrou pessimiste pour éviter les traitements concurrents
+            $em->beginTransaction();
+            try {
+                $em->lock($payment, LockMode::PESSIMISTIC_WRITE);
+                $em->refresh($payment); // relire l'état le plus récent après acquisition du verrou
 
-            // Mettre à jour le paiement
-            $payment->setStatus($internalStatus)->setUpdatedAt(new \DateTime());
-            
-            // Mettre à jour le montant si fourni dans la réponse de l'API
-            if ($amount !== null && is_numeric($amount)) {
-                $payment->setAmount((int)$amount);
-                $logger->info("[FeexPay Webhook] Montant mis à jour", [
-                    'reference' => $reference,
-                    'amount' => $amount
-                ]);
-            }
+                // Idempotence : si le rendezvous est déjà payé, ne rien faire
+                $rendezvous = $payment->getRendezvous();
+                if ($rendezvous && $rendezvous->isPaid()) {
+                    $em->rollback();
+                    $logger->info("[FeexPay Webhook] Ignoré - rendezvous #{$rendezvous->getId()} déjà payé", [
+                        'reference' => $reference
+                    ]);
+                    return new JsonResponse(['success' => true, 'skipped' => 'already_paid']);
+                }
 
-            $rendezvous = $payment->getRendezvous();
+                // Convertir le statut FeexPay vers notre statut interne
+                $internalStatus = Payment::convertFeexStatus($feexStatus);
+                $oldStatus = $payment->getStatus();
 
-            // Traiter selon le statut
-            switch ($internalStatus) {
-                case 'successful':
-                    if ($oldStatus !== 'successful') { // Éviter les doublons
-                        $rendezvous->setPaid(true)->setStatus('Rendez-vous pris');
+                // Mettre à jour le paiement
+                $payment->setStatus($internalStatus)->setUpdatedAt(new \DateTime());
 
-                        // Appliquer le code promo en attente s'il y en a un
-                        if ($rendezvous->getPendingPromoCode()) {
+                // Mettre à jour le montant si fourni dans la réponse de l'API
+                if ($amount !== null && is_numeric($amount)) {
+                    $payment->setAmount((int)$amount);
+                    $logger->info("[FeexPay Webhook] Montant mis à jour", [
+                        'reference' => $reference,
+                        'amount' => $amount
+                    ]);
+                }
+
+                // Traiter selon le statut
+                switch ($internalStatus) {
+                    case 'successful':
+                        if ($oldStatus !== 'successful') {
+                            $rendezvous->setPaid(true)->setStatus('Rendez-vous pris');
+
+                            if ($rendezvous->getPendingPromoCode()) {
+                                $promoCodeService = $this->container->get(PromoCodeService::class);
+                                $result = $promoCodeService->applyPendingPromoCode($rendezvous);
+                                $logger->info("[FeexPay Webhook] Code promo traité", [
+                                    'rendezvous_id' => $rendezvous->getId(),
+                                    'promo_result' => $result['isValid'] ? 'appliqué' : 'échoué',
+                                    'message' => $result['message']
+                                ]);
+                            }
+
+                            $this->sendClientSuccessEmail($rendezvous, $mailer, $logger);
+                            $this->sendAdminNotificationEmail($rendezvous, $mailer, $logger);
+
+                            $logger->info("[FeexPay Webhook] Paiement réussi - Emails envoyés pour RDV #{$rendezvous->getId()}");
+                        }
+                        break;
+
+                    case 'failed':
+                        $rendezvous->setStatus('Échec du paiement');
+                        if ($rendezvous->getPromoCode()) {
                             $promoCodeService = $this->container->get(PromoCodeService::class);
-                            $result = $promoCodeService->applyPendingPromoCode($rendezvous);
-                            $logger->info("[FeexPay Webhook] Code promo traité", [
-                                'rendezvous_id' => $rendezvous->getId(),
-                                'promo_result' => $result['isValid'] ? 'appliqué' : 'échoué',
-                                'message' => $result['message']
+                            $promoCodeService->revokePromoCodeUsage($rendezvous, 'Paiement échoué');
+                            $logger->info("[FeexPay Webhook] Code promo révoqué suite à l'échec", [
+                                'rendezvous_id' => $rendezvous->getId()
                             ]);
                         }
+                        $logger->info("[FeexPay Webhook] Paiement échoué pour RDV #{$rendezvous->getId()}");
+                        break;
 
-                        // Envoi d'email au client
-                        $this->sendClientSuccessEmail($rendezvous, $mailer, $logger);
+                    case 'canceled':
+                        $rendezvous->setStatus('Paiement annulé');
+                        if ($rendezvous->getPromoCode()) {
+                            $promoCodeService = $this->container->get(PromoCodeService::class);
+                            $promoCodeService->revokePromoCodeUsage($rendezvous, 'Paiement annulé');
+                            $logger->info("[FeexPay Webhook] Code promo révoqué suite à l'annulation", [
+                                'rendezvous_id' => $rendezvous->getId()
+                            ]);
+                        }
+                        $logger->info("[FeexPay Webhook] Paiement annulé pour RDV #{$rendezvous->getId()}");
+                        break;
 
-                        // Envoi d'email à l'admin
-                        $this->sendAdminNotificationEmail($rendezvous, $mailer, $logger);
+                    case 'pending':
+                        $rendezvous->setStatus('Paiement en attente');
+                        break;
+                }
 
-                        $logger->info("[FeexPay Webhook] Paiement réussi - Emails envoyés pour RDV #{$rendezvous->getId()}");
-                    }
-                    break;
+                $em->flush();
+                $em->commit();
 
-                case 'failed':
-                    $rendezvous->setStatus('Échec du paiement');
-                    // Révoquer le code promo si il y en a un
-                    if ($rendezvous->getPromoCode()) {
-                        $promoCodeService = $this->container->get(PromoCodeService::class);
-                        $result = $promoCodeService->revokePromoCodeUsage($rendezvous, 'Paiement échoué');
-                        $logger->info("[FeexPay Webhook] Code promo révoqué suite à l'échec", [
-                            'rendezvous_id' => $rendezvous->getId(),
-                            'reason' => 'Paiement échoué'
-                        ]);
-                    }
-                    $logger->info("[FeexPay Webhook] Paiement échoué pour RDV #{$rendezvous->getId()}");
-                    break;
+                $logger->info(sprintf(
+                    '[FeexPay Webhook] Traitement terminé - Réf: %s, Ancien statut: %s, Nouveau statut: %s',
+                    $reference,
+                    $oldStatus,
+                    $internalStatus
+                ));
 
-                case 'canceled':
-                    $rendezvous->setStatus('Paiement annulé');
-                    // Révoquer le code promo si il y en a un
-                    if ($rendezvous->getPromoCode()) {
-                        $promoCodeService = $this->container->get(PromoCodeService::class);
-                        $result = $promoCodeService->revokePromoCodeUsage($rendezvous, 'Paiement annulé');
-                        $logger->info("[FeexPay Webhook] Code promo révoqué suite à l'annulation", [
-                            'rendezvous_id' => $rendezvous->getId(),
-                            'reason' => 'Paiement annulé'
-                        ]);
-                    }
-                    $logger->info("[FeexPay Webhook] Paiement annulé pour RDV #{$rendezvous->getId()}");
-                    break;
-
-                case 'pending':
-                    $rendezvous->setStatus('Paiement en attente');
-                    break;
+                return new JsonResponse([
+                    'success' => true,
+                    'reference' => $reference,
+                    'old_status' => $oldStatus,
+                    'new_status' => $internalStatus
+                ]);
+            } catch (\Exception $e) {
+                if ($em->getConnection()->isTransactionActive()) {
+                    $em->rollback();
+                }
+                throw $e;
             }
-
-            // Sauvegarder en base
-            $em->flush();
-
-            $logger->info(sprintf(
-                '[FeexPay Webhook] Traitement terminé - Réf: %s, Ancien statut: %s, Nouveau statut: %s',
-                $reference,
-                $oldStatus,
-                $internalStatus
-            ));
-
-            return new JsonResponse([
-                'success' => true,
-                'reference' => $reference,
-                'old_status' => $oldStatus,
-                'new_status' => $internalStatus
-            ]);
         } catch (\Exception $e) {
             $logger->error('[FeexPay Webhook] Erreur lors du traitement', [
                 'error' => $e->getMessage(),

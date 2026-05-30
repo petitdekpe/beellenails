@@ -126,13 +126,20 @@
                                                 <p class="text-gray-600 mb-3 ml-9">{{ module.description|nl2br }}</p>
                                             {% endif %}
                                         </div>
-                                        <div class="ml-4 flex flex-col items-end">
+                                        <div class="ml-4 flex flex-col items-end gap-2">
                                             <span class="text-sm text-gray-500">{{ module.formattedDuration }}</span>
                                             {% if module.youtubeVideoId %}
-                                                <button data-video-id="{{ module.youtubeVideoId }}" 
-                                                        class="mt-2 inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-pink-700 bg-pink-100 hover:bg-pink-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 play-video-btn">
+                                                <button data-video-id="{{ module.youtubeVideoId }}"
+                                                        class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-pink-700 bg-pink-100 hover:bg-pink-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 play-video-btn">
                                                     ▶️ Voir la vidéo
                                                 </button>
+                                            {% endif %}
+                                            {% if is_granted('ROLE_ADMIN') %}
+                                                <a href="{{ path('app_quiz_show', {'id': module.id}) }}"
+                                                   class="inline-flex items-center px-3 py-1 text-sm font-medium rounded-md
+                                                          {{ module.hasActiveQuiz ? 'text-indigo-700 bg-indigo-100 hover:bg-indigo-200' : 'text-gray-600 bg-gray-100 hover:bg-gray-200' }}">
+                                                    📝 {{ module.hasActiveQuiz ? 'Quiz configuré' : 'Configurer le quiz' }}
+                                                </a>
                                             {% endif %}
                                         </div>
                                     </div>

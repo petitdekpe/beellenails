@@ -9,6 +9,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\FormationModuleRepository;
 use App\Entity\Formation;
+use App\Entity\Quiz;
 
 #[ORM\Entity(repositoryClass: FormationModuleRepository::class)]
 class FormationModule
@@ -42,6 +43,9 @@ class FormationModule
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTime $createdAt = null;
+
+    #[ORM\OneToOne(mappedBy: 'module', targetEntity: Quiz::class, cascade: ['persist', 'remove'])]
+    private ?Quiz $quiz = null;
 
     public function __construct()
     {
@@ -182,5 +186,18 @@ class FormationModule
     {
         $this->createdAt = $createdAt;
         return $this;
+    }
+
+    public function getQuiz(): ?Quiz { return $this->quiz; }
+
+    public function setQuiz(?Quiz $quiz): static
+    {
+        $this->quiz = $quiz;
+        return $this;
+    }
+
+    public function hasActiveQuiz(): bool
+    {
+        return $this->quiz !== null && $this->quiz->isActive();
     }
 }

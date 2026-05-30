@@ -19,7 +19,6 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
-use App\Form\FormationModuleType;
 use App\Form\FormationResourceType;
 
 class FormationType extends AbstractType
@@ -170,16 +169,6 @@ class FormationType extends AbstractType
                     'Modèle Classique (bleu/gris)' => 'classic',
                 ],
                 'attr' => ['class' => 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5'],
-            ])
-            ->add('modules', CollectionType::class, [
-                'entry_type' => FormationModuleType::class,
-                'entry_options' => ['label' => false],
-                'allow_add' => true,
-                'allow_delete' => true,
-                'by_reference' => false,
-                'required' => false,
-                'label' => 'Modules de formation',
-                'attr' => ['data-collection-holder' => 'modules'],
             ])
             ->add('resources', CollectionType::class, [
                 'entry_type' => FormationResourceType::class,

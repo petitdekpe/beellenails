@@ -239,7 +239,7 @@ class DashboardController extends AbstractController
         // Trier en PHP selon le critère choisi
         switch ($sortBy) {
             case 'rdv_count_desc':
-                usort($allUsers, function($a, $b) {
+                usort($allUsers, function(User $a, User $b) {
                     if ($a->rdvCount == $b->rdvCount) {
                         return strcmp($a->getNom(), $b->getNom());
                     }
@@ -247,7 +247,7 @@ class DashboardController extends AbstractController
                 });
                 break;
             case 'rdv_count_asc':
-                usort($allUsers, function($a, $b) {
+                usort($allUsers, function(User $a, User $b) {
                     if ($a->rdvCount == $b->rdvCount) {
                         return strcmp($a->getNom(), $b->getNom());
                     }
@@ -255,17 +255,17 @@ class DashboardController extends AbstractController
                 });
                 break;
             case 'date_desc':
-                usort($allUsers, function($a, $b) {
+                usort($allUsers, function(User $a, User $b) {
                     return $b->getCreatedAt() <=> $a->getCreatedAt();
                 });
                 break;
             case 'date_asc':
-                usort($allUsers, function($a, $b) {
+                usort($allUsers, function(User $a, User $b) {
                     return $a->getCreatedAt() <=> $b->getCreatedAt();
                 });
                 break;
             default: // 'name'
-                usort($allUsers, function($a, $b) {
+                usort($allUsers, function(User $a, User $b) {
                     $nameCompare = strcmp($a->getNom(), $b->getNom());
                     if ($nameCompare === 0) {
                         return strcmp($a->getPrenom(), $b->getPrenom());
@@ -606,7 +606,7 @@ class DashboardController extends AbstractController
 
     //Modifier le statut d'un rendez-vous
     #[Route('/dashboard/rendezvous/{id}/confirm', name: 'app_admin_rdv_confirm', methods: ['GET', 'POST'])]
-    public function confirm(Rendezvous $rendezvous, EntityManagerInterface $entityManager, MailerInterface $mailer, PromoCodeService $promoCodeService, LoggerInterface $logger): Response
+    public function confirm(Rendezvous $rendezvous, Request $request, EntityManagerInterface $entityManager, MailerInterface $mailer, PromoCodeService $promoCodeService, LoggerInterface $logger): Response
     {
         // Modifier le statut du rendez-vous en "Rendez-vous confirmé"
         $rendezvous->setStatus('Rendez-vous confirmé');
@@ -625,8 +625,9 @@ class DashboardController extends AbstractController
         }
         
         $entityManager->flush();
-        // Redirection vers la liste des rendez-vous
-        return $this->redirectToRoute('app_dashboard_rendezvous');
+
+        $route = $request->query->get('from') === 'mobile' ? 'app_mobile_rendezvous' : 'app_dashboard_rendezvous';
+        return $this->redirectToRoute($route);
     }
 
     //Afficher la liste des congés dans le dashboard

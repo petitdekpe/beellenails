@@ -1,0 +1,114 @@
+{% extends 'dashboard.html.twig' %}
+
+{% block title %}Quiz - {{ module.title }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-6">
+
+    <div class="mb-6 flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">Quiz du module</h1>
+            <p class="text-sm text-gray-500 mt-1">{{ module.title }}</p>
+        </div>
+        <div class="flex gap-2">
+            {% if quiz %}
+                <a href="{{ path('app_quiz_edit', {'id': quiz.id}) }}"
+                   class="inline-flex items-center px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white text-sm font-medium rounded-lg transition-colors">
+                    Modifier le quiz
+                </a>
+            {% else %}
+                <a href="{{ path('app_quiz_create', {'id': module.id}) }}"
+                   class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors">
+                    Créer un quiz
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    {% for message in app.flashes('success') %}
+        <div class="mb-4 p-4 bg-green-50 border border-green-200 text-green-800 rounded-lg">{{ message }}</div>
+    {% endfor %}
+
+    {% if quiz %}
+        <div class="bg-white rounded-lg shadow mb-6">
+            <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+                <h2 class="text-lg font-medium text-gray-900">Paramètres</h2>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ quiz.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
+                    {{ quiz.isActive ? 'Actif' : 'Inactif' }}
+                </span>
+            </div>
+            <div class="px-6 py-4 grid grid-cols-3 gap-4 text-sm">
+                <div>
+                    <p class="text-gray-500">Score minimum</p>
+                    <p class="font-semibold text-gray-900">{{ quiz.passingScore }}%</p>
+                </div>
+                <div>
+                    <p class="text-gray-500">Tentatives max</p>
+                    <p class="font-semibold text-gray-900">{{ quiz.maxAttempts is null ? 'Illimité' : quiz.maxAttempts }}</p>
+                </div>
+                <div>
+                    <p class="text-gray-500">Questions</p>
+                    <p class="font-semibold text-gray-900">{{ quiz.questionsCount }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow mb-6">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-lg font-medium text-gray-900">Questions</h2>
+            </div>
+            {% if quiz.questions|length > 0 %}
+                <div class="divide-y divide-gray-100">
+                    {% for question in quiz.questions %}
+                        <div class="px-6 py-4">
+                            <div class="flex items-start justify-between gap-4">
+                                <div class="flex-1">
+                                    <p class="font-medium text-gray-900">
+                                        <span class="text-gray-400 mr-2">{{ loop.index }}.</span>
+                                        {{ question.questionText }}
+                                    </p>
+                                    <span class="inline-flex items-center mt-1 px-2 py-0.5 rounded text-xs font-medium {{ question.type == 'single' ? 'bg-blue-50 text-blue-700' : 'bg-purple-50 text-purple-700' }}">
+                                        {{ question.type == 'single' ? 'Choix unique' : 'Choix multiple' }}
+                                    </span>
+                                </div>
+                            </div>
+                            <ul class="mt-3 space-y-1">
+                                {% for answer in question.answers %}
+                                    <li class="flex items-center gap-2 text-sm">
+                                        <span class="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 {{ answer.isCorrect ? 'bg-green-500' : 'bg-gray-200' }}">
+                                            {% if answer.isCorrect %}
+                                                <svg class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                            {% endif %}
+                                        </span>
+                                        <span class="{{ answer.isCorrect ? 'text-green-700 font-medium' : 'text-gray-600' }}">{{ answer.answerText }}</span>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                            {% if question.explanation %}
+                                <p class="mt-2 text-xs text-blue-600 italic">💡 {{ question.explanation }}</p>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="px-6 py-8 text-center text-gray-400">Aucune question pour l'instant.</div>
+            {% endif %}
+        </div>
+
+        <form method="POST" action="{{ path('app_quiz_delete', {'id': quiz.id}) }}" onsubmit="return confirm('Supprimer ce quiz ?')">
+            <input type="hidden" name="_token" value="{{ csrf_token('delete_quiz_' ~ quiz.id) }}">
+            <button type="submit" class="text-sm text-red-600 hover:text-red-800">Supprimer le quiz</button>
+        </form>
+
+    {% else %}
+        <div class="bg-white rounded-lg shadow px-6 py-12 text-center">
+            <p class="text-gray-500">Aucun quiz pour ce module.</p>
+            <a href="{{ path('app_quiz_create', {'id': module.id}) }}"
+               class="mt-4 inline-flex items-center px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white text-sm font-medium rounded-lg transition-colors">
+                Créer un quiz
+            </a>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}
