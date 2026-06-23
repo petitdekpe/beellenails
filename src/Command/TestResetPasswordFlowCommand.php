@@ -55,7 +55,7 @@ class TestResetPasswordFlowCommand extends Command
             $user->setEmail($testEmail);
             $user->setNom('Test');
             $user->setPrenom('User');
-            $user->setPhone('97853512');
+            $user->setPhone('0190115561');
             $user->setPassword($this->passwordHasher->hashPassword($user, 'oldPassword123'));
             
             $this->entityManager->persist($user);

@@ -131,7 +131,7 @@ class TestEmailCommand extends Command
         $user->setNom('Doe');
         $user->setPrenom('Jane');
         $user->setEmail('jane.doe@example.com');
-        $user->setPhone('97853512');
+        $user->setPhone('0190115561');
         
         return $user;
     }

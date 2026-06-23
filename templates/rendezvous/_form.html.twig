@@ -1,890 +1,937 @@
 <!-- Formulaire de réservation -->
 <div class="bg-white rounded-lg shadow">
-    <div class="px-6 py-4 border-b border-gray-200">
-        <h2 class="text-lg font-medium text-gray-900">Détails de votre réservation</h2>
-        <p class="text-sm text-gray-600">Remplissez toutes les informations ci-dessous pour réserver votre créneau</p>
-    </div>
+	<div class="px-6 py-4 border-b border-gray-200">
+		<h2 class="text-lg font-medium text-gray-900">Détails de votre réservation</h2>
+		<p class="text-sm text-gray-600">Remplissez toutes les informations ci-dessous pour réserver votre créneau</p>
+	</div>
 
-    <div class="px-6 py-6">
-        {{ form_start(form, {'attr': {'class': 'space-y-6', 'id': 'monformulaire', 'novalidate': 'novalidate'}}) }}
+	<div class="px-6 py-6">
+		{{ form_start(form, {'attr': {'class': 'space-y-6', 'id': 'monformulaire', 'novalidate': 'novalidate'}}) }}
 
-        {# Bloc d'affichage des erreurs globales #}
-        {% set hasErrors = not form.vars.valid and form.vars.submitted %}
-        {% if hasErrors %}
-        <div class="bg-red-50 border-l-4 border-red-500 rounded-lg p-4 mb-6" id="form-errors-summary">
-            <div class="flex items-start">
-                <div class="flex-shrink-0">
-                    <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                </div>
-                <div class="ml-3 flex-1">
-                    <h3 class="text-lg font-semibold text-red-800 mb-2">
-                        ⚠️ Oups ! Quelque chose ne va pas
-                    </h3>
-                    <p class="text-sm text-red-700 mb-3">Merci de vérifier les points suivants :</p>
-                    <ul class="list-none space-y-2">
-                        {% for child in form.children %}
-                            {% for error in child.vars.errors %}
-                                <li class="flex items-start text-sm text-red-700">
-                                    <svg class="w-4 h-4 text-red-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                                    </svg>
-                                    <span>{{ error.message }}</span>
-                                </li>
-                            {% endfor %}
-                        {% endfor %}
-                        {% for error in form.vars.errors %}
-                            <li class="flex items-start text-sm text-red-700">
-                                <svg class="w-4 h-4 text-red-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                                </svg>
-                                <span>{{ error.message }}</span>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
-        </div>
-        {% endif %}
-        
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <!-- Colonne gauche -->
-            <div class="space-y-6">
-                <!-- Catégorie -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                        <span class="flex items-center">
-                            <svg class="w-4 h-4 mr-2 text-pink-600" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
-                            </svg>
-                            Catégorie de prestation *
-                        </span>
-                    </label>
-                    {{ form_widget(form.categorie, {'attr': {'class': 'block w-full rounded-lg shadow-sm sm:text-sm py-3 px-4 ' ~ (form.categorie.vars.errors|length > 0 ? 'border-red-500 focus:border-red-500 focus:ring-red-500 bg-red-50' : 'border-gray-300 focus:border-pink-500 focus:ring-pink-500')}}) }}
-                    {% if form.categorie.vars.errors|length > 0 %}
-                        <div class="mt-2 flex items-center text-sm text-red-600">
-                            <svg class="w-4 h-4 mr-1.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                            </svg>
-                            {{ form_errors(form.categorie) }}
-                        </div>
-                    {% endif %}
-                </div>
+		{# Bloc d'affichage des erreurs globales #}
+		{% set hasErrors = not form.vars.valid and form.vars.submitted %}
+		{% if hasErrors %}
+			<div class="bg-red-50 border-l-4 border-red-500 rounded-lg p-4 mb-6" id="form-errors-summary">
+				<div class="flex items-start">
+					<div class="flex-shrink-0">
+						<svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+						</svg>
+					</div>
+					<div class="ml-3 flex-1">
+						<h3 class="text-lg font-semibold text-red-800 mb-2">
+							⚠️ Oups ! Quelque chose ne va pas
+						</h3>
+						<p class="text-sm text-red-700 mb-3">Merci de vérifier les points suivants :</p>
+						<ul class="list-none space-y-2">
+							{% for child in form.children %}
+								{% for error in child.vars.errors %}
+									<li class="flex items-start text-sm text-red-700">
+										<svg class="w-4 h-4 text-red-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewbox="0 0 20 20">
+											<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+										</svg>
+										<span>{{ error.message }}</span>
+									</li>
+								{% endfor %}
+							{% endfor %}
+							{% for error in form.vars.errors %}
+								<li class="flex items-start text-sm text-red-700">
+									<svg class="w-4 h-4 text-red-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewbox="0 0 20 20">
+										<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+									</svg>
+									<span>{{ error.message }}</span>
+								</li>
+							{% endfor %}
+						</ul>
+					</div>
+				</div>
+			</div>
+		{% endif %}
 
-                <!-- Prestation -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                        <span class="flex items-center">
-                            <svg class="w-4 h-4 mr-2 text-pink-600" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M5 3a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V5a2 2 0 00-2-2H5zm0 2h10v7h-2l-1-2H8l-1 2H5V5z" clip-rule="evenodd"/>
-                            </svg>
-                            Prestation *
-                        </span>
-                    </label>
-                    {{ form_widget(form.prestation, {'attr': {'class': 'block w-full rounded-lg shadow-sm sm:text-sm py-3 px-4 ' ~ (form.prestation.vars.errors|length > 0 ? 'border-red-500 focus:border-red-500 focus:ring-red-500 bg-red-50' : 'border-gray-300 focus:border-pink-500 focus:ring-pink-500')}}) }}
-                    {% if form.prestation.vars.errors|length > 0 %}
-                        <div class="mt-2 flex items-center text-sm text-red-600">
-                            <svg class="w-4 h-4 mr-1.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                            </svg>
-                            {{ form_errors(form.prestation) }}
-                        </div>
-                    {% endif %}
-                </div>
+		<div
+			class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+			<!-- Colonne gauche -->
+			<div
+				class="space-y-6">
+				<!-- Catégorie -->
+				<div>
+					<label class="block text-sm font-medium text-gray-700 mb-2">
+						<span class="flex items-center">
+							<svg class="w-4 h-4 mr-2 text-pink-600" fill="currentColor" viewbox="0 0 20 20">
+								<path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
+							</svg>
+							Catégorie de prestation *
+						</span>
+					</label>
+					{{ form_widget(form.categorie, {'attr': {'class': 'block w-full rounded-lg shadow-sm sm:text-sm py-3 px-4 ' ~ (form.categorie.vars.errors|length > 0 ? 'border-red-500 focus:border-red-500 focus:ring-red-500 bg-red-50' : 'border-gray-300 focus:border-pink-500 focus:ring-pink-500')}}) }}
+					{% if form.categorie.vars.errors|length > 0 %}
+						<div class="mt-2 flex items-center text-sm text-red-600">
+							<svg class="w-4 h-4 mr-1.5 flex-shrink-0" fill="currentColor" viewbox="0 0 20 20">
+								<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+							</svg>
+							{{ form_errors(form.categorie) }}
+						</div>
+					{% endif %}
+				</div>
 
-                <!-- Date -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                        <span class="flex items-center">
-                            <svg class="w-4 h-4 mr-2 text-pink-600" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
-                            </svg>
-                            Date du rendez-vous *
-                        </span>
-                    </label>
-                    <input name="{{ field_name(form.day) }}" value="{{ field_value(form.day) }}" placeholder="Cliquez pour choisir une date" class="block w-full rounded-lg shadow-sm sm:text-sm py-3 px-4 {{ form.day.vars.errors|length > 0 ? 'border-red-500 focus:border-red-500 focus:ring-red-500 bg-red-50' : 'border-gray-300 focus:border-pink-500 focus:ring-pink-500' }}" id="datepicker">
-                    {% if form.day.vars.errors|length > 0 %}
-                        <div class="mt-2 flex items-center text-sm text-red-600">
-                            <svg class="w-4 h-4 mr-1.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                            </svg>
-                            {{ form_errors(form.day) }}
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
+				<!-- Prestation -->
+				<div>
+					<label class="block text-sm font-medium text-gray-700 mb-2">
+						<span class="flex items-center">
+							<svg class="w-4 h-4 mr-2 text-pink-600" fill="currentColor" viewbox="0 0 20 20">
+								<path fill-rule="evenodd" d="M5 3a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V5a2 2 0 00-2-2H5zm0 2h10v7h-2l-1-2H8l-1 2H5V5z" clip-rule="evenodd"/>
+							</svg>
+							Prestation *
+						</span>
+					</label>
+					{{ form_widget(form.prestation, {'attr': {'class': 'block w-full rounded-lg shadow-sm sm:text-sm py-3 px-4 ' ~ (form.prestation.vars.errors|length > 0 ? 'border-red-500 focus:border-red-500 focus:ring-red-500 bg-red-50' : 'border-gray-300 focus:border-pink-500 focus:ring-pink-500')}}) }}
+					{% if form.prestation.vars.errors|length > 0 %}
+						<div class="mt-2 flex items-center text-sm text-red-600">
+							<svg class="w-4 h-4 mr-1.5 flex-shrink-0" fill="currentColor" viewbox="0 0 20 20">
+								<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+							</svg>
+							{{ form_errors(form.prestation) }}
+						</div>
+					{% endif %}
+				</div>
 
-            <!-- Colonne droite -->
-            <div class="space-y-6">
-                <!-- Créneau -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                        <span class="flex items-center">
-                            <svg class="w-4 h-4 mr-2 text-pink-600" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
-                            </svg>
-                            Créneau horaire *
-                        </span>
-                    </label>
-                    <div id="slots-container" class="{{ form.creneau.vars.errors|length > 0 ? 'ring-2 ring-red-500 rounded-lg' : '' }}">
-                        {{ form_widget(form.creneau, {'attr': {'class': 'block w-full rounded-lg shadow-sm sm:text-sm py-3 px-4 ' ~ (form.creneau.vars.errors|length > 0 ? 'border-red-500 focus:border-red-500 focus:ring-red-500 bg-red-50' : 'border-gray-300 focus:border-pink-500 focus:ring-pink-500')}}) }}
-                    </div>
-                    {% if form.creneau.vars.errors|length > 0 %}
-                        <div class="mt-2 flex items-center text-sm text-red-600">
-                            <svg class="w-4 h-4 mr-1.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                            </svg>
-                            {{ form_errors(form.creneau) }}
-                        </div>
-                    {% else %}
-                        <p class="text-xs text-gray-500 mt-1">Choisissez d'abord une date</p>
-                    {% endif %}
-                </div>
+				<!-- Date -->
+				<div>
+					<label class="block text-sm font-medium text-gray-700 mb-2">
+						<span class="flex items-center">
+							<svg class="w-4 h-4 mr-2 text-pink-600" fill="currentColor" viewbox="0 0 20 20">
+								<path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+							</svg>
+							Date du rendez-vous *
+						</span>
+					</label>
+					<input name="{{ field_name(form.day) }}" value="{{ field_value(form.day) }}" placeholder="Cliquez pour choisir une date" class="block w-full rounded-lg shadow-sm sm:text-sm py-3 px-4 {{ form.day.vars.errors|length > 0 ? 'border-red-500 focus:border-red-500 focus:ring-red-500 bg-red-50' : 'border-gray-300 focus:border-pink-500 focus:ring-pink-500' }}" id="datepicker">
+					{% if form.day.vars.errors|length > 0 %}
+						<div class="mt-2 flex items-center text-sm text-red-600">
+							<svg class="w-4 h-4 mr-1.5 flex-shrink-0" fill="currentColor" viewbox="0 0 20 20">
+								<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+							</svg>
+							{{ form_errors(form.day) }}
+						</div>
+					{% endif %}
+				</div>
+			</div>
 
-                <!-- Supplément -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                        <span class="flex items-center">
-                            <svg class="w-4 h-4 mr-2 text-pink-600" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"/>
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd"/>
-                            </svg>
-                            Suppléments (optionnel)
-                        </span>
-                    </label>
-                    <div class="space-y-2 {{ form.supplement.vars.errors|length > 0 ? 'p-2 border-2 border-red-500 rounded-lg bg-red-50' : '' }}">
-                        {{ form_widget(form.supplement) }}
-                    </div>
-                    {% if form.supplement.vars.errors|length > 0 %}
-                        <div class="mt-2 flex items-center text-sm text-red-600">
-                            <svg class="w-4 h-4 mr-1.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                            </svg>
-                            {{ form_errors(form.supplement) }}
-                        </div>
-                    {% endif %}
-                </div>
+			<!-- Colonne droite -->
+			<div
+				class="space-y-6">
+				<!-- Créneau -->
+				<div>
+					<label class="block text-sm font-medium text-gray-700 mb-2">
+						<span class="flex items-center">
+							<svg class="w-4 h-4 mr-2 text-pink-600" fill="currentColor" viewbox="0 0 20 20">
+								<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+							</svg>
+							Créneau horaire *
+						</span>
+					</label>
+					<div id="slots-container" class="{{ form.creneau.vars.errors|length > 0 ? 'ring-2 ring-red-500 rounded-lg' : '' }}">
+						{{ form_widget(form.creneau, {'attr': {'class': 'block w-full rounded-lg shadow-sm sm:text-sm py-3 px-4 ' ~ (form.creneau.vars.errors|length > 0 ? 'border-red-500 focus:border-red-500 focus:ring-red-500 bg-red-50' : 'border-gray-300 focus:border-pink-500 focus:ring-pink-500')}}) }}
+					</div>
+					{% if form.creneau.vars.errors|length > 0 %}
+						<div class="mt-2 flex items-center text-sm text-red-600">
+							<svg class="w-4 h-4 mr-1.5 flex-shrink-0" fill="currentColor" viewbox="0 0 20 20">
+								<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+							</svg>
+							{{ form_errors(form.creneau) }}
+						</div>
+					{% else %}
+						<p class="text-xs text-gray-500 mt-1">Choisissez d'abord une date</p>
+					{% endif %}
+				</div>
 
-                <!-- Image -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                        <span class="flex items-center">
-                            <svg class="w-4 h-4 mr-2 text-pink-600" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
-                            </svg>
-                            Photo de vos ongles *
-                        </span>
-                    </label>
+				<!-- Supplément -->
+				<div>
+					<label class="block text-sm font-medium text-gray-700 mb-2">
+						<span class="flex items-center">
+							<svg class="w-4 h-4 mr-2 text-pink-600" fill="currentColor" viewbox="0 0 20 20">
+								<path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"/>
+								<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd"/>
+							</svg>
+							Suppléments (optionnel)
+						</span>
+					</label>
+					<div class="space-y-2 {{ form.supplement.vars.errors|length > 0 ? 'p-2 border-2 border-red-500 rounded-lg bg-red-50' : '' }}">
+						{{ form_widget(form.supplement) }}
+					</div>
+					{% if form.supplement.vars.errors|length > 0 %}
+						<div class="mt-2 flex items-center text-sm text-red-600">
+							<svg class="w-4 h-4 mr-1.5 flex-shrink-0" fill="currentColor" viewbox="0 0 20 20">
+								<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+							</svg>
+							{{ form_errors(form.supplement) }}
+						</div>
+					{% endif %}
+				</div>
 
-                    {# Zone de téléchargement améliorée #}
-                    <div class="relative {{ form.image.vars.errors|length > 0 ? 'border-2 border-red-500 bg-red-50' : 'border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100' }} rounded-lg p-4 transition-colors">
-                        <div class="text-center">
-                            <svg class="mx-auto h-12 w-12 {{ form.image.vars.errors|length > 0 ? 'text-red-400' : 'text-gray-400' }}" stroke="currentColor" fill="none" viewBox="0 0 48 48">
-                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                            <div class="mt-2">
-                                {{ form_widget(form.image, {'attr': {'class': 'block w-full text-sm text-gray-900 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-pink-50 file:text-pink-700 hover:file:bg-pink-100 cursor-pointer', 'accept': 'image/jpeg,image/png,image/webp,image/heic,image/heif'}}) }}
-                            </div>
-                            <p class="mt-2 text-xs text-gray-500">
-                                📱 Prenez une photo avec votre téléphone et envoyez-la directement
-                            </p>
-                        </div>
-                    </div>
+				<!-- Image -->
+				<div>
+					<label class="block text-sm font-medium text-gray-700 mb-2">
+						<span class="flex items-center">
+							<svg class="w-4 h-4 mr-2 text-pink-600" fill="currentColor" viewbox="0 0 20 20">
+								<path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
+							</svg>
+							Photo de vos ongles *
+						</span>
+					</label>
 
-                    {# Affichage des erreurs d'image de manière très visible #}
-                    {% if form.image.vars.errors|length > 0 %}
-                        <div class="mt-3 bg-red-100 border border-red-400 rounded-lg p-4">
-                            <div class="flex items-start">
-                                <div class="flex-shrink-0 bg-red-200 rounded-full p-2 mr-3">
-                                    <svg class="w-6 h-6 text-red-600" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
-                                    </svg>
-                                </div>
-                                <div>
-                                    <h4 class="text-base font-semibold text-red-800">📷 Problème avec votre photo</h4>
-                                    <div class="mt-2 text-sm text-red-700">
-                                        {% for error in form.image.vars.errors %}
-                                            <p class="mb-1">{{ error.message }}</p>
-                                        {% endfor %}
-                                    </div>
-                                    <p class="mt-2 text-xs text-red-600 italic">
-                                        💡 Astuce : Prenez une photo directement avec votre téléphone et envoyez-la sans la modifier.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    {% endif %}
+					{# Zone de téléchargement améliorée #}
+					<div class="relative {{ form.image.vars.errors|length > 0 ? 'border-2 border-red-500 bg-red-50' : 'border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100' }} rounded-lg p-4 transition-colors">
+						<div class="text-center">
+							<svg class="mx-auto h-12 w-12 {{ form.image.vars.errors|length > 0 ? 'text-red-400' : 'text-gray-400' }}" stroke="currentColor" fill="none" viewbox="0 0 48 48">
+								<path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+							</svg>
+							<div class="mt-2">
+								{{ form_widget(form.image, {'attr': {'class': 'block w-full text-sm text-gray-900 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-pink-50 file:text-pink-700 hover:file:bg-pink-100 cursor-pointer', 'accept': 'image/jpeg,image/png,image/webp,image/heic,image/heif'}}) }}
+							</div>
+							<p class="mt-2 text-xs text-gray-500">
+								📱 Prenez une photo avec votre téléphone et envoyez-la directement
+							</p>
+						</div>
+					</div>
 
-                    {# Aide pour l'utilisateur #}
-                    <div class="mt-3 bg-amber-50 border border-amber-200 rounded-lg p-3">
-                        <div class="flex items-start">
-                            <svg class="w-5 h-5 text-amber-600 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
-                            </svg>
-                            <div class="text-xs text-amber-800">
-                                <p class="font-medium mb-1">Important :</p>
-                                <p>{{ form_help(form.image) }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+					{# Affichage des erreurs d'image de manière très visible #}
+					{% if form.image.vars.errors|length > 0 %}
+						<div class="mt-3 bg-red-100 border border-red-400 rounded-lg p-4">
+							<div class="flex items-start">
+								<div class="flex-shrink-0 bg-red-200 rounded-full p-2 mr-3">
+									<svg class="w-6 h-6 text-red-600" fill="currentColor" viewbox="0 0 20 20">
+										<path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
+									</svg>
+								</div>
+								<div>
+									<h4 class="text-base font-semibold text-red-800">📷 Problème avec votre photo</h4>
+									<div class="mt-2 text-sm text-red-700">
+										{% for error in form.image.vars.errors %}
+											<p class="mb-1">{{ error.message }}</p>
+										{% endfor %}
+									</div>
+									<p class="mt-2 text-xs text-red-600 italic">
+										💡 Astuce : Prenez une photo directement avec votre téléphone et envoyez-la sans la modifier.
+									</p>
+								</div>
+							</div>
+						</div>
+					{% endif %}
 
-        <!-- Actions -->
-        <div class="pt-6 border-t border-gray-200">
-            <div class="flex items-center justify-end space-x-3">
-                <a href="{{ path('app_home') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors">
-                    Annuler
-                </a>
-                <button type="submit" class="inline-flex items-center px-6 py-2 bg-pink-600 hover:bg-pink-700 text-white font-medium rounded-lg text-sm transition-colors">
-                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
-                    </svg>
-                    Suivant
-                </button>
-            </div>
-        </div>
+					{# Aide pour l'utilisateur #}
+					<div class="mt-3 bg-amber-50 border border-amber-200 rounded-lg p-3">
+						<div class="flex items-start">
+							<svg class="w-5 h-5 text-amber-600 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewbox="0 0 20 20">
+								<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+							</svg>
+							<div class="text-xs text-amber-800">
+								<p class="font-medium mb-1">Important :</p>
+								<p>{{ form_help(form.image) }}</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 
-        {{ form_widget(form._token) }}
-        {{ form_end(form, {'render_rest': false}) }}
-    </div>
+		<!-- Actions -->
+		<div class="pt-6 border-t border-gray-200">
+			<div class="flex items-center justify-end space-x-3">
+				<a href="{{ path('app_home') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+					Annuler
+				</a>
+				<button type="submit" class="inline-flex items-center px-6 py-2 bg-pink-600 hover:bg-pink-700 text-white font-medium rounded-lg text-sm transition-colors">
+					<svg class="w-4 h-4 mr-2" fill="currentColor" viewbox="0 0 20 20">
+						<path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+					</svg>
+					Suivant
+				</button>
+			</div>
+		</div>
+
+		{{ form_widget(form._token) }}
+		{{ form_end(form, {'render_rest': false}) }}
+	</div>
 </div>
 
 <!-- Section d'aide -->
 <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mt-6">
-    <div class="flex">
-        <div class="flex-shrink-0">
-            <svg class="w-5 h-5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
-            </svg>
-        </div>
-        <div class="ml-3">
-            <h3 class="text-sm font-medium text-yellow-800">Besoin d'aide ?</h3>
-            <div class="mt-2 text-sm text-yellow-700">
-                <p>En cas de difficultés à réserver votre rendez-vous, contactez-nous directement sur <a href="https://wa.me/22997853512" class="underline font-medium">WhatsApp</a> pour confirmer votre créneau.</p>
-            </div>
-        </div>
-    </div>
+	<div class="flex">
+		<div class="flex-shrink-0">
+			<svg class="w-5 h-5 text-yellow-500" fill="currentColor" viewbox="0 0 20 20">
+				<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+			</svg>
+		</div>
+		<div class="ml-3">
+			<h3 class="text-sm font-medium text-yellow-800">Besoin d'aide ?</h3>
+			<div class="mt-2 text-sm text-yellow-700">
+				<p>En cas de difficultés à réserver votre rendez-vous, contactez-nous directement sur
+					<a href="https://wa.me/2290190115561" class="underline font-medium">WhatsApp</a>
+					pour confirmer votre créneau.</p>
+			</div>
+		</div>
+	</div>
 </div>
 
 {% block javascripts %}
-<script>
-    // ========================================
-    // SYSTÈME DE TRACKING DES ERREURS CLIENT
-    // ========================================
-    (function() {
-        const LOG_ENDPOINT = '/api/log-client-error';
-        const PAGE_NAME = 'prendrerdv';
-
-        // Fonction utilitaire pour envoyer les logs au serveur
-        function sendLog(type, message, details = {}) {
-            try {
-                const payload = {
-                    type: type,
-                    message: message,
-                    page: PAGE_NAME,
-                    timestamp: new Date().toISOString(),
-                    ...details
-                };
-
-                // Utiliser sendBeacon si disponible (fonctionne même si la page se ferme)
-                if (navigator.sendBeacon) {
-                    navigator.sendBeacon(LOG_ENDPOINT, JSON.stringify(payload));
-                } else {
-                    // Fallback avec fetch
-                    fetch(LOG_ENDPOINT, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload),
-                        keepalive: true
-                    }).catch(() => {}); // Ignorer les erreurs de logging
-                }
-            } catch (e) {
-                // Ne pas faire échouer l'application à cause du logging
-                console.warn('Impossible d\'envoyer le log:', e);
-            }
-        }
-
-        // Exposer la fonction globalement pour utilisation dans le code
-        window.logClientError = sendLog;
-
-        // 1. TRACKING DES ERREURS JAVASCRIPT GLOBALES
-        window.onerror = function(message, source, lineno, colno, error) {
-            sendLog('js_error', message, {
-                url: source,
-                line: lineno,
-                column: colno,
-                stack: error ? error.stack : null
-            });
-            return false; // Laisser l'erreur se propager
-        };
-
-        // 2. TRACKING DES PROMESSES REJETÉES NON GÉRÉES
-        window.addEventListener('unhandledrejection', function(event) {
-            sendLog('js_error', 'Promise rejetée: ' + (event.reason ? event.reason.message || event.reason : 'Raison inconnue'), {
-                stack: event.reason ? event.reason.stack : null
-            });
-        });
-
-        // 3. INTERCEPTION DES ERREURS FETCH (AJAX)
-        const originalFetch = window.fetch;
-        window.fetch = function(...args) {
-            const url = args[0];
-            const startTime = Date.now();
-
-            return originalFetch.apply(this, args)
-                .then(response => {
-                    const duration = Date.now() - startTime;
-
-                    // Logger les erreurs HTTP (4xx, 5xx)
-                    if (!response.ok) {
-                        sendLog('ajax_error', `Erreur HTTP ${response.status} sur ${url}`, {
-                            url: url,
-                            status: response.status,
-                            statusText: response.statusText,
-                            duration: duration
-                        });
-                    }
-
-                    // Logger les requêtes lentes (plus de 5 secondes)
-                    if (duration > 5000) {
-                        sendLog('timeout', `Requête lente (${duration}ms) sur ${url}`, {
-                            url: url,
-                            duration: duration
-                        });
-                    }
-
-                    return response;
-                })
-                .catch(error => {
-                    const duration = Date.now() - startTime;
-                    sendLog('network_error', `Erreur réseau sur ${url}: ${error.message}`, {
-                        url: url,
-                        duration: duration,
-                        details: error.message
-                    });
-                    throw error; // Relancer l'erreur
-                });
-        };
-
-        // 4. INTERCEPTION DES ERREURS XMLHttpRequest
-        const originalXHROpen = XMLHttpRequest.prototype.open;
-        const originalXHRSend = XMLHttpRequest.prototype.send;
-
-        XMLHttpRequest.prototype.open = function(method, url) {
-            this._logUrl = url;
-            this._logMethod = method;
-            return originalXHROpen.apply(this, arguments);
-        };
-
-        XMLHttpRequest.prototype.send = function() {
-            const xhr = this;
-            const startTime = Date.now();
-
-            xhr.addEventListener('loadend', function() {
-                const duration = Date.now() - startTime;
-
-                // Logger les erreurs HTTP
-                if (xhr.status >= 400 || xhr.status === 0) {
-                    sendLog('ajax_error', `XHR Erreur ${xhr.status} sur ${xhr._logUrl}`, {
-                        url: xhr._logUrl,
-                        method: xhr._logMethod,
-                        status: xhr.status,
-                        statusText: xhr.statusText,
-                        duration: duration
-                    });
-                }
-            });
-
-            xhr.addEventListener('timeout', function() {
-                sendLog('timeout', `XHR Timeout sur ${xhr._logUrl}`, {
-                    url: xhr._logUrl,
-                    method: xhr._logMethod
-                });
-            });
-
-            xhr.addEventListener('error', function() {
-                sendLog('network_error', `XHR Erreur réseau sur ${xhr._logUrl}`, {
-                    url: xhr._logUrl,
-                    method: xhr._logMethod
-                });
-            });
-
-            return originalXHRSend.apply(this, arguments);
-        };
-
-        // 5. VALIDATION CÔTÉ CLIENT - TRACKING DES CHAMPS
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.getElementById('monformulaire');
-            if (!form) return;
-
-            // Tracker la soumission du formulaire
-            form.addEventListener('submit', function(e) {
-                const formData = new FormData(form);
-                const missingFields = [];
-
-                // Vérifier les champs requis
-                const requiredFields = [
-                    { name: 'rendezvous[categorie]', label: 'Catégorie' },
-                    { name: 'rendezvous[prestation]', label: 'Prestation' },
-                    { name: 'rendezvous[day]', label: 'Date' },
-                    { name: 'rendezvous[creneau]', label: 'Créneau' },
-                    { name: 'rendezvous[image][file]', label: 'Photo' }
-                ];
-
-                requiredFields.forEach(field => {
-                    const value = formData.get(field.name);
-                    if (!value || value === '' || (value instanceof File && value.size === 0)) {
-                        missingFields.push(field.label);
-                    }
-                });
-
-                if (missingFields.length > 0) {
-                    sendLog('validation_error', 'Champs manquants lors de la soumission', {
-                        fields: missingFields.join(', '),
-                        details: `Champs vides: ${missingFields.join(', ')}`
-                    });
-                }
-
-                // Vérifier le type d'image (pas de restriction de taille)
-                const imageInput = form.querySelector('input[type="file"]');
-                if (imageInput && imageInput.files.length > 0) {
-                    const file = imageInput.files[0];
-
-                    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
-                    if (!allowedTypes.includes(file.type)) {
-                        sendLog('validation_error', 'Type d\'image non accepté', {
-                            field: 'image',
-                            value: file.type,
-                            details: `Type: ${file.type}, Acceptés: ${allowedTypes.join(', ')}`
-                        });
-                    }
-                }
-            });
-
-            // Tracker les changements sur les champs importants
-            const trackedFields = ['rendezvous_categorie', 'rendezvous_prestation', 'rendezvous_creneau'];
-            trackedFields.forEach(fieldId => {
-                const field = document.getElementById(fieldId);
-                if (field) {
-                    field.addEventListener('change', function() {
-                        if (!this.value) {
-                            sendLog('validation_error', `Champ ${fieldId} vidé ou non sélectionné`, {
-                                field: fieldId,
-                                value: 'vide'
-                            });
-                        }
-                    });
-                }
-            });
-
-            // Tracker l'erreur si le formulaire est bloqué
-            const submitBtn = form.querySelector('button[type="submit"]');
-            if (submitBtn) {
-                submitBtn.addEventListener('click', function() {
-                    // Vérifier si le formulaire est valide côté HTML5
-                    if (!form.checkValidity()) {
-                        const invalidFields = [];
-                        form.querySelectorAll(':invalid').forEach(field => {
-                            invalidFields.push(field.name || field.id || 'champ inconnu');
-                        });
-                        sendLog('form_submit_blocked', 'Formulaire invalide côté client', {
-                            fields: invalidFields.join(', ')
-                        });
-                    }
-                });
-            }
-        });
-
-        console.log('[PrendreRdv] Système de tracking des erreurs initialisé');
-    })();
-</script>
-
-<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
-<script>
-    flatpickr("#datepicker", {
-        defaultDate: null,
-        enableTime: false,
-        dateFormat: "Y-m-d",
-        altInput: true,
-        altFormat: "j F Y",
-        inline: true,
-        locale: "fr",
-        minDate: "today",
-        disable: [
-            function(date) {
-                return (date.getDay() === 1); // Désactiver lundi
-            },
-            function(date) {
-                return (date.getDay() === 0); // Désactiver dimanche
-            }
-        ]
-    });
-</script>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var datePicker = document.getElementById('datepicker');
-        var slotsContainer = document.getElementById('slots-container');
-
-        // Cache pour stocker les créneaux déjà récupérés
-        var slotsCache = new Map();
-        var debounceTimer = null;
-        var isLoading = false;
-
-        // Pre-charger les créneaux des 7 prochains jours
-        preloadSlots();
-
-        datePicker.addEventListener('change', function() {
-            var selectedDate = datePicker.value;
-
-            // Debouncing pour éviter trop de requêtes
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(function() {
-                loadSlotsForDate(selectedDate);
-            }, 300);
-        });
-
-        function preloadSlots() {
-            var today = new Date();
-            for (var i = 0; i < 7; i++) {
-                var date = new Date(today);
-                date.setDate(today.getDate() + i);
-                var dateStr = date.toISOString().split('T')[0];
-
-                // Ne pas précharger si déjà en cache
-                if (!slotsCache.has(dateStr)) {
-                    setTimeout(function(d) {
-                        loadSlotsForDate(d, true);
-                    }, i * 100, dateStr);
-                }
-            }
-        }
-
-        function loadSlotsForDate(selectedDate, isPreload = false) {
-            // Vérifier le cache d'abord
-            if (slotsCache.has(selectedDate)) {
-                if (!isPreload) {
-                    updateSlotsDropdown(slotsCache.get(selectedDate));
-                }
-                return;
-            }
-
-            // Éviter les requêtes multiples simultanées
-            if (isLoading && !isPreload) return;
-            if (!isPreload) isLoading = true;
-
-            // Afficher un indicateur de chargement
-            if (!isPreload) {
-                showLoadingIndicator();
-            }
-
-            var xhr = new XMLHttpRequest();
-            xhr.open('POST', '/get-available-slots', true);
-            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-            xhr.timeout = 5000; // Timeout de 5 secondes
-
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === XMLHttpRequest.DONE) {
-                    if (!isPreload) isLoading = false;
-
-                    if (xhr.status === 200) {
-                        try {
-                            var slots = JSON.parse(xhr.responseText);
-                            // Mettre en cache
-                            slotsCache.set(selectedDate, slots);
-
-                            if (!isPreload) {
-                                updateSlotsDropdown(slots);
-
-                                // Logger si aucun créneau disponible
-                                if (slots.length === 0) {
-                                    window.logClientError('validation_error', 'Aucun créneau disponible pour la date sélectionnée', {
-                                        field: 'creneau',
-                                        value: selectedDate
-                                    });
-                                }
-                            }
-                        } catch (e) {
-                            console.error('Erreur de parsing JSON:', e);
-                            window.logClientError('ajax_error', 'Erreur parsing JSON créneaux', {
-                                url: '/get-available-slots',
-                                details: e.message,
-                                date: selectedDate
-                            });
-                            if (!isPreload) {
-                                showErrorMessage();
-                            }
-                        }
-                    } else {
-                        console.error('Erreur lors de la récupération des créneaux:', xhr.status);
-                        window.logClientError('ajax_error', 'Erreur récupération créneaux', {
-                            url: '/get-available-slots',
-                            status: xhr.status,
-                            date: selectedDate
-                        });
-                        if (!isPreload) {
-                            showErrorMessage();
-                        }
-                    }
-                }
-            };
-
-            xhr.ontimeout = function() {
-                window.logClientError('timeout', 'Timeout récupération créneaux', {
-                    url: '/get-available-slots',
-                    date: selectedDate
-                });
-                if (!isPreload) {
-                    isLoading = false;
-                    showErrorMessage('Délai d\'attente dépassé');
-                }
-            };
-
-            xhr.send('date=' + selectedDate);
-        }
-
-        function showLoadingIndicator() {
-            slotsContainer.innerHTML = '<div class="flex items-center justify-center py-4"><svg class="animate-spin h-5 w-5 text-pink-600" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span class="ml-2 text-sm text-gray-600">Chargement...</span></div>';
-        }
-
-        function showErrorMessage(message = 'Erreur lors du chargement des créneaux') {
-            slotsContainer.innerHTML = '<p class="text-red-600 mt-2 text-sm">' + message + '</p>';
-        }
-
-        function updateSlotsDropdown(slots) {
-            slotsContainer.innerHTML = '';
-
-            if (slots.length === 0) {
-                var noSlotsParagraph = document.createElement('p');
-                noSlotsParagraph.textContent = 'Aucun créneau disponible pour cette date';
-                noSlotsParagraph.className = 'text-red-600 mt-2 text-sm';
-                slotsContainer.appendChild(noSlotsParagraph);
-            } else {
-                var selectElement = document.createElement('select');
-                selectElement.id = 'rendezvous_creneau';
-                selectElement.name = 'rendezvous[creneau]';
-                selectElement.className = 'block w-full rounded-lg border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500 sm:text-sm py-3 px-4';
-
-                var defaultOption = document.createElement('option');
-                defaultOption.value = '';
-                defaultOption.text = 'Sélectionnez un créneau';
-                selectElement.appendChild(defaultOption);
-
-                slots.slice().sort(function(a, b) {
-                    return a.libelle.localeCompare(b.libelle);
-                }).forEach(function(slot) {
-                    var option = document.createElement('option');
-                    option.value = slot.id;
-                    option.text = slot.libelle;
-                    selectElement.appendChild(option);
-                });
-
-                slotsContainer.appendChild(selectElement);
-            }
-        }
-
-        // Optimisation du chargement catégorie -> prestation
-        let categorie = document.querySelector("#rendezvous_categorie");
-        let prestationSelect = document.querySelector("#rendezvous_prestation");
-
-        // Cache pour stocker les prestations par catégorie
-        let prestationsCache = new Map();
-        let allPrestationsLoaded = false;
-        let loadingPrestations = false;
-
-        // Pre-charger toutes les prestations au chargement de la page
-        preloadAllPrestations();
-
-        if (categorie && prestationSelect) {
-            categorie.addEventListener("change", function(){
-                let selectedCategoryId = this.value;
-
-                if (!selectedCategoryId) {
-                    resetPrestationSelect();
-                    return;
-                }
-
-                loadPrestationsForCategory(selectedCategoryId);
-            });
-        }
-
-        function preloadAllPrestations() {
-            if (allPrestationsLoaded || loadingPrestations) return;
-
-            loadingPrestations = true;
-
-            fetch('/api/prestations/all-by-categories', {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => {
-                if (!response.ok) throw new Error('Erreur réseau');
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    // Stocker toutes les prestations dans le cache
-                    for (let categoryId in data.prestationsByCategory) {
-                        prestationsCache.set(categoryId, data.prestationsByCategory[categoryId]);
-                    }
-                    allPrestationsLoaded = true;
-                } else {
-                    console.error('Erreur serveur:', data.error);
-                    window.logClientError('ajax_error', 'Erreur serveur lors du préchargement des prestations', {
-                        url: '/api/prestations/all-by-categories',
-                        details: data.error
-                    });
-                }
-            })
-            .catch(error => {
-                console.error('Erreur lors du pre-chargement des prestations:', error);
-                window.logClientError('network_error', 'Erreur réseau préchargement prestations', {
-                    url: '/api/prestations/all-by-categories',
-                    details: error.message
-                });
-            })
-            .finally(() => {
-                loadingPrestations = false;
-            });
-        }
-
-        function loadPrestationsForCategory(categoryId) {
-            // Vérifier le cache d'abord
-            if (prestationsCache.has(categoryId)) {
-                updatePrestationSelect(prestationsCache.get(categoryId));
-                return;
-            }
-
-            // Si pas en cache, charger via API
-            showPrestationLoading();
-
-            fetch(`/api/prestations/by-category/${categoryId}`, {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => {
-                if (!response.ok) throw new Error('Erreur réseau');
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    // Mettre en cache
-                    prestationsCache.set(categoryId, data.prestations);
-                    updatePrestationSelect(data.prestations);
-                } else {
-                    window.logClientError('ajax_error', 'Erreur chargement prestations par catégorie', {
-                        url: `/api/prestations/by-category/${categoryId}`,
-                        details: data.error || 'Erreur inconnue'
-                    });
-                    showPrestationError(data.error || 'Erreur lors du chargement');
-                }
-            })
-            .catch(error => {
-                console.error('Erreur:', error);
-                window.logClientError('network_error', 'Erreur réseau chargement prestations', {
-                    url: `/api/prestations/by-category/${categoryId}`,
-                    details: error.message
-                });
-                showPrestationError('Erreur de connexion');
-            });
-        }
-
-        function updatePrestationSelect(prestations) {
-            prestationSelect.innerHTML = '';
-
-            // Option par défaut
-            const defaultOption = document.createElement('option');
-            defaultOption.value = '';
-            defaultOption.textContent = 'Choisir une prestation';
-            prestationSelect.appendChild(defaultOption);
-
-            // Ajouter les prestations
-            prestations.forEach(prestation => {
-                const option = document.createElement('option');
-                option.value = prestation.id;
-                option.textContent = `${prestation.title} (${prestation.price}F CFA)`;
-                prestationSelect.appendChild(option);
-            });
-
-            // Réactiver le select
-            prestationSelect.disabled = false;
-            prestationSelect.classList.remove('opacity-50');
-        }
-
-        function resetPrestationSelect() {
-            prestationSelect.innerHTML = '<option value="">Prestation (Choisir une catégorie)</option>';
-            prestationSelect.disabled = true;
-            prestationSelect.classList.add('opacity-50');
-        }
-
-        function showPrestationLoading() {
-            prestationSelect.innerHTML = '<option value="">Chargement...</option>';
-            prestationSelect.disabled = true;
-            prestationSelect.classList.add('opacity-50');
-        }
-
-        function showPrestationError(message) {
-            prestationSelect.innerHTML = `<option value="">Erreur: ${message}</option>`;
-            prestationSelect.disabled = true;
-            prestationSelect.classList.add('opacity-50');
-        }
-
-        // Initialiser l'état du select prestation
-        if (!categorie.value) {
-            resetPrestationSelect();
-        }
-    });
-</script>
+	<script>
+		// ========================================
+// SYSTÈME DE TRACKING DES ERREURS CLIENT
+// ========================================
+(function () {
+const LOG_ENDPOINT = '/api/log-client-error';
+const PAGE_NAME = 'prendrerdv';
+
+// Fonction utilitaire pour envoyer les logs au serveur
+function sendLog(type, message, details = {}) {
+try {
+const payload = {
+type: type,
+message: message,
+page: PAGE_NAME,
+timestamp: new Date().toISOString(),
+...details
+};
+
+// Utiliser sendBeacon si disponible (fonctionne même si la page se ferme)
+if (navigator.sendBeacon) {
+navigator.sendBeacon(LOG_ENDPOINT, JSON.stringify(payload));
+} else { // Fallback avec fetch
+fetch(LOG_ENDPOINT, {
+method: 'POST',
+headers: {
+'Content-Type': 'application/json'
+},
+body: JSON.stringify(payload),
+keepalive: true
+}).catch(() => {}); // Ignorer les erreurs de logging
+}
+} catch (e) { // Ne pas faire échouer l'application à cause du logging
+console.warn('Impossible d\'envoyer le log:', e);
+}
+}
+
+// Exposer la fonction globalement pour utilisation dans le code
+window.logClientError = sendLog;
+
+// 1. TRACKING DES ERREURS JAVASCRIPT GLOBALES
+window.onerror = function (message, source, lineno, colno, error) {
+sendLog('js_error', message, {
+url: source,
+line: lineno,
+column: colno,
+stack: error ? error.stack : null
+});
+return false; // Laisser l'erreur se propager
+};
+
+// 2. TRACKING DES PROMESSES REJETÉES NON GÉRÉES
+window.addEventListener('unhandledrejection', function (event) {
+sendLog('js_error', 'Promise rejetée: ' + (
+event.reason ? event.reason.message || event.reason : 'Raison inconnue'
+), {
+stack: event.reason ? event.reason.stack : null
+});
+});
+
+// 3. INTERCEPTION DES ERREURS FETCH (AJAX)
+const originalFetch = window.fetch;
+window.fetch = function (...args) {
+const url = args[0];
+const startTime = Date.now();
+
+return originalFetch.apply(this, args).then(response => {
+const duration = Date.now() - startTime;
+
+// Logger les erreurs HTTP (4xx, 5xx)
+if (!response.ok) {
+sendLog('ajax_error', `Erreur HTTP ${
+response.status
+} sur ${url}`, {
+url: url,
+status: response.status,
+statusText: response.statusText,
+duration: duration
+});
+}
+
+// Logger les requêtes lentes (plus de 5 secondes)
+if (duration > 5000) {
+sendLog('timeout', `Requête lente (${duration}ms) sur ${url}`, {
+url: url,
+duration: duration
+});
+}
+
+return response;
+}).catch(error => {
+const duration = Date.now() - startTime;
+sendLog('network_error', `Erreur réseau sur ${url}: ${
+error.message
+}`, {
+url: url,
+duration: duration,
+details: error.message
+});
+throw error; // Relancer l'erreur
+});
+};
+
+// 4. INTERCEPTION DES ERREURS XMLHttpRequest
+const originalXHROpen = XMLHttpRequest.prototype.open;
+const originalXHRSend = XMLHttpRequest.prototype.send;
+
+XMLHttpRequest.prototype.open = function (method, url) {
+this._logUrl = url;
+this._logMethod = method;
+return originalXHROpen.apply(this, arguments);
+};
+
+XMLHttpRequest.prototype.send = function () {
+const xhr = this;
+const startTime = Date.now();
+
+xhr.addEventListener('loadend', function () {
+const duration = Date.now() - startTime;
+
+// Logger les erreurs HTTP
+if (xhr.status >= 400 || xhr.status === 0) {
+sendLog('ajax_error', `XHR Erreur ${
+xhr.status
+} sur ${
+xhr._logUrl
+}`, {
+url: xhr._logUrl,
+method: xhr._logMethod,
+status: xhr.status,
+statusText: xhr.statusText,
+duration: duration
+});
+}
+});
+
+xhr.addEventListener('timeout', function () {
+sendLog('timeout', `XHR Timeout sur ${
+xhr._logUrl
+}`, {
+url: xhr._logUrl,
+method: xhr._logMethod
+});
+});
+
+xhr.addEventListener('error', function () {
+sendLog('network_error', `XHR Erreur réseau sur ${
+xhr._logUrl
+}`, {
+url: xhr._logUrl,
+method: xhr._logMethod
+});
+});
+
+return originalXHRSend.apply(this, arguments);
+};
+
+// 5. VALIDATION CÔTÉ CLIENT - TRACKING DES CHAMPS
+document.addEventListener('DOMContentLoaded', function () {
+const form = document.getElementById('monformulaire');
+if (! form) 
+return;
+
+
+// Tracker la soumission du formulaire
+form.addEventListener('submit', function (e) {
+const formData = new FormData(form);
+const missingFields = [];
+
+// Vérifier les champs requis
+const requiredFields = [
+{
+name: 'rendezvous[categorie]',
+label: 'Catégorie'
+},
+{
+name: 'rendezvous[prestation]',
+label: 'Prestation'
+},
+{
+name: 'rendezvous[day]',
+label: 'Date'
+},
+{
+name: 'rendezvous[creneau]',
+label: 'Créneau'
+}, {
+name: 'rendezvous[image][file]',
+label: 'Photo'
+}
+];
+
+requiredFields.forEach(field => {
+const value = formData.get(field.name);
+if (! value || value === '' || (value instanceof File && value.size === 0)) {
+missingFields.push(field.label);
+}
+});
+
+if (missingFields.length > 0) {
+sendLog('validation_error', 'Champs manquants lors de la soumission', {
+fields: missingFields.join(', '),
+details: `Champs vides: ${
+missingFields.join(', ')
+}`
+});
+}
+
+// Vérifier le type d'image (pas de restriction de taille)
+const imageInput = form.querySelector('input[type="file"]');
+if (imageInput && imageInput.files.length > 0) {
+const file = imageInput.files[0];
+
+const allowedTypes = [
+'image/jpeg',
+'image/png',
+'image/webp',
+'image/heic',
+'image/heif'
+];
+if (! allowedTypes.includes(file.type)) {
+sendLog('validation_error', 'Type d\'image non accepté', {
+field: 'image',
+value: file.type,
+details: `Type: ${
+file.type
+}, Acceptés: ${
+allowedTypes.join(', ')
+}`
+});
+}
+}
+});
+
+// Tracker les changements sur les champs importants
+const trackedFields = ['rendezvous_categorie', 'rendezvous_prestation', 'rendezvous_creneau'];
+trackedFields.forEach(fieldId => {
+const field = document.getElementById(fieldId);
+if (field) {
+field.addEventListener('change', function () {
+if (!this.value) {
+sendLog('validation_error', `Champ ${fieldId} vidé ou non sélectionné`, {
+field: fieldId,
+value: 'vide'
+});
+}
+});
+}
+});
+
+// Tracker l'erreur si le formulaire est bloqué
+const submitBtn = form.querySelector('button[type="submit"]');
+if (submitBtn) {
+submitBtn.addEventListener('click', function () { // Vérifier si le formulaire est valide côté HTML5
+if (! form.checkValidity()) {
+const invalidFields = [];
+form.querySelectorAll(':invalid').forEach(field => {
+invalidFields.push(field.name || field.id || 'champ inconnu');
+});
+sendLog('form_submit_blocked', 'Formulaire invalide côté client', {fields: invalidFields.join(', ')});
+}
+});
+}
+});
+
+console.log('[PrendreRdv] Système de tracking des erreurs initialisé');
+})();
+	</script>
+
+	<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
+	<script>
+		flatpickr("#datepicker", {
+defaultDate: null,
+enableTime: false,
+dateFormat: "Y-m-d",
+altInput: true,
+altFormat: "j F Y",
+inline: true,
+locale: "fr",
+minDate: "today",
+disable: [
+function (date) {
+return(date.getDay() === 1); // Désactiver lundi
+},
+function (date) {
+return(date.getDay() === 0); // Désactiver dimanche
+}
+]
+});
+	</script>
+
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+var datePicker = document.getElementById('datepicker');
+var slotsContainer = document.getElementById('slots-container');
+
+// Cache pour stocker les créneaux déjà récupérés
+var slotsCache = new Map();
+var debounceTimer = null;
+var isLoading = false;
+
+// Pre-charger les créneaux des 7 prochains jours
+preloadSlots();
+
+datePicker.addEventListener('change', function () {
+var selectedDate = datePicker.value;
+
+// Debouncing pour éviter trop de requêtes
+clearTimeout(debounceTimer);
+debounceTimer = setTimeout(function () {
+loadSlotsForDate(selectedDate);
+}, 300);
+});
+
+function preloadSlots() {
+var today = new Date();
+for (var i = 0; i < 7; i++) {
+var date = new Date(today);
+date.setDate(today.getDate() + i);
+var dateStr = date.toISOString().split('T')[0];
+
+// Ne pas précharger si déjà en cache
+if (! slotsCache.has(dateStr)) {
+setTimeout(function (d) {
+loadSlotsForDate(d, true);
+}, i * 100, dateStr);
+}
+}
+}
+
+function loadSlotsForDate(selectedDate, isPreload = false) { // Vérifier le cache d'abord
+if (slotsCache.has(selectedDate)) {
+if (! isPreload) {
+updateSlotsDropdown(slotsCache.get(selectedDate));
+}
+return;
+}
+
+// Éviter les requêtes multiples simultanées
+if (isLoading && ! isPreload) 
+return;
+
+if (! isPreload) 
+isLoading = true;
+
+
+// Afficher un indicateur de chargement
+if (! isPreload) {
+showLoadingIndicator();
+}
+
+var xhr = new XMLHttpRequest();
+xhr.open('POST', '/get-available-slots', true);
+xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+xhr.timeout = 5000; // Timeout de 5 secondes
+
+xhr.onreadystatechange = function () {
+if (xhr.readyState === XMLHttpRequest.DONE) {
+if (! isPreload) 
+isLoading = false;
+
+
+if (xhr.status === 200) {
+try {
+var slots = JSON.parse(xhr.responseText);
+// Mettre en cache
+slotsCache.set(selectedDate, slots);
+
+if (! isPreload) {
+updateSlotsDropdown(slots);
+
+// Logger si aucun créneau disponible
+if (slots.length === 0) {
+window.logClientError('validation_error', 'Aucun créneau disponible pour la date sélectionnée', {
+field: 'creneau',
+value: selectedDate
+});
+}
+}
+} catch (e) {
+console.error('Erreur de parsing JSON:', e);
+window.logClientError('ajax_error', 'Erreur parsing JSON créneaux', {
+url: '/get-available-slots',
+details: e.message,
+date: selectedDate
+});
+if (! isPreload) {
+showErrorMessage();
+}
+}
+} else {
+console.error('Erreur lors de la récupération des créneaux:', xhr.status);
+window.logClientError('ajax_error', 'Erreur récupération créneaux', {
+url: '/get-available-slots',
+status: xhr.status,
+date: selectedDate
+});
+if (! isPreload) {
+showErrorMessage();
+}
+}
+}
+};
+
+xhr.ontimeout = function () {
+window.logClientError('timeout', 'Timeout récupération créneaux', {
+url: '/get-available-slots',
+date: selectedDate
+});
+if (! isPreload) {
+isLoading = false;
+showErrorMessage('Délai d\'attente dépassé');
+}
+};
+
+xhr.send('date=' + selectedDate);
+}
+
+function showLoadingIndicator() {
+slotsContainer.innerHTML = '<div class="flex items-center justify-center py-4"><svg class="animate-spin h-5 w-5 text-pink-600" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span class="ml-2 text-sm text-gray-600">Chargement...</span></div>';
+}
+
+function showErrorMessage(message = 'Erreur lors du chargement des créneaux') {
+slotsContainer.innerHTML = '<p class="text-red-600 mt-2 text-sm">' + message + '</p>';
+}
+
+function updateSlotsDropdown(slots) {
+slotsContainer.innerHTML = '';
+
+if (slots.length === 0) {
+var noSlotsParagraph = document.createElement('p');
+noSlotsParagraph.textContent = 'Aucun créneau disponible pour cette date';
+noSlotsParagraph.className = 'text-red-600 mt-2 text-sm';
+slotsContainer.appendChild(noSlotsParagraph);
+} else {
+var selectElement = document.createElement('select');
+selectElement.id = 'rendezvous_creneau';
+selectElement.name = 'rendezvous[creneau]';
+selectElement.className = 'block w-full rounded-lg border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500 sm:text-sm py-3 px-4';
+
+var defaultOption = document.createElement('option');
+defaultOption.value = '';
+defaultOption.text = 'Sélectionnez un créneau';
+selectElement.appendChild(defaultOption);
+
+slots.slice().sort(function (a, b) {
+return a.libelle.localeCompare(b.libelle);
+}).forEach(function (slot) {
+var option = document.createElement('option');
+option.value = slot.id;
+option.text = slot.libelle;
+selectElement.appendChild(option);
+});
+
+slotsContainer.appendChild(selectElement);
+}
+}
+
+// Optimisation du chargement catégorie -> prestation
+let categorie = document.querySelector("#rendezvous_categorie");
+let prestationSelect = document.querySelector("#rendezvous_prestation");
+
+// Cache pour stocker les prestations par catégorie
+let prestationsCache = new Map();
+let allPrestationsLoaded = false;
+let loadingPrestations = false;
+
+// Pre-charger toutes les prestations au chargement de la page
+preloadAllPrestations();
+
+if (categorie && prestationSelect) {
+categorie.addEventListener("change", function () {
+let selectedCategoryId = this.value;
+
+if (! selectedCategoryId) {
+resetPrestationSelect();
+return;
+}
+
+loadPrestationsForCategory(selectedCategoryId);
+});
+}
+
+function preloadAllPrestations() {
+if (allPrestationsLoaded || loadingPrestations) 
+return;
+
+
+loadingPrestations = true;
+
+fetch('/api/prestations/all-by-categories', {
+method: 'GET',
+headers: {
+'Accept': 'application/json',
+'X-Requested-With': 'XMLHttpRequest'
+}
+}).then(response => {
+if (!response.ok) 
+throw new Error('Erreur réseau');
+
+return response.json();
+}).then(data => {
+if (data.success) { // Stocker toutes les prestations dans le cache
+for (let categoryId in data.prestationsByCategory) {
+prestationsCache.set(categoryId, data.prestationsByCategory[categoryId]);
+}
+allPrestationsLoaded = true;
+} else {
+console.error('Erreur serveur:', data.error);
+window.logClientError('ajax_error', 'Erreur serveur lors du préchargement des prestations', {
+url: '/api/prestations/all-by-categories',
+details: data.error
+});
+}
+}).catch(error => {
+console.error('Erreur lors du pre-chargement des prestations:', error);
+window.logClientError('network_error', 'Erreur réseau préchargement prestations', {
+url: '/api/prestations/all-by-categories',
+details: error.message
+});
+}). finally(() => {
+loadingPrestations = false;
+});
+}
+
+function loadPrestationsForCategory(categoryId) { // Vérifier le cache d'abord
+if (prestationsCache.has(categoryId)) {
+updatePrestationSelect(prestationsCache.get(categoryId));
+return;
+}
+
+// Si pas en cache, charger via API
+showPrestationLoading();
+
+fetch (`/api/prestations/by-category/${categoryId}`, {
+method: 'GET',
+headers: {
+'Accept': 'application/json',
+'X-Requested-With': 'XMLHttpRequest'
+}
+}).then(response => {
+if (!response.ok) 
+throw new Error('Erreur réseau');
+
+return response.json();
+}).then(data => {
+if (data.success) { // Mettre en cache
+prestationsCache.set(categoryId, data.prestations);
+updatePrestationSelect(data.prestations);
+} else {
+window.logClientError('ajax_error', 'Erreur chargement prestations par catégorie', {
+url: `/api/prestations/by-category/${categoryId}`,
+details: data.error || 'Erreur inconnue'
+});
+showPrestationError(data.error || 'Erreur lors du chargement');
+}
+}).catch(error => {
+console.error('Erreur:', error);
+window.logClientError('network_error', 'Erreur réseau chargement prestations', {
+url: `/api/prestations/by-category/${categoryId}`,
+details: error.message
+});
+showPrestationError('Erreur de connexion');
+});
+}
+
+function updatePrestationSelect(prestations) {
+prestationSelect.innerHTML = '';
+
+// Option par défaut
+const defaultOption = document.createElement('option');
+defaultOption.value = '';
+defaultOption.textContent = 'Choisir une prestation';
+prestationSelect.appendChild(defaultOption);
+
+// Ajouter les prestations
+prestations.forEach(prestation => {
+const option = document.createElement('option');
+option.value = prestation.id;
+option.textContent = `${
+prestation.title
+} (${
+prestation.price
+}F CFA)`;
+prestationSelect.appendChild(option);
+});
+
+// Réactiver le select
+prestationSelect.disabled = false;
+prestationSelect.classList.remove('opacity-50');
+}
+
+function resetPrestationSelect() {
+prestationSelect.innerHTML = '<option value="">Prestation (Choisir une catégorie)</option>';
+prestationSelect.disabled = true;
+prestationSelect.classList.add('opacity-50');
+}
+
+function showPrestationLoading() {
+prestationSelect.innerHTML = '<option value="">Chargement...</option>';
+prestationSelect.disabled = true;
+prestationSelect.classList.add('opacity-50');
+}
+
+function showPrestationError(message) {
+prestationSelect.innerHTML = `<option value="">Erreur: ${message}</option>`;
+prestationSelect.disabled = true;
+prestationSelect.classList.add('opacity-50');
+}
+
+// Initialiser l'état du select prestation
+if (! categorie.value) {
+resetPrestationSelect();
+}
+});
+	</script>
 {% endblock %}
 
 {% block stylesheets %}
-<style>
-    /* Styles pour Flatpickr */
-    .flatpickr-calendar {
-        width: 300px;
-        font-size: 14px;
-    }
-    
-    @media (min-width: 640px) {
-        .flatpickr-calendar {
-            width: 300px;
-            font-size: 16px;
-        }
-    }
-    
-    .flatpickr-calendar .flatpickr-day.today {
-        background-color: transparent !important;
-        border: none !important;
-    }
-    
-    /* Styles pour les checkboxes des suppléments */
-    .form-check {
-        display: flex;
-        align-items: center;
-        margin-bottom: 0.5rem;
-    }
-    
-    .form-check input[type="checkbox"] {
-        width: 1rem;
-        height: 1rem;
-        margin-right: 0.5rem;
-        border-radius: 0.25rem;
-        border: 1px solid #d1d5db;
-        color: #ec4899;
-    }
-    
-    .form-check input[type="checkbox"]:focus {
-        ring-color: #ec4899;
-        border-color: #ec4899;
-    }
-</style>
+	<style>
+		/* Styles pour Flatpickr */
+		.flatpickr-calendar {
+			width: 300px;
+			font-size: 14px;
+		}
+
+		@media(min-width: 640px) {
+			.flatpickr-calendar {
+				width: 300px;
+				font-size: 16px;
+			}
+		}
+
+		.flatpickr-calendar .flatpickr-day.today {
+			background-color: transparent !important;
+			border: none !important;
+		}
+
+		/* Styles pour les checkboxes des suppléments */
+		.form-check {
+			display: flex;
+			align-items: center;
+			margin-bottom: 0.5rem;
+		}
+
+		.form-check input[type="checkbox"] {
+			width: 1rem;
+			height: 1rem;
+			margin-right: 0.5rem;
+			border-radius: 0.25rem;
+			border: 1px solid #d1d5db;
+			color: #ec4899;
+		}
+
+		.form-check input[type="checkbox"]:focus {
+			ring-color: #ec4899;
+			border-color: #ec4899;
+		}
+	</style>
 {% endblock %}
