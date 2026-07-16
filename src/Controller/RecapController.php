@@ -92,6 +92,7 @@ class RecapController extends AbstractController
                             'form' => $form->createView(),
                             'supplements' => $rendezvous->getSupplement(),
                             'rendezvous' => $rendezvous,
+                            'holdDurationMinutes' => $holdMinutes,
                         ]);
                     }
                 } catch (\Exception $e) {
@@ -100,6 +101,7 @@ class RecapController extends AbstractController
                         'form' => $form->createView(),
                         'supplements' => $rendezvous->getSupplement(),
                         'rendezvous' => $rendezvous,
+                        'holdDurationMinutes' => $holdMinutes,
                     ]);
                 }
             }
@@ -114,6 +116,7 @@ class RecapController extends AbstractController
             'form' => $form->createView(),
             'supplements' => $supplements, // Passer la liste des suppléments à la vue Twig
             'rendezvous' => $rendezvous, // Passer l'objet rendezvous avec le coût total calculé
+            'holdDurationMinutes' => $holdMinutes,
         ]);
     }
 }
