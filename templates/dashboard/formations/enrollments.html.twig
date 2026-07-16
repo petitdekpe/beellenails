@@ -2,330 +2,292 @@
 
 {% block title %}Inscriptions - {{ formation.nom }}{% endblock %}
 
-{% block body %}
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <!-- Header -->
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div class="d-flex align-items-center">
-                    <a href="{{ path('app_dashboard_formation_show', {id: formation.id}) }}" class="btn btn-link p-0 me-3">
-                        <i class="fas fa-arrow-left"></i> Retour
-                    </a>
-                    <h1 class="h3 mb-0 text-gray-800">👥 Inscriptions - {{ formation.nom }}</h1>
-                </div>
-                <div class="btn-group">
-                    <button class="btn btn-primary" data-toggle="modal" data-target="#enrollUserModal">
-                        <i class="fas fa-user-plus"></i> Nouvelle Inscription
-                    </button>
-                    <button class="btn btn-info" data-toggle="modal" data-target="#bulkActionsModal">
-                        <i class="fas fa-tasks"></i> Actions en Lot
-                    </button>
-                </div>
-            </div>
-
-            <!-- Filtres -->
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Filtres</h6>
-                </div>
-                <div class="card-body">
-                    <form method="GET" action="{{ path('app_dashboard_formation_enrollments', {id: formation.id}) }}">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="search">Recherche</label>
-                                    <input type="text" class="form-control" id="search" name="search" 
-                                           value="{{ search }}" placeholder="Nom, prénom ou email...">
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="status">Statut</label>
-                                    <select class="form-control" id="status" name="status">
-                                        <option value="all" {{ status == 'all' ? 'selected' : '' }}>Tous les statuts</option>
-                                        <option value="active" {{ status == 'active' ? 'selected' : '' }}>Actives</option>
-                                        <option value="completed" {{ status == 'completed' ? 'selected' : '' }}>Terminées</option>
-                                        <option value="expired" {{ status == 'expired' ? 'selected' : '' }}>Expirées</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-3 d-flex align-items-end">
-                                <div class="form-group w-100">
-                                    <button type="submit" class="btn btn-primary btn-block">
-                                        <i class="fas fa-search"></i> Filtrer
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="col-md-2 d-flex align-items-end">
-                                <div class="form-group w-100">
-                                    <button type="button" class="btn btn-success btn-block" onclick="exportEnrollments()">
-                                        <i class="fas fa-download"></i> Export
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Liste des inscriptions -->
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">
-                        Inscriptions ({{ enrollments.getTotalItemCount }})
-                    </h6>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-bordered" width="100%" cellspacing="0">
-                            <thead>
-                                <tr>
-                                    <th>
-                                        <div class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" id="selectAll">
-                                            <label class="custom-control-label" for="selectAll"></label>
-                                        </div>
-                                    </th>
-                                    <th>Utilisateur</th>
-                                    <th>Progression</th>
-                                    <th>Statut</th>
-                                    <th>Inscrit le</th>
-                                    <th>Expire le</th>
-                                    <th>Dernière activité</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for enrollment in enrollments %}
-                                <tr>
-                                    <td>
-                                        <div class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input enrollment-checkbox" 
-                                                   id="enroll-{{ enrollment.id }}" data-enrollment-id="{{ enrollment.id }}">
-                                            <label class="custom-control-label" for="enroll-{{ enrollment.id }}"></label>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center text-white me-3" 
-                                                 style="width: 40px; height: 40px;">
-                                                {{ enrollment.user.prenom|slice(0,1)|upper }}{{ enrollment.user.nom|slice(0,1)|upper }}
-                                            </div>
-                                            <div>
-                                                <h6 class="mb-0">{{ enrollment.user.prenom }} {{ enrollment.user.nom }}</h6>
-                                                <small class="text-muted">{{ enrollment.user.email }}</small>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="progress flex-grow-1 me-2" style="height: 8px;">
-                                                <div class="progress-bar bg-{% if enrollment.progressPercentage == 100 %}success{% elseif enrollment.progressPercentage > 50 %}info{% else %}warning{% endif %}" 
-                                                     style="width: {{ enrollment.progressPercentage }}%"></div>
-                                            </div>
-                                            <span class="small font-weight-bold">{{ enrollment.progressPercentage }}%</span>
-                                        </div>
-                                        {% if enrollment.totalTimeSpent > 0 %}
-                                            <small class="text-muted">
-                                                Temps : 
-                                                {% if enrollment.totalTimeSpent > 3600 %}
-                                                    {{ (enrollment.totalTimeSpent / 3600)|round(1) }}h
-                                                {% else %}
-                                                    {{ (enrollment.totalTimeSpent / 60)|round }}min
-                                                {% endif %}
-                                            </small>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        <span class="badge badge-{% if enrollment.status == 'active' %}success{% elseif enrollment.status == 'completed' %}primary{% else %}warning{% endif %}">
-                                            {% if enrollment.status == 'active' %}✅ Active
-                                            {% elseif enrollment.status == 'completed' %}🏆 Terminée
-                                            {% else %}⚠️ Expirée{% endif %}
-                                        </span>
-                                    </td>
-                                    <td>{{ enrollment.enrolledAt|date('d/m/Y H:i') }}</td>
-                                    <td>
-                                        {% if enrollment.expiresAt %}
-                                            <span class="{% if enrollment.daysUntilExpiration <= 7 %}text-danger{% elseif enrollment.daysUntilExpiration <= 30 %}text-warning{% else %}text-success{% endif %}">
-                                                {{ enrollment.expiresAt|date('d/m/Y') }}
-                                            </span>
-                                            {% if enrollment.daysUntilExpiration >= 0 %}
-                                                <br><small class="text-muted">{{ enrollment.timeUntilExpiration }}</small>
-                                            {% endif %}
-                                        {% else %}
-                                            <span class="text-success">Illimité</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        {% if enrollment.lastAccessedAt %}
-                                            {{ enrollment.lastAccessedAt|date('d/m/Y H:i') }}
-                                        {% else %}
-                                            <span class="text-muted">Jamais</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        <div class="btn-group">
-                                            <button class="btn btn-sm btn-outline-primary dropdown-toggle" 
-                                                    type="button" data-toggle="dropdown">
-                                                Actions
-                                            </button>
-                                            <div class="dropdown-menu">
-                                                <a class="dropdown-item" href="{{ path('app_user_learning_formation_detail', {id: enrollment.id}) }}" target="_blank">
-                                                    <i class="fas fa-external-link-alt"></i> Voir l'espace utilisateur
-                                                </a>
-                                                <div class="dropdown-divider"></div>
-                                                
-                                                <h6 class="dropdown-header">Changer le statut :</h6>
-                                                {% if enrollment.status != 'active' %}
-                                                <a class="dropdown-item change-status" href="#" 
-                                                   data-enrollment-id="{{ enrollment.id }}" data-status="active">
-                                                    <i class="fas fa-play text-success"></i> Activer
-                                                </a>
-                                                {% endif %}
-                                                {% if enrollment.status != 'completed' %}
-                                                <a class="dropdown-item change-status" href="#" 
-                                                   data-enrollment-id="{{ enrollment.id }}" data-status="completed">
-                                                    <i class="fas fa-check text-primary"></i> Marquer terminée
-                                                </a>
-                                                {% endif %}
-                                                {% if enrollment.status != 'expired' %}
-                                                <a class="dropdown-item change-status" href="#" 
-                                                   data-enrollment-id="{{ enrollment.id }}" data-status="expired">
-                                                    <i class="fas fa-ban text-warning"></i> Expirer
-                                                </a>
-                                                {% endif %}
-                                                
-                                                <div class="dropdown-divider"></div>
-                                                
-                                                <a class="dropdown-item extend-access" href="#" 
-                                                   data-enrollment-id="{{ enrollment.id }}">
-                                                    <i class="fas fa-clock text-info"></i> Prolonger l'accès
-                                                </a>
-                                                
-                                                <a class="dropdown-item reset-progress" href="#" 
-                                                   data-enrollment-id="{{ enrollment.id }}">
-                                                    <i class="fas fa-undo text-warning"></i> Réinitialiser la progression
-                                                </a>
-                                                
-                                                <div class="dropdown-divider"></div>
-                                                
-                                                <a class="dropdown-item text-danger delete-enrollment" href="#" 
-                                                   data-enrollment-id="{{ enrollment.id }}" 
-                                                   data-user-name="{{ enrollment.user.prenom }} {{ enrollment.user.nom }}">
-                                                    <i class="fas fa-trash"></i> Supprimer l'inscription
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                {% else %}
-                                <tr>
-                                    <td colspan="8" class="text-center text-muted py-4">
-                                        <i class="fas fa-users fa-3x mb-3 d-block"></i>
-                                        Aucune inscription trouvée
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- Pagination -->
-                    {% if enrollments.pageCount > 1 %}
-                    <div class="d-flex justify-content-center">
-                        {{ knp_pagination_render(enrollments) }}
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
+{% block content %}
+<div id="page-container" class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+        <div class="flex items-center gap-3">
+            <a href="{{ path('app_dashboard_formation_show', {id: formation.id}) }}" class="text-gray-500 hover:text-gray-700">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                </svg>
+            </a>
+            <h1 class="text-2xl font-bold text-gray-900">👥 Inscriptions - {{ formation.nom }}</h1>
         </div>
+        <button type="button" onclick="openModal('enrollUserModal')"
+                class="inline-flex items-center px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white font-medium rounded-lg transition-colors">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+            </svg>
+            Nouvelle Inscription
+        </button>
+    </div>
+
+    <!-- Filtres -->
+    <div class="bg-white rounded-lg shadow mb-6">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h3 class="text-lg font-medium text-gray-900">Filtres</h3>
+        </div>
+        <div class="px-6 py-4">
+            <form method="GET" action="{{ path('app_dashboard_formation_enrollments', {id: formation.id}) }}" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="md:col-span-2">
+                    <label for="search" class="block text-sm font-medium text-gray-700 mb-1">Recherche</label>
+                    <input type="text" id="search" name="search" value="{{ search }}" placeholder="Nom, prénom ou email..."
+                           class="block w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500">
+                </div>
+                <div>
+                    <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Statut</label>
+                    <select id="status" name="status" class="block w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500">
+                        <option value="all" {{ status == 'all' ? 'selected' : '' }}>Tous les statuts</option>
+                        <option value="active" {{ status == 'active' ? 'selected' : '' }}>Actives</option>
+                        <option value="completed" {{ status == 'completed' ? 'selected' : '' }}>Terminées</option>
+                        <option value="expired" {{ status == 'expired' ? 'selected' : '' }}>Expirées</option>
+                    </select>
+                </div>
+                <div class="flex items-end gap-2">
+                    <button type="submit" class="flex-1 inline-flex items-center justify-center px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white font-medium rounded-lg transition-colors">
+                        Filtrer
+                    </button>
+                    <button type="button" onclick="exportEnrollments()" title="Export CSV"
+                            class="flex-shrink-0 inline-flex items-center justify-center px-3 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                        </svg>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Liste des inscriptions -->
+    <div class="bg-white rounded-lg shadow">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h3 class="text-lg font-medium text-gray-900">Inscriptions ({{ enrollments.getTotalItemCount }})</h3>
+        </div>
+        {% if enrollments|length > 0 %}
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-pink-50">
+                        <tr>
+                            <th class="px-4 py-3 text-left">
+                                <input type="checkbox" id="selectAll" class="rounded border-gray-300 text-pink-600 focus:ring-pink-500">
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-pink-600 uppercase tracking-wider">Utilisateur</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-pink-600 uppercase tracking-wider">Progression</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-pink-600 uppercase tracking-wider">Statut</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-pink-600 uppercase tracking-wider">Inscrit le</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-pink-600 uppercase tracking-wider">Expire le</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-pink-600 uppercase tracking-wider">Dernière activité</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-pink-600 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for enrollment in enrollments %}
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="px-4 py-4">
+                                <input type="checkbox" class="enrollment-checkbox rounded border-gray-300 text-pink-600 focus:ring-pink-500"
+                                       data-enrollment-id="{{ enrollment.id }}">
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-9 h-9 bg-pink-500 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                                        {{ enrollment.user.prenom|slice(0,1)|upper }}{{ enrollment.user.nom|slice(0,1)|upper }}
+                                    </div>
+                                    <div class="min-w-0">
+                                        <div class="text-sm font-medium text-gray-900 truncate">{{ enrollment.user.prenom }} {{ enrollment.user.nom }}</div>
+                                        <div class="text-xs text-gray-500 truncate">{{ enrollment.user.email }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-2">
+                                    <div class="flex-1 bg-gray-200 rounded-full h-1.5 min-w-[60px]">
+                                        <div class="h-1.5 rounded-full {% if enrollment.progressPercentage == 100 %}bg-green-500{% elseif enrollment.progressPercentage > 50 %}bg-cyan-500{% else %}bg-yellow-500{% endif %}"
+                                             style="width: {{ enrollment.progressPercentage }}%"></div>
+                                    </div>
+                                    <span class="text-xs font-semibold text-gray-900">{{ enrollment.progressPercentage }}%</span>
+                                </div>
+                                {% if enrollment.totalTimeSpent > 0 %}
+                                    <div class="text-xs text-gray-400 mt-1">
+                                        Temps :
+                                        {% if enrollment.totalTimeSpent > 3600 %}
+                                            {{ (enrollment.totalTimeSpent / 3600)|round(1) }}h
+                                        {% else %}
+                                            {{ (enrollment.totalTimeSpent / 60)|round }}min
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="px-2 py-1 text-xs font-medium rounded-full
+                                    {% if enrollment.status == 'active' %}bg-green-100 text-green-800
+                                    {% elseif enrollment.status == 'completed' %}bg-blue-100 text-blue-800
+                                    {% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                                    {% if enrollment.status == 'active' %}✅ Active
+                                    {% elseif enrollment.status == 'completed' %}🏆 Terminée
+                                    {% else %}⚠️ Expirée{% endif %}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">{{ enrollment.enrolledAt|date('d/m/Y H:i') }}</td>
+                            <td class="px-6 py-4 text-sm whitespace-nowrap">
+                                {% if enrollment.expiresAt %}
+                                    <span class="{% if enrollment.daysUntilExpiration <= 7 %}text-red-600{% elseif enrollment.daysUntilExpiration <= 30 %}text-yellow-600{% else %}text-green-600{% endif %}">
+                                        {{ enrollment.expiresAt|date('d/m/Y') }}
+                                    </span>
+                                    {% if enrollment.daysUntilExpiration >= 0 %}
+                                        <div class="text-xs text-gray-400">{{ enrollment.timeUntilExpiration }}</div>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="text-green-600">Illimité</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
+                                {% if enrollment.lastAccessedAt %}
+                                    {{ enrollment.lastAccessedAt|date('d/m/Y H:i') }}
+                                {% else %}
+                                    <span class="text-gray-400">Jamais</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 text-right">
+                                <div class="relative inline-block text-left">
+                                    <button type="button" class="actions-toggle inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+                                            data-id="{{ enrollment.id }}">
+                                        Actions
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                        </svg>
+                                    </button>
+                                    <div id="actions-dropdown-{{ enrollment.id }}" class="actions-dropdown hidden absolute right-0 z-20 mt-1 w-60 bg-white rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 py-1 text-left">
+                                        <a href="{{ path('app_user_learning_formation_detail', {id: enrollment.id}) }}" target="_blank"
+                                           class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">🔗 Voir l'espace utilisateur</a>
+                                        <div class="border-t border-gray-100 my-1"></div>
+                                        <p class="px-4 pt-1 pb-1 text-xs font-semibold text-gray-400 uppercase">Changer le statut</p>
+                                        {% if enrollment.status != 'active' %}
+                                        <a href="#" class="change-status block px-4 py-2 text-sm text-green-700 hover:bg-gray-100"
+                                           data-enrollment-id="{{ enrollment.id }}" data-status="active">▶️ Activer</a>
+                                        {% endif %}
+                                        {% if enrollment.status != 'completed' %}
+                                        <a href="#" class="change-status block px-4 py-2 text-sm text-blue-700 hover:bg-gray-100"
+                                           data-enrollment-id="{{ enrollment.id }}" data-status="completed">✔️ Marquer terminée</a>
+                                        {% endif %}
+                                        {% if enrollment.status != 'expired' %}
+                                        <a href="#" class="change-status block px-4 py-2 text-sm text-yellow-700 hover:bg-gray-100"
+                                           data-enrollment-id="{{ enrollment.id }}" data-status="expired">🚫 Expirer</a>
+                                        {% endif %}
+                                        <div class="border-t border-gray-100 my-1"></div>
+                                        <a href="#" class="extend-access block px-4 py-2 text-sm text-cyan-700 hover:bg-gray-100"
+                                           data-enrollment-id="{{ enrollment.id }}">⏱️ Prolonger l'accès</a>
+                                        <a href="#" class="reset-progress block px-4 py-2 text-sm text-yellow-700 hover:bg-gray-100"
+                                           data-enrollment-id="{{ enrollment.id }}">↩️ Réinitialiser la progression</a>
+                                        <div class="border-t border-gray-100 my-1"></div>
+                                        <a href="#" class="delete-enrollment block px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                                           data-enrollment-id="{{ enrollment.id }}" data-user-name="{{ enrollment.user.prenom }} {{ enrollment.user.nom }}">🗑️ Supprimer l'inscription</a>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="8" class="px-6 py-12 text-center text-gray-500">Aucune inscription trouvée</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            {% if enrollments.pageCount > 1 %}
+            <div class="flex justify-center px-6 py-4 border-t border-gray-200">
+                {{ knp_pagination_render(enrollments) }}
+            </div>
+            {% endif %}
+        {% else %}
+            <div class="px-6 py-12 text-center text-gray-500">Aucune inscription trouvée</div>
+        {% endif %}
     </div>
 </div>
 
 <!-- Modal nouvelle inscription -->
-<div class="modal fade" id="enrollUserModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Nouvelle Inscription</h5>
-                <button type="button" class="close" data-dismiss="modal">
-                    <span>&times;</span>
-                </button>
-            </div>
-            <form id="enrollUserForm">
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="userEmail">Email de l'utilisateur</label>
-                        <input type="email" class="form-control" id="userEmail" name="userEmail" required
-                               placeholder="Saisir l'email de l'utilisateur...">
-                        <small class="form-text text-muted">Si l'utilisateur n'existe pas, il sera créé automatiquement.</small>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="accessType">Type d'accès</label>
-                        <select class="form-control" id="accessType" name="accessType">
-                            <option value="30_days">30 jours</option>
-                            <option value="60_days">60 jours</option>
-                            <option value="90_days">90 jours</option>
-                            <option value="1_year">1 an</option>
-                            <option value="lifetime">Accès à vie</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input" id="sendEmail" name="sendEmail" checked>
-                            <label class="custom-control-label" for="sendEmail">
-                                Envoyer un email de notification à l'utilisateur
-                            </label>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
-                    <button type="submit" class="btn btn-primary">Inscrire</button>
-                </div>
-            </form>
+<div id="enrollUserModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
+        <div class="flex items-center justify-between px-5 py-4 border-b border-gray-200">
+            <h3 class="text-lg font-semibold text-gray-900">Nouvelle Inscription</h3>
+            <button type="button" onclick="closeModal('enrollUserModal')" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
         </div>
+        <form id="enrollUserForm">
+            <div class="px-5 py-4 space-y-4">
+                <div>
+                    <label for="userEmail" class="block text-sm font-medium text-gray-700 mb-1">Email de l'utilisateur</label>
+                    <input type="email" id="userEmail" name="userEmail" required placeholder="Saisir l'email de l'utilisateur..."
+                           class="block w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500">
+                    <p class="text-xs text-gray-500 mt-1">Si l'utilisateur n'existe pas, il sera créé automatiquement.</p>
+                </div>
+                <div>
+                    <label for="accessType" class="block text-sm font-medium text-gray-700 mb-1">Type d'accès</label>
+                    <select id="accessType" name="accessType" class="block w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500">
+                        <option value="30_days">30 jours</option>
+                        <option value="60_days">60 jours</option>
+                        <option value="90_days">90 jours</option>
+                        <option value="1_year">1 an</option>
+                        <option value="lifetime">Accès à vie</option>
+                    </select>
+                </div>
+                <label class="flex items-center gap-2">
+                    <input type="checkbox" id="sendEmail" name="sendEmail" checked class="rounded border-gray-300 text-pink-600 focus:ring-pink-500">
+                    <span class="text-sm text-gray-700">Envoyer un email de notification à l'utilisateur</span>
+                </label>
+            </div>
+            <div class="flex justify-end gap-2 px-5 py-4 border-t border-gray-200">
+                <button type="button" onclick="closeModal('enrollUserModal')" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">Annuler</button>
+                <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-pink-600 hover:bg-pink-700 rounded-lg transition-colors">Inscrire</button>
+            </div>
+        </form>
     </div>
 </div>
 
 <!-- Modal prolongation d'accès -->
-<div class="modal fade" id="extendAccessModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Prolonger l'Accès</h5>
-                <button type="button" class="close" data-dismiss="modal">
-                    <span>&times;</span>
-                </button>
-            </div>
-            <form id="extendAccessForm">
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="extendDays">Nombre de jours à ajouter</label>
-                        <select class="form-control" id="extendDays" name="days">
-                            <option value="7">7 jours</option>
-                            <option value="14">14 jours</option>
-                            <option value="30" selected>30 jours</option>
-                            <option value="60">60 jours</option>
-                            <option value="90">90 jours</option>
-                            <option value="365">1 an</option>
-                        </select>
-                    </div>
-                    <input type="hidden" id="extendEnrollmentId" name="enrollmentId">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
-                    <button type="submit" class="btn btn-primary">Prolonger</button>
-                </div>
-            </form>
+<div id="extendAccessModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
+        <div class="flex items-center justify-between px-5 py-4 border-b border-gray-200">
+            <h3 class="text-lg font-semibold text-gray-900">Prolonger l'Accès</h3>
+            <button type="button" onclick="closeModal('extendAccessModal')" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
         </div>
+        <form id="extendAccessForm">
+            <div class="px-5 py-4">
+                <label for="extendDays" class="block text-sm font-medium text-gray-700 mb-1">Nombre de jours à ajouter</label>
+                <select id="extendDays" name="days" class="block w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500">
+                    <option value="7">7 jours</option>
+                    <option value="14">14 jours</option>
+                    <option value="30" selected>30 jours</option>
+                    <option value="60">60 jours</option>
+                    <option value="90">90 jours</option>
+                    <option value="365">1 an</option>
+                </select>
+                <input type="hidden" id="extendEnrollmentId" name="enrollmentId">
+            </div>
+            <div class="flex justify-end gap-2 px-5 py-4 border-t border-gray-200">
+                <button type="button" onclick="closeModal('extendAccessModal')" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">Annuler</button>
+                <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-pink-600 hover:bg-pink-700 rounded-lg transition-colors">Prolonger</button>
+            </div>
+        </form>
     </div>
 </div>
 
 <script>
+function openModal(id) {
+    document.getElementById(id).classList.remove('hidden');
+}
+function closeModal(id) {
+    document.getElementById(id).classList.add('hidden');
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     // Sélection multiple
     document.getElementById('selectAll').addEventListener('change', function() {
@@ -334,36 +296,49 @@ document.addEventListener('DOMContentLoaded', function() {
             checkbox.checked = this.checked;
         });
     });
-    
+
+    // Menus d'actions par ligne (ouverture/fermeture + clic à l'extérieur)
+    document.addEventListener('click', function(e) {
+        const toggle = e.target.closest('.actions-toggle');
+        document.querySelectorAll('.actions-dropdown').forEach(function(menu) {
+            if (!toggle || menu.id !== 'actions-dropdown-' + toggle.dataset.id) {
+                menu.classList.add('hidden');
+            }
+        });
+        if (toggle) {
+            document.getElementById('actions-dropdown-' + toggle.dataset.id).classList.toggle('hidden');
+        }
+    });
+
     // Changement de statut
     document.querySelectorAll('.change-status').forEach(function(link) {
         link.addEventListener('click', function(e) {
             e.preventDefault();
             const enrollmentId = this.dataset.enrollmentId;
             const status = this.dataset.status;
-            
+
             changeEnrollmentStatus(enrollmentId, status);
         });
     });
-    
+
     // Prolongation d'accès
     document.querySelectorAll('.extend-access').forEach(function(link) {
         link.addEventListener('click', function(e) {
             e.preventDefault();
             const enrollmentId = this.dataset.enrollmentId;
-            
+
             document.getElementById('extendEnrollmentId').value = enrollmentId;
-            $('#extendAccessModal').modal('show');
+            openModal('extendAccessModal');
         });
     });
-    
+
     // Formulaire de prolongation
     document.getElementById('extendAccessForm').addEventListener('submit', function(e) {
         e.preventDefault();
-        
+
         const enrollmentId = document.getElementById('extendEnrollmentId').value;
         const days = document.getElementById('extendDays').value;
-        
+
         extendAccess(enrollmentId, days);
     });
 });
@@ -404,7 +379,7 @@ function extendAccess(enrollmentId, days) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            $('#extendAccessModal').modal('hide');
+            closeModal('extendAccessModal');
             showAlert('success', data.message);
             setTimeout(() => location.reload(), 1000);
         } else {
@@ -420,25 +395,25 @@ function extendAccess(enrollmentId, days) {
 function exportEnrollments() {
     const params = new URLSearchParams(window.location.search);
     params.set('export', 'csv');
-    
+
     window.location.href = `${window.location.pathname}?${params.toString()}`;
 }
 
 function showAlert(type, message) {
-    const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+    const alertClasses = type === 'success'
+        ? 'bg-green-50 border border-green-200 text-green-700'
+        : 'bg-red-50 border border-red-200 text-red-700';
     const alertHtml = `
-        <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
-            ${message}
-            <button type="button" class="close" data-dismiss="alert">
-                <span>&times;</span>
-            </button>
+        <div class="alert-toast mb-4 px-4 py-3 rounded-lg flex items-center justify-between gap-3 ${alertClasses}">
+            <span class="text-sm">${message}</span>
+            <button type="button" onclick="this.closest('.alert-toast').remove()" class="text-current opacity-60 hover:opacity-100">&times;</button>
         </div>
     `;
-    
-    document.querySelector('.container-fluid').insertAdjacentHTML('afterbegin', alertHtml);
-    
+
+    document.getElementById('page-container').insertAdjacentHTML('afterbegin', alertHtml);
+
     setTimeout(function() {
-        const alert = document.querySelector('.alert');
+        const alert = document.querySelector('.alert-toast');
         if (alert) {
             alert.remove();
         }

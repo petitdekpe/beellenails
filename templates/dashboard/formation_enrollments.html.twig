@@ -2,192 +2,150 @@
 
 {% block title %}Inscriptions aux formations - Dashboard{% endblock %}
 
-{% block body %}
-<div class="container-fluid px-4">
-    <div class="row">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1 class="h3 mb-0 text-gray-800">📚 Gestion des inscriptions aux formations</h1>
-                <div>
-                    <small class="text-muted">{{ enrollments|length }} inscription{{ enrollments|length > 1 ? 's' : '' }} total{{ enrollments|length > 1 ? 'es' : 'e' }}</small>
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-gray-900">📚 Gestion des inscriptions aux formations</h1>
+        <span class="text-sm text-gray-500">{{ enrollments|length }} inscription{{ enrollments|length > 1 ? 's' : '' }} total{{ enrollments|length > 1 ? 'es' : 'e' }}</span>
+    </div>
+
+    {% set activeEnrollments = enrollments|filter(e => e.status == 'active')|length %}
+    {% set completedEnrollments = enrollments|filter(e => e.status == 'completed')|length %}
+    {% set expiredEnrollments = enrollments|filter(e => e.status == 'expired')|length %}
+
+    <!-- Statistics Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+                <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <span class="text-green-600 text-lg">🎓</span>
+                </div>
+                <div class="ml-4">
+                    <p class="text-xs font-semibold text-green-600 uppercase tracking-wide">Inscriptions actives</p>
+                    <p class="text-xl font-bold text-gray-900">{{ activeEnrollments }}</p>
                 </div>
             </div>
+        </div>
 
-            <!-- Statistics Cards -->
-            <div class="row mb-4">
-                {% set activeEnrollments = enrollments|filter(e => e.status == 'active')|length %}
-                {% set completedEnrollments = enrollments|filter(e => e.status == 'completed')|length %}
-                {% set expiredEnrollments = enrollments|filter(e => e.status == 'expired')|length %}
-
-                <div class="col-xl-3 col-md-6 mb-4">
-                    <div class="card border-left-success shadow h-100 py-2">
-                        <div class="card-body">
-                            <div class="row no-gutters align-items-center">
-                                <div class="col mr-2">
-                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                        Inscriptions actives</div>
-                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ activeEnrollments }}</div>
-                                </div>
-                                <div class="col-auto">
-                                    <i class="fas fa-user-graduate fa-2x text-gray-300"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+                <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <span class="text-blue-600 text-lg">🏆</span>
                 </div>
-
-                <div class="col-xl-3 col-md-6 mb-4">
-                    <div class="card border-left-primary shadow h-100 py-2">
-                        <div class="card-body">
-                            <div class="row no-gutters align-items-center">
-                                <div class="col mr-2">
-                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                        Formations terminées</div>
-                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ completedEnrollments }}</div>
-                                </div>
-                                <div class="col-auto">
-                                    <i class="fas fa-trophy fa-2x text-gray-300"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-xl-3 col-md-6 mb-4">
-                    <div class="card border-left-warning shadow h-100 py-2">
-                        <div class="card-body">
-                            <div class="row no-gutters align-items-center">
-                                <div class="col mr-2">
-                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                        Formations expirées</div>
-                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ expiredEnrollments }}</div>
-                                </div>
-                                <div class="col-auto">
-                                    <i class="fas fa-clock fa-2x text-gray-300"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-xl-3 col-md-6 mb-4">
-                    <div class="card border-left-info shadow h-100 py-2">
-                        <div class="card-body">
-                            <div class="row no-gutters align-items-center">
-                                <div class="col mr-2">
-                                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                        Total inscriptions</div>
-                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ enrollments|length }}</div>
-                                </div>
-                                <div class="col-auto">
-                                    <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div class="ml-4">
+                    <p class="text-xs font-semibold text-blue-600 uppercase tracking-wide">Formations terminées</p>
+                    <p class="text-xl font-bold text-gray-900">{{ completedEnrollments }}</p>
                 </div>
             </div>
+        </div>
 
-            <!-- Enrollments Table -->
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Liste des inscriptions</h6>
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+                <div class="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <span class="text-yellow-600 text-lg">⏰</span>
                 </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                            <thead>
-                                <tr>
-                                    <th>Utilisateur</th>
-                                    <th>Formation</th>
-                                    <th>Date d'inscription</th>
-                                    <th>Statut</th>
-                                    <th>Progression</th>
-                                    <th>Dernier accès</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for enrollment in enrollments %}
-                                <tr>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div>
-                                                <strong>{{ enrollment.user.fullName }}</strong><br>
-                                                <small class="text-muted">{{ enrollment.user.email }}</small>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <strong>{{ enrollment.formation.nom }}</strong><br>
-                                        <small class="text-muted">{{ enrollment.formation.cout }} F CFA</small>
-                                    </td>
-                                    <td>{{ enrollment.enrolledAt|date('d/m/Y H:i') }}</td>
-                                    <td>
-                                        {% if enrollment.status == 'active' %}
-                                            <span class="badge badge-success">Actif</span>
-                                        {% elseif enrollment.status == 'completed' %}
-                                            <span class="badge badge-primary">Terminé</span>
-                                        {% elseif enrollment.status == 'expired' %}
-                                            <span class="badge badge-warning">Expiré</span>
-                                        {% elseif enrollment.status == 'cancelled' %}
-                                            <span class="badge badge-danger">Annulé</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        <div class="progress" style="height: 20px;">
-                                            <div class="progress-bar" role="progressbar"
-                                                 style="width: {{ enrollment.progressPercentage }}%"
-                                                 aria-valuenow="{{ enrollment.progressPercentage }}"
-                                                 aria-valuemin="0"
-                                                 aria-valuemax="100">
-                                                {{ enrollment.progressPercentage }}%
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        {% if enrollment.lastAccessedAt %}
-                                            {{ enrollment.lastAccessedAt|date('d/m/Y H:i') }}
-                                        {% else %}
-                                            <span class="text-muted">Jamais</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        <div class="btn-group" role="group">
-                                            <a href="{{ path('app_formation_show', {id: enrollment.formation.id}) }}"
-                                               class="btn btn-sm btn-outline-primary" title="Voir formation">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                            <a href="{{ path('app_user_learning_formation_detail', {id: enrollment.formation.id}) }}"
-                                               class="btn btn-sm btn-outline-success" title="Voir progression">
-                                                <i class="fas fa-chart-line"></i>
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                                {% else %}
-                                <tr>
-                                    <td colspan="7" class="text-center text-muted">Aucune inscription trouvée</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
+                <div class="ml-4">
+                    <p class="text-xs font-semibold text-yellow-600 uppercase tracking-wide">Formations expirées</p>
+                    <p class="text-xl font-bold text-gray-900">{{ expiredEnrollments }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+                <div class="w-10 h-10 bg-cyan-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <span class="text-cyan-600 text-lg">📋</span>
+                </div>
+                <div class="ml-4">
+                    <p class="text-xs font-semibold text-cyan-600 uppercase tracking-wide">Total inscriptions</p>
+                    <p class="text-xl font-bold text-gray-900">{{ enrollments|length }}</p>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<script>
-$(document).ready(function() {
-    $('#dataTable').DataTable({
-        "language": {
-            "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/French.json"
-        },
-        "order": [[ 2, "desc" ]],
-        "pageLength": 25
-    });
-});
-</script>
+    <!-- Enrollments Table -->
+    <div class="bg-white rounded-lg shadow">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h3 class="text-lg font-medium text-gray-900">Liste des inscriptions</h3>
+        </div>
+        {% if enrollments|length > 0 %}
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-pink-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-pink-600 uppercase tracking-wider">Utilisateur</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-pink-600 uppercase tracking-wider">Formation</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-pink-600 uppercase tracking-wider">Date d'inscription</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-pink-600 uppercase tracking-wider">Statut</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-pink-600 uppercase tracking-wider">Progression</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-pink-600 uppercase tracking-wider">Dernier accès</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-pink-600 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for enrollment in enrollments %}
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="px-6 py-4">
+                                <div class="text-sm font-medium text-gray-900">{{ enrollment.user.fullName }}</div>
+                                <div class="text-xs text-gray-500">{{ enrollment.user.email }}</div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="text-sm font-medium text-gray-900">{{ enrollment.formation.nom }}</div>
+                                <div class="text-xs text-gray-500">{{ enrollment.formation.cout }} F CFA</div>
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">{{ enrollment.enrolledAt|date('d/m/Y H:i') }}</td>
+                            <td class="px-6 py-4">
+                                {% if enrollment.status == 'active' %}
+                                    <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">Actif</span>
+                                {% elseif enrollment.status == 'completed' %}
+                                    <span class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">Terminé</span>
+                                {% elseif enrollment.status == 'expired' %}
+                                    <span class="px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">Expiré</span>
+                                {% elseif enrollment.status == 'cancelled' %}
+                                    <span class="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">Annulé</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-2">
+                                    <div class="flex-1 bg-gray-200 rounded-full h-2 min-w-[80px]">
+                                        <div class="h-2 rounded-full bg-pink-500" style="width: {{ enrollment.progressPercentage }}%"></div>
+                                    </div>
+                                    <span class="text-sm font-semibold text-gray-900">{{ enrollment.progressPercentage }}%</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
+                                {% if enrollment.lastAccessedAt %}
+                                    {{ enrollment.lastAccessedAt|date('d/m/Y H:i') }}
+                                {% else %}
+                                    <span class="text-gray-400">Jamais</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 text-right">
+                                <div class="flex items-center justify-end gap-2">
+                                    <a href="{{ path('app_formation_show', {id: enrollment.formation.id}) }}"
+                                       class="text-blue-600 hover:text-blue-900 transition-colors" title="Voir formation">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                        </svg>
+                                    </a>
+                                    <a href="{{ path('app_user_learning_formation_detail', {id: enrollment.formation.id}) }}"
+                                       class="text-green-600 hover:text-green-900 transition-colors" title="Voir progression">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                                        </svg>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="px-6 py-12 text-center text-gray-500">Aucune inscription trouvée</div>
+        {% endif %}
+    </div>
+</div>
 {% endblock %}

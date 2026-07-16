@@ -7,6 +7,7 @@ namespace App\Controller;
 
 use App\Entity\Rendezvous;
 use App\Form\RendezvousType;
+use App\Repository\BookingSettingsRepository;
 use App\Repository\CreneauRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -21,7 +22,7 @@ class CalendarController extends AbstractController
 {
     #[Route('/prendrerdv/{prestationId?}/{categoryId?}', name: 'app_calendar')]
     #/[IsGranted("ROLE_USER")]
-    public function index(Request $request, EntityManagerInterface $entityManager, LoggerInterface $logger): Response
+    public function index(Request $request, EntityManagerInterface $entityManager, LoggerInterface $logger, BookingSettingsRepository $bookingSettingsRepository): Response
     {
         $clientIp = $request->getClientIp();
         $prestationId = $request->attributes->get('prestationId');
@@ -106,6 +107,8 @@ class CalendarController extends AbstractController
             $request->getSession()->set('prestation',  $form->get('prestation')->getData());
 
             $rendezvous->setStatus("Tentative");
+            $holdMinutes = $bookingSettingsRepository->getHoldDurationMinutes();
+            $rendezvous->setExpiresAt((new \DateTime())->modify("+{$holdMinutes} minutes"));
 
             $entityManager->persist($rendezvous);
             $entityManager->flush();

@@ -11,12 +11,14 @@ use App\Entity\FormationEnrollment;
 use App\Entity\ModuleProgress;
 use App\Form\FeexPayFormType;
 use App\Interface\PayableEntityInterface;
+use App\Repository\RendezvousRepository;
 use App\Service\FedapayService;
 use App\Service\FeexpayService;
 use App\Service\PaymentTypeResolver;
 use App\Service\PromoCodeService;
 use App\Service\NotificationService;
 use App\Service\ReceiptPdfService;
+use App\Service\RendezvousConflictResolver;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -36,7 +38,9 @@ class GenericPaymentController extends AbstractController
         private readonly FeexpayService $feexpayService,
         private readonly LoggerInterface $logger,
         private readonly NotificationService $notificationService,
-        private readonly ReceiptPdfService $receiptPdfService
+        private readonly ReceiptPdfService $receiptPdfService,
+        private readonly RendezvousRepository $rendezvousRepository,
+        private readonly RendezvousConflictResolver $conflictResolver
     ) {}
 
     #[Route('/payment/{provider}/{paymentType}/{entityType}/{entityId}', name: 'generic_payment_init', methods: ['GET', 'POST'])]
@@ -78,6 +82,12 @@ class GenericPaymentController extends AbstractController
             if ($entity->getStatus() === 'Rendez-vous pris' || $entity->isPaid()) {
                 $this->addFlash('warning', 'Ce rendez-vous a déjà été payé et confirmé.');
                 return $this->redirectToRoute('app_dashboard_rendezvous');
+            }
+
+            // Un autre client occupe déjà activement ce créneau (confirmé, ou tentative/paiement en attente non expiré)
+            if ($this->rendezvousRepository->hasActiveHoldOrConfirmedConflict($entity->getDay(), $entity->getCreneau(), $entity->getId())) {
+                $this->addFlash('error', 'Ce créneau vient d\'être réservé par un autre client. Merci d\'en choisir un autre.');
+                return $this->redirectToRoute('app_calendar');
             }
         } elseif ($entityType === 'formation' && $entity instanceof \App\Entity\Formation) {
             // For formations, we can allow multiple enrollments, but we could add checks here if needed
@@ -403,6 +413,24 @@ class GenericPaymentController extends AbstractController
         ]);
     }
 
+    #[Route('/payment/conflict/{reference}', name: 'generic_payment_conflict')]
+    public function conflictPayment(string $reference): Response
+    {
+        $payment = $this->entityManager->getRepository(Payment::class)
+            ->findOneBy(['reference' => $reference]);
+
+        if (!$payment) {
+            throw $this->createNotFoundException('Paiement introuvable');
+        }
+
+        $entity = $this->paymentTypeResolver->resolveEntity($payment);
+
+        return $this->render('payment/conflict.html.twig', [
+            'payment' => $payment,
+            'entity' => $entity
+        ]);
+    }
+
     #[Route('/payment/callback', name: 'generic_payment_callback')]
     public function paymentCallback(Request $request): Response
     {
@@ -437,12 +465,11 @@ class GenericPaymentController extends AbstractController
                 ]);
             }
 
-            // Mettre à jour le paiement avec les données fraîches de FedaPay
+            // Récupérer le statut frais sans encore muter $payment (nécessaire pour le
+            // verrouillage/idempotence sur la branche rendez-vous, voir plus bas)
             $transaction = $this->fedapayService->getTransaction($transactionID);
             $oldStatus = strtolower($payment->getStatus() ?? '');
-            $payment->parseTransaction($transaction);
-
-            $newStatus = strtolower($payment->getStatus() ?? '');
+            $newStatus = strtolower((string) ($transaction->status ?? ''));
             $entity = $this->paymentTypeResolver->resolveEntity($payment);
 
             $this->logger->info('[Generic Payment Callback] Statut du paiement mis à jour', [
@@ -454,6 +481,47 @@ class GenericPaymentController extends AbstractController
             // Si le statut a changé, traiter le succès ou l'échec
             if ($oldStatus !== $newStatus) {
                 if (in_array($newStatus, ['approved', 'successful'], true)) {
+                    if ($entity instanceof \App\Entity\Rendezvous) {
+                        $this->entityManager->beginTransaction();
+                        try {
+                            $this->entityManager->lock($payment, \Doctrine\DBAL\LockMode::PESSIMISTIC_WRITE);
+                            $this->entityManager->refresh($payment);
+                            $this->entityManager->refresh($entity);
+
+                            // Idempotence : callback FedaPay dupliqué déjà traité par un appel concurrent
+                            if ($entity->isPaid()) {
+                                $this->entityManager->rollback();
+                                return $this->redirectToRoute('generic_payment_success', [
+                                    'reference' => $payment->getReference()
+                                ]);
+                            }
+
+                            $payment->parseTransaction($transaction);
+                            $confirmed = $this->conflictResolver->confirmOrFlagConflict($entity, $payment, $this->entityManager);
+
+                            $this->entityManager->flush();
+                            $this->entityManager->commit();
+                        } catch (\Exception $e) {
+                            if ($this->entityManager->getConnection()->isTransactionActive()) {
+                                $this->entityManager->rollback();
+                            }
+                            throw $e;
+                        }
+
+                        if (!$confirmed) {
+                            return $this->redirectToRoute('generic_payment_conflict', [
+                                'reference' => $payment->getReference()
+                            ]);
+                        }
+
+                        $this->notificationService->sendPaymentConfirmation($entity);
+
+                        return $this->redirectToRoute('generic_payment_success', [
+                            'reference' => $payment->getReference()
+                        ]);
+                    }
+
+                    $payment->parseTransaction($transaction);
                     $entity->onPaymentSuccess();
 
                     // Créer l'inscription si c'est une formation
@@ -463,17 +531,13 @@ class GenericPaymentController extends AbstractController
 
                     $this->entityManager->flush();
 
-                    // Envoyer notification si c'est un rendez-vous
-                    if ($entity instanceof \App\Entity\Rendezvous) {
-                        $this->notificationService->sendPaymentConfirmation($entity);
-                    }
-
                     return $this->redirectToRoute('generic_payment_success', [
                         'reference' => $payment->getReference()
                     ]);
                 }
 
                 if (in_array($newStatus, ['declined', 'failed'], true)) {
+                    $payment->parseTransaction($transaction);
                     $entity->onPaymentFailure();
                     $this->entityManager->flush();
 
@@ -483,6 +547,7 @@ class GenericPaymentController extends AbstractController
                 }
             }
 
+            $payment->parseTransaction($transaction);
             $this->entityManager->flush();
 
             // Redirection finale basée sur le statut reçu
@@ -651,13 +716,48 @@ class GenericPaymentController extends AbstractController
             }
         }
 
-        $payment->setStatus($apiStatus);
-        $payment->setUpdatedAt(new \DateTimeImmutable());
-
         // Mettre à jour l'entité liée si le paiement est réussi
         if ($apiStatus === 'successful') {
             try {
                 $entity = $this->paymentTypeResolver->resolveEntity($payment);
+
+                if ($entity instanceof \App\Entity\Rendezvous) {
+                    $this->entityManager->beginTransaction();
+                    try {
+                        $this->entityManager->lock($payment, \Doctrine\DBAL\LockMode::PESSIMISTIC_WRITE);
+                        $this->entityManager->refresh($payment);
+                        $this->entityManager->refresh($entity);
+
+                        // Idempotence : déjà traité par un appel concurrent
+                        if ($entity->isPaid()) {
+                            $this->entityManager->rollback();
+                            return;
+                        }
+
+                        $payment->setStatus($apiStatus);
+                        $payment->setUpdatedAt(new \DateTimeImmutable());
+
+                        $confirmed = $this->conflictResolver->confirmOrFlagConflict($entity, $payment, $this->entityManager);
+
+                        $this->entityManager->flush();
+                        $this->entityManager->commit();
+                    } catch (\Exception $e) {
+                        if ($this->entityManager->getConnection()->isTransactionActive()) {
+                            $this->entityManager->rollback();
+                        }
+                        throw $e;
+                    }
+
+                    if ($confirmed) {
+                        $this->notificationService->sendPaymentConfirmation($entity);
+                    }
+
+                    return;
+                }
+
+                $payment->setStatus($apiStatus);
+                $payment->setUpdatedAt(new \DateTimeImmutable());
+
                 if ($entity && method_exists($entity, 'onPaymentSuccess')) {
                     $entity->onPaymentSuccess();
 
@@ -667,11 +767,6 @@ class GenericPaymentController extends AbstractController
                     }
 
                     $this->entityManager->persist($entity);
-
-                    // Envoyer les notifications email si c'est un rendez-vous
-                    if ($entity instanceof \App\Entity\Rendezvous) {
-                        $this->notificationService->sendPaymentConfirmation($entity);
-                    }
                 }
             } catch (\Exception $e) {
                 $this->logger->error('[Generic Payment] Error updating entity on payment success', [
@@ -679,8 +774,14 @@ class GenericPaymentController extends AbstractController
                     'error' => $e->getMessage()
                 ]);
             }
+
+            $this->entityManager->persist($payment);
+            $this->entityManager->flush();
+            return;
         }
 
+        $payment->setStatus($apiStatus);
+        $payment->setUpdatedAt(new \DateTimeImmutable());
         $this->entityManager->persist($payment);
         $this->entityManager->flush();
     }

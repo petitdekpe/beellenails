@@ -2,278 +2,246 @@
 
 {% block title %}Analyses & Statistiques{% endblock %}
 
-{% block body %}
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1 class="h3 mb-0 text-gray-800">📊 Analyses & Statistiques</h1>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-                        Période : {{ period == '7days' ? '7 jours' : (period == '30days' ? '30 jours' : (period == '3months' ? '3 mois' : (period == '6months' ? '6 mois' : '1 an'))) }}
-                    </button>
-                    <div class="dropdown-menu">
-                        <a class="dropdown-item" href="{{ path('app_dashboard_analytics', {period: '7days'}) }}">7 derniers jours</a>
-                        <a class="dropdown-item" href="{{ path('app_dashboard_analytics', {period: '30days'}) }}">30 derniers jours</a>
-                        <a class="dropdown-item" href="{{ path('app_dashboard_analytics', {period: '3months'}) }}">3 derniers mois</a>
-                        <a class="dropdown-item" href="{{ path('app_dashboard_analytics', {period: '6months'}) }}">6 derniers mois</a>
-                        <a class="dropdown-item" href="{{ path('app_dashboard_analytics', {period: '1year'}) }}">1 an</a>
-                    </div>
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+        <h1 class="text-2xl font-bold text-gray-900">📊 Analyses & Statistiques</h1>
+        <select onchange="window.location.href=this.value"
+                class="block w-full sm:w-auto rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500">
+            <option value="{{ path('app_dashboard_analytics', {period: '7days'}) }}" {{ period == '7days' ? 'selected' : '' }}>7 derniers jours</option>
+            <option value="{{ path('app_dashboard_analytics', {period: '30days'}) }}" {{ period == '30days' ? 'selected' : '' }}>30 derniers jours</option>
+            <option value="{{ path('app_dashboard_analytics', {period: '3months'}) }}" {{ period == '3months' ? 'selected' : '' }}>3 derniers mois</option>
+            <option value="{{ path('app_dashboard_analytics', {period: '6months'}) }}" {{ period == '6months' ? 'selected' : '' }}>6 derniers mois</option>
+            <option value="{{ path('app_dashboard_analytics', {period: '1year'}) }}" {{ period == '1year' ? 'selected' : '' }}>1 an</option>
+        </select>
+    </div>
+
+    <!-- Vue d'ensemble -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+                <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <span class="text-blue-600 text-lg">🎓</span>
+                </div>
+                <div class="ml-4">
+                    <p class="text-xs font-semibold text-blue-600 uppercase tracking-wide">Formations Totales</p>
+                    <p class="text-xl font-bold text-gray-900">{{ stats.totalFormations }}</p>
+                    <p class="text-xs text-green-600">{{ stats.activeFormations }} actives</p>
                 </div>
             </div>
+        </div>
 
-            <!-- Vue d'ensemble -->
-            <div class="row mb-4">
-                <div class="col-xl-3 col-md-6 mb-4">
-                    <div class="card border-left-primary shadow h-100 py-2">
-                        <div class="card-body">
-                            <div class="row no-gutters align-items-center">
-                                <div class="col mr-2">
-                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Formations Totales</div>
-                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ stats.totalFormations }}</div>
-                                    <div class="text-xs text-success">{{ stats.activeFormations }} actives</div>
-                                </div>
-                                <div class="col-auto">
-                                    <i class="fas fa-graduation-cap fa-2x text-gray-300"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+                <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <span class="text-green-600 text-lg">👥</span>
                 </div>
-
-                <div class="col-xl-3 col-md-6 mb-4">
-                    <div class="card border-left-success shadow h-100 py-2">
-                        <div class="card-body">
-                            <div class="row no-gutters align-items-center">
-                                <div class="col mr-2">
-                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Inscriptions Totales</div>
-                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ stats.totalEnrollments }}</div>
-                                    <div class="text-xs text-success">{{ stats.activeEnrollments }} actives</div>
-                                </div>
-                                <div class="col-auto">
-                                    <i class="fas fa-users fa-2x text-gray-300"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-xl-3 col-md-6 mb-4">
-                    <div class="card border-left-info shadow h-100 py-2">
-                        <div class="card-body">
-                            <div class="row no-gutters align-items-center">
-                                <div class="col mr-2">
-                                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Revenus Totaux</div>
-                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ stats.totalRevenue|number_format(0, ',', ' ') }} F CFA</div>
-                                </div>
-                                <div class="col-auto">
-                                    <i class="fas fa-euro-sign fa-2x text-gray-300"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-xl-3 col-md-6 mb-4">
-                    <div class="card border-left-warning shadow h-100 py-2">
-                        <div class="card-body">
-                            <div class="row no-gutters align-items-center">
-                                <div class="col mr-2">
-                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Revenus Période</div>
-                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ stats.periodRevenue|number_format(0, ',', ' ') }} F CFA</div>
-                                </div>
-                                <div class="col-auto">
-                                    <i class="fas fa-chart-line fa-2x text-gray-300"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div class="ml-4">
+                    <p class="text-xs font-semibold text-green-600 uppercase tracking-wide">Inscriptions Totales</p>
+                    <p class="text-xl font-bold text-gray-900">{{ stats.totalEnrollments }}</p>
+                    <p class="text-xs text-green-600">{{ stats.activeEnrollments }} actives</p>
                 </div>
             </div>
+        </div>
 
-            <div class="row">
-                <!-- Graphiques -->
-                <div class="col-xl-8 col-lg-7">
-                    <!-- Revenus -->
-                    <div class="card shadow mb-4">
-                        <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                            <h6 class="m-0 font-weight-bold text-primary">📈 Évolution des Revenus</h6>
-                            <button class="btn btn-sm btn-outline-primary" onclick="refreshRevenueChart()">
-                                <i class="fas fa-sync"></i>
-                            </button>
-                        </div>
-                        <div class="card-body">
-                            <div class="chart-area">
-                                <canvas id="revenueChart" width="100%" height="40"></canvas>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Inscriptions -->
-                    <div class="card shadow mb-4">
-                        <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">👥 Nouvelles Inscriptions</h6>
-                        </div>
-                        <div class="card-body">
-                            <div class="chart-area">
-                                <canvas id="enrollmentsChart" width="100%" height="40"></canvas>
-                            </div>
-                        </div>
-                    </div>
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+                <div class="w-10 h-10 bg-cyan-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <span class="text-cyan-600 text-lg">💰</span>
                 </div>
-
-                <!-- Sidebar statistiques -->
-                <div class="col-xl-4 col-lg-5">
-                    <!-- Formations populaires -->
-                    <div class="card shadow mb-4">
-                        <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">🔥 Formations Populaires</h6>
-                        </div>
-                        <div class="card-body">
-                            {% if popularFormations is not empty %}
-                                {% for formation in popularFormations %}
-                                <div class="d-flex align-items-center mb-3">
-                                    <div class="flex-grow-1">
-                                        <h6 class="mb-0">{{ formation.name }}</h6>
-                                        <small class="text-muted">{{ formation.enrollments }} inscriptions</small>
-                                    </div>
-                                    <span class="badge badge-primary">{{ formation.enrollments }}</span>
-                                </div>
-                                {% if not loop.last %}<hr class="my-2">{% endif %}
-                                {% endfor %}
-                            {% else %}
-                                <div class="text-center text-muted py-3">
-                                    <i class="fas fa-chart-bar fa-2x mb-2 d-block"></i>
-                                    <small>Aucune donnée pour cette période</small>
-                                </div>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <!-- Taux de complétion -->
-                    <div class="card shadow mb-4">
-                        <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">✅ Taux de Complétion</h6>
-                        </div>
-                        <div class="card-body">
-                            {% if completionRates is not empty %}
-                                {% for formation in completionRates|slice(0, 5) %}
-                                <div class="mb-3">
-                                    <div class="d-flex justify-content-between align-items-center mb-1">
-                                        <h6 class="mb-0 small">{{ formation.name }}</h6>
-                                        <span class="small text-muted">{{ formation.avgProgress|round }}%</span>
-                                    </div>
-                                    <div class="progress" style="height: 6px;">
-                                        <div class="progress-bar bg-success" style="width: {{ formation.avgProgress }}%"></div>
-                                    </div>
-                                    <small class="text-muted">
-                                        {{ formation.completedEnrollments }}/{{ formation.totalEnrollments }} terminées
-                                    </small>
-                                </div>
-                                {% endfor %}
-                            {% else %}
-                                <div class="text-center text-muted py-3">
-                                    <i class="fas fa-percentage fa-2x mb-2 d-block"></i>
-                                    <small>Aucune donnée disponible</small>
-                                </div>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <!-- Utilisateurs actifs -->
-                    <div class="card shadow mb-4">
-                        <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">⭐ Utilisateurs Actifs</h6>
-                        </div>
-                        <div class="card-body">
-                            {% if activeUsers is not empty %}
-                                {% for user in activeUsers|slice(0, 5) %}
-                                <div class="d-flex align-items-center mb-3">
-                                    <div class="flex-grow-1">
-                                        <h6 class="mb-0 small">{{ user.prenom }} {{ user.nom }}</h6>
-                                        <small class="text-muted">
-                                            {{ user.enrollments }} formations • 
-                                            {% if user.totalTimeSpent > 3600 %}
-                                                {{ (user.totalTimeSpent / 3600)|round }}h
-                                            {% else %}
-                                                {{ (user.totalTimeSpent / 60)|round }}min
-                                            {% endif %}
-                                        </small>
-                                    </div>
-                                    <div class="text-center">
-                                        <small class="text-success font-weight-bold">{{ user.avgProgress|round }}%</small>
-                                    </div>
-                                </div>
-                                {% if not loop.last %}<hr class="my-2">{% endif %}
-                                {% endfor %}
-                            {% else %}
-                                <div class="text-center text-muted py-3">
-                                    <i class="fas fa-user-friends fa-2x mb-2 d-block"></i>
-                                    <small>Aucun utilisateur actif</small>
-                                </div>
-                            {% endif %}
-                        </div>
-                    </div>
+                <div class="ml-4">
+                    <p class="text-xs font-semibold text-cyan-600 uppercase tracking-wide">Revenus Totaux</p>
+                    <p class="text-xl font-bold text-gray-900">{{ stats.totalRevenue|number_format(0, ',', ' ') }} F CFA</p>
                 </div>
             </div>
+        </div>
 
-            <!-- Tableau détaillé -->
-            <div class="row">
-                <div class="col-12">
-                    <div class="card shadow mb-4">
-                        <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">📋 Rapport Détaillé</h6>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-bordered" width="100%" cellspacing="0">
-                                    <thead>
-                                        <tr>
-                                            <th>Formation</th>
-                                            <th>Inscriptions</th>
-                                            <th>Taux Complétion</th>
-                                            <th>Temps Moyen</th>
-                                            <th>Revenus</th>
-                                            <th>Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for formation in completionRates %}
-                                        <tr>
-                                            <td>{{ formation.name }}</td>
-                                            <td>
-                                                <span class="badge badge-primary">{{ formation.totalEnrollments }}</span>
-                                                <small class="text-muted">({{ formation.completedEnrollments }} terminées)</small>
-                                            </td>
-                                            <td>
-                                                <div class="progress" style="height: 20px;">
-                                                    <div class="progress-bar bg-success" style="width: {{ formation.avgProgress }}%">
-                                                        {{ formation.avgProgress|round }}%
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <span class="text-muted">À calculer</span>
-                                            </td>
-                                            <td>
-                                                <span class="font-weight-bold">À calculer</span>
-                                            </td>
-                                            <td>
-                                                <span class="badge badge-success">Active</span>
-                                            </td>
-                                        </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+                <div class="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <span class="text-yellow-600 text-lg">📈</span>
+                </div>
+                <div class="ml-4">
+                    <p class="text-xs font-semibold text-yellow-600 uppercase tracking-wide">Revenus Période</p>
+                    <p class="text-xl font-bold text-gray-900">{{ stats.periodRevenue|number_format(0, ',', ' ') }} F CFA</p>
                 </div>
             </div>
         </div>
     </div>
+
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        <!-- Graphiques -->
+        <div class="xl:col-span-2 space-y-6">
+            <!-- Revenus -->
+            <div class="bg-white rounded-lg shadow">
+                <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                    <h3 class="text-lg font-medium text-gray-900">📈 Évolution des Revenus</h3>
+                    <button class="p-2 text-pink-600 hover:bg-pink-50 rounded-lg transition-colors" onclick="refreshRevenueChart()" title="Rafraîchir">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="p-6">
+                    <div class="relative h-64">
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Inscriptions -->
+            <div class="bg-white rounded-lg shadow">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h3 class="text-lg font-medium text-gray-900">👥 Nouvelles Inscriptions</h3>
+                </div>
+                <div class="p-6">
+                    <div class="relative h-64">
+                        <canvas id="enrollmentsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar statistiques -->
+        <div class="space-y-6">
+            <!-- Formations populaires -->
+            <div class="bg-white rounded-lg shadow">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h3 class="text-lg font-medium text-gray-900">🔥 Formations Populaires</h3>
+                </div>
+                <div class="p-6">
+                    {% if popularFormations is not empty %}
+                        <div class="divide-y divide-gray-100">
+                            {% for formation in popularFormations %}
+                            <div class="flex items-center justify-between py-2 first:pt-0 last:pb-0">
+                                <div class="min-w-0">
+                                    <h4 class="text-sm font-semibold text-gray-900 truncate">{{ formation.name }}</h4>
+                                    <p class="text-xs text-gray-500">{{ formation.enrollments }} inscriptions</p>
+                                </div>
+                                <span class="px-2 py-1 text-xs font-medium bg-pink-100 text-pink-800 rounded-full flex-shrink-0 ml-2">{{ formation.enrollments }}</span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center text-gray-400 py-3">
+                            <p class="text-sm">Aucune donnée pour cette période</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Taux de complétion -->
+            <div class="bg-white rounded-lg shadow">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h3 class="text-lg font-medium text-gray-900">✅ Taux de Complétion</h3>
+                </div>
+                <div class="p-6 space-y-4">
+                    {% if completionRates is not empty %}
+                        {% for formation in completionRates|slice(0, 5) %}
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <h4 class="text-xs font-semibold text-gray-700 truncate">{{ formation.name }}</h4>
+                                <span class="text-xs text-gray-500 flex-shrink-0 ml-2">{{ formation.avgProgress|round }}%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-1.5">
+                                <div class="bg-green-500 h-1.5 rounded-full" style="width: {{ formation.avgProgress }}%"></div>
+                            </div>
+                            <p class="text-xs text-gray-400 mt-1">
+                                {{ formation.completedEnrollments }}/{{ formation.totalEnrollments }} terminées
+                            </p>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center text-gray-400 py-3">
+                            <p class="text-sm">Aucune donnée disponible</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Utilisateurs actifs -->
+            <div class="bg-white rounded-lg shadow">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h3 class="text-lg font-medium text-gray-900">⭐ Utilisateurs Actifs</h3>
+                </div>
+                <div class="p-6">
+                    {% if activeUsers is not empty %}
+                        <div class="divide-y divide-gray-100">
+                            {% for user in activeUsers|slice(0, 5) %}
+                            <div class="flex items-center justify-between py-2 first:pt-0 last:pb-0">
+                                <div class="min-w-0">
+                                    <h4 class="text-xs font-semibold text-gray-700 truncate">{{ user.prenom }} {{ user.nom }}</h4>
+                                    <p class="text-xs text-gray-500">
+                                        {{ user.enrollments }} formations •
+                                        {% if user.totalTimeSpent > 3600 %}
+                                            {{ (user.totalTimeSpent / 3600)|round }}h
+                                        {% else %}
+                                            {{ (user.totalTimeSpent / 60)|round }}min
+                                        {% endif %}
+                                    </p>
+                                </div>
+                                <span class="text-xs text-green-600 font-semibold flex-shrink-0 ml-2">{{ user.avgProgress|round }}%</span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center text-gray-400 py-3">
+                            <p class="text-sm">Aucun utilisateur actif</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tableau détaillé -->
+    <div class="bg-white rounded-lg shadow mt-6">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h3 class="text-lg font-medium text-gray-900">📋 Rapport Détaillé</h3>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-pink-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-pink-600 uppercase tracking-wider">Formation</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-pink-600 uppercase tracking-wider">Inscriptions</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-pink-600 uppercase tracking-wider">Taux Complétion</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-pink-600 uppercase tracking-wider">Temps Moyen</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-pink-600 uppercase tracking-wider">Revenus</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-pink-600 uppercase tracking-wider">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for formation in completionRates %}
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ formation.name }}</td>
+                        <td class="px-6 py-4">
+                            <span class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">{{ formation.totalEnrollments }}</span>
+                            <span class="text-xs text-gray-500 ml-1">({{ formation.completedEnrollments }} terminées)</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-2">
+                                <div class="flex-1 bg-gray-200 rounded-full h-2 min-w-[80px]">
+                                    <div class="h-2 rounded-full bg-green-500" style="width: {{ formation.avgProgress }}%"></div>
+                                </div>
+                                <span class="text-sm font-semibold text-gray-900">{{ formation.avgProgress|round }}%</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-400">À calculer</td>
+                        <td class="px-6 py-4 text-sm font-semibold text-gray-900">À calculer</td>
+                        <td class="px-6 py-4">
+                            <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">Active</span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 let revenueChart;
 let enrollmentsChart;
@@ -283,9 +251,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function initializeCharts() {
-    // Graphique des revenus
     const revenueCtx = document.getElementById('revenueChart').getContext('2d');
-    
+
     fetch(`{{ path('app_dashboard_analytics_revenue_chart') }}?period={{ period }}`)
         .then(response => response.json())
         .then(data => {
@@ -314,9 +281,8 @@ function initializeCharts() {
             });
         });
 
-    // Graphique des inscriptions
     const enrollmentsCtx = document.getElementById('enrollmentsChart').getContext('2d');
-    
+
     fetch(`{{ path('app_dashboard_analytics_enrollments_chart') }}?period={{ period }}`)
         .then(response => response.json())
         .then(data => {
@@ -348,9 +314,9 @@ function refreshRevenueChart() {
     if (revenueChart) {
         revenueChart.destroy();
     }
-    
+
     const revenueCtx = document.getElementById('revenueChart').getContext('2d');
-    
+
     fetch(`{{ path('app_dashboard_analytics_revenue_chart') }}?period={{ period }}&t=${Date.now()}`)
         .then(response => response.json())
         .then(data => {
@@ -380,7 +346,4 @@ function refreshRevenueChart() {
         });
 }
 </script>
-
-<!-- Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 {% endblock %}

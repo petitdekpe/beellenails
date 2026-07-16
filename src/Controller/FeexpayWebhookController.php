@@ -8,6 +8,7 @@ namespace App\Controller;
 
 use App\Entity\Payment;
 use App\Service\PromoCodeService;
+use App\Service\RendezvousConflictResolver;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\DBAL\LockMode;
 use Psr\Log\LoggerInterface;
@@ -26,7 +27,8 @@ class FeexpayWebhookController extends AbstractController
         Request $request,
         EntityManagerInterface $em,
         LoggerInterface $logger,
-        MailerInterface $mailer
+        MailerInterface $mailer,
+        RendezvousConflictResolver $conflictResolver
     ): JsonResponse {
         try {
             // Récupérer le payload JSON
@@ -94,7 +96,12 @@ class FeexpayWebhookController extends AbstractController
                 switch ($internalStatus) {
                     case 'successful':
                         if ($oldStatus !== 'successful') {
-                            $rendezvous->setPaid(true)->setStatus('Rendez-vous pris');
+                            $confirmed = $conflictResolver->confirmOrFlagConflict($rendezvous, $payment, $em);
+
+                            if (!$confirmed) {
+                                $logger->warning("[FeexPay Webhook] Conflit de créneau - RDV #{$rendezvous->getId()} non confirmé, remboursement à traiter");
+                                break;
+                            }
 
                             if ($rendezvous->getPendingPromoCode()) {
                                 $promoCodeService = $this->container->get(PromoCodeService::class);

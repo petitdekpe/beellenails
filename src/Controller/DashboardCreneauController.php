@@ -6,6 +6,7 @@
 namespace App\Controller;
 
 use App\Entity\Creneau;
+use App\Repository\BookingSettingsRepository;
 use App\Repository\CreneauRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -19,13 +20,37 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class DashboardCreneauController extends AbstractController
 {
     #[Route('', name: 'app_dashboard_creneaux', methods: ['GET'])]
-    public function index(CreneauRepository $creneauRepository): Response
+    public function index(CreneauRepository $creneauRepository, BookingSettingsRepository $bookingSettingsRepository): Response
     {
         $creneaux = $creneauRepository->findBy([], ['startTime' => 'ASC']);
 
         return $this->render('dashboard/creneau/index.html.twig', [
             'creneaux' => $creneaux,
+            'bookingSettings' => $bookingSettingsRepository->getCurrent(),
         ]);
+    }
+
+    #[Route('/hold-duration', name: 'app_dashboard_hold_duration_update', methods: ['POST'])]
+    public function updateHoldDuration(Request $request, BookingSettingsRepository $bookingSettingsRepository, EntityManagerInterface $em): Response
+    {
+        if (!$this->isCsrfTokenValid('hold_duration_update', $request->request->get('_token'))) {
+            $this->addFlash('error', 'Token invalide.');
+            return $this->redirectToRoute('app_dashboard_creneaux');
+        }
+
+        $minutes = $request->request->getInt('holdDurationMinutes');
+
+        if ($minutes < 1 || $minutes > 1440) {
+            $this->addFlash('error', 'La durée doit être comprise entre 1 et 1440 minutes.');
+            return $this->redirectToRoute('app_dashboard_creneaux');
+        }
+
+        $settings = $bookingSettingsRepository->getCurrent();
+        $settings->setHoldDurationMinutes($minutes);
+        $em->flush();
+
+        $this->addFlash('success', 'Durée de réservation temporaire mise à jour : ' . $minutes . ' minute(s).');
+        return $this->redirectToRoute('app_dashboard_creneaux');
     }
 
     #[Route('/new', name: 'app_dashboard_creneau_new', methods: ['POST'])]

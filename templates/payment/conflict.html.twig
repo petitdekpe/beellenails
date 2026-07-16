@@ -1,0 +1,89 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créneau indisponible{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-gray-50 py-8 pt-32">
+    <div class="max-w-2xl mx-auto px-4">
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-8 text-white">
+                <div class="text-center">
+                    <div class="inline-flex items-center justify-center w-16 h-16 bg-white bg-opacity-20 rounded-full mb-4">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h1 class="text-3xl font-bold mb-2">Ce créneau n'est plus disponible</h1>
+                    <p class="text-orange-100">Votre paiement a bien été reçu</p>
+                </div>
+            </div>
+
+            <div class="p-6">
+                <div class="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-6">
+                    <p class="text-orange-900">
+                        Nous avons bien reçu votre paiement, mais ce créneau vient malheureusement d'être réservé
+                        par un autre client entre-temps. Nous en sommes sincèrement désolées.
+                    </p>
+                </div>
+
+                {% if payment %}
+                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
+                        <h3 class="font-semibold text-gray-900 mb-3">Détails du paiement</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                            <div>
+                                <span class="text-gray-500">Référence :</span>
+                                <span class="font-mono font-medium block text-gray-900">{{ payment.reference }}</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-500">Montant :</span>
+                                <span class="font-bold block text-gray-900">{{ (payment.amount / 100)|number_format(0, ',', ' ') }} {{ payment.currency }}</span>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                    <h4 class="font-semibold text-blue-900 mb-2">Que se passe-t-il maintenant ?</h4>
+                    <p class="text-sm text-blue-800">
+                        Notre équipe va procéder au remboursement de votre paiement et vous contactera très
+                        prochainement pour convenir d'un nouveau créneau. Un email récapitulatif vous a été envoyé.
+                    </p>
+                </div>
+
+                <div class="space-y-3">
+                    <a href="{{ path('app_calendar') }}"
+                       class="block w-full bg-pink-600 hover:bg-pink-700 text-white text-center font-semibold py-3 px-6 rounded-lg transition-colors">
+                        Choisir un autre créneau
+                    </a>
+                    <a href="{{ path('app_home') }}"
+                       class="block w-full bg-gray-100 hover:bg-gray-200 text-gray-700 text-center font-semibold py-3 px-6 rounded-lg transition-colors">
+                        Retour à l'accueil
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Customer Support -->
+        <div class="mt-6 bg-white rounded-lg p-4 border border-gray-200">
+            <div class="text-center">
+                <h4 class="font-medium text-gray-900 mb-2">Besoin d'aide ?</h4>
+                <p class="text-sm text-gray-600 mb-3">
+                    Notre équipe support est disponible pour vous aider
+                </p>
+                <div class="flex justify-center space-x-4 text-sm">
+                    <a href="mailto:beellenailscare@beellenails.com?subject=Cr%C3%A9neau%20indisponible%20-%20{{ payment.reference ?? 'N/A' }}"
+                       class="text-pink-600 hover:text-pink-700 font-medium">
+                        📧 Contacter le support
+                    </a>
+                    <span class="text-gray-300">|</span>
+                    <a href="tel:+22997123456"
+                       class="text-pink-600 hover:text-pink-700 font-medium">
+                        📞 Appeler
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

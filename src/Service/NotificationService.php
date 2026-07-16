@@ -5,6 +5,7 @@
 
 namespace App\Service;
 
+use App\Entity\Payment;
 use App\Entity\Rendezvous;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
@@ -105,6 +106,57 @@ class NotificationService
                 'error' => $e->getMessage()
             ]);
             throw $e;
+        }
+    }
+
+    /**
+     * Envoie les notifications de conflit de créneau (paiement reçu mais créneau déjà pris entretemps)
+     */
+    public function sendPaymentConflictNotification(Rendezvous $rendezvous, Payment $payment): void
+    {
+        try {
+            $email = (new Email())
+                ->from(sprintf('%s <%s>', $this->fromName, $this->fromEmail))
+                ->to($rendezvous->getUser()->getEmail())
+                ->replyTo($this->replyToEmail)
+                ->subject('Votre créneau n\'est plus disponible - Remboursement en cours')
+                ->html($this->twig->render('emails/payment_conflict.html.twig', [
+                    'rendezvous' => $rendezvous,
+                    'payment' => $payment
+                ]));
+
+            $email->getHeaders()->addTextHeader('X-Mailer', 'BeElle Nails Booking System');
+            $email->getHeaders()->addTextHeader('X-Auto-Response-Suppress', 'OOF, DR, RN, NRN, AutoReply');
+
+            $this->mailer->send($email);
+
+            $adminEmail = (new Email())
+                ->from(sprintf('%s <%s>', $this->fromName, $this->fromEmail))
+                ->to($this->adminEmail, $this->adminEmail2)
+                ->bcc($this->adminBcc)
+                ->replyTo($this->replyToEmail)
+                ->subject('⚠️ Conflit de créneau - Remboursement à traiter')
+                ->html($this->twig->render('emails/payment_conflict_admin.html.twig', [
+                    'rendezvous' => $rendezvous,
+                    'payment' => $payment
+                ]));
+
+            $adminEmail->getHeaders()->addTextHeader('X-Mailer', 'BeElle Nails Booking System');
+            $adminEmail->getHeaders()->addTextHeader('X-Auto-Response-Suppress', 'OOF, DR, RN, NRN, AutoReply');
+
+            $this->mailer->send($adminEmail);
+
+            $this->logger->info('Notifications de conflit de créneau envoyées', [
+                'rendezvous_id' => $rendezvous->getId(),
+                'payment_id' => $payment->getId(),
+                'customer_email' => $rendezvous->getUser()->getEmail()
+            ]);
+        } catch (\Exception $e) {
+            $this->logger->error('Erreur envoi notifications de conflit de créneau', [
+                'rendezvous_id' => $rendezvous->getId(),
+                'payment_id' => $payment->getId(),
+                'error' => $e->getMessage()
+            ]);
         }
     }
 

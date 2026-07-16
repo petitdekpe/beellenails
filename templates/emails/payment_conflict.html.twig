@@ -1,0 +1,36 @@
+{% extends 'emails/base_email.html.twig' %}
+
+{% block title %}Votre créneau n'est plus disponible - BeElle Nails{% endblock %}
+
+{% block preheader %}Votre paiement a bien été reçu, mais ce créneau vient d'être pris par un autre client.{% endblock %}
+
+{% block header_title %}Créneau indisponible ⚠️{% endblock %}
+
+{% block header_subtitle %}Votre paiement a bien été reçu{% endblock %}
+
+{% block content %}
+    <div class="greeting">
+        Bonjour {{ rendezvous.user.prenom }} {{ rendezvous.user.nom }},
+    </div>
+
+    <div class="content-text">
+        Nous avons bien reçu votre paiement de <strong>{{ (payment.amount / 100)|number_format(0, ',', ' ') }} {{ payment.currency }}</strong> (référence <strong>{{ payment.reference }}</strong>),
+        mais le créneau du <strong>{{ rendezvous.day|date('d/m/Y') }}</strong> à <strong>{{ rendezvous.creneau.startTime|date('H:i') }}</strong>
+        a malheureusement été réservé par un autre client entre-temps.
+    </div>
+
+    <div class="content-text">
+        Nous sommes sincèrement désolées pour ce désagrément. Nous allons procéder au <strong>remboursement</strong> de votre paiement. 
+        Vous pouvez retourner sur notre site pour choisir un autre créneau qui vous conviendrait.
+    </div>
+
+    <div class="content-text">
+        En cas de besoin, n'hésitez pas à nous contacter directement au <strong>+229 01 97 85 35 12</strong> ou via WhatsApp,
+        en mentionnant la référence <strong>{{ payment.reference }}</strong>.
+    </div>
+
+    <div class="content-text">
+        <em>Toutes nos excuses pour la gêne occasionnée.</em><br>
+        <strong>BeElle</strong>
+    </div>
+{% endblock %}

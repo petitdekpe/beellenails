@@ -20,6 +20,35 @@
         {% endfor %}
     {% endfor %}
 
+    <!-- Réglages de réservation -->
+    <div class="bg-white rounded-lg shadow mb-6">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-medium text-gray-900">Réglages de réservation</h2>
+        </div>
+        <div class="px-6 py-4">
+            <form method="POST" action="{{ path('app_dashboard_hold_duration_update') }}" class="flex flex-col sm:flex-row gap-4 items-end">
+                <input type="hidden" name="_token" value="{{ csrf_token('hold_duration_update') }}">
+                <div>
+                    <label for="holdDurationMinutes" class="block text-sm font-medium text-gray-700 mb-1">
+                        Durée de réservation temporaire (minutes)
+                    </label>
+                    <input type="number" id="holdDurationMinutes" name="holdDurationMinutes" min="1" max="1440" required
+                           value="{{ bookingSettings.holdDurationMinutes }}"
+                           class="block w-32 rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500">
+                    <p class="text-xs text-gray-500 mt-1">
+                        Temps pendant lequel un créneau reste réservé pour un client le temps qu'il paye, avant de redevenir disponible.
+                    </p>
+                </div>
+                <div>
+                    <button type="submit"
+                            class="inline-flex items-center px-5 py-2 bg-pink-600 hover:bg-pink-700 text-white font-medium rounded-lg transition-colors">
+                        Enregistrer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Formulaire création -->
     <div class="bg-white rounded-lg shadow mb-6">
         <div class="px-6 py-4 border-b border-gray-200">

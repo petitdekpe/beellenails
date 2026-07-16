@@ -101,6 +101,9 @@ class Rendezvous implements PayableEntityInterface
     #[ORM\JoinColumn(nullable: true)]
     private ?Creneau $previousCreneau = null;
 
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $expiresAt = null;
+
     public function __construct()
     {
         $this->payments = new ArrayCollection();
@@ -394,6 +397,18 @@ class Rendezvous implements PayableEntityInterface
         return $this;
     }
 
+    public function getExpiresAt(): ?\DateTimeInterface
+    {
+        return $this->expiresAt;
+    }
+
+    public function setExpiresAt(?\DateTimeInterface $expiresAt): self
+    {
+        $this->expiresAt = $expiresAt;
+
+        return $this;
+    }
+
     /**
      * Sauvegarde les anciennes informations avant modification
      */
@@ -434,6 +449,7 @@ class Rendezvous implements PayableEntityInterface
     {
         $this->setPaid(true);
         $this->setStatus('Rendez-vous pris');
+        $this->setExpiresAt(null);
     }
 
     public function onPaymentFailure(): void

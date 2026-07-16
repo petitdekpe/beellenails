@@ -56,6 +56,41 @@ class PaymentRepository extends ServiceEntityRepository
 		;
 	}
 
+	/**
+	 * Paiements en conflit (créneau déjà pris entretemps), remboursement à traiter.
+	 *
+	 * @return Payment[]
+	 */
+	public function findConflicts(): array
+	{
+		return $this->createQueryBuilder('p')
+		            ->andWhere('p.status = :status')
+		            ->setParameter('status', 'conflict')
+		            ->orderBy('p.createdAt', 'DESC')
+		            ->getQuery()
+		            ->getResult()
+		;
+	}
+
+	/**
+	 * Conflits déjà résolus (remboursés), les plus récents en premier.
+	 *
+	 * @return Payment[]
+	 */
+	public function findResolvedConflicts(int $limit = 20): array
+	{
+		return $this->createQueryBuilder('p')
+		            ->andWhere('p.status = :status')
+		            ->andWhere('p.entityType = :entityType')
+		            ->setParameter('status', 'refunded')
+		            ->setParameter('entityType', 'rendezvous')
+		            ->orderBy('p.updatedAt', 'DESC')
+		            ->setMaxResults($limit)
+		            ->getQuery()
+		            ->getResult()
+		;
+	}
+
 //    /**
 //     * @return Payment[] Returns an array of Payment objects
 //     */

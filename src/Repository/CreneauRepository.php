@@ -48,12 +48,17 @@ class CreneauRepository extends ServiceEntityRepository
             SELECT cr.id FROM App\Entity\Creneau cr
             INNER JOIN cr.rendezvouses re
             WHERE re.day = :selectedDate
-            AND re.status IN (:statuses)
+            AND (
+                re.status IN (:statuses)
+                OR (re.status IN (:holdStatuses) AND re.expiresAt > :now)
+            )
         )')
             ->andWhere('( :selectedDate != :currentDate OR c.startTime > :twoHoursLater )')
             ->setParameter('selectedDate', $selectedDate->format('Y-m-d'))
             ->setParameter('currentDate', $currentTime->format('Y-m-d'))
             ->setParameter('statuses', ['Rendez-vous pris', 'Rendez-vous confirmé', 'Congé'])
+            ->setParameter('holdStatuses', ['Tentative', 'Paiement en attente'])
+            ->setParameter('now', new \DateTime())
             ->setParameter('twoHoursLater', $twoHoursLater->format('H:i:s'))
             ->getQuery()
             ->getResult();

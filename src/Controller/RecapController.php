@@ -8,6 +8,7 @@ namespace App\Controller;
 
 use App\Form\TermsType;
 use App\Entity\Rendezvous;
+use App\Repository\BookingSettingsRepository;
 use App\Repository\RendezvousRepository;
 use App\Service\PromoCodeService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -25,7 +26,7 @@ class RecapController extends AbstractController
 
     #[Route('/recap/{rendezvous}', name: 'app_recap')]
     #[IsGranted("ROLE_USER")]
-    public function index(Rendezvous $rendezvous, Request $request, EntityManagerInterface $entityManager, RendezvousRepository $rendezvousRepository): Response
+    public function index(Rendezvous $rendezvous, Request $request, EntityManagerInterface $entityManager, RendezvousRepository $rendezvousRepository, BookingSettingsRepository $bookingSettingsRepository): Response
     {
         // Créer le formulaire TermsType 
         $form = $this->createForm(TermsType::class);
@@ -34,19 +35,16 @@ class RecapController extends AbstractController
         $user = $this->getUser();
         $rendezvous->setUser($user);
         $rendezvous->setStatus("Paiement en attente");
+        $holdMinutes = $bookingSettingsRepository->getHoldDurationMinutes();
+        $rendezvous->setExpiresAt((new \DateTime())->modify("+{$holdMinutes} minutes"));
 
         // Calculer et enregistrer le coût total
         $rendezvous->updateTotalCost();
 
-        // Vérifier si un rendez-vous avec le même jour et créneau existe déjà
-        $existingRendezvous = $rendezvousRepository->findOneBy([
-            'day' => $rendezvous->getDay(),
-            'creneau' => $rendezvous->getCreneau(),
-            'status' => 'Rendez-vous pris'
-        ]);
-
-        if ($existingRendezvous) {
-            // Si un rendez-vous existe déjà, rediriger vers la page de prise de rendez-vous
+        // Vérifier si un autre rendez-vous occupe déjà ce jour/créneau
+        // (confirmé, ou tentative/paiement en attente pas encore expiré)
+        if ($rendezvousRepository->hasActiveHoldOrConfirmedConflict($rendezvous->getDay(), $rendezvous->getCreneau(), $rendezvous->getId())) {
+            $this->addFlash('error', 'Ce créneau vient d\'être réservé par un autre client. Merci d\'en choisir un autre.');
             return $this->redirectToRoute('app_calendar');
         }
 

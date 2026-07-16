@@ -64,7 +64,7 @@
             </li>
 
             <!-- Paiements -->
-            {% set payment_active = route starts with 'app_dashboard_transactions' or route starts with 'app_dashboard_payment_method' or route starts with 'app_dashboard_payment_config' %}
+            {% set payment_active = route starts with 'app_dashboard_transactions' or route starts with 'app_dashboard_payment_method' or route starts with 'app_dashboard_payment_config' or route starts with 'app_dashboard_payment_conflicts' %}
             <li>
                 <button type="button" 
                         class="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 {{ payment_active ? 'bg-pink-100 font-semibold text-pink-700' : '' }}"
@@ -89,8 +89,12 @@
                            class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 {{ route starts with 'app_dashboard_payment_method' ? 'bg-pink-100 font-medium' : '' }}">Moyens de paiement</a>
                     </li>
                     <li>
-                        <a href="{{ path('app_dashboard_payment_config_index') }}" 
+                        <a href="{{ path('app_dashboard_payment_config_index') }}"
                            class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 {{ route starts with 'app_dashboard_payment_config' ? 'bg-pink-100 font-medium' : '' }}">Configuration montants</a>
+                    </li>
+                    <li>
+                        <a href="{{ path('app_dashboard_payment_conflicts_index') }}"
+                           class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 {{ route starts with 'app_dashboard_payment_conflicts' ? 'bg-pink-100 font-medium' : '' }}">⚠️ Conflits de créneaux</a>
                     </li>
                 </ul>
             </li>

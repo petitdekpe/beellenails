@@ -26,6 +26,7 @@ class Payment
 		'invalid'     => 'Invalide',
 		'successful'  => 'Approuvée',
 		'failed'      => 'Annulée',
+		'conflict'    => 'Conflit - remboursement à traiter',
 	];
 
 	public const STATUS_FEDEX = [

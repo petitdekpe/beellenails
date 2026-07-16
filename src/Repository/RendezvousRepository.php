@@ -6,6 +6,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Creneau;
 use App\Entity\Rendezvous;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -112,7 +113,73 @@ class RendezvousRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    
+    /**
+     * True si un AUTRE rendez-vous occupe déjà ce jour/créneau : soit confirmé,
+     * soit une réservation temporaire pas encore expirée (Tentative / Paiement en attente).
+     * Utilisé comme garde-fou avant de générer un lien de paiement.
+     */
+    public function hasActiveHoldOrConfirmedConflict(\DateTimeInterface $day, Creneau $creneau, ?int $excludeId = null): bool
+    {
+        $qb = $this->createQueryBuilder('r')
+            ->andWhere('r.day = :day')
+            ->andWhere('r.creneau = :creneau')
+            ->andWhere('(
+                r.status IN (:confirmedStatuses)
+                OR (r.status IN (:holdStatuses) AND r.expiresAt > :now)
+            )')
+            ->setParameter('day', $day->format('Y-m-d'))
+            ->setParameter('creneau', $creneau)
+            ->setParameter('confirmedStatuses', ['Rendez-vous pris', 'Rendez-vous confirmé'])
+            ->setParameter('holdStatuses', ['Tentative', 'Paiement en attente'])
+            ->setParameter('now', new \DateTime())
+            ->setMaxResults(1);
+
+        if ($excludeId !== null) {
+            $qb->andWhere('r.id != :excludeId')->setParameter('excludeId', $excludeId);
+        }
+
+        return $qb->getQuery()->getOneOrNullResult() !== null;
+    }
+
+    /**
+     * True si un AUTRE rendez-vous est déjà confirmé sur ce jour/créneau.
+     * Utilisé au moment de la confirmation du paiement (sous verrou) : seule une
+     * réservation qui a déjà gagné la course compte, pas une simple tentative concurrente.
+     */
+    public function hasConfirmedConflict(\DateTimeInterface $day, Creneau $creneau, int $excludeId): bool
+    {
+        $result = $this->createQueryBuilder('r')
+            ->andWhere('r.day = :day')
+            ->andWhere('r.creneau = :creneau')
+            ->andWhere('r.status IN (:confirmedStatuses)')
+            ->andWhere('r.id != :excludeId')
+            ->setParameter('day', $day->format('Y-m-d'))
+            ->setParameter('creneau', $creneau)
+            ->setParameter('confirmedStatuses', ['Rendez-vous pris', 'Rendez-vous confirmé'])
+            ->setParameter('excludeId', $excludeId)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        return $result !== null;
+    }
+
+    /**
+     * Réservations temporaires (Tentative / Paiement en attente) dont le délai est dépassé.
+     *
+     * @return Rendezvous[]
+     */
+    public function findExpiredHolds(\DateTimeInterface $now): array
+    {
+        return $this->createQueryBuilder('r')
+            ->andWhere('r.status IN (:holdStatuses)')
+            ->andWhere('r.expiresAt IS NOT NULL')
+            ->andWhere('r.expiresAt <= :now')
+            ->setParameter('holdStatuses', ['Tentative', 'Paiement en attente'])
+            ->setParameter('now', $now)
+            ->getQuery()
+            ->getResult();
+    }
 
 
 //    /**

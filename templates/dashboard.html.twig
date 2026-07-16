@@ -38,9 +38,9 @@
         {% endif %}
 
         <!-- Main content -->
-        <div class="flex-1 {% if is_granted('ROLE_ADMIN') %}ml-64{% endif %} main-content">
+        <div class="flex-1 {% if is_granted('ROLE_ADMIN') %}sm:ml-64{% endif %} main-content">
             <!-- Top navigation -->
-            <nav class="fixed top-0 right-0 left-0 {% if is_granted('ROLE_ADMIN') %}ml-64{% endif %} z-30 bg-white border-b border-gray-200">
+            <nav class="fixed top-0 right-0 left-0 {% if is_granted('ROLE_ADMIN') %}sm:ml-64{% endif %} z-30 bg-white border-b border-gray-200">
                 <div class="px-3 py-3 lg:px-5 lg:pl-3">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center justify-start rtl:justify-end">
