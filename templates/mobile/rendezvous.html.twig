@@ -108,7 +108,9 @@
                         'Paiement en attente':  'bg-yellow-100 text-yellow-800',
                         'Échec du paiement':    'bg-red-200 text-red-900',
                         'Tentative':            'bg-orange-100 text-orange-800',
-                        'Congé':                'bg-purple-100 text-purple-800'
+                        'Congé':                'bg-purple-100 text-purple-800',
+                        'Paiement en conflit':  'bg-orange-200 text-orange-900',
+                        'Expiré':               'bg-gray-100 text-gray-800'
                     } %}
                     {% set effective_status = rdv.status %}
                     {% set status_class = status_colors[effective_status] ?? 'bg-gray-100 text-gray-800' %}
