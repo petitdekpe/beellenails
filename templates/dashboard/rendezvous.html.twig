@@ -230,7 +230,7 @@
                                                         'Congé': 'bg-purple-100 text-purple-800',
                                                         '': 'bg-gray-100 text-gray-800'
                                                     } %}
-                                                    {% set rdv_status = rdv.paid ? 'Rendez-vous pris' : rdv.status|default('') %}
+                                                    {% set rdv_status = rdv.status|default('') %}
                                                     {% set status_class = status_colors[rdv_status] ?? 'bg-gray-100 text-gray-800' %}
                                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ status_class }}">
                                                         {{ rdv_status|default('Non défini') }}

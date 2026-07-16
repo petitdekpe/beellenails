@@ -225,7 +225,8 @@ class RendezvousController extends AbstractController
     public function cancel(Request $request, Rendezvous $rendezvous, EntityManagerInterface $entityManager, MailerInterface $mailer, PromoCodeService $promoCodeService, LoggerInterface $logger): Response
     {
         $rendezvous->setStatus("Annulé");
-        
+        $rendezvous->setPaid(false);
+
         // Révoquer le code promo si il y en a un
         if ($rendezvous->getPromoCode()) {
             $result = $promoCodeService->revokePromoCodeUsage($rendezvous, 'Rendez-vous annulé par le client');

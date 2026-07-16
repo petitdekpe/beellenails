@@ -524,7 +524,8 @@ class DashboardController extends AbstractController
     ): Response {
         // Met à jour le statut
         $rendezvous->setStatus("Annulé");
-        
+        $rendezvous->setPaid(false);
+
         // Révoquer le code promo si il y en a un
         if ($rendezvous->getPromoCode()) {
             $result = $promoCodeService->revokePromoCodeUsage($rendezvous, 'Rendez-vous annulé par l\'admin');

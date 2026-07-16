@@ -90,6 +90,9 @@
                                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-pink-600 uppercase tracking-wider">
                                                 Date
                                             </th>
+                                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-pink-600 uppercase tracking-wider">
+                                                Actions
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody class="bg-white divide-y divide-gray-200">
@@ -181,6 +184,19 @@
                                                     <div class="text-xs text-gray-500">{{ payment.createdAt|date('H:i') }}</div>
                                                     {% if payment.updatedAt and payment.updatedAt != payment.createdAt %}
                                                         <div class="text-xs text-blue-600">Mis à jour: {{ payment.updatedAt|date('d/m H:i') }}</div>
+                                                    {% endif %}
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-right">
+                                                    {% if payment.provider == 'fedapay' and payment.status == 'pending' %}
+                                                        <button type="button"
+                                                                class="fedapay-refresh-btn inline-flex items-center px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
+                                                                data-reference="{{ payment.reference }}"
+                                                                data-status-url="{{ path('generic_payment_status', {reference: payment.reference}) }}">
+                                                            <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                                                            </svg>
+                                                            Relancer via FedaPay
+                                                        </button>
                                                     {% endif %}
                                                 </td>
                                             </tr>
@@ -295,4 +311,28 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+document.querySelectorAll('.fedapay-refresh-btn').forEach(function(button) {
+    button.addEventListener('click', function() {
+        const originalHtml = button.innerHTML;
+        button.disabled = true;
+        button.innerHTML = '<div class="animate-spin w-3.5 h-3.5 mr-1.5 border-2 border-blue-400 border-t-transparent rounded-full inline-block"></div> Vérification...';
+
+        fetch(button.dataset.statusUrl + '?force_api=true')
+            .then(response => response.json())
+            .then(data => {
+                window.location.reload();
+            })
+            .catch(error => {
+                console.error('Erreur lors de la relance du statut FedaPay:', error);
+                button.disabled = false;
+                button.innerHTML = originalHtml;
+                alert('Erreur lors de la vérification du statut auprès de FedaPay.');
+            });
+    });
+});
+</script>
 {% endblock %}

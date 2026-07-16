@@ -589,21 +589,24 @@ class GenericPaymentController extends AbstractController
 
         $forceApiCheck = $request->query->getBoolean('force_api', false);
 
-        // Si force_api=true ET le paiement est encore pending ET c'est FeexPay
+        // Si force_api=true ET le paiement est encore pending ET le provider le supporte
         if (
             $forceApiCheck &&
             $payment->getStatus() === 'pending' &&
-            $payment->getProvider() === 'feexpay'
+            in_array($payment->getProvider(), ['feexpay', 'fedapay'], true)
         ) {
 
             $this->logger->info('[Generic Payment] Force API check requested', [
                 'reference' => $reference,
+                'provider' => $payment->getProvider(),
                 'current_status' => $payment->getStatus()
             ]);
 
-            // Appel API FeexPay pour vérifier le vrai statut
+            // Appel API du provider pour vérifier le vrai statut
             try {
-                $apiStatus = $this->checkFeexPayApiStatus($payment);
+                $apiStatus = $payment->getProvider() === 'fedapay'
+                    ? $this->checkFedaPayApiStatus($payment)
+                    : $this->checkFeexPayApiStatus($payment);
 
                 if ($apiStatus && $apiStatus !== 'pending') {
                     $this->updatePaymentFromApiStatus($payment, $apiStatus);
@@ -661,6 +664,38 @@ class GenericPaymentController extends AbstractController
             'is_successful' => in_array($payment->getStatus(), ['approved', 'successful']),
             'entity_status' => $entity ? ($entity->getEntityType() === 'rendezvous' && method_exists($entity, 'isPaid') ? $entity->isPaid() : null) : null
         ]);
+    }
+
+    private function checkFedaPayApiStatus(Payment $payment): ?string
+    {
+        try {
+            if (!$payment->getTransactionID()) {
+                return null;
+            }
+
+            // Appel à l'API FedaPay pour vérifier le statut réel de la transaction
+            $transaction = $this->fedapayService->getTransaction((int) $payment->getTransactionID());
+            $rawStatus = $this->fedapayService->getTransactionStatus($transaction);
+
+            $this->logger->info('[Generic Payment] FedaPay API Status Check', [
+                'reference' => $payment->getReference(),
+                'transaction_id' => $payment->getTransactionID(),
+                'api_status' => $rawStatus
+            ]);
+
+            return match ($rawStatus) {
+                'approved', 'successful', 'transferred' => 'successful',
+                'declined', 'canceled', 'invalid' => 'failed',
+                'pending' => 'pending',
+                default => 'pending'
+            };
+        } catch (\Exception $e) {
+            $this->logger->error('[Generic Payment] FedaPay API Status Check Error', [
+                'reference' => $payment->getReference(),
+                'error' => $e->getMessage()
+            ]);
+            return null;
+        }
     }
 
     private function checkFeexPayApiStatus(Payment $payment): ?string
