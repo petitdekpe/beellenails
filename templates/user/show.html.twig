@@ -160,7 +160,14 @@
                                             'Rendez-vous confirmé': 'bg-green-50 text-green-700',
                                             'Annulé': 'bg-red-50 text-red-700',
                                             'Reporté': 'bg-orange-50 text-orange-700',
-                                            'Validé': 'bg-purple-50 text-purple-700'
+                                            'Validé': 'bg-purple-50 text-purple-700',
+                                            'Tentative': 'bg-orange-50 text-orange-700',
+                                            'Paiement en attente': 'bg-yellow-50 text-yellow-700',
+                                            'Échec du paiement': 'bg-red-100 text-red-800',
+                                            'Paiement annulé': 'bg-red-50 text-red-700',
+                                            'Paiement en conflit': 'bg-orange-100 text-orange-800',
+                                            'Expiré': 'bg-gray-100 text-gray-700',
+                                            'Congé': 'bg-purple-50 text-purple-700'
                                         } %}
                                         {% set bg_class = status_classes[rdv.status] ?: 'bg-gray-50' %}
                                         <div class="flex items-center justify-between p-3 {{ bg_class|split(' ')[0] }} rounded-lg">

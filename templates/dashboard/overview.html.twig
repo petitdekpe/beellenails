@@ -82,7 +82,9 @@
                                             'Tentative échouée': 'bg-red-100 text-red-800',
                                             'Échec du paiement': 'bg-red-200 text-red-900',
                                             'Paiement en attente': 'bg-yellow-50 text-yellow-700',
-                                            'Congé': 'bg-purple-50 text-purple-700'
+                                            'Congé': 'bg-purple-50 text-purple-700',
+                                            'Paiement en conflit': 'bg-orange-100 text-orange-800',
+                                            'Expiré': 'bg-gray-100 text-gray-700'
                                         } %}
                                         {% set bg_class = status_classes[rdv.status] ?: 'bg-gray-50' %}
                                         <div class="flex items-center justify-between p-3 {{ bg_class|split(' ')[0] }} rounded-lg">
