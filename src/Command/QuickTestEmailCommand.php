@@ -303,7 +303,7 @@ class QuickTestEmailCommand extends Command
                             Cotonou, Bénin
                         </div>
                         <div class="footer-info" style="margin-top: 15px;">
-                            📞 +229 97 85 35 12 | 🌐 www.beellenails.com
+                            📞 +229 01 90 11 55 61 | 🌐 www.beellenails.com
                         </div>
                         <div style="color: #9ca3af; font-size: 12px; margin-top: 20px;">
                             © 2025 BeElle Nails. Tous droits réservés.
